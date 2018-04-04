@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button } from "semantic-ui-react";
+import { Form, Button, Header } from "semantic-ui-react";
 import { login, signup } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -24,7 +24,7 @@ const
 		margin: 0px auto;
 	`,
 
-	FormHeader = styled.h2`
+	FormHeader = styled( Header )`
 		margin-bottom: 30px;
 		text-align: center;
 	`,
@@ -59,7 +59,7 @@ class AuthPage extends Component {
 		}
 	};
 
-	handleSignup =() => {
+	handleSignup = () => {
 		const credentials = { email: this.state.email, password: this.state.password };
 		if ( credentials.email !== "" && credentials.password !== "" ) {
 			this.props.signup( credentials ).then(() => this.props.history.push( "/" ));
@@ -69,25 +69,37 @@ class AuthPage extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<FormContainer>
+				<FormContainer id="AuthFormContainer">
 					{ this.state.signup ?
-						<SwapButton secondary content="Log In" onClick={this.swapForm} />
+						<SwapButton
+							className="swapButton"
+							secondary
+							content="Log In"
+							onClick={this.swapForm}
+						/>
 						:
-						<SwapButton secondary content="Sign Up" onClick={this.swapForm} />
+						<SwapButton
+							className="swapButton"
+							secondary
+							content="Sign Up"
+							onClick={this.swapForm}
+						/>
 					}
 					{ this.state.signup ?
-						<FormHeader>Sign Up</FormHeader>
+						<FormHeader className="formHeader" content="Sign Up" />
 						:
-						<FormHeader>Log In</FormHeader>
+						<FormHeader className="formHeader" content="Log In" />
 					}
-					<Form>
+					<Form id="AuthForm">
 						<Form.Input
+							className="emailInput"
 							label="Email"
 							name="email"
 							onChange={this.handleChange}
 							value={this.state.email}
 						/>
 						<Form.Input
+							className="passwordInput"
 							label="Password"
 							type="password"
 							name="password"
@@ -96,6 +108,7 @@ class AuthPage extends Component {
 						/>
 						{ this.state.signup ?
 							<Form.Button
+								className="authFormButton"
 								floated="right"
 								primary
 								content="Sign Up"
@@ -103,6 +116,7 @@ class AuthPage extends Component {
 							/>
 							:
 							<Form.Button
+								className="authFormButton"
 								floated="right"
 								primary
 								content="Log In"
