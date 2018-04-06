@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
-import axios from "axios";
+import api from "../services/api";
 
 const
 	LogoutButton = styled( Button )`
@@ -21,20 +21,16 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			sharebox: "",
-			posts: [],
-			updatedPost: ""
+			posts: []
 		};
 	}
 
 	componentWillMount() {
-		this.getNewsfeed();
+		this.getNewsFeed();
 	}
 
-	getNewsfeed = () => {
-		axios({
-			method: "get",
-			url: "posts/test@gmail.com"
-		})
+	getNewsFeed = () => {
+		api.getNewsFeed()
 			.then( res => this.setState({ posts: res.data }))
 			.catch( err => console.log( err ));
 	}
@@ -51,37 +47,12 @@ class HomePage extends Component {
 				post: { token: localStorage.getItem( "token" ), content: this.state.sharebox }
 			};
 
-			axios({
-				method: "post",
-				url: "/posts/create",
-				data: post
-			}).then( res => {
-				this.getNewsfeed();
-			}).catch( err => console.log( err ));
+			api.createPost( post )
+				.then(() => this.getNewsFeed())
+				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
 		}
-	};
-
-	handleDelete = postId => {
-		axios({
-			method: "delete",
-			url: "/posts/delete",
-			data: { post: { id: postId } }
-		}).then( res => {
-			this.getNewsfeed();
-		}).catch( err => console.log( err ));
-	};
-
-	handleUpdate = () => {
-		console.log( this.state.updatedPost );
-		// axios({
-		// 	method: "patch",
-		// 	url: "/posts/update",
-		// 	data: { post: { id: postId } }
-		// }).then( res => {
-		// 	this.getNewsfeed();
-		// }).catch( err => console.log( err ));
 	};
 
 	render() {
@@ -95,9 +66,7 @@ class HomePage extends Component {
 				/>
 				<NewsFeed
 					posts={this.state.posts}
-					handleDelete={this.handleDelete}
-					handleUpdate={this.handleUpdate}
-					handleChange={this.handleChange}
+					getNewsFeed={this.getNewsFeed}
 				/>
 			</div>
 		);

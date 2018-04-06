@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
+import api from "../services/api";
 
 const
 	Wrapper = styled.div`
@@ -29,6 +30,38 @@ const
 
 
 class Post extends Component {
+	constructor() {
+		super();
+		this.state = {
+			updatedPost: ""
+		};
+	}
+
+	static getDerivedStateFromProps( nextProps, prevState ) {
+		if ( nextProps.content ) {
+			return { updatedPost: nextProps.content };
+		}
+	}
+
+	handleChange = e =>
+		this.setState({ [ e.target.name ]: e.target.value });
+
+	handleDelete = () => {
+		api.deletePost( this.props.id )
+			.then(() => this.props.getNewsFeed())
+			.catch( err => console.log( err ));
+	};
+
+	handleUpdate = () => {
+		// if the post has been updated
+		if ( this.props.content !== this.state.updatedPost ) {
+			api.updatePost(
+				localStorage.getItem( "token" ), this.props.id, this.state.updatedPost
+			)
+				.then( res => this.props.getNewsFeed())
+				.catch( err => console.log( err ));
+		}
+	};
 
 	render() {
 		return (
@@ -42,17 +75,21 @@ class Post extends Component {
 								<Form>
 									<Form.Input
 										name="updatedPost"
-										placeholder={this.props.content}
-										onChange={this.props.handleChange}
+										onChange={this.handleChange}
+										value={this.state.updatedPost}
 									/>
-									<Form.Button content="Update" onClick={this.props.handleUpdate} />
+									<Form.Button
+										primary
+										content="Update"
+										onClick={this.handleUpdate}
+									/>
 								</Form>
 							</Modal.Content>
 						</UpdateModal>
 
 						<Dropdown.Item
 							text="Delete"
-							onClick={() => this.props.handleDelete( this.props.id )}
+							onClick={this.handleDelete}
 						/>
 					</Dropdown.Menu>
 				</Options>
