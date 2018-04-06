@@ -2,7 +2,7 @@ import Enzyme from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
-import { shallow, render, mount } from "enzyme";
+import { shallow } from "enzyme";
 import AuthPage from "./AuthPage";
 import configureStore from "redux-mock-store";
 import createBrowserHistory from "history/createBrowserHistory";
