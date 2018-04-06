@@ -37,14 +37,20 @@ class ShareBox extends Component {
 	render() {
 		return (
 			<div>
-				<Box>
+				<Box id="ShareBox">
 					<BoxInput
+						id="ShareBoxInput"
 						placeholder="Share something cool"
 						name="sharebox"
 						value={this.props.sharebox}
 						onChange={this.props.handleChange}
 					/>
-					<BoxButton primary content="Share" onClick={this.props.handleShare} />
+					<BoxButton
+						id="ShareBoxButton"
+						primary
+						content="Share"
+						onClick={this.props.handleShare}
+					/>
 				</Box>
 			</div>
 		);
