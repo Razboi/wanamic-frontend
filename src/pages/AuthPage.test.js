@@ -76,4 +76,20 @@ describe( "< AuthPage />", () => {
 		wrapper.find( ".passwordInput" ).simulate( "change", event );
 		expect( wrapper.state( "password" )).to.equal( "123" );
 	});
+
+	// login and signup methods
+	it( "checks that handleLogin is called", () => {
+		expect( spyLogin.called ).to.equal( false );
+		wrapper.find( ".swapButton" ).simulate( "click" );
+		wrapper.find( ".swapButton" ).simulate( "click" );
+		wrapper.find( ".authFormButton" ).simulate( "click" );
+		expect( spyLogin.called ).to.equal( true );
+	});
+
+	it( "checks that handleSignup is called", () => {
+		expect( spySignup.called ).to.equal( false );
+		wrapper.find( ".swapButton" ).simulate( "click" );
+		wrapper.find( ".authFormButton" ).simulate( "click" );
+		expect( spySignup.called ).to.equal( true );
+	});
 });
