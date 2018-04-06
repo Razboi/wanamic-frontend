@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Post from "./Post";
+import Post from "../containers/Post";
 import styled from "styled-components";
 
 const
@@ -19,9 +19,7 @@ class NewsFeed extends Component {
 						author={post.authorUsername}
 						content={post.content}
 						date={post.createdAt}
-						handleDelete={this.props.handleDelete}
-						handleUpdate={this.props.handleUpdate}
-						handleChange={this.props.handleChange}
+						getNewsFeed={this.props.getNewsFeed}
 					/>
 				)}
 			</Wrapper>
