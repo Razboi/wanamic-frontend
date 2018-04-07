@@ -67,18 +67,20 @@ class Post extends Component {
 		return (
 			<Wrapper>
 				<Options direction="left">
-					<Dropdown.Menu>
+					<Dropdown.Menu className="postDropdown">
 
 						<UpdateModal trigger={<Dropdown.Item text="Update" />} >
 							<Header>Update your post</Header>
 							<Modal.Content>
 								<Form>
 									<Form.Input
+										className="postUpdateInput"
 										name="updatedPost"
 										onChange={this.handleChange}
 										value={this.state.updatedPost}
 									/>
 									<Form.Button
+										className="postUpdateButton"
 										primary
 										content="Update"
 										onClick={this.handleUpdate}
@@ -88,16 +90,17 @@ class Post extends Component {
 						</UpdateModal>
 
 						<Dropdown.Item
+							className="postDeleteOption"
 							text="Delete"
 							onClick={this.handleDelete}
 						/>
 					</Dropdown.Menu>
 				</Options>
 				<PostHeader>
-					<Author>{this.props.author}</Author>
-					<DateTime>{this.props.date}</DateTime>
+					<Author className="postAuthor">{this.props.author}</Author>
+					<DateTime className="postDate">{this.props.date}</DateTime>
 				</PostHeader>
-				<p>{this.props.content}</p>
+				<p className="postContent">{this.props.content}</p>
 			</Wrapper>
 		);
 	}
