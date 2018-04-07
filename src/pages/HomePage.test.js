@@ -14,16 +14,13 @@ Enzyme.configure({ adapter: new Adapter() });
 describe( "<Homepage/>", () => {
 	var
 		wrapper,
-		history,
 		store;
 
 	beforeEach(() => {
 		store = mockStore();
-		history = createBrowserHistory();
 		wrapper = shallow(
 			<HomePage
 				store={store}
-				history={history}
 			/>
 		).dive();
 	});
