@@ -10,9 +10,10 @@ import api from "../services/api";
 
 const
 	LogoutButton = styled( Button )`
-		position: absolute;
-		left: 10px;
+		position: fixed;
+		right: 10px;
 		bottom: 10px;
+		z-index: 2;
 	`;
 
 
@@ -21,18 +22,30 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			sharebox: "",
-			posts: []
+			posts: [],
+			skip: 0,
+			isInfiniteLoading: false,
+			empty: false
 		};
 	}
 
-	componentWillMount() {
-		this.getNewsFeed();
-	}
-
 	getNewsFeed = () => {
-		api.getNewsFeed()
-			.then( res => this.setState({ posts: res.data }))
-			.catch( err => console.log( err ));
+		if ( !this.state.empty && !this.state.isInfiniteLoading ) {
+			this.setState({ isInfiniteLoading: true });
+			api.getNewsFeed( this.state.skip )
+				.then( res => {
+					if ( res.data.length > 0 ) {
+						this.setState({
+							posts: [ ...this.state.posts, ...res.data ],
+							skip: this.state.skip + 1,
+							isInfiniteLoading: false
+						});
+					} else {
+						this.setState({ empty: true, isInfiniteLoading: false });
+					}
+				})
+				.catch( err => console.log( err ));
+		}
 	}
 
 	handleLogout = () =>
