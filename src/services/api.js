@@ -37,11 +37,11 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	deletePost: ( postId ) =>
+	deletePost: ( postId, token ) =>
 		axios({
 			method: "delete",
 			url: "/posts/delete",
-			data: { post: { id: postId } }
+			data: { post: { id: postId, token: token } }
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
