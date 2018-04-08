@@ -29,10 +29,10 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
-	getNewsFeed: () =>
+	getNewsFeed: ( skip ) =>
 		axios({
 			method: "get",
-			url: "posts/test@gmail.com"
+			url: "posts/test@gmail.com/" + skip
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
