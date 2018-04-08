@@ -11,6 +11,7 @@ const
 class NewsFeed extends Component {
 
 	render() {
+		console.log( this.props.posts );
 		return (
 			<Wrapper
 				useWindowAsScrollContainer
@@ -23,7 +24,7 @@ class NewsFeed extends Component {
 					<Post
 						key={index}
 						id={post._id}
-						author={post.authorUsername}
+						author={post.author}
 						content={post.content}
 						date={post.createdAt}
 						getNewsFeed={this.props.getNewsFeed}

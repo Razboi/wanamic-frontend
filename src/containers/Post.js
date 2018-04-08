@@ -47,7 +47,7 @@ class Post extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 
 	handleDelete = () => {
-		api.deletePost( this.props.id )
+		api.deletePost( this.props.id, localStorage.getItem( "token" ))
 			.then(() => this.props.getNewsFeed())
 			.catch( err => console.log( err ));
 	};
