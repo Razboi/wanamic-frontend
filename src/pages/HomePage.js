@@ -32,7 +32,7 @@ class HomePage extends Component {
 	getNewsFeed = () => {
 		if ( !this.state.empty && !this.state.isInfiniteLoading ) {
 			this.setState({ isInfiniteLoading: true });
-			api.getNewsFeed( this.state.skip )
+			api.getNewsFeed( this.state.skip, localStorage.getItem( "token" ))
 				.then( res => {
 					if ( res.data.length > 0 ) {
 						this.setState({
@@ -48,6 +48,22 @@ class HomePage extends Component {
 		}
 	}
 
+	refreshNewsFeed = () => {
+		api.getNewsFeed( 0, localStorage.getItem( "token" ))
+			.then( res => {
+				this.setState({
+					posts: res.data
+				});
+			})
+			.catch( err => console.log( err ));
+	}
+
+	updatePost = ( postIndex, updatedContent ) => {
+		var posts = this.state.posts;
+		posts[ postIndex ].content = updatedContent;
+		this.setState({ posts: posts });
+	}
+
 	handleLogout = () =>
 		this.props.logout();
 
@@ -61,7 +77,7 @@ class HomePage extends Component {
 			};
 
 			api.createPost( post )
-				.then(() => this.getNewsFeed())
+				.then(() => this.refreshNewsFeed())
 				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
@@ -80,6 +96,7 @@ class HomePage extends Component {
 				<NewsFeed
 					posts={this.state.posts}
 					getNewsFeed={this.getNewsFeed}
+					updatePost={this.updatePost}
 				/>
 			</div>
 		);

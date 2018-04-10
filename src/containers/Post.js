@@ -33,7 +33,8 @@ class Post extends Component {
 	constructor() {
 		super();
 		this.state = {
-			updatedPost: ""
+			updatedPost: "",
+			deleted: false
 		};
 	}
 
@@ -48,7 +49,7 @@ class Post extends Component {
 
 	handleDelete = () => {
 		api.deletePost( this.props.id, localStorage.getItem( "token" ))
-			.then(() => this.props.getNewsFeed())
+			.then(() => this.setState({ deleted: true }))
 			.catch( err => console.log( err ));
 	};
 
@@ -58,51 +59,66 @@ class Post extends Component {
 			api.updatePost(
 				localStorage.getItem( "token" ), this.props.id, this.state.updatedPost
 			)
-				.then( res => this.props.getNewsFeed())
+				.then( res => this.props.updatePost( this.props.index, this.state.updatedPost ))
 				.catch( err => console.log( err ));
 		}
 	};
 
 	render() {
-		return (
-			<Wrapper>
-				<Options direction="left">
-					<Dropdown.Menu className="postDropdown">
+		if ( !this.state.deleted ) {
+			return (
+				<Wrapper>
 
-						<UpdateModal trigger={<Dropdown.Item text="Update" />} >
-							<Header>Update your post</Header>
-							<Modal.Content>
-								<Form>
-									<Form.Input
-										className="postUpdateInput"
-										name="updatedPost"
-										onChange={this.handleChange}
-										value={this.state.updatedPost}
-									/>
-									<Form.Button
-										className="postUpdateButton"
-										primary
-										content="Update"
-										onClick={this.handleUpdate}
-									/>
-								</Form>
-							</Modal.Content>
-						</UpdateModal>
+					<Options direction="left">
 
-						<Dropdown.Item
-							className="postDeleteOption"
-							text="Delete"
-							onClick={this.handleDelete}
-						/>
-					</Dropdown.Menu>
-				</Options>
-				<PostHeader>
-					<Author className="postAuthor">{this.props.author}</Author>
-					<DateTime className="postDate">{this.props.date}</DateTime>
-				</PostHeader>
-				<p className="postContent">{this.props.content}</p>
-			</Wrapper>
-		);
+						{ localStorage.getItem( "username" ) === this.props.author ?
+							<Dropdown.Menu className="postDropdown">
+								<UpdateModal trigger={<Dropdown.Item text="Update" />} >
+									<Header>Update your post</Header>
+									<Modal.Content>
+										<Form>
+											<Form.Input
+												className="postUpdateInput"
+												name="updatedPost"
+												onChange={this.handleChange}
+												value={this.state.updatedPost}
+											/>
+											<Form.Button
+												className="postUpdateButton"
+												primary
+												content="Update"
+												onClick={this.handleUpdate}
+											/>
+										</Form>
+									</Modal.Content>
+								</UpdateModal>
+
+								<Dropdown.Item
+									className="postDeleteOption"
+									text="Delete"
+									onClick={this.handleDelete}
+								/>
+							</Dropdown.Menu>
+							:
+							<Dropdown.Menu className="postDropdown">
+								<Dropdown.Item
+									text="Report"
+								/>
+							</Dropdown.Menu>
+						}
+					</Options>
+
+					<PostHeader>
+						<Author className="postAuthor">{this.props.author}</Author>
+						<DateTime className="postDate">{this.props.date}</DateTime>
+					</PostHeader>
+					<p className="postContent">
+						{this.props.content}
+					</p>
+				</Wrapper>
+			);
+		}
+		return null;
 	}
 }
 
