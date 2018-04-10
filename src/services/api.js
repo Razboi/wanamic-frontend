@@ -29,10 +29,11 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
-	getNewsFeed: ( skip ) =>
+	getNewsFeed: ( skip, token ) =>
 		axios({
-			method: "get",
-			url: "posts/test@gmail.com/" + skip
+			method: "post",
+			url: "posts/newsfeed/" + skip,
+			data: { token: token }
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
