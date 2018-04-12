@@ -74,4 +74,13 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	setUserInfo: data =>
+		axios({
+			method: "post",
+			data: data,
+			url: "/user/info"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

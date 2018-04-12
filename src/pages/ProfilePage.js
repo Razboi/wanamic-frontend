@@ -24,6 +24,8 @@ const
 		@media (max-width: 420px) {
 			grid-area: h;
 			border-bottom: 1px solid #000;
+			background-image: url('../images/img1.jpg') no-repeat !important;
+			background-size: cover;
 		}
 	`,
 	Information = styled.div`
@@ -189,10 +191,18 @@ class ProfilePage extends Component {
 		} else {
 			return (
 				<Wrapper>
-					<Header></Header>
+					<Header image={this.state.user.headerImage} />
 					<Information>
 						<BasicInfo>
-							<UserImage src={ require( "../images/img1.jpg" ) } />
+							{this.state.user.profileImage ?
+								<UserImage
+									src={ require( `../images/${this.state.user.profileImage}` ) }
+								/>
+								:
+								<UserImage
+									src={ require( "../images/defaultUser.png" ) }
+								/>
+							}
 							<Names>
 								<UserName>{this.state.user.fullname}</UserName>
 								<NickName>@{this.state.user.username}</NickName>
