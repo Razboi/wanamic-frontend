@@ -5,7 +5,7 @@ import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 
-var background = require( "../images/bg1.jpeg" );
+
 const
 	Wrapper = styled.div`
 		@media (max-width: 420px) {
@@ -24,7 +24,6 @@ const
 		@media (max-width: 420px) {
 			grid-area: h;
 			border-bottom: 1px solid #000;
-			background-image: url(${background}) !important;
 		}
 	`,
 	Information = styled.div`
