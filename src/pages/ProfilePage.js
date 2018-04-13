@@ -4,7 +4,9 @@ import { Button } from "semantic-ui-react";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
-
+var
+	backgroundImg,
+	profileImg;
 
 const
 	Wrapper = styled.div`
@@ -24,7 +26,8 @@ const
 		@media (max-width: 420px) {
 			grid-area: h;
 			border-bottom: 1px solid #000;
-			background-image: url('../images/img1.jpg') no-repeat !important;
+			background-image: ${props => props.image};
+			background-repeat: no-repeat;
 			background-size: cover;
 		}
 	`,
@@ -124,11 +127,34 @@ class ProfilePage extends Component {
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
 				this.setState({ user: res.data });
+				this.setImages();
 			})
 			.catch( err => {
 				console.log( err );
 				this.setState({ inexistent: true });
 			});
+	}
+
+	setImages() {
+		try {
+			if ( this.state.user.headerImage ) {
+				backgroundImg = require( "../images/" + this.state.user.headerImage );
+			} else {
+				backgroundImg = require( "../images/defaultbg.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
+
+		try {
+			if ( this.state.user.profileImage ) {
+				profileImg = require( "../images/" + this.state.user.profileImage );
+			} else {
+				profileImg = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	getTimeline = () => {
@@ -191,18 +217,10 @@ class ProfilePage extends Component {
 		} else {
 			return (
 				<Wrapper>
-					<Header image={this.state.user.headerImage} />
+					<Header image={`url(${backgroundImg})`} />
 					<Information>
 						<BasicInfo>
-							{this.state.user.profileImage ?
-								<UserImage
-									src={ require( `../images/${this.state.user.profileImage}` ) }
-								/>
-								:
-								<UserImage
-									src={ require( "../images/defaultUser.png" ) }
-								/>
-							}
+							<UserImage src={profileImg} />
 							<Names>
 								<UserName>{this.state.user.fullname}</UserName>
 								<NickName>@{this.state.user.username}</NickName>
