@@ -209,6 +209,18 @@ class ProfilePage extends Component {
 		}
 	}
 
+	handleAddFriend = () => {
+		api.addFriend( localStorage.getItem( "token" ), this.props.match.params.username )
+			.then( res => console.log( res ))
+			.catch( err => console.log( err ));
+	}
+
+	handleFollow = () => {
+		api.followUser( localStorage.getItem( "token" ), this.props.match.params.username )
+			.then( res => console.log( res ))
+			.catch( err => console.log( err ));
+	}
+
 	render() {
 		if ( this.state.inexistent ) {
 			return (
@@ -228,8 +240,18 @@ class ProfilePage extends Component {
 						</BasicInfo>
 						<Options>
 							<Buttons>
-								<Button primary size="tiny" content="Add Friend" />
-								<Button secondary size="tiny" content="Follow" />
+								<Button
+									onClick={this.handleAddFriend}
+									primary
+									size="tiny"
+									content="Add Friend"
+								/>
+								<Button
+									onClick={this.handleFollow}
+									secondary
+									size="tiny"
+									content="Follow"
+								/>
 								<Button size="tiny" icon="mail outline" />
 							</Buttons>
 							<Keywords>

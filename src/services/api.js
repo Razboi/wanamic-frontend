@@ -83,4 +83,22 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	addFriend: ( token, username ) =>
+		axios({
+			method: "post",
+			data: { token: token, friendUsername: username },
+			url: "/friends/add"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	followUser: ( token, username ) =>
+		axios({
+			method: "post",
+			data: { token: token, targetUsername: username },
+			url: "/followers/follow"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
