@@ -18,7 +18,7 @@ describe( "< App />", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
-	it( "checks that app renders all the children", () => {
-		expect( wrapper.children()).to.have.length( 2 );
+	it( "checks that app renders all the children. With Switch should be only 1", () => {
+		expect( wrapper.children()).to.have.length( 1 );
 	});
 });

@@ -38,6 +38,14 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
+	getTimeline: ( skip, username ) =>
+		axios({
+			method: "get",
+			url: "posts/" + username + "/" + skip,
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
 	deletePost: ( postId, token ) =>
 		axios({
 			method: "delete",
@@ -55,6 +63,41 @@ export default {
 				token: token,
 				post: { id: postId, content: content }
 			} }
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getUserInfo: username =>
+		axios({
+			method: "get",
+			url: "/user/" + username
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	setUserInfo: data =>
+		axios({
+			method: "post",
+			data: data,
+			url: "/user/info"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	addFriend: ( token, username ) =>
+		axios({
+			method: "post",
+			data: { token: token, friendUsername: username },
+			url: "/friends/add"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	followUser: ( token, username ) =>
+		axios({
+			method: "post",
+			data: { token: token, targetUsername: username },
+			url: "/followers/follow"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
