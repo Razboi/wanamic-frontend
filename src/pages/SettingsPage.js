@@ -44,25 +44,27 @@ class SettingsPage extends Component {
 			<div>
 				<Form>
 					<h2>User Settings</h2>
-					<Form.Input
+					<Form.Input className="fullnameInput"
 						onChange={this.handleChange} name="fullname" label="Full Name"
 					/>
-					<Form.Input
+					<Form.Input className="usernameInput"
 						onChange={this.handleChange} name="username" label="Username"
 					/>
-					<Form.TextArea
+					<Form.TextArea className="descriptionArea"
 						onChange={this.handleChange} name="description" label="Description"
 					/>
-					<Form.Input
+					<Form.Input className="keywordsInput"
 						onChange={this.handleChange} name="keywords" label="Keywords"
 					/>
 					<Form.Input
+						className="profileImageInput"
 						name="userImage"
 						onChange={this.handleFileChange}
 						label="Profile Image"
 						type="file"
 					/>
 					<Form.Input
+						className="headerImageInput"
 						name="headerImage"
 						onChange={this.handleFileChange}
 						label="Header Image"
