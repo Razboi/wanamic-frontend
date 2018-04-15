@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import UserRoute from "./utils/routes/UserRoute";
+import WelcomePage from "./pages/WelcomePage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 
@@ -15,7 +16,8 @@ class App extends Component {
 				<Switch>
 					<UserRoute exact path="/" component={HomePage} />
 					<GuestRoute path="/login" component={AuthPage} />
-					<SettingsPage path="/settings" component={SettingsPage} />
+					<UserRoute path="/settings" component={SettingsPage} />
+					<WelcomePage path="/welcome" component={WelcomePage} />
 
 					<UserRoute path="/:username" component={ProfilePage} />
 				</Switch>

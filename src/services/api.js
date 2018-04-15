@@ -101,4 +101,13 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	getInterestsMatches: data =>
+		axios({
+			method: "post",
+			data: { data: data },
+			url: "/user/match"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
