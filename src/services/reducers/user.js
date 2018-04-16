@@ -9,4 +9,4 @@ export default function authenticated( state = {}, action = {}) {
 	default:
 		return false;
 	}
-}
+};

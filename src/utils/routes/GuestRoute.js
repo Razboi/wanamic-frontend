@@ -1,15 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import { Route, Redirect } from "react-router-dom";
 
-// Rename component to Component and put all the arguments to ...rest
-// then we create a normal route with the passed arguments
+
 const GuestRoute = ({ authenticated, component: Component, ...rest }) => (
 	<Route
 		{...rest}
 		render={props =>
-			!authenticated ? <Component {...props} /> : <Redirect to="/" />} />
+			authenticated ?
+				<Redirect to="/" />
+				:
+				<Component {...props} />}
+	/>
 );
 
 GuestRoute.propTypes = {
@@ -21,6 +24,6 @@ function mapStateToProps( state ) {
 	return {
 		authenticated: !!state.authenticated
 	};
-}
+};
 
 export default connect( mapStateToProps )( GuestRoute );

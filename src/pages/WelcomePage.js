@@ -5,6 +5,7 @@ import Step3 from "../components/WelcomeStep3";
 import Step4 from "../components/WelcomeStep4";
 import styled from "styled-components";
 import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -20,11 +21,11 @@ class WelcomePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			username: "",
 			description: "",
 			userImage: null,
 			step: 1,
 			checkedCategories: [],
+			toFollow: [],
 			matchedUsers: []
 		};
 	}
@@ -59,16 +60,46 @@ class WelcomePage extends Component {
 		}
 	}
 
+	handleFollow = ( username, checked ) => {
+		var arrayOfToFollow;
+		if ( checked ) {
+			this.setState({
+				toFollow: [ ...this.state.toFollow, username ]
+			});
+		} else {
+			arrayOfToFollow = this.state.toFollow;
+			const index = arrayOfToFollow.indexOf( username );
+			arrayOfToFollow.splice( index, 1 );
+			this.setState({ toFollow: arrayOfToFollow });
+		}
+	}
+
 	categoriesNext = () => {
 		api.getInterestsMatches( this.state.checkedCategories )
 			.then( res => this.setState({ matchedUsers: res.data }))
 			.catch( err => console.log( err ));
-		this.setState({ checkedCategories: [] });
 		this.handleNext();
 	}
 
 	finish = () => {
-		this.props.history.push( "/" );
+		var data = new FormData();
+		data.append( "userImage", this.state.userImage );
+		data.append( "description", this.state.description );
+		data.append( "token", localStorage.getItem( "token" ));
+		api.setUserInfo( data )
+			.then(() => {
+				api.addInterests( this.state.checkedCategories, localStorage.getItem( "token" ))
+					.then(() => {
+						api.setupFollow( this.state.toFollow, localStorage.getItem( "token" ))
+							.then(() => {
+								api.initializeUser( localStorage.getItem( "token" ))
+									.then(() => {
+										localStorage.removeItem( "NU" );
+										this.props.history.push( "/" );
+									}).catch( err => console.log( err ));
+							}).catch( err => console.log( err ));
+					}).catch( err => console.log( err ));
+			}).catch( err => console.log( err ));
 	}
 
 	render() {
@@ -99,6 +130,7 @@ class WelcomePage extends Component {
 						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
 						matchedUsers={this.state.matchedUsers}
+						handleFollow={this.handleFollow}
 						finish={this.finish}
 					/>
 				}
@@ -108,5 +140,10 @@ class WelcomePage extends Component {
 	}
 }
 
+WelcomePage.propTypes = {
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired
+};
 
 export default withRouter( WelcomePage );

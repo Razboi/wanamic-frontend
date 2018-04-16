@@ -25,6 +25,7 @@ export const
 			if ( data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "NU", true );
 				dispatch( userLoggedIn());
 			}
 		}).catch( err => console.log( err )),

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import FollowCheck from "../containers/FollowCheck";
-import api from "../services/api";
 
 const
 	MatchesWrapper = styled.div`
@@ -33,9 +32,6 @@ const
 	`;
 
 class Step4 extends Component {
-	handleFollow = username => {
-		api.followUser( localStorage.getItem( "token" ), username );
-	}
 	render() {
 		return (
 			<div>
@@ -44,9 +40,12 @@ class Step4 extends Component {
 					{this.props.matchedUsers.map(( user, index ) =>
 						<Match key={index}>
 							<MatchFullname>{user.fullname}</MatchFullname>
-							<MatchUsername>{user.email}</MatchUsername>
+							<MatchUsername>{user.username}</MatchUsername>
 							<MatchDescription>{user.description}</MatchDescription>
-							<StyledFollowCheck />
+							<StyledFollowCheck
+								username={user.username}
+								handleFollow={this.props.handleFollow}
+							/>
 						</Match>
 					)}
 				</MatchesWrapper>

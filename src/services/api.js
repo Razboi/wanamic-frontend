@@ -110,4 +110,40 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	initializeUser: token =>
+		axios({
+			method: "post",
+			data: { token: token },
+			url: "/user/initialize"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	checkInitialized: token =>
+		axios({
+			method: "post",
+			data: { token: token },
+			url: "/user/checkInitialized"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	addInterests: ( data, token ) =>
+		axios({
+			method: "post",
+			data: { token: token, data: data },
+			url: "/user/addInterests"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	setupFollow: ( users, token ) =>
+		axios({
+			method: "post",
+			data: { token: token, users: users },
+			url: "/followers/setupFollow"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

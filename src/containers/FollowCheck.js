@@ -15,6 +15,7 @@ class FollowCheck extends Component {
 	}
 
 	toggle = () => {
+		this.props.handleFollow( this.props.username, !this.state.checked );
 		this.setState({ checked: !this.state.checked });
 	}
 
