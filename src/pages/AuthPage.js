@@ -1,38 +1,15 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button, Header } from "semantic-ui-react";
 import { login, signup } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import LoginForm from "../components/LoginForm";
+import SignupForm from "../components/SignupForm";
 
 const
 	Wrapper = styled.div`
 		height: 100vh;
 		display: grid;
-	`,
-	FormContainer = styled.div`
-		@media (max-width: 420px) {
-			width: 90%;
-			height: 60%;
-			margin: auto;
-			padding: 25px;
-		}
-		border: 1px solid #808080;
-		width: 300px;
-		height: 400px;
-		grid-row: 1 / 3;
-		margin: 0px auto;
-	`,
-
-	FormHeader = styled( Header )`
-		margin-bottom: 30px;
-		text-align: center;
-	`,
-
-	SwapButton = styled( Button )`
-		position: absolute;
-		right: 10px;
-		top: 10px;
 	`;
 
 
@@ -42,7 +19,10 @@ class AuthPage extends Component {
 		this.state = {
 			email: "",
 			password: "",
-			signup: false
+			username: "",
+			fullname: "",
+			signup: false,
+			signupStep: 1
 		};
 	}
 
@@ -60,71 +40,42 @@ class AuthPage extends Component {
 	};
 
 	handleSignup = () => {
-		const credentials = { email: this.state.email, password: this.state.password };
-		if ( credentials.email !== "" && credentials.password !== "" ) {
-			this.props.signup( credentials ).then(() => this.props.history.push( "/" ));
+		const credentials = {
+			email: this.state.email, password: this.state.password,
+			username: this.state.username, fullname: this.state.fullname
+		};
+		if ( credentials.email !== "" && credentials.password !== "" &&
+				credentials.username !== "" && credentials.fullname !== "" ) {
+			this.props.signup( credentials )
+				.then(() => this.props.history.push( "/welcome" ))
+				.catch( err => console.log( err ));
 		}
 	};
+
+	handleSignupNext = () => {
+		this.setState({ signupStep: 2 });
+	}
 
 	render() {
 		return (
 			<Wrapper>
-				<FormContainer id="AuthFormContainer">
-					{ this.state.signup ?
-						<SwapButton
-							className="swapButton"
-							secondary
-							content="Log In"
-							onClick={this.swapForm}
-						/>
-						:
-						<SwapButton
-							className="swapButton"
-							secondary
-							content="Sign Up"
-							onClick={this.swapForm}
-						/>
-					}
-					{ this.state.signup ?
-						<FormHeader className="formHeader" content="Sign Up" />
-						:
-						<FormHeader className="formHeader" content="Log In" />
-					}
-					<Form id="AuthForm">
-						<Form.Input
-							className="emailInput"
-							label="Email"
-							name="email"
-							onChange={this.handleChange}
-							value={this.state.email}
-						/>
-						<Form.Input
-							className="passwordInput"
-							label="Password"
-							type="password"
-							name="password"
-							onChange={this.handleChange}
-							value={this.state.password}
-						/>
-						{ this.state.signup ?
-							<Form.Button
-								className="authFormButton"
-								floated="right"
-								primary
-								content="Sign Up"
-								onClick={this.handleSignup}
-							/>
-							:
-							<Form.Button
-								className="authFormButton"
-								floated="right"
-								primary
-								content="Log In"
-								onClick={this.handleLogin}
-							/>
-						}
-					</Form>
-				</FormContainer>
+				{this.state.signup ?
+					<SignupForm
+						handleChange={this.handleChange}
+						swapForm={this.swapForm}
+						handleSignup={this.handleSignup}
+						handleSignupNext={this.handleSignupNext}
+						step={this.state.signupStep}
+					/>
+					:
+					<LoginForm
+						handleChange={this.handleChange}
+						swapForm={this.swapForm}
+						email={this.state.email}
+						password={this.state.password}
+						handleLogin={this.handleLogin}
+					/>
+				}
 			</Wrapper>
 		);
 	}
