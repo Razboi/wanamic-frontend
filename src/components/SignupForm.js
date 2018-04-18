@@ -67,7 +67,7 @@ class SignupForm extends Component {
 						/>
 						<Form.Button
 							type="button"
-							className="authFormButton"
+							className="signupButton"
 							floated="right"
 							primary
 							content="Sign Up"

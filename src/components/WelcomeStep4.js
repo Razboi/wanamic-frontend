@@ -36,7 +36,7 @@ class Step4 extends Component {
 		return (
 			<div>
 				<h2>Step 4</h2>
-				<MatchesWrapper>
+				<MatchesWrapper className="matchesWrapper">
 					{this.props.matchedUsers.map(( user, index ) =>
 						<Match key={index}>
 							<MatchFullname>{user.fullname}</MatchFullname>
@@ -50,10 +50,18 @@ class Step4 extends Component {
 					)}
 				</MatchesWrapper>
 				<Button
-					primary floated="right" content="Next" onClick={this.props.finish}
+					className="nextButton"
+					primary
+					floated="right"
+					content="Next"
+					onClick={this.props.finish}
 				/>
 				<Button
-					secondary floated="left" content="Prev" onClick={this.props.handlePrev}
+					className="prevButton"
+					secondary
+					floated="left"
+					content="Prev"
+					onClick={this.props.handlePrev}
 				/>
 			</div>
 		);

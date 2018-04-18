@@ -6,8 +6,11 @@ class Step2 extends Component {
 		return (
 			<Form>
 				<h2>Step 2</h2>
-				<Form.TextArea className="descriptionArea"
-					onChange={this.props.handleChange} name="description" label="Description"
+				<Form.TextArea
+					className="descriptionArea"
+					onChange={this.props.handleChange}
+					name="description"
+					label="Description"
 				/>
 				<Form.Input
 					className="profileImageInput"
@@ -17,7 +20,12 @@ class Step2 extends Component {
 					type="file"
 				/>
 				<Form.Button
-					primary type="button" floated="right" content="Next" onClick={this.props.handleNext}
+					className="nextButton"
+					primary
+					type="button"
+					floated="right"
+					content="Next"
+					onClick={this.props.handleNext}
 				/>
 			</Form>
 		);

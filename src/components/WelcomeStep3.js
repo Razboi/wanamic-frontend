@@ -15,7 +15,7 @@ class Step3 extends Component {
 			<div>
 				<h2>Step 3</h2>
 				<h4>What are you interested in?</h4>
-				<ChecksWrapper>
+				<ChecksWrapper className="checksWrapper">
 					{this.props.categories.map(( category, index ) =>
 						<CategoryCheck
 							key={index}
@@ -26,6 +26,7 @@ class Step3 extends Component {
 				</ChecksWrapper>
 
 				<Button
+					className="nextButton"
 					primary
 					floated="right"
 					content="Next"
@@ -33,7 +34,11 @@ class Step3 extends Component {
 					onClick={this.props.categoriesNext}
 				/>
 				<Button
-					secondary floated="left" content="Prev" onClick={this.props.handlePrev}
+					className="prevButton"
+					secondary
+					floated="left"
+					content="Prev"
+					onClick={this.props.handlePrev}
 				/>
 			</div>
 		);

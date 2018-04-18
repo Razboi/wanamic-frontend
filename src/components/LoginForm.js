@@ -62,7 +62,7 @@ class LoginForm extends Component {
 
 					<Form.Button
 						type="button"
-						className="authFormButton"
+						className="loginButton"
 						floated="right"
 						primary
 						content="Log In"
