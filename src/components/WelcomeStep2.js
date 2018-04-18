@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
 
 class Step2 extends Component {
+	handleKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			this.props.handleNext();
+		}
+	}
+
 	render() {
 		return (
 			<Form>
@@ -9,6 +15,7 @@ class Step2 extends Component {
 				<Form.TextArea
 					className="descriptionArea"
 					onChange={this.props.handleChange}
+					onKeyPress={this.handleKeyPress}
 					name="description"
 					label="Description"
 				/>

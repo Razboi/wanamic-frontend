@@ -111,24 +111,6 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	initializeUser: token =>
-		axios({
-			method: "post",
-			data: { token: token },
-			url: "/user/initialize"
-		})
-			.then( res => res )
-			.catch( err => console.log( err )),
-
-	checkInitialized: token =>
-		axios({
-			method: "post",
-			data: { token: token },
-			url: "/user/checkInitialized"
-		})
-			.then( res => res )
-			.catch( err => console.log( err )),
-
 	addInterests: ( data, token ) =>
 		axios({
 			method: "post",
@@ -143,6 +125,15 @@ export default {
 			method: "post",
 			data: { token: token, users: users },
 			url: "/followers/setupFollow"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getSugested: token =>
+		axios({
+			method: "post",
+			data: { data: token },
+			url: "/user/sugestedUsers"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),

@@ -31,6 +31,12 @@ const
 
 
 class SignupForm extends Component {
+	handleKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			this.props.handleSignupNext();
+		}
+	}
+
 	render() {
 		if ( this.props.step === 2 ) {
 			return (
@@ -55,6 +61,7 @@ class SignupForm extends Component {
 							label="Email"
 							name="email"
 							onChange={this.props.handleChange}
+							onKeyPress={this.handleKeyPress}
 							value={this.props.email}
 						/>
 						<Form.Input
@@ -63,6 +70,7 @@ class SignupForm extends Component {
 							type="password"
 							name="password"
 							onChange={this.props.handleChange}
+							onKeyPress={this.handleKeyPress}
 							value={this.props.password}
 						/>
 						<Form.Button
