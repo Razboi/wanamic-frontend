@@ -126,7 +126,17 @@ class ProfilePage extends Component {
 	componentWillMount() {
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
-				this.setState({ user: res.data });
+				var keywordsString = res.data.keywords.toString().replace( /,/g, " #" );
+				this.setState({
+					user: {
+						headerImage: res.data.headerImage,
+						profileImage: res.data.profileImage,
+						fullname: res.data.fullname,
+						username: res.data.username,
+						keywords: "#" + keywordsString,
+						description: res.data.description,
+					}
+				});
 				this.setImages();
 			})
 			.catch( err => {

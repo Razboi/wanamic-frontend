@@ -129,10 +129,10 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	getSugested: token =>
+	getSugested: ( token, skip ) =>
 		axios({
 			method: "post",
-			data: { data: token },
+			data: { skip: skip, token: token },
 			url: "/user/sugestedUsers"
 		})
 			.then( res => res )
@@ -147,11 +147,20 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	matchKwUsers: ( token, data ) =>
+	matchKwUsers: ( token, data, skip ) =>
+		axios({
+			method: "post",
+			data: { token: token, data: data, skip: skip },
+			url: "/user/matchKwUsers"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	setUserKw: ( token, data ) =>
 		axios({
 			method: "post",
 			data: { token: token, data: data },
-			url: "/user/matchKwUsers"
+			url: "/user/setUserKw"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
