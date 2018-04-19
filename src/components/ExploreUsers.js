@@ -83,6 +83,7 @@ const
 			justify-self: center;
 			align-self: flex-start;
 			margin-top: 10px;
+			width: 70%;
 		}
 	`,
 	UsernameWrapper = styled.div`
@@ -110,10 +111,20 @@ const
 			justify-self: center;
 			align-self: flex-start;
 			margin-top: 10px;
+
 		}
 	`;
 
 class ExploreUsers extends Component {
+	handleKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			e.target.name === "keywords" ?
+				this.props.getKeywordUser()
+				:
+				this.props.getUsername();
+		}
+	}
+
 	render() {
 		return (
 			<Wrapper>
@@ -126,16 +137,32 @@ class ExploreUsers extends Component {
 						content="Sugested"
 						onClick={this.props.getSugested}
 					/>
-					<RandomButton secondary content="Random" />
+					<RandomButton
+						secondary
+						content="Random"
+						onClick={this.props.getRandom}
+					/>
 				</ButtonsWrapper>
 				<SeparatorWrapper horizontal content="Or" />
 				<InterestsWrapper>
 					<InterestsHeader>Search by interests</InterestsHeader>
-					<InterestsSearch icon="search" placeholder="Golf, Programming..." />
+					<InterestsSearch
+						icon="search"
+						name="keywords"
+						placeholder="#Rock music  #Golf  #anime  #fishing"
+						onKeyPress={this.handleKeyPress}
+						onChange={this.props.handleChange}
+					/>
 				</InterestsWrapper>
 				<UsernameWrapper>
 					<UsernameHeader>Search by username</UsernameHeader>
-					<UsernameSearch icon="search" placeholder="username" />
+					<UsernameSearch
+						icon="search"
+						name="usernameSearch"
+						placeholder="username"
+						onKeyPress={this.handleKeyPress}
+						onChange={this.props.handleChange}
+					/>
 				</UsernameWrapper>
 			</Wrapper>
 		);

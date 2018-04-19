@@ -137,4 +137,22 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	getRandom: token =>
+		axios({
+			method: "post",
+			data: { token: token },
+			url: "/user/randomUser"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	matchKwUsers: ( token, data ) =>
+		axios({
+			method: "post",
+			data: { token: token, data: data },
+			url: "/user/matchKwUsers"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
