@@ -3,9 +3,13 @@ import styled from "styled-components";
 import { Input, Image, Divider } from "semantic-ui-react";
 import axios from "axios";
 
-const
-	DefaultCover = require( "../images/defaultBook.jpg" ),
+try {
+	const DefaultCover = require( "../images/defaultBook.jpg" );
+} catch ( err ) {
+	console.log( err );
+}
 
+const
 	Wrapper = styled.div`
 		@media (max-width: 420px) {
 			height: 100vh;
