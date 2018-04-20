@@ -62,12 +62,12 @@ const
 	Names = styled.span`
 		align-self: center;
 	`,
-	UserName = styled.h2`
+	FullName = styled.h2`
 		@media (max-width: 420px) {
 			margin: 0px;
 		}
 	`,
-	NickName = styled.span`
+	UserName = styled.span`
 		@media (max-width: 420px) {
 			color: #D3D3D3;
 		}
@@ -156,8 +156,12 @@ class ExploreProfile extends Component {
 					<BasicInfo>
 						<UserImage src={profileImg} />
 						<Names>
-							<UserName>{this.props.user.fullname}</UserName>
-							<NickName>@{this.props.user.username}</NickName>
+							<FullName className="fullname">
+								{this.props.user.fullname}
+							</FullName>
+							<UserName className="username">
+								@{this.props.user.username}
+							</UserName>
 						</Names>
 					</BasicInfo>
 					<Options>
@@ -177,19 +181,22 @@ class ExploreProfile extends Component {
 							<Button size="tiny" icon="mail outline" />
 						</Buttons>
 						<Keywords>
-							#{this.props.user.keywords.toString().replace( /,/g, " #" )}
+							#{this.props.user.keywords &&
+								this.props.user.keywords.toString().replace( /,/g, " #" )}
 						</Keywords>
 					</Options>
 					<Description>
-						<p>{this.props.user.description}</p>
+						<p className="description">{this.props.user.description}</p>
 					</Description>
 				</Information>
 				<BackButton
+					className="backButton"
 					secondary
 					content="Back to menu"
 					onClick={this.props.backToMenu}
 				/>
 				<NextButton
+					className="nextButton"
 					primary
 					content="Next"
 					onClick={this.props.next}

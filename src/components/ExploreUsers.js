@@ -133,11 +133,13 @@ class ExploreUsers extends Component {
 						Find users with similar interests or random ones.
 					</SugestedHeader>
 					<SugestedButton
+						className="sugestedButton"
 						primary
 						content="Sugested"
 						onClick={this.props.getSugested}
 					/>
 					<RandomButton
+						className="randomButton"
 						secondary
 						content="Random"
 						onClick={this.props.getRandom}
@@ -147,6 +149,7 @@ class ExploreUsers extends Component {
 				<InterestsWrapper>
 					<InterestsHeader>Search by interests</InterestsHeader>
 					<InterestsSearch
+						className="interestsSearch"
 						icon="search"
 						name="keywords"
 						placeholder="#Rock music  #Golf  #anime  #fishing"
@@ -157,6 +160,7 @@ class ExploreUsers extends Component {
 				<UsernameWrapper>
 					<UsernameHeader>Search by username</UsernameHeader>
 					<UsernameSearch
+						className="usernameSearch"
 						icon="search"
 						name="usernameSearch"
 						placeholder="username"
