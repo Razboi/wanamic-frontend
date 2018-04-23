@@ -7,7 +7,7 @@ import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
 import WelcomePage from "./pages/WelcomePage";
 import ExplorePage from "./pages/ExplorePage";
-import SearchMedia from "./components/SearchMedia";
+import SearchMedia from "./containers/SearchMedia";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 
