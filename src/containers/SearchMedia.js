@@ -52,6 +52,9 @@ const
 	BookInfo = styled.div`
 		grid-area: inf;
 	`,
+	SelectedWrapper = styled.div`
+		overflow: hidden;
+	`,
 	ShareWrapper = styled.div`
 		position: absolute;
 		height: 100vh;
@@ -101,6 +104,11 @@ const
 		position: absolute;
 		bottom: 5px;
 		right: 5px;
+	`,
+	SwapBackButton = styled( Button )`
+		position: fixed;
+		bottom: 5px;
+		left: 5px;
 	`;
 
 class SearchMedia extends Component {
@@ -156,7 +164,7 @@ class SearchMedia extends Component {
 	render() {
 		if ( this.state.selected ) {
 			return (
-				<div>
+				<SelectedWrapper>
 					<ShareWrapper>
 						<ContentInputWrapper>
 							<UserContentInput
@@ -173,7 +181,7 @@ class SearchMedia extends Component {
 					<MediaBackground background={this.state.mediaData.image} />
 					<BackButton secondary content="Back" onClick={this.handleBack} />
 					<ShareButton primary content="Done" onClick={this.handleSubmit} />
-				</div>
+				</SelectedWrapper>
 			);
 		} else {
 			return (
@@ -209,6 +217,8 @@ class SearchMedia extends Component {
 							</div>
 						)}
 					</ResultsWrapper>
+					<SwapBackButton secondary content="Cancel"
+						onClick={() => this.props.history.push( "/" )} />
 				</Wrapper>
 			);
 		}

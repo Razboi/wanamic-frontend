@@ -1,19 +1,51 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
+import { Button, Modal } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
+import SearchMedia from "../containers/SearchMedia";
 
 const
+	Wrapper = styled.div`
+		display: grid;
+	`,
 	LogoutButton = styled( Button )`
 		position: fixed;
-		right: 10px;
-		bottom: 10px;
+		left: 5px;
+		bottom: 5px;
+		z-index: 3;
+	`,
+	ShareMediaButton = styled( Button )`
+		position: fixed;
+		right: 5px;
+		bottom: 5px;
+		z-index: 3;
+	`,
+	StyledModal = styled( Modal )`
+		margin: 0px auto !important;
+		align-self: center !important;
+		justify-self: center !important;
+	`,
+	MediaDimmer = styled.div`
+		filter: ${props => props.show ? "blur(10px)" : "none"};
+		height: 100vh;
+	`,
+	MediaOptionsWrapper = styled.div`
+		display: ${props => props.show ? "grid" : "none"};
+		position: fixed;
+		height: 100vh;
+		width: 100%;
 		z-index: 2;
+	`,
+	MediaOptions = styled.div`
+		justify-self: center;
+		align-self: center;
+	`,
+	MediaButton = styled( Button )`
 	`;
 
 
@@ -25,7 +57,8 @@ class HomePage extends Component {
 			posts: [],
 			skip: 0,
 			isInfiniteLoading: false,
-			empty: false
+			empty: false,
+			showMediaOptions: false
 		};
 	}
 
@@ -73,7 +106,9 @@ class HomePage extends Component {
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			const post = {
-				post: { token: localStorage.getItem( "token" ), content: this.state.sharebox }
+				post: {
+					token: localStorage.getItem( "token" ), content: this.state.sharebox
+				}
 			};
 
 			api.createPost( post )
@@ -84,20 +119,51 @@ class HomePage extends Component {
 		}
 	};
 
+	handleSearchMedia = media => {
+		this.props.history.push( "/search/" + media );
+	}
+
+	swapMediaOptions = () => {
+		this.setState({ showMediaOptions: !this.state.showMediaOptions });
+	}
+
 	render() {
 		return (
 			<div>
-				<LogoutButton secondary content="Logout" onClick={this.handleLogout} />
-				<ShareBox
-					handleChange={this.handleChange}
-					sharebox={this.state.sharebox}
-					handleShare={this.handleShare}
+				<ShareMediaButton primary circular icon="plus" size="large"
+					onClick={this.swapMediaOptions}
 				/>
-				<NewsFeed
-					posts={this.state.posts}
-					getNewsFeed={this.getNewsFeed}
-					updatePost={this.updatePost}
+				<LogoutButton secondary content="Logout"
+					onClick={this.handleLogout}
 				/>
+				<MediaOptionsWrapper show={this.state.showMediaOptions}>
+					<MediaOptions>
+						<MediaButton secondary circular icon="book" size="huge"
+							onClick={() => this.handleSearchMedia( "book" )}
+						/>
+						<MediaButton secondary circular icon="music" size="huge"
+							onClick={() => this.handleSearchMedia( "music" )}
+						/>
+						<MediaButton secondary circular icon="linkify" size="huge"
+							onClick={() => this.handleSearchMedia( "link" )}
+						/>
+						<MediaButton secondary circular icon="film" size="huge"
+							onClick={() => this.handleSearchMedia( "film" )}
+						/>
+					</MediaOptions>
+				</MediaOptionsWrapper>
+				<MediaDimmer show={this.state.showMediaOptions}>
+					<ShareBox
+						handleChange={this.handleChange}
+						sharebox={this.state.sharebox}
+						handleShare={this.handleShare}
+					/>
+					<NewsFeed
+						posts={this.state.posts}
+						getNewsFeed={this.getNewsFeed}
+						updatePost={this.updatePost}
+					/>
+				</MediaDimmer>
 			</div>
 		);
 	}
