@@ -1,18 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Modal } from "semantic-ui-react";
+import { Button, Input } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
-import SearchMedia from "../containers/SearchMedia";
 
 const
-	Wrapper = styled.div`
-		display: grid;
-	`,
 	LogoutButton = styled( Button )`
 		position: fixed;
 		left: 5px;
@@ -24,11 +20,6 @@ const
 		right: 5px;
 		bottom: 5px;
 		z-index: 3;
-	`,
-	StyledModal = styled( Modal )`
-		margin: 0px auto !important;
-		align-self: center !important;
-		justify-self: center !important;
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.show ? "blur(10px)" : "none"};
@@ -46,6 +37,9 @@ const
 		align-self: center;
 	`,
 	MediaButton = styled( Button )`
+	`,
+	ShareLinkInput = styled( Input )`
+		width: 300px;
 	`;
 
 
@@ -58,7 +52,9 @@ class HomePage extends Component {
 			skip: 0,
 			isInfiniteLoading: false,
 			empty: false,
-			showMediaOptions: false
+			showMediaOptions: false,
+			shareLink: false,
+			linkInput: ""
 		};
 	}
 
@@ -124,7 +120,24 @@ class HomePage extends Component {
 	}
 
 	swapMediaOptions = () => {
-		this.setState({ showMediaOptions: !this.state.showMediaOptions });
+		this.setState({
+			showMediaOptions: !this.state.showMediaOptions,
+			shareLink: false
+		});
+	}
+
+	handleLink = () => {
+		this.setState({ shareLink: true });
+	}
+
+	submitLink = () => {
+		console.log( "Submited" );
+	}
+
+	handleLinkKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			this.submitLink();
+		}
 	}
 
 	render() {
@@ -137,20 +150,34 @@ class HomePage extends Component {
 					onClick={this.handleLogout}
 				/>
 				<MediaOptionsWrapper show={this.state.showMediaOptions}>
-					<MediaOptions>
-						<MediaButton secondary circular icon="book" size="huge"
-							onClick={() => this.handleSearchMedia( "book" )}
-						/>
-						<MediaButton secondary circular icon="music" size="huge"
-							onClick={() => this.handleSearchMedia( "music" )}
-						/>
-						<MediaButton secondary circular icon="linkify" size="huge"
-							onClick={() => this.handleSearchMedia( "link" )}
-						/>
-						<MediaButton secondary circular icon="film" size="huge"
-							onClick={() => this.handleSearchMedia( "film" )}
-						/>
-					</MediaOptions>
+					{this.state.shareLink ?
+						<MediaOptions>
+							<ShareLinkInput
+								name="linkInput"
+								onKeyPress={this.handleLinkKeyPress}
+								onChange={this.handleChange}
+								placeholder="Share your link"
+							/>
+						</MediaOptions>
+						:
+						<MediaOptions>
+							<MediaButton secondary circular icon="book" size="huge"
+								onClick={() => this.handleSearchMedia( "book" )}
+							/>
+							<MediaButton secondary circular icon="music" size="huge"
+								onClick={() => this.handleSearchMedia( "music" )}
+							/>
+							<MediaButton secondary circular icon="linkify" size="huge"
+								onClick={this.handleLink}
+							/>
+							<MediaButton secondary circular icon="film" size="huge"
+								onClick={() => this.handleSearchMedia( "movie" )}
+							/>
+							<MediaButton secondary circular icon="tv" size="huge"
+								onClick={() => this.handleSearchMedia( "tv" )}
+							/>
+						</MediaOptions>
+					}
 				</MediaOptionsWrapper>
 				<MediaDimmer show={this.state.showMediaOptions}>
 					<ShareBox

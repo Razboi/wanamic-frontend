@@ -7,7 +7,7 @@ import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
 import WelcomePage from "./pages/WelcomePage";
 import ExplorePage from "./pages/ExplorePage";
-import SearchMedia from "./containers/SearchMedia";
+import SearchMediaPage from "./pages/SearchMediaPage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 
@@ -22,7 +22,7 @@ class App extends Component {
 					<UserRoute path="/settings" component={SettingsPage}/>
 					<NewUserRoute path="/welcome" component={WelcomePage} />
 					<UserRoute path="/explore" component={ExplorePage} />
-					<UserRoute path="/search/:mediaType" component={SearchMedia} />
+					<UserRoute path="/search/:mediaType" component={SearchMediaPage} />
 
 					<UserRoute path="/:username" component={ProfilePage} />
 				</Switch>

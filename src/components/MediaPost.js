@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header } from "semantic-ui-react";
+import { Header, Image } from "semantic-ui-react";
 
 const
 	Wrapper = styled.div`
@@ -26,7 +26,7 @@ class MediaPost extends Component {
 					<Author className="postAuthor">{this.props.author}</Author>
 					<DateTime className="postDate">{this.props.date}</DateTime>
 				</PostHeader>
-				<img src={this.props.mediaContent.image} />
+				<Image src={this.props.mediaContent.image} />
 				<p className="postContent">
 					{this.props.content}
 				</p>

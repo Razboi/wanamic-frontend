@@ -35,7 +35,7 @@ const
 	ResultsWrapper = styled.div`
 		grid-area: r;
 	`,
-	BookWrapper = styled.div`
+	ResultMediaWrapper = styled.div`
 		margin: 25px 0px;
 		display: grid;
 		grid-template-columns: 40% 50%;
@@ -43,13 +43,13 @@ const
 		grid-template-areas:
 			"img inf"
 	`,
-	BookImage = styled( Image )`
+	ResultMediaImage = styled( Image )`
 		grid-area: img;
 		justify-self: center;
 		width: 128px;
 		height: 194px;
 	`,
-	BookInfo = styled.div`
+	ResultMediaInfo = styled.div`
 		grid-area: inf;
 	`,
 	SelectedWrapper = styled.div`
@@ -77,18 +77,18 @@ const
 		align-self: end;
 		z-index: 2;
 	`,
-	MediaImgWrapper = styled.div`
+	SelectedMediaImgWrapper = styled.div`
 		grid-area: img;
 		display: grid;
 	`,
-	MediaBackground = styled.div`
+	SelectedMediaBackground = styled.div`
 		height: 100vh;
 		background-image: url(${props => props.background});
 		background-size: cover;
 		filter: blur(20px) brightness(50%);
 		transform: scale(1.2);
 	`,
-	MediaImg = styled( Image )`
+	SelectedMediaImg = styled( Image )`
 		width: 128px;
 		height: 194px;
 		justify-self: center;
@@ -111,7 +111,7 @@ const
 		left: 5px;
 	`;
 
-class SearchMedia extends Component {
+class SearchMediaPage extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -135,18 +135,57 @@ class SearchMedia extends Component {
 
 	handleSearch = () => {
 		if ( this.state.search ) {
-			const googleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q=";
-			axios.get( googleBooksAPI + this.state.search + "&langRestrict=en" +
-			"&orderBy=relevance" )
-				.then( res => this.setState({ results: res.data.items }))
-				.catch( err => console.log( err ));
+			switch ( this.props.match.params.mediaType ) {
+			case "book":
+				this.bookSearch();
+				break;
+			case "music":
+				this.musicSearch();
+				break;
+			case "movie":
+				this.movieSearch();
+				break;
+			case "tv":
+				this.TVSearch();
+				break;
+			default:
+				this.bookSearch();
+			}
 		}
+	}
+
+	bookSearch = () => {
+		const itunesAPI = "https://itunes.apple.com/search?limit=11&media=ebook&term=";
+		axios.get( itunesAPI + this.state.search )
+			.then( res => this.setState({ results: res.data.results }))
+			.catch( err => console.log( err ));
+	}
+
+	musicSearch = () => {
+		const itunesAPI = "https://itunes.apple.com/search?limit=11&media=music&term=";
+		axios.get( itunesAPI + this.state.search )
+			.then( res => this.setState({ results: res.data.results }))
+			.catch( err => console.log( err ));
+	}
+
+	movieSearch = () => {
+		const itunesAPI = "https://itunes.apple.com/search?limit=11&media=movie&term=";
+		axios.get( itunesAPI + this.state.search )
+			.then( res => this.setState({ results: res.data.results }))
+			.catch( err => console.log( err ));
+	}
+
+	TVSearch = () => {
+		const itunesAPI = "https://itunes.apple.com/search?limit=11&media=tvShow&term=";
+		axios.get( itunesAPI + this.state.search )
+			.then( res => this.setState({ results: res.data.results }))
+			.catch( err => console.log( err ));
 	}
 
 	handleSelected = media => {
 		const mediaData = {
-			title: media.volumeInfo.title,
-			image: media.volumeInfo.imageLinks.thumbnail
+			title: media.artistName,
+			image: media.artworkUrl100.replace( "100x100bb", "200x200bb" )
 		};
 		this.setState({ selected: true, mediaData: mediaData });
 	}
@@ -155,6 +194,7 @@ class SearchMedia extends Component {
 		var finalData = this.state.mediaData;
 		finalData.content = this.state.userInput;
 		api.createMediaPost( localStorage.getItem( "token" ), finalData );
+		this.props.history.push( "/" );
 	}
 
 	handleBack = () => {
@@ -174,11 +214,11 @@ class SearchMedia extends Component {
 								onChange={this.handleChange}
 							/>
 						</ContentInputWrapper>
-						<MediaImgWrapper>
-							<MediaImg src={this.state.mediaData.image} />
-						</MediaImgWrapper>
+						<SelectedMediaImgWrapper>
+							<SelectedMediaImg src={this.state.mediaData.image} />
+						</SelectedMediaImgWrapper>
 					</ShareWrapper>
-					<MediaBackground background={this.state.mediaData.image} />
+					<SelectedMediaBackground background={this.state.mediaData.image} />
 					<BackButton secondary content="Back" onClick={this.handleBack} />
 					<ShareButton primary content="Done" onClick={this.handleSubmit} />
 				</SelectedWrapper>
@@ -197,22 +237,21 @@ class SearchMedia extends Component {
 						/>
 					</SearchWrapper>
 					<ResultsWrapper>
-						{this.state.results.map(( book, index ) =>
+						{this.state.results.map(( media, index ) =>
 							<div key={index}>
-								<BookWrapper onClick={() => this.handleSelected( book )}>
-									<BookInfo>
-										<h3>{book.volumeInfo.title}</h3>
-										{book.volumeInfo.authors &&
-											<span>{book.volumeInfo.authors[ 0 ]}</span>
-										}
-									</BookInfo>
-									{book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail
+								<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
+									<ResultMediaInfo>
+										<h3>{media.trackName}</h3>
+										<span>{media.artistName}</span>
+									</ResultMediaInfo>
+									{media.artworkUrl100
 										?
-										<BookImage src={book.volumeInfo.imageLinks.thumbnail} />
+										<ResultMediaImage
+											src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )} />
 										:
-										<BookImage src={DefaultCover} />
+										<ResultMediaImage src={DefaultCover} />
 									}
-								</BookWrapper>
+								</ResultMediaWrapper>
 								<Divider />
 							</div>
 						)}
@@ -225,4 +264,4 @@ class SearchMedia extends Component {
 	}
 }
 
-export default SearchMedia;
+export default SearchMediaPage;
