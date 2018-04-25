@@ -10,6 +10,7 @@ import ExplorePage from "./pages/ExplorePage";
 import SearchMediaPage from "./pages/SearchMediaPage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
+import MediaPicture from "./containers/MediaPicture";
 
 // Switch will render the first match. /:username must be last
 class App extends Component {
@@ -22,7 +23,8 @@ class App extends Component {
 					<UserRoute path="/settings" component={SettingsPage}/>
 					<NewUserRoute path="/welcome" component={WelcomePage} />
 					<UserRoute path="/explore" component={ExplorePage} />
-					<UserRoute path="/search/:mediaType" component={SearchMediaPage} />
+					<UserRoute path="/media/:mediaType" component={SearchMediaPage} />
+					<UserRoute path="/mediaPicture" component={MediaPicture} />
 
 					<UserRoute path="/:username" component={ProfilePage} />
 				</Switch>

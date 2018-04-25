@@ -32,6 +32,7 @@ class NewsFeed extends Component {
 							linkContent={post.linkContent}
 							date={post.createdAt}
 							link={post.link}
+							picture={post.picture}
 						/>
 						:
 						<Post

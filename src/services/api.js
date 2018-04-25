@@ -47,6 +47,15 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
+	createMediaPicture: data =>
+		axios({
+			method: "post",
+			url: "/posts/mediaPicture",
+			data: data
+		})
+			.then( res => res.data )
+			.catch( err => console.log( err )),
+
 	getNewsFeed: ( skip, token ) =>
 		axios({
 			method: "post",

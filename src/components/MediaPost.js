@@ -58,8 +58,14 @@ const
 		font-size: 13px;
 	`;
 
+var mediaPicture;
 
 class MediaPost extends Component {
+	componentWillMount() {
+		if ( this.props.picture ) {
+			mediaPicture = require( "../images/" + this.props.mediaContent.image );
+		}
+	}
 
 	render() {
 		if ( this.props.link ) {
@@ -72,8 +78,7 @@ class MediaPost extends Component {
 
 					<a href={this.props.linkContent.url}>
 						<LinkPreviewWrapper>
-							<LinkPreviewImage src={this.props.linkContent.image} />
-							{/* {this.props.linkContent.embeddedUrl ?
+							{this.props.linkContent.embeddedUrl ?
 								<LinkPreviewIframe
 									src={this.props.linkContent.embeddedUrl}
 									frameborder="0"
@@ -87,7 +92,6 @@ class MediaPost extends Component {
 								:
 								<LinkPreviewImage src={this.props.linkContent.image} />
 							}
-								*/}
 
 							<LinkPreviewText>
 								<LinkPreviewHeader>
@@ -116,7 +120,12 @@ class MediaPost extends Component {
 						<DateTime className="postDate">{this.props.date}</DateTime>
 					</PostHeader>
 					<h4>{this.props.mediaContent.title}</h4>
-					<Image src={this.props.mediaContent.image} />
+					{this.props.picture ?
+						<Image src={mediaPicture} />
+						:
+						<Image src={this.props.mediaContent.image} />
+					}
+
 					<p className="postContent">
 						{this.props.content}
 					</p>

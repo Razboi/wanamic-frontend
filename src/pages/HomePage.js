@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Input } from "semantic-ui-react";
+import { Button, Input, TextArea } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -58,8 +58,38 @@ const
 	`,
 	MediaButton = styled( Button )`
 	`,
+	LinkForm = styled.div`
+		display: grid;
+		justify-self: center;
+		align-self: center;
+		width: 100%;
+	`,
 	ShareLinkInput = styled( Input )`
-		width: 300px;
+		width: 80%;
+		justify-self: center;
+		align-self: center;
+		margin-bottom: 10px;
+	`,
+	ShareLinkContent = styled( TextArea )`
+		width: 90%;
+		justify-self: center;
+		align-self: center;
+	`,
+	PictureUploadWrapper = styled.span`
+		position: relative;
+	`,
+	PictureUploadInput = styled.input`
+		width: 0.1px;
+		height: 0.1px;
+		opacity: 0;
+		overflow: hidden;
+		position: absolute;
+		z-index: -1;
+	`,
+	PictureUploadLabel = styled.input`
+		width: 100%;
+		height: 100%;
+		z-index: 2;
 	`;
 
 
@@ -74,7 +104,9 @@ class HomePage extends Component {
 			empty: false,
 			showMediaOptions: false,
 			shareLink: false,
-			linkInput: ""
+			linkInput: "",
+			linkContent: "",
+			picture: null
 		};
 	}
 
@@ -134,7 +166,7 @@ class HomePage extends Component {
 	};
 
 	handleSearchMedia = media => {
-		this.props.history.push( "/search/" + media );
+		this.props.history.push( "/media/" + media );
 	}
 
 	swapMediaOptions = () => {
@@ -150,7 +182,9 @@ class HomePage extends Component {
 
 	submitLink = () => {
 		if ( this.state.linkInput ) {
-			api.createMediaLink( LSToken, { link: this.state.linkInput })
+			api.createMediaLink( LSToken, {
+				link: this.state.linkInput, content: this.state.linkContent
+			})
 				.then(() => this.swapMediaOptions())
 				.catch( err => console.log( err ));
 		}
@@ -160,6 +194,13 @@ class HomePage extends Component {
 		if ( e.key === "Enter" ) {
 			this.submitLink();
 		}
+	}
+
+	handlePictureSelect = e => {
+		this.props.history.push({
+			pathname: "/mediaPicture",
+			state: { file: e.target.files[ 0 ] }
+		});
 	}
 
 	render() {
@@ -173,14 +214,20 @@ class HomePage extends Component {
 				/>
 				<MediaOptionsWrapper show={this.state.showMediaOptions}>
 					{this.state.shareLink ?
-						<MediaOptions>
+						<LinkForm>
 							<ShareLinkInput
 								name="linkInput"
 								onKeyPress={this.handleLinkKeyPress}
 								onChange={this.handleChange}
 								placeholder="Share your link"
 							/>
-						</MediaOptions>
+							<ShareLinkContent
+								name="linkContent"
+								onKeyPress={this.handleLinkKeyPress}
+								onChange={this.handleChange}
+								placeholder="Anything to say?"
+							/>
+						</LinkForm>
 						:
 						<MediaOptions>
 							<MediaButton secondary circular icon="book" size="huge"
@@ -192,6 +239,14 @@ class HomePage extends Component {
 							<MediaButton secondary circular icon="linkify" size="huge"
 								onClick={this.handleLink}
 							/>
+							<PictureUploadWrapper>
+								<MediaButton secondary circular icon="picture" size="huge"
+									onClick={() => document.getElementById( "pictureInput" ).click()}
+								/>
+								<PictureUploadInput type="file" name="picture" id="pictureInput"
+									onChange={this.handlePictureSelect}
+								/>
+							</PictureUploadWrapper>
 							<MediaButton secondary circular icon="film" size="huge"
 								onClick={() => this.handleSearchMedia( "movie" )}
 							/>
