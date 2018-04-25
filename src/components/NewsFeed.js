@@ -29,7 +29,9 @@ class NewsFeed extends Component {
 							author={post.author}
 							content={post.content}
 							mediaContent={post.mediaContent}
+							linkContent={post.linkContent}
 							date={post.createdAt}
+							link={post.link}
 						/>
 						:
 						<Post

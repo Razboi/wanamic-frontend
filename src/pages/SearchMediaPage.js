@@ -184,7 +184,8 @@ class SearchMediaPage extends Component {
 
 	handleSelected = media => {
 		const mediaData = {
-			title: media.artistName,
+			title: media.trackName,
+			artist: media.artistName,
 			image: media.artworkUrl100.replace( "100x100bb", "200x200bb" )
 		};
 		this.setState({ selected: true, mediaData: mediaData });
