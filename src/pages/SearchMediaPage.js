@@ -216,52 +216,63 @@ class SearchMediaPage extends Component {
 							/>
 						</ContentInputWrapper>
 						<SelectedMediaImgWrapper>
-							<SelectedMediaImg src={this.state.mediaData.image} />
+							{this.state.mediaData && this.state.mediaData.image ?
+								<SelectedMediaImg src={this.state.mediaData.image} />
+								:
+								<SelectedMediaImg
+									src={require( "../images/defaultBook.jpg" )}
+								/>
+							}
 						</SelectedMediaImgWrapper>
 					</ShareWrapper>
-					<SelectedMediaBackground background={this.state.mediaData.image} />
+					{this.state.mediaData && this.state.mediaData.image ?
+						<SelectedMediaBackground background={this.state.mediaData.image} />
+						:
+						<SelectedMediaBackground
+							background={require( "../images/defaultBook.jpg" )}
+						/>
+					}
 					<BackButton secondary content="Back" onClick={this.handleBack} />
 					<ShareButton primary content="Done" onClick={this.handleSubmit} />
 				</SelectedWrapper>
 			);
-		} else {
-			return (
-				<Wrapper>
-					<SearchWrapper>
-						<SearchInput
-							value={this.state.search}
-							icon="search"
-							name="search"
-							placeholder="Search..."
-							onChange={this.handleChange}
-							onKeyPress={this.handleKeyPress}
-						/>
-					</SearchWrapper>
-					<ResultsWrapper>
-						{this.state.results.map(( media, index ) =>
-							<div key={index}>
-								<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
-									<ResultMediaInfo>
-										<h3>{media.trackName}</h3>
-										<span>{media.artistName}</span>
-									</ResultMediaInfo>
-									{media.artworkUrl100
-										?
-										<ResultMediaImage
-											src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )} />
-										:
-										<ResultMediaImage src={DefaultCover} />
-									}
-								</ResultMediaWrapper>
-								<Divider />
-							</div>
-						)}
-					</ResultsWrapper>
-					<SwapBackButton secondary content="Cancel"
-						onClick={() => this.props.history.push( "/" )} />
-				</Wrapper>
-			);
 		}
+		return (
+			<Wrapper>
+				<SearchWrapper>
+					<SearchInput
+						value={this.state.search}
+						icon="search"
+						name="search"
+						placeholder="Search..."
+						onChange={this.handleChange}
+						onKeyPress={this.handleKeyPress}
+					/>
+				</SearchWrapper>
+				<ResultsWrapper className="mediaResults">
+					{this.state.results.map(( media, index ) =>
+						<div key={index}>
+							<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
+								<ResultMediaInfo>
+									<h3>{media.trackName}</h3>
+									<span>{media.artistName}</span>
+								</ResultMediaInfo>
+								{media.artworkUrl100
+									?
+									<ResultMediaImage
+										src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )} />
+									:
+									<ResultMediaImage src={DefaultCover} />
+								}
+							</ResultMediaWrapper>
+							<Divider />
+						</div>
+					)}
+				</ResultsWrapper>
+				<SwapBackButton secondary content="Cancel"
+					onClick={() => this.props.history.push( "/" )} />
+			</Wrapper>
+		);
 	}
 }
 

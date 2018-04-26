@@ -85,11 +85,6 @@ const
 		overflow: hidden;
 		position: absolute;
 		z-index: -1;
-	`,
-	PictureUploadLabel = styled.input`
-		width: 100%;
-		height: 100%;
-		z-index: 2;
 	`;
 
 

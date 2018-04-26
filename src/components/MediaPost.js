@@ -63,7 +63,11 @@ var mediaPicture;
 class MediaPost extends Component {
 	componentWillMount() {
 		if ( this.props.picture ) {
-			mediaPicture = require( "../images/" + this.props.mediaContent.image );
+			try {
+				mediaPicture = require( "../images/" + this.props.mediaContent.image );
+			} catch ( err ) {
+				console.log( err );
+			}
 		}
 	}
 
@@ -71,29 +75,29 @@ class MediaPost extends Component {
 		if ( this.props.link ) {
 			return (
 				<Wrapper>
-					<PostHeader>
+					<PostHeader className="mediaPostHeader">
 						<Author className="postAuthor">{this.props.author}</Author>
 						<DateTime className="postDate">{this.props.date}</DateTime>
 					</PostHeader>
 
 					<a href={this.props.linkContent.url}>
-						<LinkPreviewWrapper>
+						<LinkPreviewWrapper className="linkPreviewWrapper">
 							{this.props.linkContent.embeddedUrl ?
 								<LinkPreviewIframe
+									className="linkPreviewIframe"
 									src={this.props.linkContent.embeddedUrl}
 									frameborder="0"
 									allow="autoplay; encrypted-media"
 									allowfullscreen="allowfullscreen"
-									mozallowfullscreen="mozallowfullscreen"
-									msallowfullscreen="msallowfullscreen"
-									oallowfullscreen="oallowfullscreen"
-									webkitallowfullscreen="webkitallowfullscreen"
-								></LinkPreviewIframe>
+								/>
 								:
-								<LinkPreviewImage src={this.props.linkContent.image} />
+								<LinkPreviewImage
+									className="linkPreviewImage"
+									src={this.props.linkContent.image}
+								/>
 							}
 
-							<LinkPreviewText>
+							<LinkPreviewText className="linkPreviewText">
 								<LinkPreviewHeader>
 									{this.props.linkContent.title}
 								</LinkPreviewHeader>
@@ -112,26 +116,27 @@ class MediaPost extends Component {
 					</p>
 				</Wrapper>
 			);
-		} else {
-			return (
-				<Wrapper>
-					<PostHeader>
-						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">{this.props.date}</DateTime>
-					</PostHeader>
-					<h4>{this.props.mediaContent.title}</h4>
-					{this.props.picture ?
-						<Image src={mediaPicture} />
-						:
-						<Image src={this.props.mediaContent.image} />
-					}
-
-					<p className="postContent">
-						{this.props.content}
-					</p>
-				</Wrapper>
-			);
 		}
+		return (
+			<Wrapper>
+				<PostHeader className="mediaPostHeader">
+					<Author className="postAuthor">{this.props.author}</Author>
+					<DateTime className="postDate">{this.props.date}</DateTime>
+				</PostHeader>
+				<h4>{this.props.mediaContent.title}</h4>
+				{this.props.picture ?
+					<Image src={mediaPicture} className="mediaPicture" />
+					:
+					<Image src={this.props.mediaContent.image}
+						className="mediaArtwork"
+					/>
+				}
+
+				<p className="postContent">
+					{this.props.content}
+				</p>
+			</Wrapper>
+		);
 	}
 }
 

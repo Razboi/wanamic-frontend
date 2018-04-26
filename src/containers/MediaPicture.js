@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Input, Image, Divider, Button } from "semantic-ui-react";
-import axios from "axios";
+import { Input, Image, Button } from "semantic-ui-react";
 import api from "../services/api";
 
 const
 	SelectedWrapper = styled.div`
 		overflow: hidden;
 	`,
-	ShareWrapper = styled.div`
+	SharePictureForm = styled.div`
 		position: absolute;
 		height: 100vh;
 		width: 100%;
@@ -99,7 +98,7 @@ class MediaPicture extends Component {
 	render() {
 		return (
 			<SelectedWrapper>
-				<ShareWrapper>
+				<SharePictureForm className="sharePictureForm">
 					<ContentInputWrapper>
 						<UserContentInput
 							name="userInput"
@@ -111,7 +110,8 @@ class MediaPicture extends Component {
 					<SelectedMediaImgWrapper>
 						<SelectedMediaImg src={this.state.imagePreviewUrl} />
 					</SelectedMediaImgWrapper>
-				</ShareWrapper>
+				</SharePictureForm>
+
 				<SelectedMediaBackground
 					background={this.state.imagePreviewUrl}
 				/>
