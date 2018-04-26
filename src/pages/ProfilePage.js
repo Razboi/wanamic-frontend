@@ -208,7 +208,7 @@ class ProfilePage extends Component {
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			const post = {
-				post: { token: localStorage.getItem( "token" ), content: this.state.sharebox }
+				post: { content: this.state.sharebox }
 			};
 
 			api.createPost( post )
@@ -220,13 +220,13 @@ class ProfilePage extends Component {
 	}
 
 	handleAddFriend = () => {
-		api.addFriend( localStorage.getItem( "token" ), this.props.match.params.username )
+		api.addFriend( this.props.match.params.username )
 			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
-		api.followUser( localStorage.getItem( "token" ), this.props.match.params.username )
+		api.followUser( this.props.match.params.username )
 			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}

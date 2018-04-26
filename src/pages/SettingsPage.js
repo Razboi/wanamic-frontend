@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
 import api from "../services/api";
 
-var LSToken = localStorage.getItem( "token" );
-
 
 class SettingsPage extends Component {
 	constructor() {
@@ -51,10 +49,10 @@ class SettingsPage extends Component {
 		data.append( "description", this.state.description );
 		data.append( "fullname", this.state.fullname );
 		data.append( "username", this.state.username );
-		data.append( "token", LSToken );
+		data.append( "token", localStorage.getItem( "token" ));
 
 		api.setUserInfo( data );
-		api.setUserKw( LSToken, keywordsArray );
+		api.setUserKw( keywordsArray );
 	}
 
 	render() {

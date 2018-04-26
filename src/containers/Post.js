@@ -48,7 +48,7 @@ class Post extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 
 	handleDelete = () => {
-		api.deletePost( this.props.id, localStorage.getItem( "token" ))
+		api.deletePost( this.props.id )
 			.then(() => this.setState({ deleted: true }))
 			.catch( err => console.log( err ));
 	};
@@ -56,9 +56,7 @@ class Post extends Component {
 	handleUpdate = () => {
 		// if the post has been updated
 		if ( this.props.content !== this.state.updatedPost ) {
-			api.updatePost(
-				localStorage.getItem( "token" ), this.props.id, this.state.updatedPost
-			)
+			api.updatePost( this.props.id, this.state.updatedPost )
 				.then( res => this.props.updatePost( this.props.index, this.state.updatedPost ))
 				.catch( err => console.log( err ));
 		}

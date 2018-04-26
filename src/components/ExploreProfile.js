@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import api from "../services/api";
 var
-	LSToken = localStorage.getItem( "token" ),
 	backgroundImg,
 	profileImg;
 
@@ -136,13 +135,13 @@ class ExploreProfile extends Component {
 	}
 
 	handleAddFriend = () => {
-		api.addFriend( LSToken, this.props.user.username )
+		api.addFriend( this.props.user.username )
 			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
-		api.followUser( LSToken, this.props.user.username )
+		api.followUser( this.props.user.username )
 			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}

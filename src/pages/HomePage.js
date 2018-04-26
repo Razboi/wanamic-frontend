@@ -8,8 +8,6 @@ import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 
-var LSToken = localStorage.getItem( "token" );
-
 const
 	Wrapper = styled.div`
 		height: 100vh;
@@ -108,7 +106,7 @@ class HomePage extends Component {
 	getNewsFeed = () => {
 		if ( !this.state.empty && !this.state.isInfiniteLoading ) {
 			this.setState({ isInfiniteLoading: true });
-			api.getNewsFeed( this.state.skip, LSToken )
+			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length > 0 ) {
 						this.setState({
@@ -125,7 +123,7 @@ class HomePage extends Component {
 	}
 
 	refreshNewsFeed = () => {
-		api.getNewsFeed( 0, LSToken )
+		api.getNewsFeed( 0 )
 			.then( res => {
 				this.setState({
 					posts: res.data
@@ -149,7 +147,7 @@ class HomePage extends Component {
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			const post = {
-				post: { token: LSToken, content: this.state.sharebox }
+				post: { content: this.state.sharebox }
 			};
 
 			api.createPost( post )
@@ -177,7 +175,7 @@ class HomePage extends Component {
 
 	submitLink = () => {
 		if ( this.state.linkInput ) {
-			api.createMediaLink( LSToken, {
+			api.createMediaLink({
 				link: this.state.linkInput, content: this.state.linkContent
 			})
 				.then(() => this.swapMediaOptions())

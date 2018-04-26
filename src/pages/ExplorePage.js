@@ -5,8 +5,6 @@ import api from "../services/api";
 import ExploreUsers from "../components/ExploreUsers";
 import ExploreProfile from "../components/ExploreProfile";
 
-var LSToken = localStorage.getItem( "token" );
-
 const
 	Wrapper = styled.div`
 		@media (max-width: 420px) {
@@ -64,7 +62,7 @@ class ExplorePage extends Component {
 	}
 
 	getSugestedUser = () => {
-		api.getSugested( LSToken, this.state.skip )
+		api.getSugested( this.state.skip )
 			.then( res => this.setState({
 				user: res.data, renderProfile: true, typeOfSearch: "sugested",
 				skip: this.state.skip + 1
@@ -73,7 +71,7 @@ class ExplorePage extends Component {
 	}
 
 	getRandomUser = () => {
-		api.getRandom( LSToken )
+		api.getRandom()
 			.then( res => this.setState({
 				user: res.data, renderProfile: true, typeOfSearch: "random"
 			}))
@@ -83,7 +81,7 @@ class ExplorePage extends Component {
 	getKeywordUser = () => {
 		var keywordsArray = ( this.state.keywords ).split( /\s*#/ );
 		keywordsArray.shift();
-		api.matchKwUsers( LSToken, keywordsArray, this.state.skip )
+		api.matchKwUsers( keywordsArray, this.state.skip )
 			.then( res => {
 				if ( res.data ) {
 					this.setState({

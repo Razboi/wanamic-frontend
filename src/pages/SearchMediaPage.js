@@ -194,7 +194,7 @@ class SearchMediaPage extends Component {
 	handleSubmit = () => {
 		var finalData = this.state.mediaData;
 		finalData.content = this.state.userInput;
-		api.createMediaPost( localStorage.getItem( "token" ), finalData );
+		api.createMediaPost( finalData );
 		this.props.history.push( "/" );
 	}
 

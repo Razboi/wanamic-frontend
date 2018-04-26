@@ -29,20 +29,20 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
-	createMediaPost: ( token, data ) =>
+	createMediaPost: data =>
 		axios({
 			method: "post",
 			url: "/posts/media",
-			data: { token: token, data: data }
+			data: { token: localStorage.getItem( "token" ), data: data }
 		})
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
-	createMediaLink: ( token, data ) =>
+	createMediaLink: data =>
 		axios({
 			method: "post",
 			url: "/posts/mediaLink",
-			data: { token: token, data: data }
+			data: { token: localStorage.getItem( "token" ), data: data }
 		})
 			.then( res => res.data )
 			.catch( err => console.log( err )),
@@ -56,11 +56,11 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
-	getNewsFeed: ( skip, token ) =>
+	getNewsFeed: skip =>
 		axios({
 			method: "post",
 			url: "posts/newsfeed/" + skip,
-			data: { token: token }
+			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
@@ -73,21 +73,21 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	deletePost: ( postId, token ) =>
+	deletePost: postId =>
 		axios({
 			method: "delete",
 			url: "/posts/delete",
-			data: { post: { id: postId, token: token } }
+			data: { post: { id: postId, token: localStorage.getItem( "token" ) } }
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	updatePost: ( token, postId, content ) =>
+	updatePost: ( postId, content ) =>
 		axios({
 			method: "patch",
 			url: "/posts/update",
 			data: { data: {
-				token: token,
+				token: localStorage.getItem( "token" ),
 				post: { id: postId, content: content }
 			} }
 		})
@@ -111,19 +111,19 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	addFriend: ( token, username ) =>
+	addFriend: username =>
 		axios({
 			method: "post",
-			data: { token: token, friendUsername: username },
+			data: { token: localStorage.getItem( "token" ), friendUsername: username },
 			url: "/friends/add"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	followUser: ( token, username ) =>
+	followUser: username =>
 		axios({
 			method: "post",
-			data: { token: token, targetUsername: username },
+			data: { token: localStorage.getItem( "token" ), targetUsername: username },
 			url: "/followers/follow"
 		})
 			.then( res => res )
@@ -138,55 +138,55 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	addInterests: ( data, token ) =>
+	addInterests: data =>
 		axios({
 			method: "post",
-			data: { token: token, data: data },
+			data: { token: localStorage.getItem( "token" ), data: data },
 			url: "/user/addInterests"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	setupFollow: ( users, token ) =>
+	setupFollow: users =>
 		axios({
 			method: "post",
-			data: { token: token, users: users },
+			data: { token: localStorage.getItem( "token" ), users: users },
 			url: "/followers/setupFollow"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	getSugested: ( token, skip ) =>
+	getSugested: skip =>
 		axios({
 			method: "post",
-			data: { skip: skip, token: token },
+			data: { skip: skip, token: localStorage.getItem( "token" ) },
 			url: "/user/sugestedUsers"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	getRandom: token =>
+	getRandom: () =>
 		axios({
 			method: "post",
-			data: { token: token },
+			data: { token: localStorage.getItem( "token" ) },
 			url: "/user/randomUser"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	matchKwUsers: ( token, data, skip ) =>
+	matchKwUsers: ( data, skip ) =>
 		axios({
 			method: "post",
-			data: { token: token, data: data, skip: skip },
+			data: { token: localStorage.getItem( "token" ), data: data, skip: skip },
 			url: "/user/matchKwUsers"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	setUserKw: ( token, data ) =>
+	setUserKw: data =>
 		axios({
 			method: "post",
-			data: { token: token, data: data },
+			data: { token: localStorage.getItem( "token" ), data: data },
 			url: "/user/setUserKw"
 		})
 			.then( res => res )
