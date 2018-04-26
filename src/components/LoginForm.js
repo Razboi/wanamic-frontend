@@ -31,6 +31,12 @@ const
 
 
 class LoginForm extends Component {
+	handleKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			this.props.handleLogin();
+		}
+	}
+
 	render() {
 		return (
 			<FormContainer id="AuthFormContainer">
@@ -49,6 +55,7 @@ class LoginForm extends Component {
 						label="Email"
 						name="email"
 						onChange={this.props.handleChange}
+						onKeyPress={this.handleKeyPress}
 						value={this.props.email}
 					/>
 					<Form.Input
@@ -57,6 +64,7 @@ class LoginForm extends Component {
 						type="password"
 						name="password"
 						onChange={this.props.handleChange}
+						onKeyPress={this.handleKeyPress}
 						value={this.props.password}
 					/>
 

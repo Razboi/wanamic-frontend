@@ -82,23 +82,20 @@ class WelcomePage extends Component {
 	}
 
 	finish = () => {
-		var data = new FormData();
+		var
+			LSToken = localStorage.getItem( "token" ),
+			data = new FormData();
 		data.append( "userImage", this.state.userImage );
 		data.append( "description", this.state.description );
-		data.append( "token", localStorage.getItem( "token" ));
-		api.setUserInfo( data )
+		data.append( "token", LSToken );
+		Promise.all([
+			api.setUserInfo( data ),
+			api.addInterests( this.state.checkedCategories, LSToken ),
+			api.setupFollow( this.state.toFollow, LSToken )
+		])
 			.then(() => {
-				api.addInterests( this.state.checkedCategories, localStorage.getItem( "token" ))
-					.then(() => {
-						api.setupFollow( this.state.toFollow, localStorage.getItem( "token" ))
-							.then(() => {
-								api.initializeUser( localStorage.getItem( "token" ))
-									.then(() => {
-										localStorage.removeItem( "NU" );
-										this.props.history.push( "/" );
-									}).catch( err => console.log( err ));
-							}).catch( err => console.log( err ));
-					}).catch( err => console.log( err ));
+				localStorage.removeItem( "NU" );
+				this.props.history.push( "/" );
 			}).catch( err => console.log( err ));
 	}
 

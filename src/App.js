@@ -6,8 +6,11 @@ import SettingsPage from "./pages/SettingsPage";
 import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
 import WelcomePage from "./pages/WelcomePage";
+import ExplorePage from "./pages/ExplorePage";
+import SearchMediaPage from "./pages/SearchMediaPage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
+import MediaPicture from "./containers/MediaPicture";
 
 // Switch will render the first match. /:username must be last
 class App extends Component {
@@ -19,6 +22,9 @@ class App extends Component {
 					<GuestRoute path="/login" component={AuthPage} />
 					<UserRoute path="/settings" component={SettingsPage}/>
 					<NewUserRoute path="/welcome" component={WelcomePage} />
+					<UserRoute path="/explore" component={ExplorePage} />
+					<UserRoute path="/media/:mediaType" component={SearchMediaPage} />
+					<UserRoute path="/mediaPicture" component={MediaPicture} />
 
 					<UserRoute path="/:username" component={ProfilePage} />
 				</Switch>

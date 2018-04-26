@@ -29,6 +29,33 @@ export default {
 			.then( res => res.data )
 			.catch( err => console.log( err )),
 
+	createMediaPost: ( token, data ) =>
+		axios({
+			method: "post",
+			url: "/posts/media",
+			data: { token: token, data: data }
+		})
+			.then( res => res.data )
+			.catch( err => console.log( err )),
+
+	createMediaLink: ( token, data ) =>
+		axios({
+			method: "post",
+			url: "/posts/mediaLink",
+			data: { token: token, data: data }
+		})
+			.then( res => res.data )
+			.catch( err => console.log( err )),
+
+	createMediaPicture: data =>
+		axios({
+			method: "post",
+			url: "/posts/mediaPicture",
+			data: data
+		})
+			.then( res => res.data )
+			.catch( err => console.log( err )),
+
 	getNewsFeed: ( skip, token ) =>
 		axios({
 			method: "post",
@@ -111,24 +138,6 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	initializeUser: token =>
-		axios({
-			method: "post",
-			data: { token: token },
-			url: "/user/initialize"
-		})
-			.then( res => res )
-			.catch( err => console.log( err )),
-
-	checkInitialized: token =>
-		axios({
-			method: "post",
-			data: { token: token },
-			url: "/user/checkInitialized"
-		})
-			.then( res => res )
-			.catch( err => console.log( err )),
-
 	addInterests: ( data, token ) =>
 		axios({
 			method: "post",
@@ -143,6 +152,42 @@ export default {
 			method: "post",
 			data: { token: token, users: users },
 			url: "/followers/setupFollow"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getSugested: ( token, skip ) =>
+		axios({
+			method: "post",
+			data: { skip: skip, token: token },
+			url: "/user/sugestedUsers"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getRandom: token =>
+		axios({
+			method: "post",
+			data: { token: token },
+			url: "/user/randomUser"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	matchKwUsers: ( token, data, skip ) =>
+		axios({
+			method: "post",
+			data: { token: token, data: data, skip: skip },
+			url: "/user/matchKwUsers"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	setUserKw: ( token, data ) =>
+		axios({
+			method: "post",
+			data: { token: token, data: data },
+			url: "/user/setUserKw"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
