@@ -220,7 +220,7 @@ class SearchMediaPage extends Component {
 								<SelectedMediaImg src={this.state.mediaData.image} />
 								:
 								<SelectedMediaImg
-									src={require( "../images/defaultBook.jpg" )}
+									src={DefaultCover}
 								/>
 							}
 						</SelectedMediaImgWrapper>
@@ -229,7 +229,7 @@ class SearchMediaPage extends Component {
 						<SelectedMediaBackground background={this.state.mediaData.image} />
 						:
 						<SelectedMediaBackground
-							background={require( "../images/defaultBook.jpg" )}
+							background={DefaultCover}
 						/>
 					}
 					<BackButton secondary content="Back" onClick={this.handleBack} />
