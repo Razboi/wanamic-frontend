@@ -24,7 +24,7 @@ export default {
 		axios({
 			method: "post",
 			url: "/posts/create",
-			data: post
+			data: { token: localStorage.getItem( "token" ), post: post }
 		})
 			.then( res => res.data )
 			.catch( err => console.log( err )),

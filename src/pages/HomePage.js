@@ -7,11 +7,18 @@ import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
+import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
+		overflow: auto;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	LogoutButton = styled( Button )`
 		position: fixed;
@@ -92,9 +99,9 @@ class HomePage extends Component {
 		this.state = {
 			sharebox: "",
 			posts: [],
-			skip: 0,
+			skip: 1,
 			isInfiniteLoading: false,
-			empty: false,
+			hasMore: true,
 			showMediaOptions: false,
 			shareLink: false,
 			linkInput: "",
@@ -103,22 +110,25 @@ class HomePage extends Component {
 		};
 	}
 
+	componentWillMount() {
+		this.refreshNewsFeed();
+	}
+
 	getNewsFeed = () => {
-		if ( !this.state.empty && !this.state.isInfiniteLoading ) {
+		if ( this.state.hasMore && !this.state.isInfiniteLoading ) {
 			this.setState({ isInfiniteLoading: true });
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
-					if ( res.data.length > 0 ) {
-						this.setState({
-							posts: [ ...this.state.posts, ...res.data ],
-							skip: this.state.skip + 1,
-							isInfiniteLoading: false
-						});
-					} else {
-						this.setState({ empty: true, isInfiniteLoading: false });
+					if ( res.data.length < 10 ) {
+						this.setState({ hasMore: false, isInfiniteLoading: false });
+						return;
 					}
-				})
-				.catch( err => console.log( err ));
+					this.setState({
+						posts: [ ...this.state.posts, ...res.data ],
+						isInfiniteLoading: false,
+						skip: this.state.skip + 1
+					});
+				}).catch( err => console.log( err ));
 		}
 	}
 
@@ -128,8 +138,7 @@ class HomePage extends Component {
 				this.setState({
 					posts: res.data
 				});
-			})
-			.catch( err => console.log( err ));
+			}).catch( err => console.log( err ));
 	}
 
 	updatePost = ( postIndex, updatedContent ) => {
@@ -146,10 +155,7 @@ class HomePage extends Component {
 
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
-			const post = {
-				post: { content: this.state.sharebox }
-			};
-
+			const post = this.state.sharebox;
 			api.createPost( post )
 				.then(() => this.refreshNewsFeed())
 				.catch( err => console.log( err ));
@@ -199,68 +205,78 @@ class HomePage extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<ShareMediaButton primary circular icon="plus" size="large"
-					onClick={this.swapMediaOptions}
-				/>
-				<LogoutButton secondary content="Logout"
-					onClick={this.handleLogout}
-				/>
-				<MediaOptionsWrapper show={this.state.showMediaOptions}>
-					{this.state.shareLink ?
-						<LinkForm>
-							<ShareLinkInput
-								name="linkInput"
-								onKeyPress={this.handleLinkKeyPress}
-								onChange={this.handleChange}
-								placeholder="Share your link"
-							/>
-							<ShareLinkContent
-								name="linkContent"
-								onKeyPress={this.handleLinkKeyPress}
-								onChange={this.handleChange}
-								placeholder="Anything to say?"
-							/>
-						</LinkForm>
-						:
-						<MediaOptions>
-							<MediaButton secondary circular icon="book" size="huge"
-								onClick={() => this.handleSearchMedia( "book" )}
-							/>
-							<MediaButton secondary circular icon="music" size="huge"
-								onClick={() => this.handleSearchMedia( "music" )}
-							/>
-							<MediaButton secondary circular icon="linkify" size="huge"
-								onClick={this.handleLink}
-							/>
-							<PictureUploadWrapper>
-								<MediaButton secondary circular icon="picture" size="huge"
-									onClick={() => document.getElementById( "pictureInput" ).click()}
-								/>
-								<PictureUploadInput type="file" name="picture" id="pictureInput"
-									onChange={this.handlePictureSelect}
-								/>
-							</PictureUploadWrapper>
-							<MediaButton secondary circular icon="film" size="huge"
-								onClick={() => this.handleSearchMedia( "movie" )}
-							/>
-							<MediaButton secondary circular icon="tv" size="huge"
-								onClick={() => this.handleSearchMedia( "tv" )}
-							/>
-						</MediaOptions>
-					}
-				</MediaOptionsWrapper>
-				<MediaDimmer show={this.state.showMediaOptions}>
-					<StyledShareBox
-						handleChange={this.handleChange}
-						sharebox={this.state.sharebox}
-						handleShare={this.handleShare}
+				<InfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getNewsFeed}
+					initialLoad={false}
+					useWindow={false}
+				>
+					<ShareMediaButton primary circular icon="plus" size="large"
+						onClick={this.swapMediaOptions}
 					/>
-					<StyledNewsFeed
-						posts={this.state.posts}
-						getNewsFeed={this.getNewsFeed}
-						updatePost={this.updatePost}
+					<LogoutButton secondary content="Logout"
+						onClick={this.handleLogout}
 					/>
-				</MediaDimmer>
+					<MediaOptionsWrapper show={this.state.showMediaOptions}>
+						{this.state.shareLink ?
+							<LinkForm>
+								<ShareLinkInput
+									name="linkInput"
+									onKeyPress={this.handleLinkKeyPress}
+									onChange={this.handleChange}
+									placeholder="Share your link"
+								/>
+								<ShareLinkContent
+									name="linkContent"
+									onKeyPress={this.handleLinkKeyPress}
+									onChange={this.handleChange}
+									placeholder="Anything to say?"
+								/>
+							</LinkForm>
+							:
+							<MediaOptions>
+								<MediaButton secondary circular icon="book" size="huge"
+									onClick={() => this.handleSearchMedia( "book" )}
+								/>
+								<MediaButton secondary circular icon="music" size="huge"
+									onClick={() => this.handleSearchMedia( "music" )}
+								/>
+								<MediaButton secondary circular icon="linkify" size="huge"
+									onClick={this.handleLink}
+								/>
+								<PictureUploadWrapper>
+									<MediaButton secondary circular icon="picture" size="huge"
+										onClick={() => document.getElementById( "pictureInput" ).click()}
+									/>
+									<PictureUploadInput type="file" name="picture" id="pictureInput"
+										onChange={this.handlePictureSelect}
+									/>
+								</PictureUploadWrapper>
+								<MediaButton secondary circular icon="film" size="huge"
+									onClick={() => this.handleSearchMedia( "movie" )}
+								/>
+								<MediaButton secondary circular icon="tv" size="huge"
+									onClick={() => this.handleSearchMedia( "tv" )}
+								/>
+							</MediaOptions>
+						}
+					</MediaOptionsWrapper>
+					<MediaDimmer show={this.state.showMediaOptions}>
+						<StyledShareBox
+							handleChange={this.handleChange}
+							sharebox={this.state.sharebox}
+							handleShare={this.handleShare}
+						/>
+						<StyledNewsFeed
+							posts={this.state.posts}
+							getNewsFeed={this.getNewsFeed}
+							updatePost={this.updatePost}
+							hasMore={this.state.hasMore}
+							skip={this.state.skip}
+						/>
+					</MediaDimmer>
+				</InfiniteScroll>
 			</Wrapper>
 		);
 	}

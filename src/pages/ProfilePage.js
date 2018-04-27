@@ -126,18 +126,10 @@ class ProfilePage extends Component {
 	componentWillMount() {
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
-				var keywordsString = res.data.keywords.toString().replace( /,/g, " #" );
+				this.setImages( res.data.headerImage, res.data.profileImage );
 				this.setState({
-					user: {
-						headerImage: res.data.headerImage,
-						profileImage: res.data.profileImage,
-						fullname: res.data.fullname,
-						username: res.data.username,
-						keywords: "#" + keywordsString,
-						description: res.data.description,
-					}
+					user: res.data
 				});
-				this.setImages();
 			})
 			.catch( err => {
 				console.log( err );
@@ -145,10 +137,10 @@ class ProfilePage extends Component {
 			});
 	}
 
-	setImages() {
+	setImages( headerImage, profileImage ) {
 		try {
-			if ( this.state.user.headerImage ) {
-				backgroundImg = require( "../images/" + this.state.user.headerImage );
+			if ( headerImage ) {
+				backgroundImg = require( "../images/" + headerImage );
 			} else {
 				backgroundImg = require( "../images/defaultbg.png" );
 			}
@@ -157,8 +149,8 @@ class ProfilePage extends Component {
 		}
 
 		try {
-			if ( this.state.user.profileImage ) {
-				profileImg = require( "../images/" + this.state.user.profileImage );
+			if ( profileImage ) {
+				profileImg = require( "../images/" + profileImage );
 			} else {
 				profileImg = require( "../images/defaultUser.png" );
 			}
@@ -232,6 +224,7 @@ class ProfilePage extends Component {
 	}
 
 	render() {
+		console.log( profileImg );
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
