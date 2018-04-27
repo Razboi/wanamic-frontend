@@ -30,6 +30,6 @@ describe( "<Homepage/>", () => {
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children().children()).to.have.length( 4 );
 	});
 });

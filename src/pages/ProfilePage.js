@@ -224,7 +224,6 @@ class ProfilePage extends Component {
 	}
 
 	render() {
-		console.log( profileImg );
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
