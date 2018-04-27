@@ -4,15 +4,21 @@ import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import ExploreUsers from "../components/ExploreUsers";
 import ExploreProfile from "../components/ExploreProfile";
+import ExploreContent from "../components/ExploreContent";
+import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
 		@media (max-width: 420px) {
+			overflow: auto;
+			::-webkit-scrollbar {
+				display: none !important;
+			}
 			height: 100vh;
 			width: 100%;
 			display: grid;
 			grid-template-columns: 100%;
-			grid-template-rows: 14% 86%;
+			grid-template-rows: 10% auto;
 			grid-template-areas:
 				"h"
 				"c"
@@ -21,6 +27,7 @@ const
 	Header = styled.div`
 		@media (max-width: 420px) {
 			grid-area: h;
+			height: 100%;
 			border-bottom: 1px solid #D8D8D8;
 			display: grid;
 			grid-template-columns: 50% 50%;
@@ -57,8 +64,18 @@ class ExplorePage extends Component {
 			usernameSearch: "",
 			renderProfile: false,
 			typeOfSearch: "",
-			skip: 0
+			skip: 1,
+			hasMore: true,
+			isInfiniteLoading: false,
+			content: true,
+			posts: []
 		};
+	}
+
+	componentWillMount() {
+		api.exploreContent( 0 )
+			.then( res => this.setState({ posts: res.data }))
+			.catch( err => console.log( err ));
 	}
 
 	getSugestedUser = () => {
@@ -123,6 +140,28 @@ class ExplorePage extends Component {
 		}
 	}
 
+	getPosts = () => {
+		if ( this.state.hasMore && !this.state.isInfiniteLoading ) {
+			this.setState({ isInfiniteLoading: true });
+			api.exploreContent( this.state.skip )
+				.then( res => {
+					if ( res.data.length < 10 ) {
+						this.setState({
+							posts: [ ...this.state.posts, ...res.data ],
+							hasMore: false,
+							isInfiniteLoading: false
+						});
+						return;
+					}
+					this.setState({
+						posts: [ ...this.state.posts, ...res.data ],
+						isInfiniteLoading: false,
+						skip: this.state.skip + 1
+					});
+				}).catch( err => console.log( err ));
+		}
+	}
+
 
 	render() {
 		if ( this.state.renderProfile ) {
@@ -133,29 +172,46 @@ class ExplorePage extends Component {
 					next={this.nextUser}
 				/>
 			);
-		} else {
-			return (
-				<Wrapper>
+		}
+		return (
+			<Wrapper>
+				<InfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getPosts}
+					initialLoad={false}
+					useWindow={false}
+				>
 					<Header>
 						<UserSubheader>
-							<Icon name="user" size="large" />
+							<Icon name="user" size="large"
+								onClick={() => this.setState({ content: false })}
+							/>
 						</UserSubheader>
 						<ContentSubheader>
-							<Icon name="content" size="large" />
+							<Icon name="content" size="large"
+								onClick={() => this.setState({ content: true })}
+							/>
 						</ContentSubheader>
 					</Header>
 					<MainComponent>
-						<ExploreUsers
-							getSugested={this.getSugestedUser}
-							getRandom={this.getRandomUser}
-							getKeywordUser={this.getKeywordUser}
-							getUsername={this.getUsername}
-							handleChange={this.handleChange}
-						/>
+						{this.state.content ?
+							<ExploreContent
+								posts={this.state.posts}
+							/>
+							:
+							<ExploreUsers
+								getSugested={this.getSugestedUser}
+								getRandom={this.getRandomUser}
+								getKeywordUser={this.getKeywordUser}
+								getUsername={this.getUsername}
+								handleChange={this.handleChange}
+							/>
+						}
 					</MainComponent>
-				</Wrapper>
-			);
-		}
+				</InfiniteScroll>
+			</Wrapper>
+		);
 	}
 }
 

@@ -4,14 +4,25 @@ import { Button } from "semantic-ui-react";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
+import InfiniteScroll from "react-infinite-scroller";
 var
 	backgroundImg,
 	profileImg;
 
 const
 	Wrapper = styled.div`
+		height: 100vh;
+		width: 100%;
+		overflow: auto;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
 		@media (max-width: 420px) {
-			height: 100vh;
+			height: 100%;
 			width: 100%;
 			display: grid;
 			grid-template-columns: 100%;
@@ -115,8 +126,8 @@ class ProfilePage extends Component {
 		this.state = {
 			user: {},
 			posts: [],
-			inexistent: false,
-			skip: 0,
+			hasMore: true,
+			skip: 1,
 			isInfiniteLoading: false,
 			empty: false,
 			sharebox: ""
@@ -124,6 +135,7 @@ class ProfilePage extends Component {
 	}
 
 	componentWillMount() {
+		this.refreshTimeline();
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
 				this.setImages( res.data.headerImage, res.data.profileImage );
@@ -160,21 +172,20 @@ class ProfilePage extends Component {
 	}
 
 	getTimeline = () => {
-		if ( !this.state.empty && !this.state.isInfiniteLoading ) {
+		if ( this.state.hasMore && !this.state.isInfiniteLoading ) {
 			this.setState({ isInfiniteLoading: true });
 			api.getTimeline( this.state.skip, this.props.match.params.username )
 				.then( res => {
-					if ( res.data.length > 0 ) {
-						this.setState({
-							posts: [ ...this.state.posts, ...res.data ],
-							skip: this.state.skip + 1,
-							isInfiniteLoading: false
-						});
-					} else {
-						this.setState({ empty: true, isInfiniteLoading: false });
+					if ( res.data.length < 10 ) {
+						this.setState({ hasMore: false, isInfiniteLoading: false });
+						return;
 					}
-				})
-				.catch( err => console.log( err ));
+					this.setState({
+						posts: [ ...this.state.posts, ...res.data ],
+						isInfiniteLoading: false,
+						skip: this.state.skip + 1
+					});
+				}).catch( err => console.log( err ));
 		}
 	}
 
@@ -184,8 +195,7 @@ class ProfilePage extends Component {
 				this.setState({
 					posts: res.data
 				});
-			})
-			.catch( err => console.log( err ));
+			}).catch( err => console.log( err ));
 	}
 
 	updatePost = ( postIndex, updatedContent ) => {
@@ -231,51 +241,61 @@ class ProfilePage extends Component {
 		} else {
 			return (
 				<Wrapper>
-					<Header image={`url(${backgroundImg})`} />
-					<Information>
-						<BasicInfo>
-							<UserImage src={profileImg} />
-							<Names>
-								<UserName>{this.state.user.fullname}</UserName>
-								<NickName>@{this.state.user.username}</NickName>
-							</Names>
-						</BasicInfo>
-						<Options>
-							<Buttons>
-								<Button
-									onClick={this.handleAddFriend}
-									primary
-									size="tiny"
-									content="Add Friend"
-								/>
-								<Button
-									onClick={this.handleFollow}
-									secondary
-									size="tiny"
-									content="Follow"
-								/>
-								<Button size="tiny" icon="mail outline" />
-							</Buttons>
-							<Keywords>
-								{this.state.user.keywords}
-							</Keywords>
-						</Options>
-						<Description>
-							<p>{this.state.user.description}</p>
-						</Description>
-					</Information>
-					<Timeline>
-						<ShareBox
-							handleChange={this.handleChange}
-							sharebox={this.state.sharebox}
-							handleShare={this.handleShare}
-						/>
-						<NewsFeed
-							posts={this.state.posts}
-							getNewsFeed={this.getTimeline}
-							updatePost={this.updatePost}
-						/>
-					</Timeline>
+					<StyledInfiniteScroll
+						pageStart={this.state.skip}
+						hasMore={this.state.hasMore}
+						loadMore={this.getTimeline}
+						initialLoad={false}
+						useWindow={false}
+					>
+						<Header image={`url(${backgroundImg})`} />
+						<Information>
+							<BasicInfo>
+								<UserImage src={profileImg} />
+								<Names>
+									<UserName>{this.state.user.fullname}</UserName>
+									<NickName>@{this.state.user.username}</NickName>
+								</Names>
+							</BasicInfo>
+							<Options>
+								<Buttons>
+									<Button
+										onClick={this.handleAddFriend}
+										primary
+										size="tiny"
+										content="Add Friend"
+									/>
+									<Button
+										onClick={this.handleFollow}
+										secondary
+										size="tiny"
+										content="Follow"
+									/>
+									<Button size="tiny" icon="mail outline" />
+								</Buttons>
+								<Keywords>
+									{this.state.user.keywords}
+								</Keywords>
+							</Options>
+							<Description>
+								<p>{this.state.user.description}</p>
+							</Description>
+						</Information>
+						<Timeline>
+							<ShareBox
+								handleChange={this.handleChange}
+								sharebox={this.state.sharebox}
+								handleShare={this.handleShare}
+							/>
+							<NewsFeed
+								posts={this.state.posts}
+								getNewsFeed={this.getTimeline}
+								updatePost={this.updatePost}
+								hasMore={this.state.hasMore}
+								skip={this.state.skip}
+							/>
+						</Timeline>
+					</StyledInfiniteScroll>
 				</Wrapper>
 			);
 		}

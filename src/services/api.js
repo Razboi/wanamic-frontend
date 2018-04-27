@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 export default {
 	login: credentials =>
 		axios({
@@ -188,6 +187,15 @@ export default {
 			method: "post",
 			data: { token: localStorage.getItem( "token" ), data: data },
 			url: "/user/setUserKw"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	exploreContent: skip =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: "/posts/explore/" + skip
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),

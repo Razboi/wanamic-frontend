@@ -6,7 +6,7 @@ import api from "../services/api";
 const
 	Wrapper = styled.div`
 		padding: 10px;
-		margin: 10px auto;
+		margin: 0px 0px 20px 0px;
 		border: 1px solid #808080;
 		position: relative;
 	`,

@@ -1,14 +1,39 @@
 import React, { Component } from "react";
 import Post from "../containers/Post";
 import MediaPost from "../components/MediaPost";
+import styled from "styled-components";
 
-class NewsFeed extends Component {
+const
+	Wrapper = styled.div`
+		@media (max-width: 420px) {
+			height: 100%;
+			width: 100%;
+			columns: 2;
+			column-gap: 1em;
+			padding: 5px;
+		}
+	`,
+	StyledMediaPost = styled( MediaPost )`
+		@media (max-width: 420px) {
+			margin-bottom: 1em;
+			display: inline-block;
+		}
+	`,
+	StyledPost = styled( Post )`
+		@media (max-width: 420px) {
+			margin-bottom: 1em;
+			display: inline-block;
+		}
+	`;
+
+
+class ExploreContent extends Component {
 	render() {
 		return (
-			<div>
+			<Wrapper>
 				{this.props.posts.map(( post, index ) =>
 					post.media ?
-						<MediaPost
+						<StyledMediaPost
 							key={index}
 							index={index}
 							id={post._id}
@@ -21,7 +46,7 @@ class NewsFeed extends Component {
 							picture={post.picture}
 						/>
 						:
-						<Post
+						<StyledPost
 							key={index}
 							index={index}
 							id={post._id}
@@ -32,9 +57,9 @@ class NewsFeed extends Component {
 							updatePost={this.props.updatePost}
 						/>
 				)}
-			</div>
+			</Wrapper>
 		);
 	}
 }
 
-export default NewsFeed;
+export default ExploreContent;

@@ -120,7 +120,11 @@ class HomePage extends Component {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length < 10 ) {
-						this.setState({ hasMore: false, isInfiniteLoading: false });
+						this.setState({
+							posts: [ ...this.state.posts, ...res.data ],
+							hasMore: false,
+							isInfiniteLoading: false
+						});
 						return;
 					}
 					this.setState({
