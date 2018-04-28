@@ -173,6 +173,7 @@ class ExplorePage extends Component {
 		if ( this.state.renderProfile ) {
 			return (
 				<ExploreProfile
+					className="exploreProfile"
 					user={this.state.user}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}
@@ -180,7 +181,7 @@ class ExplorePage extends Component {
 			);
 		}
 		return (
-			<Wrapper>
+			<Wrapper className="exploreMainWrapper">
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -190,12 +191,18 @@ class ExplorePage extends Component {
 				>
 					<Header>
 						<UserSubheader>
-							<Icon name="user" size="large"
+							<Icon
+								className="userIcon"
+								name="user"
+								size="large"
 								onClick={() => this.setState({ content: false })}
 							/>
 						</UserSubheader>
 						<ContentSubheader>
-							<Icon name="content" size="large"
+							<Icon
+								className="contentIcon"
+								name="content"
+								size="large"
 								onClick={() => this.setState({ content: true })}
 							/>
 						</ContentSubheader>
@@ -203,10 +210,12 @@ class ExplorePage extends Component {
 					<MainComponent>
 						{this.state.content ?
 							<ExploreContent
+								className="exploreContent"
 								posts={this.state.posts}
 							/>
 							:
 							<ExploreUsers
+								className="exploreUsers"
 								getSugested={this.getSugestedUser}
 								getRandom={this.getRandomUser}
 								getKeywordUser={this.getKeywordUser}

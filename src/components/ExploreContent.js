@@ -26,9 +26,8 @@ class ExploreContent extends Component {
 			<Wrapper options={ { transitionDuration: "0.95s" } }>
 				{this.props.posts.map(( post, index ) =>
 					post.media ?
-						<PostWrapper>
+						<PostWrapper key={index}>
 							<MediaPost
-								key={index}
 								index={index}
 								id={post._id}
 								author={post.author}
@@ -41,9 +40,8 @@ class ExploreContent extends Component {
 							/>
 						</PostWrapper>
 						:
-						<PostWrapper>
+						<PostWrapper key={index}>
 							<Post
-								key={index}
 								index={index}
 								id={post._id}
 								author={post.author}
