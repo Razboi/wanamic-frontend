@@ -6,8 +6,9 @@ import { Header, Image } from "semantic-ui-react";
 const
 	Wrapper = styled.div`
 		padding: 10px;
-		margin: 10px auto;
-		border: 1px solid #808080;
+		margin: 0px 0px 15px 0px;
+		border: 1px solid #D3D3D3;
+		border-radius: 5px;
 		position: relative;
 	`,
 	PostHeader = styled( Header )`
@@ -17,6 +18,15 @@ const
 	DateTime = styled( Header.Subheader )`
 	`,
 	LinkPreviewWrapper = styled.div`
+		@media (max-width: 420px) {
+			display: grid;
+			grid-template-columns: 100%;
+			grid-row-gap: 7px;
+			grid-template-rows: 50% 50%;
+			grid-template-areas:
+				"img"
+				"txt"
+		}
 		display: grid;
 		grid-template-columns: 40% 60%;
 		grid-column-gap: 7px;
@@ -26,12 +36,10 @@ const
 	`,
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
-		height: 100%;
 		width: 100%;
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
-		height: 100%;
 		width: 100%;
 	`,
 	LinkPreviewText = styled.div`

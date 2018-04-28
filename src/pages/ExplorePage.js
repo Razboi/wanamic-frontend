@@ -16,6 +16,12 @@ const
 			}
 			height: 100vh;
 			width: 100%;
+		}
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		@media (max-width: 420px) {
+			height: 100%;
+			width: 100%;
 			display: grid;
 			grid-template-columns: 100%;
 			grid-template-rows: 10% auto;
@@ -175,7 +181,7 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper>
-				<InfiniteScroll
+				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getPosts}
@@ -209,7 +215,7 @@ class ExplorePage extends Component {
 							/>
 						}
 					</MainComponent>
-				</InfiniteScroll>
+				</StyledInfiniteScroll>
 			</Wrapper>
 		);
 	}
