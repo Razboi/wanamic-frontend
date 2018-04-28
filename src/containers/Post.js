@@ -7,7 +7,8 @@ const
 	Wrapper = styled.div`
 		padding: 10px;
 		margin: 0px 0px 20px 0px;
-		border: 1px solid #808080;
+		border: 1px solid #D3D3D3;
+		border-radius: 5px;
 		position: relative;
 	`,
 	PostHeader = styled( Header )`

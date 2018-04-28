@@ -16,6 +16,12 @@ const
 			}
 			height: 100vh;
 			width: 100%;
+		}
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		@media (max-width: 420px) {
+			height: 100%;
+			width: 100%;
 			display: grid;
 			grid-template-columns: 100%;
 			grid-template-rows: 10% auto;
@@ -167,6 +173,7 @@ class ExplorePage extends Component {
 		if ( this.state.renderProfile ) {
 			return (
 				<ExploreProfile
+					className="exploreProfile"
 					user={this.state.user}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}
@@ -174,8 +181,8 @@ class ExplorePage extends Component {
 			);
 		}
 		return (
-			<Wrapper>
-				<InfiniteScroll
+			<Wrapper className="exploreMainWrapper">
+				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getPosts}
@@ -184,12 +191,18 @@ class ExplorePage extends Component {
 				>
 					<Header>
 						<UserSubheader>
-							<Icon name="user" size="large"
+							<Icon
+								className="userIcon"
+								name="user"
+								size="large"
 								onClick={() => this.setState({ content: false })}
 							/>
 						</UserSubheader>
 						<ContentSubheader>
-							<Icon name="content" size="large"
+							<Icon
+								className="contentIcon"
+								name="content"
+								size="large"
 								onClick={() => this.setState({ content: true })}
 							/>
 						</ContentSubheader>
@@ -197,10 +210,12 @@ class ExplorePage extends Component {
 					<MainComponent>
 						{this.state.content ?
 							<ExploreContent
+								className="exploreContent"
 								posts={this.state.posts}
 							/>
 							:
 							<ExploreUsers
+								className="exploreUsers"
 								getSugested={this.getSugestedUser}
 								getRandom={this.getRandomUser}
 								getKeywordUser={this.getKeywordUser}
@@ -209,7 +224,7 @@ class ExplorePage extends Component {
 							/>
 						}
 					</MainComponent>
-				</InfiniteScroll>
+				</StyledInfiniteScroll>
 			</Wrapper>
 		);
 	}
