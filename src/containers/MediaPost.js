@@ -4,6 +4,7 @@ import { Header, Image } from "semantic-ui-react";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import api from "../services/api";
+import Comments from "../components/Comments";
 
 const
 	Wrapper = styled.div`
@@ -100,12 +101,13 @@ class MediaPost extends Component {
 	constructor() {
 		super();
 		this.state = {
-			likedBy: []
+			likedBy: [],
+			comments: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
-		return { likedBy: nextProps.likedBy };
+		return { likedBy: nextProps.likedBy, comments: nextProps.comments };
 	}
 
 	componentDidMount() {
@@ -179,7 +181,17 @@ class MediaPost extends Component {
 						</LinkPreviewWrapper>
 					</a>
 
-					<PostOptions />
+					<PostOptions
+						handleLike={this.handleLike}
+						handleDislike={this.handleDislike}
+						switchComments={this.props.switchComments}
+						numLiked={this.state.likedBy.length}
+						numComments={this.props.comments.length}
+						id={this.props.id}
+						liked={
+							this.state.likedBy.includes( localStorage.getItem( "username" ))
+						}
+					/>
 
 					{this.props.content &&
 						<PostUserContent>
@@ -218,6 +230,10 @@ class MediaPost extends Component {
 				<PostOptions
 					handleLike={this.handleLike}
 					handleDislike={this.handleDislike}
+					switchComments={this.props.switchComments}
+					numLiked={this.state.likedBy.length}
+					numComments={this.state.comments.length}
+					id={this.props.id}
 					liked={
 						this.state.likedBy.includes( localStorage.getItem( "username" ))
 					}

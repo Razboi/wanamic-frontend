@@ -217,4 +217,26 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	createComment: ( comment, postId ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				comment: comment,
+				postId: postId
+			},
+			url: "/comments/create/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getPostComments: ( postId, skip ) =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/comments/postComments/" + skip
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

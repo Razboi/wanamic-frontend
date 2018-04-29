@@ -23,6 +23,7 @@ describe( "<MediaPost/>", () => {
 				link={post.link}
 				likedBy={post.likedBy}
 				picture={true}
+				comments={[]}
 			/>
 		),
 		linkWrapper = shallow(
@@ -34,6 +35,8 @@ describe( "<MediaPost/>", () => {
 				date={post.createdAt}
 				link={true}
 				picture={post.picture}
+				likedBy={post.likedBy}
+				comments={[]}
 			/>
 		);
 

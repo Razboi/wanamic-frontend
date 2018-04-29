@@ -4,6 +4,7 @@ import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
+import Comments from "../components/Comments";
 
 const
 	Wrapper = styled.div`
@@ -39,12 +40,17 @@ class Post extends Component {
 			content: "",
 			updatedContent: "",
 			deleted: false,
-			likedBy: []
+			likedBy: [],
+			comments: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
-		return { content: nextProps.content, likedBy: nextProps.likedBy };
+		return {
+			content: nextProps.content,
+			likedBy: nextProps.likedBy,
+			comments: nextProps.comments
+		};
 	}
 
 	handleChange = e =>
@@ -140,6 +146,10 @@ class Post extends Component {
 					<PostOptions
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
+						switchComments={this.props.switchComments}
+						numLiked={this.state.likedBy.length}
+						numComments={this.state.comments.length}
+						id={this.props.id}
 						liked={
 							this.state.likedBy.includes( localStorage.getItem( "username" ))
 						}

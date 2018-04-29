@@ -8,6 +8,7 @@ import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
+import Comments from "../components/Comments";
 
 const
 	Wrapper = styled.div`
@@ -106,7 +107,9 @@ class HomePage extends Component {
 			shareLink: false,
 			linkInput: "",
 			linkContent: "",
-			picture: null
+			picture: null,
+			showComments: false,
+			commentsPost: ""
 		};
 	}
 
@@ -200,6 +203,13 @@ class HomePage extends Component {
 		});
 	}
 
+	switchComments = postId => {
+		this.setState({
+			showComments: !this.state.showComments,
+			commentsPost: postId
+		});
+	}
+
 	render() {
 		return (
 			<Wrapper>
@@ -216,6 +226,14 @@ class HomePage extends Component {
 					<LogoutButton secondary content="Logout"
 						onClick={this.handleLogout}
 					/>
+					{this.state.showComments &&
+					<Comments
+						switchComments={this.switchComments}
+						comments={this.state.comments}
+						id={this.state.commentsPost}
+					/>
+					}
+
 					<MediaOptionsWrapper show={this.state.showMediaOptions}>
 						{this.state.shareLink ?
 							<LinkForm>
@@ -271,6 +289,7 @@ class HomePage extends Component {
 							getNewsFeed={this.getNewsFeed}
 							hasMore={this.state.hasMore}
 							skip={this.state.skip}
+							switchComments={this.switchComments}
 						/>
 					</MediaDimmer>
 				</InfiniteScroll>

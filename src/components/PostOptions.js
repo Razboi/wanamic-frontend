@@ -9,7 +9,7 @@ const
 		display: flex;
 		justify-content: space-around;
 	`,
-	Option = styled( Icon )`
+	Option = styled.div`
 	`;
 
 class PostOptions extends Component {
@@ -17,29 +17,39 @@ class PostOptions extends Component {
 		return (
 			<Wrapper>
 				{this.props.liked ?
-					<Option
-						name="heart"
-						color="red"
-						size="large"
-						onClick={this.props.handleDislike}
-					/>
+					<Option onClick={this.props.handleDislike}>
+						<Icon
+							name="heart"
+							color="red"
+							size="large"
+						/>
+						<span>{this.props.numLiked}</span>
+					</Option>
 					:
-					<Option
-						name="empty heart"
-						size="large"
-						onClick={this.props.handleLike}
-					/>
+					<Option onClick={this.props.handleLike}>
+						<Icon
+							name="empty heart"
+							size="large"
+						/>
+						<span>{this.props.numLiked}</span>
+					</Option>
 				}
-				<Option
-					name="comment outline"
-					size="large"
-					onClick={this.props.handleComment}
-				/>
-				<Option
-					name="share"
-					size="large"
-					onClick={this.props.handleShare}
-				/>
+
+				<Option onClick={() => this.props.switchComments( this.props.id )}>
+					<Icon
+						name="comment outline"
+						size="large"
+					/>
+					<span>{this.props.numComments}</span>
+				</Option>
+
+				<Option>
+					<Icon
+						name="share"
+						size="large"
+						onClick={this.props.handleShare}
+					/>
+				</Option>
 			</Wrapper>
 		);
 	}
