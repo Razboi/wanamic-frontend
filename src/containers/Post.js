@@ -2,16 +2,15 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
 import api from "../services/api";
+import moment from "moment";
+import PostOptions from "../components/PostOptions";
 
 const
 	Wrapper = styled.div`
-		padding: 10px;
-		margin: 0px 0px 20px 0px;
-		border: 1px solid #D3D3D3;
-		border-radius: 5px;
 		position: relative;
 	`,
 	PostHeader = styled( Header )`
+		padding: 10px !important;
 	`,
 	Author = styled.span`
 	`,
@@ -27,6 +26,9 @@ const
 	`,
 	UpdateModal = styled( Modal )`
 		margin: 0px !important;
+	`,
+	PostContent = styled.div`
+		padding: 10px;
 	`;
 
 
@@ -34,15 +36,15 @@ class Post extends Component {
 	constructor() {
 		super();
 		this.state = {
-			updatedPost: "",
-			deleted: false
+			content: "",
+			updatedContent: "",
+			deleted: false,
+			likedBy: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
-		if ( nextProps.content ) {
-			return { updatedPost: nextProps.content };
-		}
+		return { content: nextProps.content, likedBy: nextProps.likedBy };
 	}
 
 	handleChange = e =>
@@ -55,13 +57,31 @@ class Post extends Component {
 	};
 
 	handleUpdate = () => {
-		// if the post has been updated
-		if ( this.props.content !== this.state.updatedPost ) {
-			api.updatePost( this.props.id, this.state.updatedPost )
-				.then( res => this.props.updatePost( this.props.index, this.state.updatedPost ))
+		if ( this.state.content !== this.state.updatedContent ) {
+			this.setState({ content: this.state.updatedContent });
+			api.updatePost( this.props.id, this.state.updatedContent )
 				.catch( err => console.log( err ));
 		}
 	};
+
+	handleLike = () => {
+		this.setState({
+			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+		});
+
+		api.likePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
+
+	handleDislike = () => {
+		var	newLikedBy = this.state.likedBy;
+		const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
+		newLikedBy.splice( index, 1 );
+		this.setState({ likedBy: newLikedBy });
+
+		api.dislikePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
 
 	render() {
 		if ( !this.state.deleted ) {
@@ -69,7 +89,6 @@ class Post extends Component {
 				<Wrapper>
 
 					<Options direction="left">
-
 						{ localStorage.getItem( "username" ) === this.props.author ?
 							<Dropdown.Menu className="postDropdown">
 								<UpdateModal trigger={<Dropdown.Item text="Update" />} >
@@ -80,7 +99,7 @@ class Post extends Component {
 												className="postUpdateInput"
 												name="updatedPost"
 												onChange={this.handleChange}
-												value={this.state.updatedPost}
+												value={this.state.updatedContent}
 											/>
 											<Form.Button
 												className="postUpdateButton"
@@ -109,11 +128,22 @@ class Post extends Component {
 
 					<PostHeader>
 						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">{this.props.date}</DateTime>
+						<DateTime className="postDate">
+							{moment( this.props.date ).fromNow()}
+						</DateTime>
 					</PostHeader>
-					<p className="postContent">
-						{this.props.content}
-					</p>
+					<PostContent>
+						<p className="postContent">
+							{this.state.content}
+						</p>
+					</PostContent>
+					<PostOptions
+						handleLike={this.handleLike}
+						handleDislike={this.handleDislike}
+						liked={
+							this.state.likedBy.includes( localStorage.getItem( "username" ))
+						}
+					/>
 				</Wrapper>
 			);
 		}

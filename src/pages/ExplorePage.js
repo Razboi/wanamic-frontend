@@ -78,7 +78,7 @@ class ExplorePage extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		api.exploreContent( 0 )
 			.then( res => this.setState({ posts: res.data }))
 			.catch( err => console.log( err ));

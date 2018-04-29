@@ -11,7 +11,7 @@ describe( "<MediaPost/>", () => {
 	var
 		post = {
 			author: "tester", content: "testing", mediaContent: { image: "defaultbg.png" },
-			linkContent: { embeddedUrl: "123" }, createdAt: "123"
+			linkContent: { embeddedUrl: "123" }, createdAt: "123", "likedBy": []
 		},
 		wrapper = shallow(
 			<MediaPost
@@ -21,6 +21,7 @@ describe( "<MediaPost/>", () => {
 				linkContent={post.linkContent}
 				date={post.createdAt}
 				link={post.link}
+				likedBy={post.likedBy}
 				picture={true}
 			/>
 		),
@@ -54,7 +55,7 @@ describe( "<MediaPost/>", () => {
 	});
 
 	it( "Checks that <MediaPost/> children render when link is true", () => {
-		expect( linkWrapper.children()).to.have.length( 3 );
+		expect( linkWrapper.children()).to.have.length( 4 );
 	});
 
 	it( "Checks that mediaPostHeader children renders when link is true", () => {

@@ -134,7 +134,7 @@ class ProfilePage extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.refreshTimeline();
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {

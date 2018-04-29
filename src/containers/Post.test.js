@@ -12,7 +12,7 @@ describe( "<Post/>", () => {
 	var
 		wrapper;
 
-	wrapper = shallow( <Post /> );
+	wrapper = shallow( <Post likedBy={[]} /> );
 
 
 	it( "Checks that <Post/> renders", () => {

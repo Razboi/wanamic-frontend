@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Header, Image } from "semantic-ui-react";
-
+import moment from "moment";
+import PostOptions from "../components/PostOptions";
+import api from "../services/api";
 
 const
 	Wrapper = styled.div`
-		padding: 10px;
-		margin: 0px 0px 15px 0px;
-		border: 1px solid #D3D3D3;
-		border-radius: 5px;
+		overflow: hidden;
+		display: grid;
 		position: relative;
 	`,
 	PostHeader = styled( Header )`
+		padding: 10px !important;
 	`,
 	Author = styled.span`
 	`,
@@ -44,6 +45,7 @@ const
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
+		padding: 10px;
 		display: grid;
 		grid-template-columns: 100%;
 		grid-template-rows: 25% 65% 10%;
@@ -64,12 +66,49 @@ const
 		grid-area: host;
 		color: #808080;
 		font-size: 13px;
+	`,
+	MediaImage = styled( Image )`
+		justify-self: center;
+		align-self: center;
+	`,
+	PostMediaContent = styled.div`
+		display: grid;
+		position: relative;
+		overflow: hidden;
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		color: #fff;
+	`,
+	PostMediaBackground = styled.div`
+		z-index: -1;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		background-size: cover;
+		background-image: url(${props => props.background});
+		filter: blur(17px) brightness(90%);
+		transform: scale(1.2);
+	`,
+	PostUserContent = styled.div`
+		padding: 10px;
 	`;
 
 var mediaPicture;
 
 class MediaPost extends Component {
-	componentWillMount() {
+	constructor() {
+		super();
+		this.state = {
+			likedBy: []
+		};
+	}
+
+	static getDerivedStateFromProps( nextProps, prevState ) {
+		return { likedBy: nextProps.likedBy };
+	}
+
+	componentDidMount() {
 		if ( this.props.picture ) {
 			try {
 				mediaPicture = require( "../images/" + this.props.mediaContent.image );
@@ -79,13 +118,34 @@ class MediaPost extends Component {
 		}
 	}
 
+	handleLike = () => {
+		this.setState({
+			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+		});
+
+		api.likePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
+
+	handleDislike = () => {
+		var	newLikedBy = this.state.likedBy;
+		const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
+		newLikedBy.splice( index, 1 );
+		this.setState({ likedBy: newLikedBy });
+
+		api.dislikePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
+
 	render() {
 		if ( this.props.link ) {
 			return (
 				<Wrapper>
 					<PostHeader className="mediaPostHeader">
 						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">{this.props.date}</DateTime>
+						<DateTime className="postDate">
+							{moment( this.props.date ).fromNow()}
+						</DateTime>
 					</PostHeader>
 
 					<a href={this.props.linkContent.url}>
@@ -119,9 +179,15 @@ class MediaPost extends Component {
 						</LinkPreviewWrapper>
 					</a>
 
-					<p className="postContent">
-						{this.props.content}
-					</p>
+					<PostOptions />
+
+					{this.props.content &&
+						<PostUserContent>
+							<p className="postContent">
+								{this.props.content}
+							</p>
+						</PostUserContent>
+					}
 				</Wrapper>
 			);
 		}
@@ -129,20 +195,41 @@ class MediaPost extends Component {
 			<Wrapper>
 				<PostHeader className="mediaPostHeader">
 					<Author className="postAuthor">{this.props.author}</Author>
-					<DateTime className="postDate">{this.props.date}</DateTime>
+					<DateTime className="postDate">
+						{moment( this.props.date ).fromNow()}
+					</DateTime>
 				</PostHeader>
-				<h4>{this.props.mediaContent.title}</h4>
-				{this.props.picture ?
-					<Image src={mediaPicture} className="mediaPicture" />
-					:
-					<Image src={this.props.mediaContent.image}
-						className="mediaArtwork"
-					/>
-				}
 
-				<p className="postContent">
-					{this.props.content}
-				</p>
+				<PostMediaContent>
+					<PostMediaBackground background={
+						this.props.picture ? mediaPicture : this.props.mediaContent.image
+					}
+					/>
+					<h4>{this.props.mediaContent.title}</h4>
+					{this.props.picture ?
+						<MediaImage src={mediaPicture} className="mediaPicture" />
+						:
+						<MediaImage src={this.props.mediaContent.image}
+							className="mediaArtwork"
+						/>
+					}
+				</PostMediaContent>
+
+				<PostOptions
+					handleLike={this.handleLike}
+					handleDislike={this.handleDislike}
+					liked={
+						this.state.likedBy.includes( localStorage.getItem( "username" ))
+					}
+				/>
+
+				{this.props.content &&
+					<PostUserContent>
+						<p className="postContent">
+							{this.props.content}
+						</p>
+					</PostUserContent>
+				}
 			</Wrapper>
 		);
 	}

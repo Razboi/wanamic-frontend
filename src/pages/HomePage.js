@@ -110,7 +110,7 @@ class HomePage extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.refreshNewsFeed();
 	}
 
@@ -143,12 +143,6 @@ class HomePage extends Component {
 					posts: res.data
 				});
 			}).catch( err => console.log( err ));
-	}
-
-	updatePost = ( postIndex, updatedContent ) => {
-		var posts = this.state.posts;
-		posts[ postIndex ].content = updatedContent;
-		this.setState({ posts: posts });
 	}
 
 	handleLogout = () =>
@@ -275,7 +269,6 @@ class HomePage extends Component {
 						<StyledNewsFeed
 							posts={this.state.posts}
 							getNewsFeed={this.getNewsFeed}
-							updatePost={this.updatePost}
 							hasMore={this.state.hasMore}
 							skip={this.state.skip}
 						/>

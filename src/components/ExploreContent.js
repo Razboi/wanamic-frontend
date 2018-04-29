@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Post from "../containers/Post";
-import MediaPost from "../components/MediaPost";
+import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
 import Masonry from "react-masonry-component";
 
@@ -15,7 +15,6 @@ const
 		@media (max-width: 420px) {
 			width: 48%;
 			margin: 1%;
-			background: #fff;
 		}
 	`;
 

@@ -199,4 +199,22 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	likePost: postId =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/posts/like/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	dislikePost: postId =>
+		axios({
+			method: "patch",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/posts/dislike/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
