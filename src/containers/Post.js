@@ -44,7 +44,8 @@ class Post extends Component {
 			updatedContent: "",
 			deleted: false,
 			likedBy: [],
-			comments: []
+			comments: [],
+			sharedBy: []
 		};
 	}
 
@@ -52,7 +53,8 @@ class Post extends Component {
 		return {
 			content: nextProps.content,
 			likedBy: nextProps.likedBy,
-			comments: nextProps.comments
+			comments: nextProps.comments,
+			sharedBy: nextProps.sharedBy
 		};
 	}
 
@@ -147,16 +149,21 @@ class Post extends Component {
 						<p className="postContent">
 							{this.state.content}
 						</p>
-						{this.props.sharedPost && <SharedPost post={this.props.sharedPost} />}
+						{this.props.sharedPost &&
+								<SharedPost post={this.props.sharedPost} />}
 					</PostContent>
 
 					<PostOptions
+						fakeOptions={this.props.fakeOptions}
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
 						switchComments={this.props.switchComments}
+						switchShare={this.props.switchShare}
 						numLiked={this.state.likedBy.length}
 						numComments={this.state.comments.length}
+						numShared={this.state.sharedBy.length}
 						id={this.props.id}
+						index={this.props.index}
 						liked={
 							this.state.likedBy.includes( localStorage.getItem( "username" ))
 						}

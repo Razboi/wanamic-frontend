@@ -79,7 +79,10 @@ class Share extends Component {
 		return (
 			<Wrapper>
 				<HeaderWrapper>
-					<Icon name="arrow left" onClick={this.props.switchShare} />
+					<Icon
+						name="arrow left"
+						onClick={() => this.props.switchShare( false )}
+					/>
 					<HeaderTxt>Share</HeaderTxt>
 					<CheckIcon name="check" onClick={this.handleShare} />
 				</HeaderWrapper>

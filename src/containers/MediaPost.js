@@ -191,6 +191,7 @@ class MediaPost extends Component {
 					</a>
 
 					<PostOptions
+						fakeOptions={this.props.fakeOptions}
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
 						switchComments={this.props.switchComments}

@@ -212,10 +212,21 @@ class HomePage extends Component {
 	}
 
 	switchShare = postIndex => {
-		this.setState({
-			showShare: !this.state.showShare,
-			postToShare: this.state.posts[ postIndex ]
-		});
+		if ( postIndex === false ) {
+			this.setState({ showShare: !this.state.showShare });
+			return;
+		}
+		if ( this.state.posts[ postIndex ].sharedPost ) {
+			this.setState({
+				showShare: !this.state.showShare,
+				postToShare: this.state.posts[ postIndex ].sharedPost
+			});
+		} else {
+			this.setState({
+				showShare: !this.state.showShare,
+				postToShare: this.state.posts[ postIndex ]
+			});
+		}
 	}
 
 	render() {
