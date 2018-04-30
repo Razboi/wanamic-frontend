@@ -4,14 +4,15 @@ import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
-import Comments from "../components/Comments";
+import SharedPost from "../containers/SharedPost";
 
 const
 	Wrapper = styled.div`
 		position: relative;
 	`,
 	PostHeader = styled( Header )`
-		padding: 10px !important;
+		padding: 10px 10px 0px 10px !important;
+		margin-bottom: 10px !important;
 	`,
 	Author = styled.span`
 	`,
@@ -29,7 +30,9 @@ const
 		margin: 0px !important;
 	`,
 	PostContent = styled.div`
-		padding: 10px;
+		height: auto;
+		padding: 0px 10px;
+		margin-bottom: 30px;
 	`;
 
 
@@ -138,11 +141,15 @@ class Post extends Component {
 							{moment( this.props.date ).fromNow()}
 						</DateTime>
 					</PostHeader>
+
+
 					<PostContent>
 						<p className="postContent">
 							{this.state.content}
 						</p>
+						{this.props.sharedPost && <SharedPost post={this.props.sharedPost} />}
 					</PostContent>
+
 					<PostOptions
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}

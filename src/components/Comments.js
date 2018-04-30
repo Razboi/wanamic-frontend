@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Input } from "semantic-ui-react";
+import { Icon, Input, Divider } from "semantic-ui-react";
 import api from "../services/api";
 
 const
@@ -12,16 +12,37 @@ const
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 93% 7%;
+		grid-template-rows: 7% 86% 7%;
 		grid-template-areas:
+			"hea"
 			"com"
 			"inp"
 	`,
+	HeaderWrapper = styled.div`
+		grid-area: hea;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
 	CommentsWrapper = styled.div`
 		grid-area: com;
+		padding: 10px;
 	`,
 	StyledInput = styled( Input )`
 		grid-area: inp;
+	`,
+	HeaderTxt = styled.span`
+		margin-left: 15px;
+		font-weight: bold;
+		font-size: 16px;
+	`,
+	CommentAuthor = styled.h4`
+		margin: 0px;
+	`,
+	CommentContent = styled.p`
+		margin: 5px 0px;
+		color: #808080;
 	`;
 
 class Comments extends Component {
@@ -52,19 +73,29 @@ class Comments extends Component {
 	handleComment = () => {
 		api.createComment( this.state.comment, this.props.id )
 			.catch( err => console.log( err ));
-		this.props.switchComments;
+		const newComment = {
+			author: localStorage.getItem( "username" ),
+			content: this.state.comment,
+			createdAt: Date.now()
+		};
+		this.setState({
+			comments: [ newComment, ...this.state.comments ], comment: ""
+		});
 	}
 
 	render() {
 		return (
 			<Wrapper>
+				<HeaderWrapper>
+					<Icon name="arrow left" onClick={this.props.switchComments} />
+					<HeaderTxt>Comments</HeaderTxt>
+				</HeaderWrapper>
 				<CommentsWrapper>
-					<Button secondary content="Back" onClick={this.props.switchComments} />
-					<h4>Comments</h4>
 					{this.state.comments.map(( comment, index ) =>
 						<div key={index}>
-							<h4>{comment.author}</h4>
-							<p>{comment.content}</p>
+							<CommentAuthor>{comment.author}</CommentAuthor>
+							<CommentContent>{comment.content}</CommentContent>
+							<Divider />
 						</div>
 					)}
 				</CommentsWrapper>

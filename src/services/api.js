@@ -239,4 +239,17 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	sharePost: ( postId, shareComment ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				postId: postId,
+				shareComment: shareComment
+			},
+			url: "/posts/share/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

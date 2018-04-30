@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const
 	Wrapper = styled.div`
-		padding: 15px 0px;
+		margin: 15px 0px;
 		width: 100%;
 		display: flex;
 		justify-content: space-around;
@@ -17,38 +17,46 @@ class PostOptions extends Component {
 		return (
 			<Wrapper>
 				{this.props.liked ?
-					<Option onClick={this.props.handleDislike}>
+					<Option
+						onClick={() => !this.props.fakeOptions && this.props.handleDislike()}
+					>
 						<Icon
 							name="heart"
 							color="red"
 							size="large"
 						/>
-						<span>{this.props.numLiked}</span>
+						<b>{this.props.numLiked}</b>
 					</Option>
 					:
-					<Option onClick={this.props.handleLike}>
+					<Option
+						onClick={() => !this.props.fakeOptions && this.props.handleLike()}
+					>
 						<Icon
 							name="empty heart"
 							size="large"
 						/>
-						<span>{this.props.numLiked}</span>
+						<b>{this.props.numLiked}</b>
 					</Option>
 				}
 
-				<Option onClick={() => this.props.switchComments( this.props.id )}>
+				<Option onClick={() =>
+					!this.props.fakeOptions && this.props.switchComments( this.props.id )
+				}>
 					<Icon
 						name="comment outline"
 						size="large"
 					/>
-					<span>{this.props.numComments}</span>
+					<b>{this.props.numComments}</b>
 				</Option>
 
-				<Option>
+				<Option onClick={() =>
+					!this.props.fakeOptions && this.props.switchShare( this.props.index )
+				}>
 					<Icon
 						name="share"
 						size="large"
-						onClick={this.props.handleShare}
 					/>
+					<b>{this.props.numShared}</b>
 				</Option>
 			</Wrapper>
 		);

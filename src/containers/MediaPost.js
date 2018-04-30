@@ -4,7 +4,6 @@ import { Header, Image } from "semantic-ui-react";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import api from "../services/api";
-import Comments from "../components/Comments";
 
 const
 	Wrapper = styled.div`
@@ -92,7 +91,12 @@ const
 		transform: scale(1.2);
 	`,
 	PostUserContent = styled.div`
-		padding: 10px;
+		padding: 0px 10px;
+		margin-bottom: 30px;
+	`,
+	ContentAuthor = styled.span`
+		font-weight: bold;
+		font-size: 16px;
 	`;
 
 var mediaPicture;
@@ -102,12 +106,17 @@ class MediaPost extends Component {
 		super();
 		this.state = {
 			likedBy: [],
-			comments: []
+			comments: [],
+			sharedBy: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
-		return { likedBy: nextProps.likedBy, comments: nextProps.comments };
+		return {
+			likedBy: nextProps.likedBy,
+			comments: nextProps.comments,
+			sharedBy: nextProps.sharedBy
+		};
 	}
 
 	componentDidMount() {
@@ -185,9 +194,12 @@ class MediaPost extends Component {
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
 						switchComments={this.props.switchComments}
+						switchShare={this.props.switchShare}
 						numLiked={this.state.likedBy.length}
-						numComments={this.props.comments.length}
+						numComments={this.state.comments.length}
+						numShared={this.state.sharedBy.length}
 						id={this.props.id}
+						index={this.props.index}
 						liked={
 							this.state.likedBy.includes( localStorage.getItem( "username" ))
 						}
@@ -196,6 +208,7 @@ class MediaPost extends Component {
 					{this.props.content &&
 						<PostUserContent>
 							<p className="postContent">
+								<ContentAuthor>@{this.props.author} </ContentAuthor>
 								{this.props.content}
 							</p>
 						</PostUserContent>
@@ -226,14 +239,17 @@ class MediaPost extends Component {
 						/>
 					}
 				</PostMediaContent>
-
 				<PostOptions
+					fakeOptions={this.props.fakeOptions}
 					handleLike={this.handleLike}
 					handleDislike={this.handleDislike}
 					switchComments={this.props.switchComments}
+					switchShare={this.props.switchShare}
 					numLiked={this.state.likedBy.length}
 					numComments={this.state.comments.length}
+					numShared={this.state.sharedBy.length}
 					id={this.props.id}
+					index={this.props.index}
 					liked={
 						this.state.likedBy.includes( localStorage.getItem( "username" ))
 					}
@@ -242,6 +258,7 @@ class MediaPost extends Component {
 				{this.props.content &&
 					<PostUserContent>
 						<p className="postContent">
+							<ContentAuthor>@{this.props.author} </ContentAuthor>
 							{this.props.content}
 						</p>
 					</PostUserContent>
