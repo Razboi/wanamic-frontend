@@ -90,7 +90,7 @@ class Comments extends Component {
 					<Icon name="arrow left" onClick={this.props.switchComments} />
 					<HeaderTxt>Comments</HeaderTxt>
 				</HeaderWrapper>
-				<CommentsWrapper>
+				<CommentsWrapper className="commentsWrapper">
 					{this.state.comments.map(( comment, index ) =>
 						<div key={index}>
 							<CommentAuthor>{comment.author}</CommentAuthor>
@@ -100,6 +100,7 @@ class Comments extends Component {
 					)}
 				</CommentsWrapper>
 				<StyledInput
+					className="commentInput"
 					name="comment"
 					value={this.state.comment}
 					placeholder="Comment..."

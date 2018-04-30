@@ -72,7 +72,7 @@ class Share extends Component {
 	handleShare = () => {
 		api.sharePost( this.props.postToShare._id, this.state.shareComment )
 			.catch( err => console.log( err ));
-		this.props.switchShare();
+		this.props.switchShare( false );
 	}
 
 	render() {
@@ -80,11 +80,16 @@ class Share extends Component {
 			<Wrapper>
 				<HeaderWrapper>
 					<Icon
+						className="backIcon"
 						name="arrow left"
 						onClick={() => this.props.switchShare( false )}
 					/>
 					<HeaderTxt>Share</HeaderTxt>
-					<CheckIcon name="check" onClick={this.handleShare} />
+					<CheckIcon
+						className="nextIcon"
+						name="check"
+						onClick={this.handleShare}
+					/>
 				</HeaderWrapper>
 				<ShareWrapper>
 					<ShareInput

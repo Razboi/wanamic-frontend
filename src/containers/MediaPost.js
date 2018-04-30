@@ -119,16 +119,6 @@ class MediaPost extends Component {
 		};
 	}
 
-	componentDidMount() {
-		if ( this.props.picture ) {
-			try {
-				mediaPicture = require( "../images/" + this.props.mediaContent.image );
-			} catch ( err ) {
-				console.log( err );
-			}
-		}
-	}
-
 	handleLike = () => {
 		this.setState({
 			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
@@ -149,6 +139,13 @@ class MediaPost extends Component {
 	}
 
 	render() {
+		if ( this.props.picture ) {
+			try {
+				mediaPicture = require( "../images/" + this.props.mediaContent.image );
+			} catch ( err ) {
+				console.log( err );
+			}
+		}
 		if ( this.props.link ) {
 			return (
 				<Wrapper>

@@ -8,7 +8,7 @@ import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
-import Comments from "../components/Comments";
+import Comments from "../containers/Comments";
 import Share from "../containers/Share";
 
 const

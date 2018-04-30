@@ -17,7 +17,7 @@ class PostOptions extends Component {
 		return (
 			<Wrapper>
 				{this.props.liked ?
-					<Option
+					<Option className="dislikeOption"
 						onClick={() => !this.props.fakeOptions && this.props.handleDislike()}
 					>
 						<Icon
@@ -28,7 +28,7 @@ class PostOptions extends Component {
 						<b>{this.props.numLiked}</b>
 					</Option>
 					:
-					<Option
+					<Option className="likeOption"
 						onClick={() => !this.props.fakeOptions && this.props.handleLike()}
 					>
 						<Icon
@@ -39,9 +39,11 @@ class PostOptions extends Component {
 					</Option>
 				}
 
-				<Option onClick={() =>
-					!this.props.fakeOptions && this.props.switchComments( this.props.id )
-				}>
+				<Option className="commentOption"
+					onClick={() =>
+						!this.props.fakeOptions && this.props.switchComments( this.props.id )
+					}
+				>
 					<Icon
 						name="comment outline"
 						size="large"
@@ -49,9 +51,11 @@ class PostOptions extends Component {
 					<b>{this.props.numComments}</b>
 				</Option>
 
-				<Option onClick={() =>
-					!this.props.fakeOptions && this.props.switchShare( this.props.index )
-				}>
+				<Option className="shareOption"
+					onClick={() =>
+						!this.props.fakeOptions && this.props.switchShare( this.props.index )
+					}
+				>
 					<Icon
 						name="share"
 						size="large"
