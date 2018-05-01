@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
+import { Header } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import SharedPost from "../containers/SharedPost";
+import DropdownOptions from "../components/DropdownOptions";
 
 const
 	Wrapper = styled.div`
@@ -18,17 +19,6 @@ const
 	`,
 	DateTime = styled( Header.Subheader )`
 	`,
-	Options = styled( Dropdown )`
-		position: absolute !important;
-		right: 10px;
-		top: 5px;
-		.dropdown.icon {
-			margin: 0px !important;
-		}
-	`,
-	UpdateModal = styled( Modal )`
-		margin: 0px !important;
-	`,
 	PostContent = styled.div`
 		height: auto;
 		padding: 0px 10px;
@@ -41,7 +31,6 @@ class Post extends Component {
 		super();
 		this.state = {
 			content: "",
-			updatedContent: "",
 			deleted: false,
 			likedBy: [],
 			comments: [],
@@ -58,19 +47,16 @@ class Post extends Component {
 		};
 	}
 
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value });
-
 	handleDelete = () => {
 		api.deletePost( this.props.id )
 			.then(() => this.setState({ deleted: true }))
 			.catch( err => console.log( err ));
 	};
 
-	handleUpdate = () => {
-		if ( this.state.content !== this.state.updatedContent ) {
-			this.setState({ content: this.state.updatedContent });
-			api.updatePost( this.props.id, this.state.updatedContent )
+	handleUpdate = updatedContent => {
+		if ( this.state.content !== updatedContent ) {
+			this.setState({ content: updatedContent });
+			api.updatePost( this.props.id, updatedContent )
 				.catch( err => console.log( err ));
 		}
 	};
@@ -99,43 +85,11 @@ class Post extends Component {
 			return (
 				<Wrapper>
 
-					<Options direction="left">
-						{ localStorage.getItem( "username" ) === this.props.author ?
-							<Dropdown.Menu className="postDropdown">
-								<UpdateModal trigger={<Dropdown.Item text="Update" />} >
-									<Header>Update your post</Header>
-									<Modal.Content>
-										<Form>
-											<Form.Input
-												className="postUpdateInput"
-												name="updatedPost"
-												onChange={this.handleChange}
-												value={this.state.updatedContent}
-											/>
-											<Form.Button
-												className="postUpdateButton"
-												primary
-												content="Update"
-												onClick={this.handleUpdate}
-											/>
-										</Form>
-									</Modal.Content>
-								</UpdateModal>
-
-								<Dropdown.Item
-									className="postDeleteOption"
-									text="Delete"
-									onClick={this.handleDelete}
-								/>
-							</Dropdown.Menu>
-							:
-							<Dropdown.Menu className="postDropdown">
-								<Dropdown.Item
-									text="Report"
-								/>
-							</Dropdown.Menu>
-						}
-					</Options>
+					<DropdownOptions
+						author={this.props.author}
+						handleUpdate={this.handleUpdate}
+						handleDelete={this.handleDelete}
+					/>
 
 					<PostHeader>
 						<Author className="postAuthor">{this.props.author}</Author>
@@ -143,7 +97,6 @@ class Post extends Component {
 							{moment( this.props.date ).fromNow()}
 						</DateTime>
 					</PostHeader>
-
 
 					<PostContent>
 						<p className="postContent">

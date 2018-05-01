@@ -4,6 +4,7 @@ import { Header, Image } from "semantic-ui-react";
 import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import api from "../services/api";
+import DropdownOptions from "../components/DropdownOptions";
 
 const
 	Wrapper = styled.div`
@@ -105,19 +106,36 @@ class MediaPost extends Component {
 	constructor() {
 		super();
 		this.state = {
+			content: "",
 			likedBy: [],
 			comments: [],
-			sharedBy: []
+			sharedBy: [],
+			deleted: false
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
+			content: nextProps.content,
 			likedBy: nextProps.likedBy,
 			comments: nextProps.comments,
 			sharedBy: nextProps.sharedBy
 		};
 	}
+
+	handleDelete = () => {
+		api.deletePost( this.props.id )
+			.then(() => this.setState({ deleted: true }))
+			.catch( err => console.log( err ));
+	};
+
+	handleUpdate = updatedContent => {
+		if ( this.state.content !== updatedContent ) {
+			this.setState({ content: updatedContent });
+			api.updatePost( this.props.id, updatedContent )
+				.catch( err => console.log( err ));
+		}
+	};
 
 	handleLike = () => {
 		this.setState({
@@ -146,16 +164,26 @@ class MediaPost extends Component {
 				console.log( err );
 			}
 		}
-		if ( this.props.link ) {
-			return (
-				<Wrapper>
-					<PostHeader className="mediaPostHeader">
-						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">
-							{moment( this.props.date ).fromNow()}
-						</DateTime>
-					</PostHeader>
 
+		if ( this.state.deleted ) {
+			return null;
+		}
+		return (
+			<Wrapper>
+				<PostHeader className="mediaPostHeader">
+					<Author className="postAuthor">{this.props.author}</Author>
+					<DateTime className="postDate">
+						{moment( this.props.date ).fromNow()}
+					</DateTime>
+				</PostHeader>
+
+				<DropdownOptions
+					author={this.props.author}
+					handleUpdate={this.handleUpdate}
+					handleDelete={this.handleDelete}
+				/>
+
+				{this.props.link ?
 					<a href={this.props.linkContent.url}>
 						<LinkPreviewWrapper className="linkPreviewWrapper">
 							{this.props.linkContent.embeddedUrl ?
@@ -186,57 +214,23 @@ class MediaPost extends Component {
 							</LinkPreviewText>
 						</LinkPreviewWrapper>
 					</a>
-
-					<PostOptions
-						fakeOptions={this.props.fakeOptions}
-						handleLike={this.handleLike}
-						handleDislike={this.handleDislike}
-						switchComments={this.props.switchComments}
-						switchShare={this.props.switchShare}
-						numLiked={this.state.likedBy.length}
-						numComments={this.state.comments.length}
-						numShared={this.state.sharedBy.length}
-						id={this.props.id}
-						index={this.props.index}
-						liked={
-							this.state.likedBy.includes( localStorage.getItem( "username" ))
+					:
+					<PostMediaContent>
+						<PostMediaBackground background={
+							this.props.picture ? mediaPicture : this.props.mediaContent.image
 						}
-					/>
-
-					{this.props.content &&
-						<PostUserContent>
-							<p className="postContent">
-								<ContentAuthor>@{this.props.author} </ContentAuthor>
-								{this.props.content}
-							</p>
-						</PostUserContent>
-					}
-				</Wrapper>
-			);
-		}
-		return (
-			<Wrapper>
-				<PostHeader className="mediaPostHeader">
-					<Author className="postAuthor">{this.props.author}</Author>
-					<DateTime className="postDate">
-						{moment( this.props.date ).fromNow()}
-					</DateTime>
-				</PostHeader>
-
-				<PostMediaContent>
-					<PostMediaBackground background={
-						this.props.picture ? mediaPicture : this.props.mediaContent.image
-					}
-					/>
-					<h4>{this.props.mediaContent.title}</h4>
-					{this.props.picture ?
-						<MediaImage src={mediaPicture} className="mediaPicture" />
-						:
-						<MediaImage src={this.props.mediaContent.image}
-							className="mediaArtwork"
 						/>
-					}
-				</PostMediaContent>
+						<h4>{this.props.mediaContent.title}</h4>
+						{this.props.picture ?
+							<MediaImage src={mediaPicture} className="mediaPicture" />
+							:
+							<MediaImage src={this.props.mediaContent.image}
+								className="mediaArtwork"
+							/>
+						}
+					</PostMediaContent>
+				}
+
 				<PostOptions
 					fakeOptions={this.props.fakeOptions}
 					handleLike={this.handleLike}
@@ -257,7 +251,7 @@ class MediaPost extends Component {
 					<PostUserContent>
 						<p className="postContent">
 							<ContentAuthor>@{this.props.author} </ContentAuthor>
-							{this.props.content}
+							{this.state.content}
 						</p>
 					</PostUserContent>
 				}
