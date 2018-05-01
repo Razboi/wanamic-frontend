@@ -18,8 +18,4 @@ describe( "<Post/>", () => {
 	it( "Checks that <Post/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
-
-	it( "Checks that every postDropdown option renders", () => {
-		expect( wrapper.find( ".postDropdown" ).children()).to.have.length( 2 );
-	});
 });

@@ -47,7 +47,7 @@ describe( "<MediaPost/>", () => {
 	});
 
 	it( "Checks that <MediaPost/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 5 );
 	});
 
 	it( "Checks that mediaPostHeader children renders when link is false", () => {
@@ -60,7 +60,7 @@ describe( "<MediaPost/>", () => {
 	});
 
 	it( "Checks that <MediaPost/> children render when link is true", () => {
-		expect( linkWrapper.children()).to.have.length( 4 );
+		expect( linkWrapper.children()).to.have.length( 5 );
 	});
 
 	it( "Checks that mediaPostHeader children renders when link is true", () => {
