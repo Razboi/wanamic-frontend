@@ -110,7 +110,8 @@ class HomePage extends Component {
 			linkContent: "",
 			picture: null,
 			showComments: false,
-			postDetails: ""
+			postDetails: "",
+			postCommentsIndex: ""
 		};
 	}
 
@@ -159,7 +160,9 @@ class HomePage extends Component {
 		if ( this.state.sharebox !== "" ) {
 			const post = this.state.sharebox;
 			api.createPost( post )
-				.then(() => this.refreshNewsFeed())
+				.then( newPost => this.setState({
+					posts: [ newPost, ...this.state.posts ]
+				}))
 				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
@@ -186,7 +189,10 @@ class HomePage extends Component {
 			api.createMediaLink({
 				link: this.state.linkInput, content: this.state.linkContent
 			})
-				.then(() => this.swapMediaOptions())
+				.then( newPost => {
+					this.setState({ posts: [ newPost, ...this.state.posts ] });
+					this.swapMediaOptions();
+				})
 				.catch( err => console.log( err ));
 		}
 	}
@@ -204,10 +210,11 @@ class HomePage extends Component {
 		});
 	}
 
-	switchComments = postId => {
+	switchComments = ( postId, postIndex ) => {
 		this.setState({
 			showComments: !this.state.showComments,
-			postDetails: postId
+			postDetails: postId,
+			postCommentsIndex: postIndex
 		});
 	}
 
@@ -227,6 +234,18 @@ class HomePage extends Component {
 				postToShare: this.state.posts[ postIndex ]
 			});
 		}
+	}
+
+	handleDeleteComment = commentIndex => {
+		var newPosts = this.state.posts;
+		newPosts[ this.state.postCommentsIndex ].comments.splice( commentIndex, 1 );
+		this.setState({ posts: newPosts });
+	}
+
+	handleCreateComment = () => {
+		var newPosts = this.state.posts;
+		newPosts[ this.state.postCommentsIndex ].comments.push({});
+		this.setState({ posts: newPosts });
 	}
 
 	render() {
@@ -253,6 +272,8 @@ class HomePage extends Component {
 					}
 					{this.state.showComments &&
 					<Comments
+						handleCreateComment={this.handleCreateComment}
+						handleDeleteComment={this.handleDeleteComment}
 						switchComments={this.switchComments}
 						comments={this.state.comments}
 						id={this.state.postDetails}

@@ -177,11 +177,13 @@ class MediaPost extends Component {
 					</DateTime>
 				</PostHeader>
 
-				<DropdownOptions
-					author={this.props.author}
-					handleUpdate={this.handleUpdate}
-					handleDelete={this.handleDelete}
-				/>
+				{ !this.props.fakeOptions &&
+					<DropdownOptions
+						author={this.props.author}
+						handleUpdate={this.handleUpdate}
+						handleDelete={this.handleDelete}
+					/>
+				}
 
 				{this.props.link ?
 					<a href={this.props.linkContent.url}>

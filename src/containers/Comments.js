@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, Input, Divider } from "semantic-ui-react";
+import { Icon, Input } from "semantic-ui-react";
 import api from "../services/api";
+import Comment from "./Comment";
 
 const
 	Wrapper = styled.div`
@@ -36,13 +37,6 @@ const
 		margin-left: 15px;
 		font-weight: bold;
 		font-size: 16px;
-	`,
-	CommentAuthor = styled.h4`
-		margin: 0px;
-	`,
-	CommentContent = styled.p`
-		margin: 5px 0px;
-		color: #808080;
 	`;
 
 class Comments extends Component {
@@ -72,16 +66,19 @@ class Comments extends Component {
 
 	handleComment = () => {
 		api.createComment( this.state.comment, this.props.id )
+			.then( res => this.setState({
+				comments: [ res.data, ...this.state.comments ], comment: ""
+			}))
 			.catch( err => console.log( err ));
-		const newComment = {
-			author: localStorage.getItem( "username" ),
-			content: this.state.comment,
-			createdAt: Date.now()
-		};
-		this.setState({
-			comments: [ newComment, ...this.state.comments ], comment: ""
-		});
+		this.props.handleCreateComment();
 	}
+
+	handleDelete = commentIndex => {
+		var	newComments = this.state.comments;
+		newComments.splice( commentIndex, 1 );
+		this.setState({ comments: newComments });
+		this.props.handleDeleteComment( commentIndex );
+	};
 
 	render() {
 		return (
@@ -92,11 +89,11 @@ class Comments extends Component {
 				</HeaderWrapper>
 				<CommentsWrapper className="commentsWrapper">
 					{this.state.comments.map(( comment, index ) =>
-						<div key={index}>
-							<CommentAuthor>{comment.author}</CommentAuthor>
-							<CommentContent>{comment.content}</CommentContent>
-							<Divider />
-						</div>
+						<Comment
+							key={index}
+							comment={comment}
+							handleDelete={() => this.handleDelete( index )}
+						/>
 					)}
 				</CommentsWrapper>
 				<StyledInput

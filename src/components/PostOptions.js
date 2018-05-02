@@ -14,11 +14,14 @@ const
 
 class PostOptions extends Component {
 	render() {
+		if ( this.props.fakeOptions ) {
+			return null;
+		}
 		return (
 			<Wrapper>
 				{this.props.liked ?
 					<Option className="dislikeOption"
-						onClick={() => !this.props.fakeOptions && this.props.handleDislike()}
+						onClick={() => this.props.handleDislike()}
 					>
 						<Icon
 							name="heart"
@@ -29,7 +32,7 @@ class PostOptions extends Component {
 					</Option>
 					:
 					<Option className="likeOption"
-						onClick={() => !this.props.fakeOptions && this.props.handleLike()}
+						onClick={() => this.props.handleLike()}
 					>
 						<Icon
 							name="empty heart"
@@ -41,7 +44,7 @@ class PostOptions extends Component {
 
 				<Option className="commentOption"
 					onClick={() =>
-						!this.props.fakeOptions && this.props.switchComments( this.props.id )
+						this.props.switchComments( this.props.id, this.props.index )
 					}
 				>
 					<Icon
@@ -52,9 +55,7 @@ class PostOptions extends Component {
 				</Option>
 
 				<Option className="shareOption"
-					onClick={() =>
-						!this.props.fakeOptions && this.props.switchShare( this.props.index )
-					}
+					onClick={() => this.props.switchShare( this.props.index )}
 				>
 					<Icon
 						name="share"

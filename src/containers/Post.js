@@ -85,11 +85,13 @@ class Post extends Component {
 			return (
 				<Wrapper>
 
-					<DropdownOptions
-						author={this.props.author}
-						handleUpdate={this.handleUpdate}
-						handleDelete={this.handleDelete}
-					/>
+					{ !this.props.fakeOptions &&
+						<DropdownOptions
+							author={this.props.author}
+							handleUpdate={this.handleUpdate}
+							handleDelete={this.handleDelete}
+						/>
+					}
 
 					<PostHeader>
 						<Author className="postAuthor">{this.props.author}</Author>

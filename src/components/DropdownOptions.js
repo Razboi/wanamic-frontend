@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
+import { Dropdown, Modal, Form } from "semantic-ui-react";
 import styled from "styled-components";
 
 const
@@ -32,7 +32,6 @@ class DropdownOptions extends Component {
 				{ localStorage.getItem( "username" ) === this.props.author ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal trigger={<Dropdown.Item text="Update" />} >
-							<Header>Update your post</Header>
 							<Modal.Content>
 								<Form>
 									<Form.Input

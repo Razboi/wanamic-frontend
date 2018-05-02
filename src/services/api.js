@@ -231,6 +231,32 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
+	deleteComment: ( commentId, postId ) =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				postId: postId
+			},
+			url: "/comments/delete/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	updateComment: ( commentId, newContent ) =>
+		axios({
+			method: "patch",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				newContent: newContent
+			},
+			url: "/comments/update/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
 	getPostComments: ( postId, skip ) =>
 		axios({
 			method: "post",
