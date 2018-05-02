@@ -17,7 +17,7 @@ describe( "<Homepage/>", () => {
 		store;
 
 	beforeEach(() => {
-		store = mockStore();
+		store = mockStore({ posts: [] });
 		wrapper = shallow(
 			<HomePage
 				store={store}

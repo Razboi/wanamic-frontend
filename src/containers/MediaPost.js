@@ -5,6 +5,7 @@ import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -261,5 +262,22 @@ class MediaPost extends Component {
 		);
 	}
 }
+
+MediaPost.propTypes = {
+	index: PropTypes.number.isRequired,
+	id: PropTypes.string.isRequired,
+	author: PropTypes.string.isRequired,
+	content: PropTypes.string.isRequired,
+	mediaContent: PropTypes.object,
+	linkContent: PropTypes.object,
+	date: PropTypes.string.isRequired,
+	link: PropTypes.bool.isRequired,
+	picture: PropTypes.bool.isRequired,
+	likedBy: PropTypes.array.isRequired,
+	comments: PropTypes.array.isRequired,
+	sharedBy: PropTypes.array.isRequired,
+	switchComments: PropTypes.func.isRequired,
+	switchShare: PropTypes.func.isRequired,
+};
 
 export default MediaPost;

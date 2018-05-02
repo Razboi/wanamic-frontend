@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Icon, Input } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -108,5 +109,13 @@ class Comments extends Component {
 		);
 	}
 }
+
+Comments.propTypes = {
+	comments: PropTypes.array.isRequired,
+	handleCreateComment: PropTypes.func.isRequired,
+	handleDeleteComment: PropTypes.func.isRequired,
+	switchComments: PropTypes.func.isRequired,
+	id: PropTypes.string.isRequired
+};
 
 export default Comments;

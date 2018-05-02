@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Icon, Input } from "semantic-ui-react";
 import api from "../services/api";
-import Post from "../containers/Post";
-import MediaPost from "../containers/MediaPost";
+import PropTypes from "prop-types";
+import SharedPost from "./SharedPost";
 
 const
 	Wrapper = styled.div`
@@ -51,7 +51,6 @@ const
 	`,
 	PostToShare = styled.div`
 		transform: scale( 0.75 );
-		border: 1px solid #808080;
 	`,
 	CheckIcon = styled( Icon )`
 		margin-left: auto !important;
@@ -99,30 +98,7 @@ class Share extends Component {
 					/>
 					<ShareMain>
 						<PostToShare>
-							{this.props.postToShare.media ?
-								<MediaPost
-									author={this.props.postToShare.author}
-									content={this.props.postToShare.content}
-									mediaContent={this.props.postToShare.mediaContent}
-									linkContent={this.props.postToShare.linkContent}
-									date={this.props.postToShare.createdAt}
-									link={this.props.postToShare.link}
-									picture={this.props.postToShare.picture}
-									likedBy={this.props.postToShare.likedBy}
-									comments={this.props.postToShare.comments}
-									sharedBy={this.props.postToShare.sharedBy}
-									fakeOptions={true}
-								/>
-								:
-								<Post
-									author={this.props.postToShare.author}
-									content={this.props.postToShare.content}
-									date={this.props.postToShare.createdAt}
-									likedBy={this.props.postToShare.likedBy}
-									comments={this.props.postToShare.comments}
-									sharedBy={this.props.postToShare.sharedBy}
-									fakeOptions={true}
-								/>}
+							<SharedPost post={this.props.postToShare} />
 						</PostToShare>
 					</ShareMain>
 				</ShareWrapper>
@@ -130,5 +106,10 @@ class Share extends Component {
 		);
 	}
 }
+
+Share.propTypes = {
+	postToShare: PropTypes.object.isRequired,
+	switchShare: PropTypes.func.isRequired,
+};
 
 export default Share;

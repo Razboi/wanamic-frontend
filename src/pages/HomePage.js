@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button, Input, TextArea } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
+import { setNewsfeed } from "../services/actions/posts";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
@@ -143,11 +144,8 @@ class HomePage extends Component {
 
 	refreshNewsFeed = () => {
 		api.getNewsFeed( 0 )
-			.then( res => {
-				this.setState({
-					posts: res.data
-				});
-			}).catch( err => console.log( err ));
+			.then( res => this.props.setNewsfeed( res.data ))
+			.catch( err => console.log( err ));
 	}
 
 	handleLogout = () =>
@@ -331,9 +329,7 @@ class HomePage extends Component {
 							handleShare={this.handleShare}
 						/>
 						<StyledNewsFeed
-							posts={this.state.posts}
-							getNewsFeed={this.getNewsFeed}
-							hasMore={this.state.hasMore}
+							posts={this.props.newsfeed}
 							skip={this.state.skip}
 							switchComments={this.switchComments}
 							switchShare={this.switchShare}
@@ -347,6 +343,19 @@ class HomePage extends Component {
 
 HomePage.propTypes = {
 	logout: PropTypes.func.isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired,
 };
 
-export default connect( null, { logout })( HomePage );
+const
+	mapStateToProps = state => ({
+		newsfeed: state.posts.newsfeed
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		logout: () => dispatch( logout()),
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( HomePage );

@@ -41,8 +41,6 @@ class NewsFeed extends Component {
 								author={post.author}
 								content={post.content}
 								date={post.createdAt}
-								getNewsFeed={this.props.getNewsFeed}
-								updatePost={this.props.updatePost}
 								likedBy={post.likedBy}
 								comments={post.comments}
 								sharedBy={post.sharedBy}

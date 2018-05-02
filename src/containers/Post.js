@@ -6,6 +6,7 @@ import moment from "moment";
 import PostOptions from "../components/PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -129,5 +130,21 @@ class Post extends Component {
 		return null;
 	}
 }
+
+Post.propTypes = {
+	index: PropTypes.number.isRequired,
+	id: PropTypes.string.isRequired,
+	author: PropTypes.string.isRequired,
+	content: PropTypes.string.isRequired,
+	date: PropTypes.string.isRequired,
+	link: PropTypes.bool.isRequired,
+	picture: PropTypes.bool.isRequired,
+	likedBy: PropTypes.array.isRequired,
+	comments: PropTypes.array.isRequired,
+	sharedBy: PropTypes.array.isRequired,
+	sharedPost: PropTypes.object.isRequired,
+	switchComments: PropTypes.func.isRequired,
+	switchShare: PropTypes.func.isRequired,
+};
 
 export default Post;

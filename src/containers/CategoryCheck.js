@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Wrapper = styled.div`
 	justify-self: center;
@@ -33,6 +34,11 @@ class CategoryCheck extends Component {
 		);
 	}
 }
+
+CategoryCheck.propTypes = {
+	category: PropTypes.string.isRequired,
+	checked: PropTypes.func.isRequired
+};
 
 
 export default CategoryCheck;

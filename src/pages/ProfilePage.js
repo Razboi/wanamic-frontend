@@ -5,6 +5,7 @@ import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
+import PropTypes from "prop-types";
 var
 	backgroundImg,
 	profileImg;
@@ -301,5 +302,13 @@ class ProfilePage extends Component {
 		}
 	}
 }
+
+ProfilePage.propTypes = {
+	match: PropTypes.shape({
+		params: PropTypes.shape({
+			username: PropTypes.string.isRequired
+		})
+	}),
+};
 
 export default ProfilePage;

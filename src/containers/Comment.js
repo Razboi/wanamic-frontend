@@ -4,6 +4,7 @@ import { Divider } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
+import PropTypes from "prop-types";
 
 const
 	CommentAuthor = styled.h4`
@@ -86,5 +87,11 @@ class Comment extends Component {
 		);
 	}
 }
+
+Comment.propTypes = {
+	comment: PropTypes.object.isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	key: PropTypes.number
+};
 
 export default Comment;
