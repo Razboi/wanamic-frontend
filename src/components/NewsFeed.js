@@ -29,7 +29,6 @@ class NewsFeed extends Component {
 								likedBy={post.likedBy}
 								comments={post.comments}
 								sharedBy={post.sharedBy}
-								switchComments={this.props.switchComments}
 								switchShare={this.props.switchShare}
 							/>
 						</PostWrapper>
@@ -45,7 +44,6 @@ class NewsFeed extends Component {
 								comments={post.comments}
 								sharedBy={post.sharedBy}
 								sharedPost={post.sharedPost}
-								switchComments={this.props.switchComments}
 								switchShare={this.props.switchShare}
 							/>
 						</PostWrapper>

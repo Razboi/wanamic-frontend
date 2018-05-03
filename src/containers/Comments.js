@@ -3,7 +3,11 @@ import styled from "styled-components";
 import { Icon, Input } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import {
+	switchComments, setComments, setNewsfeed, addComment, deleteComment, updatePost
+} from "../services/actions/posts";
 
 const
 	Wrapper = styled.div`
@@ -50,8 +54,8 @@ class Comments extends Component {
 	}
 
 	componentDidMount() {
-		api.getPostComments( this.props.id, 0 )
-			.then( res => this.setState({ comments: res.data }))
+		api.getPostComments( this.props.postId, 0 )
+			.then( res => this.props.setComments( res.data ))
 			.catch( err => console.log( err ));
 	}
 
@@ -66,34 +70,33 @@ class Comments extends Component {
 	}
 
 	handleComment = () => {
-		api.createComment( this.state.comment, this.props.id )
-			.then( res => this.setState({
-				comments: [ res.data, ...this.state.comments ], comment: ""
-			}))
-			.catch( err => console.log( err ));
-		this.props.handleCreateComment();
+		api.createComment( this.state.comment, this.props.postId )
+			.then( res => {
+				this.setState({ comment: "" });
+				this.props.addComment( res.data.newComment );
+				this.props.updatePost( res.data.updatedPost );
+			}).catch( err => console.log( err ));
 	}
 
-	handleDelete = commentIndex => {
-		var	newComments = this.state.comments;
-		newComments.splice( commentIndex, 1 );
-		this.setState({ comments: newComments });
-		this.props.handleDeleteComment( commentIndex );
+	handleDelete = ( commentIndex, updatedPost ) => {
+		this.props.deleteComment( commentIndex );
+		this.props.updatePost( updatedPost );
 	};
 
 	render() {
 		return (
 			<Wrapper>
 				<HeaderWrapper>
-					<Icon name="arrow left" onClick={this.props.switchComments} />
+					<Icon name="arrow left" onClick={() => this.props.switchComments()} />
 					<HeaderTxt>Comments</HeaderTxt>
 				</HeaderWrapper>
 				<CommentsWrapper className="commentsWrapper">
-					{this.state.comments.map(( comment, index ) =>
+					{this.props.comments.map(( comment, index ) =>
 						<Comment
 							key={index}
+							index={index}
 							comment={comment}
-							handleDelete={() => this.handleDelete( index )}
+							handleDelete={this.handleDelete}
 						/>
 					)}
 				</CommentsWrapper>
@@ -111,11 +114,32 @@ class Comments extends Component {
 }
 
 Comments.propTypes = {
-	comments: PropTypes.array.isRequired,
-	handleCreateComment: PropTypes.func.isRequired,
-	handleDeleteComment: PropTypes.func.isRequired,
 	switchComments: PropTypes.func.isRequired,
-	id: PropTypes.string.isRequired
+	setComments: PropTypes.func.isRequired,
+	setNewsfeed: PropTypes.func.isRequired,
+	postId: PropTypes.string.isRequired,
+	postIndex: PropTypes.number.isRequired,
+	newsfeed: PropTypes.array.isRequired,
+	comments: PropTypes.array
 };
 
-export default Comments;
+const
+	mapStateToProps = state => {
+		return {
+			postId: state.posts.postDetailsId,
+			postIndex: state.posts.postDetailsIndex,
+			newsfeed: state.posts.newsfeed,
+			comments: state.posts.comments
+		};
+	},
+
+	mapDispatchToProps = dispatch => ({
+		switchComments: ( id, index ) => dispatch( switchComments( id, index )),
+		setComments: comments => dispatch( setComments( comments )),
+		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		addComment: comment => dispatch( addComment( comment )),
+		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
+		updatePost: post => dispatch( updatePost( post ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( Comments );

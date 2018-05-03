@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { Icon } from "semantic-ui-react";
 import styled from "styled-components";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { switchComments } from "../services/actions/posts";
 
 const
 	Wrapper = styled.div`
@@ -68,4 +71,21 @@ class PostOptions extends Component {
 	}
 }
 
-export default PostOptions;
+PostOptions.propTypes = {
+	fakeOptions: PropTypes.bool,
+	liked: PropTypes.bool.isRequired,
+	numLiked: PropTypes.number.isRequired,
+	numComments: PropTypes.number.isRequired,
+	numShared: PropTypes.number.isRequired,
+	switchComments: PropTypes.func.isRequired
+};
+
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		switchComments: ( id, index ) => dispatch( switchComments( id, index )),
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( PostOptions );

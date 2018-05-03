@@ -33,8 +33,7 @@ class Comment extends Component {
 			author: "",
 			post: "",
 			createdAt: "",
-			id: "",
-			deleted: false
+			id: ""
 		};
 	}
 
@@ -50,9 +49,8 @@ class Comment extends Component {
 
 	handleDelete = () => {
 		api.deleteComment( this.state.id, this.state.post )
-			.then(() => {
-				this.props.handleDelete();
-			}).catch( err => console.log( err ));
+			.then( res => this.props.handleDelete( this.props.index, res.data ))
+			.catch( err => console.log( err ));
 	};
 
 	handleUpdate = updatedContent => {
@@ -64,9 +62,6 @@ class Comment extends Component {
 	};
 
 	render() {
-		if ( this.state.deleted ) {
-			return null;
-		}
 		return (
 			<CommentWrapper>
 				<CommentHeader>
@@ -90,8 +85,7 @@ class Comment extends Component {
 
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired,
-	key: PropTypes.number
+	handleDelete: PropTypes.func.isRequired
 };
 
 export default Comment;

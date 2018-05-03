@@ -238,7 +238,6 @@ class MediaPost extends Component {
 					fakeOptions={this.props.fakeOptions}
 					handleLike={this.handleLike}
 					handleDislike={this.handleDislike}
-					switchComments={this.props.switchComments}
 					switchShare={this.props.switchShare}
 					numLiked={this.state.likedBy.length}
 					numComments={this.state.comments.length}
@@ -276,7 +275,6 @@ MediaPost.propTypes = {
 	likedBy: PropTypes.array.isRequired,
 	comments: PropTypes.array.isRequired,
 	sharedBy: PropTypes.array.isRequired,
-	switchComments: PropTypes.func.isRequired,
 	switchShare: PropTypes.func.isRequired,
 };
 

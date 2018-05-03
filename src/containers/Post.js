@@ -113,7 +113,6 @@ class Post extends Component {
 						fakeOptions={this.props.fakeOptions}
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
-						switchComments={this.props.switchComments}
 						switchShare={this.props.switchShare}
 						numLiked={this.state.likedBy.length}
 						numComments={this.state.comments.length}
@@ -137,13 +136,12 @@ Post.propTypes = {
 	author: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
 	date: PropTypes.string.isRequired,
-	link: PropTypes.bool.isRequired,
-	picture: PropTypes.bool.isRequired,
+	link: PropTypes.bool,
+	picture: PropTypes.bool,
 	likedBy: PropTypes.array.isRequired,
 	comments: PropTypes.array.isRequired,
 	sharedBy: PropTypes.array.isRequired,
-	sharedPost: PropTypes.object.isRequired,
-	switchComments: PropTypes.func.isRequired,
+	sharedPost: PropTypes.object,
 	switchShare: PropTypes.func.isRequired,
 };
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button, Input, TextArea } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
-import { setNewsfeed } from "../services/actions/posts";
+import { setNewsfeed, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
@@ -101,7 +101,6 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			sharebox: "",
-			posts: [],
 			skip: 1,
 			isInfiniteLoading: false,
 			hasMore: true,
@@ -110,9 +109,8 @@ class HomePage extends Component {
 			linkInput: "",
 			linkContent: "",
 			picture: null,
-			showComments: false,
-			postDetails: "",
-			postCommentsIndex: ""
+			showShare: false,
+			postToShare: ""
 		};
 	}
 
@@ -126,15 +124,15 @@ class HomePage extends Component {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length < 10 ) {
+						this.props.setNewsfeed([ ...this.props.posts, ...res.data ]);
 						this.setState({
-							posts: [ ...this.state.posts, ...res.data ],
 							hasMore: false,
 							isInfiniteLoading: false
 						});
 						return;
 					}
+					this.props.setNewsfeed([ ...this.props.newsfeed, ...res.data ]);
 					this.setState({
-						posts: [ ...this.state.posts, ...res.data ],
 						isInfiniteLoading: false,
 						skip: this.state.skip + 1
 					});
@@ -148,19 +146,16 @@ class HomePage extends Component {
 			.catch( err => console.log( err ));
 	}
 
-	handleLogout = () =>
-		this.props.logout();
-
-	handleChange = e =>
+	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			const post = this.state.sharebox;
 			api.createPost( post )
-				.then( newPost => this.setState({
-					posts: [ newPost, ...this.state.posts ]
-				}))
+				.then( newPost =>
+					this.props.setNewsfeed([ newPost, ...this.props.newsfeed ]))
 				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
@@ -171,9 +166,9 @@ class HomePage extends Component {
 		this.props.history.push( "/media/" + media );
 	}
 
-	swapMediaOptions = () => {
+	switchMediaOptions = () => {
+		this.props.switchMediaOptions();
 		this.setState({
-			showMediaOptions: !this.state.showMediaOptions,
 			shareLink: false
 		});
 	}
@@ -208,42 +203,22 @@ class HomePage extends Component {
 		});
 	}
 
-	switchComments = ( postId, postIndex ) => {
-		this.setState({
-			showComments: !this.state.showComments,
-			postDetails: postId,
-			postCommentsIndex: postIndex
-		});
-	}
-
 	switchShare = postIndex => {
 		if ( postIndex === false ) {
 			this.setState({ showShare: !this.state.showShare });
 			return;
 		}
-		if ( this.state.posts[ postIndex ].sharedPost ) {
+		if ( this.props.newsfeed[ postIndex ].sharedPost ) {
 			this.setState({
 				showShare: !this.state.showShare,
-				postToShare: this.state.posts[ postIndex ].sharedPost
+				postToShare: this.props.newsfeed[ postIndex ].sharedPost
 			});
 		} else {
 			this.setState({
 				showShare: !this.state.showShare,
-				postToShare: this.state.posts[ postIndex ]
+				postToShare: this.props.newsfeed[ postIndex ]
 			});
 		}
-	}
-
-	handleDeleteComment = commentIndex => {
-		var newPosts = this.state.posts;
-		newPosts[ this.state.postCommentsIndex ].comments.splice( commentIndex, 1 );
-		this.setState({ posts: newPosts });
-	}
-
-	handleCreateComment = () => {
-		var newPosts = this.state.posts;
-		newPosts[ this.state.postCommentsIndex ].comments.push({});
-		this.setState({ posts: newPosts });
 	}
 
 	render() {
@@ -257,10 +232,10 @@ class HomePage extends Component {
 					useWindow={false}
 				>
 					<ShareMediaButton primary circular icon="plus" size="large"
-						onClick={this.swapMediaOptions}
+						onClick={this.switchMediaOptions}
 					/>
 					<LogoutButton secondary content="Logout"
-						onClick={this.handleLogout}
+						onClick={() => this.props.logout()}
 					/>
 					{this.state.showShare &&
 					<Share
@@ -268,17 +243,9 @@ class HomePage extends Component {
 						postToShare={this.state.postToShare}
 					/>
 					}
-					{this.state.showComments &&
-					<Comments
-						handleCreateComment={this.handleCreateComment}
-						handleDeleteComment={this.handleDeleteComment}
-						switchComments={this.switchComments}
-						comments={this.state.comments}
-						id={this.state.postDetails}
-					/>
-					}
+					{this.props.displayComments && <Comments />}
 
-					<MediaOptionsWrapper show={this.state.showMediaOptions}>
+					<MediaOptionsWrapper show={this.props.mediaOptions}>
 						{this.state.shareLink ?
 							<LinkForm>
 								<ShareLinkInput
@@ -322,7 +289,7 @@ class HomePage extends Component {
 							</MediaOptions>
 						}
 					</MediaOptionsWrapper>
-					<MediaDimmer show={this.state.showMediaOptions}>
+					<MediaDimmer show={this.props.mediaOptions}>
 						<StyledShareBox
 							handleChange={this.handleChange}
 							sharebox={this.state.sharebox}
@@ -331,7 +298,6 @@ class HomePage extends Component {
 						<StyledNewsFeed
 							posts={this.props.newsfeed}
 							skip={this.state.skip}
-							switchComments={this.switchComments}
 							switchShare={this.switchShare}
 						/>
 					</MediaDimmer>
@@ -343,6 +309,8 @@ class HomePage extends Component {
 
 HomePage.propTypes = {
 	logout: PropTypes.func.isRequired,
+	setNewsfeed: PropTypes.func.isRequired,
+	switchMediaOptions: PropTypes.func.isRequired,
 	history: PropTypes.shape({
 		push: PropTypes.func.isRequired
 	}).isRequired,
@@ -350,11 +318,14 @@ HomePage.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		newsfeed: state.posts.newsfeed
+		newsfeed: state.posts.newsfeed,
+		mediaOptions: state.posts.mediaOptions,
+		displayComments: state.posts.displayComments
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		logout: () => dispatch( logout()),
 	});
 
