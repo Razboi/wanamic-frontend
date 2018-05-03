@@ -234,20 +234,22 @@ class MediaPost extends Component {
 					</PostMediaContent>
 				}
 
-				<PostOptions
-					fakeOptions={this.props.fakeOptions}
-					handleLike={this.handleLike}
-					handleDislike={this.handleDislike}
-					switchShare={this.props.switchShare}
-					numLiked={this.state.likedBy.length}
-					numComments={this.state.comments.length}
-					numShared={this.state.sharedBy.length}
-					id={this.props.id}
-					index={this.props.index}
-					liked={
-						this.state.likedBy.includes( localStorage.getItem( "username" ))
-					}
-				/>
+				{ !this.props.fakeOptions &&
+					<PostOptions
+						fakeOptions={this.props.fakeOptions}
+						handleLike={this.handleLike}
+						handleDislike={this.handleDislike}
+						switchShare={this.props.switchShare}
+						numLiked={this.state.likedBy.length}
+						numComments={this.props.comments.length}
+						numShared={this.props.sharedBy.length}
+						id={this.props.id}
+						index={this.props.index}
+						liked={
+							this.state.likedBy.includes( localStorage.getItem( "username" ))
+						}
+					/>
+				}
 
 				{this.props.content &&
 					<PostUserContent>
@@ -263,7 +265,7 @@ class MediaPost extends Component {
 }
 
 MediaPost.propTypes = {
-	index: PropTypes.number.isRequired,
+	index: PropTypes.number,
 	id: PropTypes.string.isRequired,
 	author: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
@@ -272,10 +274,10 @@ MediaPost.propTypes = {
 	date: PropTypes.string.isRequired,
 	link: PropTypes.bool.isRequired,
 	picture: PropTypes.bool.isRequired,
-	likedBy: PropTypes.array.isRequired,
-	comments: PropTypes.array.isRequired,
-	sharedBy: PropTypes.array.isRequired,
-	switchShare: PropTypes.func.isRequired,
+	likedBy: PropTypes.array,
+	comments: PropTypes.array,
+	sharedBy: PropTypes.array,
+	fakeOptions: PropTypes.bool
 };
 
 export default MediaPost;

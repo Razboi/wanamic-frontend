@@ -4,6 +4,8 @@ import { Icon, Input } from "semantic-ui-react";
 import api from "../services/api";
 import PropTypes from "prop-types";
 import SharedPost from "./SharedPost";
+import { addPost, switchShare, updatePost } from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -70,8 +72,11 @@ class Share extends Component {
 
 	handleShare = () => {
 		api.sharePost( this.props.postToShare._id, this.state.shareComment )
-			.catch( err => console.log( err ));
-		this.props.switchShare( false );
+			.then( res => {
+				this.props.addPost( res.data );
+				this.props.updatePost( res.data.sharedPost );
+				this.props.switchShare( undefined );
+			}).catch( err => console.log( err ));
 	}
 
 	render() {
@@ -81,7 +86,7 @@ class Share extends Component {
 					<Icon
 						className="backIcon"
 						name="arrow left"
-						onClick={() => this.props.switchShare( false )}
+						onClick={() => this.props.switchShare( undefined )}
 					/>
 					<HeaderTxt>Share</HeaderTxt>
 					<CheckIcon
@@ -112,4 +117,15 @@ Share.propTypes = {
 	switchShare: PropTypes.func.isRequired,
 };
 
-export default Share;
+const
+	mapStateToProps = state => ({
+		postToShare: state.posts.postToShare
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		updatePost: post => dispatch( updatePost( post )),
+		addPost: post => dispatch( addPost( post )),
+		switchShare: postIndex => dispatch( switchShare( postIndex ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( Share );

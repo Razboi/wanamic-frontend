@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button, Input, TextArea } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
-import { setNewsfeed, switchMediaOptions } from "../services/actions/posts";
+import {
+	setNewsfeed, switchMediaOptions, addPost
+} from "../services/actions/posts";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
@@ -104,13 +106,10 @@ class HomePage extends Component {
 			skip: 1,
 			isInfiniteLoading: false,
 			hasMore: true,
-			showMediaOptions: false,
 			shareLink: false,
 			linkInput: "",
 			linkContent: "",
 			picture: null,
-			showShare: false,
-			postToShare: ""
 		};
 	}
 
@@ -124,14 +123,14 @@ class HomePage extends Component {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length < 10 ) {
-						this.props.setNewsfeed([ ...this.props.posts, ...res.data ]);
+						this.props.setNewsfeed( res.data );
 						this.setState({
 							hasMore: false,
 							isInfiniteLoading: false
 						});
 						return;
 					}
-					this.props.setNewsfeed([ ...this.props.newsfeed, ...res.data ]);
+					this.props.setNewsfeed( res.data );
 					this.setState({
 						isInfiniteLoading: false,
 						skip: this.state.skip + 1
@@ -154,8 +153,7 @@ class HomePage extends Component {
 		if ( this.state.sharebox !== "" ) {
 			const post = this.state.sharebox;
 			api.createPost( post )
-				.then( newPost =>
-					this.props.setNewsfeed([ newPost, ...this.props.newsfeed ]))
+				.then( newPost => this.props.addPost( newPost ))
 				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
@@ -203,24 +201,6 @@ class HomePage extends Component {
 		});
 	}
 
-	switchShare = postIndex => {
-		if ( postIndex === false ) {
-			this.setState({ showShare: !this.state.showShare });
-			return;
-		}
-		if ( this.props.newsfeed[ postIndex ].sharedPost ) {
-			this.setState({
-				showShare: !this.state.showShare,
-				postToShare: this.props.newsfeed[ postIndex ].sharedPost
-			});
-		} else {
-			this.setState({
-				showShare: !this.state.showShare,
-				postToShare: this.props.newsfeed[ postIndex ]
-			});
-		}
-	}
-
 	render() {
 		return (
 			<Wrapper>
@@ -237,12 +217,7 @@ class HomePage extends Component {
 					<LogoutButton secondary content="Logout"
 						onClick={() => this.props.logout()}
 					/>
-					{this.state.showShare &&
-					<Share
-						switchShare={this.switchShare}
-						postToShare={this.state.postToShare}
-					/>
-					}
+					{this.props.displayShare && <Share /> }
 					{this.props.displayComments && <Comments />}
 
 					<MediaOptionsWrapper show={this.props.mediaOptions}>
@@ -295,11 +270,7 @@ class HomePage extends Component {
 							sharebox={this.state.sharebox}
 							handleShare={this.handleShare}
 						/>
-						<StyledNewsFeed
-							posts={this.props.newsfeed}
-							skip={this.state.skip}
-							switchShare={this.switchShare}
-						/>
+						<StyledNewsFeed posts={this.props.newsfeed} />
 					</MediaDimmer>
 				</InfiniteScroll>
 			</Wrapper>
@@ -320,13 +291,15 @@ const
 	mapStateToProps = state => ({
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
-		displayComments: state.posts.displayComments
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		logout: () => dispatch( logout()),
+		logout: () => dispatch( logout())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( HomePage );

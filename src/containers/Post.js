@@ -7,6 +7,8 @@ import PostOptions from "../components/PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
+import { deletePost, updatePost } from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -31,33 +33,30 @@ class Post extends Component {
 	constructor() {
 		super();
 		this.state = {
-			content: "",
-			deleted: false,
-			likedBy: [],
-			comments: [],
-			sharedBy: []
+			likedBy: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			content: nextProps.content,
-			likedBy: nextProps.likedBy,
-			comments: nextProps.comments,
-			sharedBy: nextProps.sharedBy
+			likedBy: nextProps.likedBy
 		};
 	}
 
 	handleDelete = () => {
 		api.deletePost( this.props.id )
-			.then(() => this.setState({ deleted: true }))
-			.catch( err => console.log( err ));
+			.then(() => {
+				if ( this.props.sharedPost ) {
+					this.props.updatePost( this.props.sharedPost.sharedBy.pop());
+				}
+				this.props.deletePost( this.props.index );
+			}).catch( err => console.log( err ));
 	};
 
 	handleUpdate = updatedContent => {
 		if ( this.state.content !== updatedContent ) {
-			this.setState({ content: updatedContent });
 			api.updatePost( this.props.id, updatedContent )
+				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
 	};
@@ -82,67 +81,74 @@ class Post extends Component {
 	}
 
 	render() {
-		if ( !this.state.deleted ) {
-			return (
-				<Wrapper>
+		return (
+			<Wrapper>
 
-					{ !this.props.fakeOptions &&
-						<DropdownOptions
-							author={this.props.author}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-						/>
-					}
+				{ !this.props.fakeOptions &&
+					<DropdownOptions
+						author={this.props.author}
+						handleUpdate={this.handleUpdate}
+						handleDelete={this.handleDelete}
+					/>
+				}
 
-					<PostHeader>
-						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">
-							{moment( this.props.date ).fromNow()}
-						</DateTime>
-					</PostHeader>
+				<PostHeader>
+					<Author className="postAuthor">{this.props.author}</Author>
+					<DateTime className="postDate">
+						{moment( this.props.date ).fromNow()}
+					</DateTime>
+				</PostHeader>
 
-					<PostContent>
-						<p className="postContent">
-							{this.state.content}
-						</p>
-						{this.props.sharedPost &&
-								<SharedPost post={this.props.sharedPost} />}
-					</PostContent>
+				<PostContent>
+					<p className="postContent">
+						{this.props.content}
+					</p>
+					{this.props.sharedPost && <SharedPost post={this.props.sharedPost} />}
+				</PostContent>
 
+				{ !this.props.fakeOptions &&
 					<PostOptions
 						fakeOptions={this.props.fakeOptions}
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
 						switchShare={this.props.switchShare}
 						numLiked={this.state.likedBy.length}
-						numComments={this.state.comments.length}
-						numShared={this.state.sharedBy.length}
+						numComments={this.props.comments.length}
+						numShared={this.props.sharedBy.length}
 						id={this.props.id}
 						index={this.props.index}
 						liked={
 							this.state.likedBy.includes( localStorage.getItem( "username" ))
 						}
 					/>
-				</Wrapper>
-			);
-		}
-		return null;
+				}
+			</Wrapper>
+		);
 	}
 }
 
 Post.propTypes = {
-	index: PropTypes.number.isRequired,
+	index: PropTypes.number,
 	id: PropTypes.string.isRequired,
 	author: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
 	date: PropTypes.string.isRequired,
 	link: PropTypes.bool,
 	picture: PropTypes.bool,
-	likedBy: PropTypes.array.isRequired,
-	comments: PropTypes.array.isRequired,
-	sharedBy: PropTypes.array.isRequired,
+	likedBy: PropTypes.array,
+	comments: PropTypes.array,
+	sharedBy: PropTypes.array,
 	sharedPost: PropTypes.object,
-	switchShare: PropTypes.func.isRequired,
+	fakeOptions: PropTypes.bool
 };
 
-export default Post;
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		deletePost: postIndex => dispatch( deletePost( postIndex )),
+		updatePost: post => dispatch( updatePost( post ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( Post );

@@ -23,11 +23,6 @@ class SharedPost extends Component {
 						date={this.props.post.createdAt}
 						link={this.props.post.link}
 						picture={this.props.post.picture}
-						likedBy={this.props.post.likedBy}
-						comments={this.props.post.comments}
-						sharedBy={this.props.post.sharedBy}
-						switchComments={this.props.switchComments}
-						switchShare={this.props.switchShare}
 						fakeOptions={true}
 					/>
 					:
@@ -36,11 +31,6 @@ class SharedPost extends Component {
 						author={this.props.post.author}
 						content={this.props.post.content}
 						date={this.props.post.createdAt}
-						likedBy={this.props.post.likedBy}
-						comments={this.props.post.comments}
-						sharedBy={this.props.post.sharedBy}
-						switchComments={this.props.switchComments}
-						switchShare={this.props.switchShare}
 						fakeOptions={true}
 					/>}
 			</Wrapper>

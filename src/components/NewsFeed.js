@@ -29,7 +29,7 @@ class NewsFeed extends Component {
 								likedBy={post.likedBy}
 								comments={post.comments}
 								sharedBy={post.sharedBy}
-								switchShare={this.props.switchShare}
+								fakeOptions={post.fakeOptions}
 							/>
 						</PostWrapper>
 						:
@@ -44,7 +44,7 @@ class NewsFeed extends Component {
 								comments={post.comments}
 								sharedBy={post.sharedBy}
 								sharedPost={post.sharedPost}
-								switchShare={this.props.switchShare}
+								fakeOptions={post.fakeOptions}
 							/>
 						</PostWrapper>
 				)}

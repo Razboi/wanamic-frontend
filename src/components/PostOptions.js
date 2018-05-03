@@ -3,7 +3,7 @@ import { Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { switchComments } from "../services/actions/posts";
+import { switchComments, switchShare } from "../services/actions/posts";
 
 const
 	Wrapper = styled.div`
@@ -77,7 +77,8 @@ PostOptions.propTypes = {
 	numLiked: PropTypes.number.isRequired,
 	numComments: PropTypes.number.isRequired,
 	numShared: PropTypes.number.isRequired,
-	switchComments: PropTypes.func.isRequired
+	switchComments: PropTypes.func.isRequired,
+	switchShare: PropTypes.func.isRequired
 };
 
 const
@@ -86,6 +87,7 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id, index ) => dispatch( switchComments( id, index )),
+		switchShare: postIndex => dispatch( switchShare( postIndex ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( PostOptions );
