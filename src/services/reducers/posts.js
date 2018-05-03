@@ -23,7 +23,7 @@ export default function posts( state = initialState, action = {}) {
 			})
 		};
 	case "SET_COMMENTS":
-		return { ...state, comments: [ ...state.comments, ...action.comments ] };
+		return { ...state, comments: action.comments };
 	case "UPDATE_POST":
 		return { ...state, newsfeed: state.newsfeed.map( post => {
 			if ( post._id === action.post._id ) {

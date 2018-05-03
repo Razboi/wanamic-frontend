@@ -45,9 +45,9 @@ class Post extends Component {
 
 	handleDelete = () => {
 		api.deletePost( this.props.id )
-			.then(() => {
-				if ( this.props.sharedPost ) {
-					this.props.updatePost( this.props.sharedPost.sharedBy.pop());
+			.then( res => {
+				if ( res.data.updatedOriginalPost ) {
+					this.props.updatePost( res.data.updatedOriginalPost );
 				}
 				this.props.deletePost( this.props.index );
 			}).catch( err => console.log( err ));

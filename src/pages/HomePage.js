@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Input, TextArea } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
 import {
 	setNewsfeed, switchMediaOptions, addPost
@@ -13,6 +13,7 @@ import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
 import Share from "../containers/Share";
+import MediaOptions from "../components/MediaOptions";
 
 const
 	Wrapper = styled.div`
@@ -38,7 +39,7 @@ const
 		z-index: 3;
 	`,
 	MediaDimmer = styled.div`
-		filter: ${props => props.show ? "blur(10px)" : "none"};
+		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		height: 100%;
 		width: 100%;
 		display: grid;
@@ -54,47 +55,6 @@ const
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
 		height: 100%;
-	`,
-	MediaOptionsWrapper = styled.div`
-		display: ${props => props.show ? "grid" : "none"};
-		position: fixed;
-		height: 100vh;
-		width: 100%;
-		z-index: 2;
-	`,
-	MediaOptions = styled.div`
-		justify-self: center;
-		align-self: center;
-	`,
-	MediaButton = styled( Button )`
-	`,
-	LinkForm = styled.div`
-		display: grid;
-		justify-self: center;
-		align-self: center;
-		width: 100%;
-	`,
-	ShareLinkInput = styled( Input )`
-		width: 80%;
-		justify-self: center;
-		align-self: center;
-		margin-bottom: 10px;
-	`,
-	ShareLinkContent = styled( TextArea )`
-		width: 90%;
-		justify-self: center;
-		align-self: center;
-	`,
-	PictureUploadWrapper = styled.span`
-		position: relative;
-	`,
-	PictureUploadInput = styled.input`
-		width: 0.1px;
-		height: 0.1px;
-		opacity: 0;
-		overflow: hidden;
-		position: absolute;
-		z-index: -1;
 	`;
 
 
@@ -220,51 +180,17 @@ class HomePage extends Component {
 					{this.props.displayShare && <Share /> }
 					{this.props.displayComments && <Comments />}
 
-					<MediaOptionsWrapper show={this.props.mediaOptions}>
-						{this.state.shareLink ?
-							<LinkForm>
-								<ShareLinkInput
-									name="linkInput"
-									onKeyPress={this.handleLinkKeyPress}
-									onChange={this.handleChange}
-									placeholder="Share your link"
-								/>
-								<ShareLinkContent
-									name="linkContent"
-									onKeyPress={this.handleLinkKeyPress}
-									onChange={this.handleChange}
-									placeholder="Anything to say?"
-								/>
-							</LinkForm>
-							:
-							<MediaOptions>
-								<MediaButton secondary circular icon="book" size="huge"
-									onClick={() => this.handleSearchMedia( "book" )}
-								/>
-								<MediaButton secondary circular icon="music" size="huge"
-									onClick={() => this.handleSearchMedia( "music" )}
-								/>
-								<MediaButton secondary circular icon="linkify" size="huge"
-									onClick={this.handleLink}
-								/>
-								<PictureUploadWrapper>
-									<MediaButton secondary circular icon="picture" size="huge"
-										onClick={() => document.getElementById( "pictureInput" ).click()}
-									/>
-									<PictureUploadInput type="file" name="picture" id="pictureInput"
-										onChange={this.handlePictureSelect}
-									/>
-								</PictureUploadWrapper>
-								<MediaButton secondary circular icon="film" size="huge"
-									onClick={() => this.handleSearchMedia( "movie" )}
-								/>
-								<MediaButton secondary circular icon="tv" size="huge"
-									onClick={() => this.handleSearchMedia( "tv" )}
-								/>
-							</MediaOptions>
-						}
-					</MediaOptionsWrapper>
-					<MediaDimmer show={this.props.mediaOptions}>
+					{this.props.mediaOptions &&
+						<MediaOptions
+							shareLink={this.state.shareLink}
+							handleLinkKeyPress={this.handleLinkKeyPress}
+							handleChange={this.handleChange}
+							handleSearchMedia={this.handleSearchMedia}
+							handleLink={this.handleLink}
+							handlePictureSelect={this.handlePictureSelect}
+						/>}
+
+					<MediaDimmer blur={this.props.mediaOptions}>
 						<StyledShareBox
 							handleChange={this.handleChange}
 							sharebox={this.state.sharebox}
@@ -272,6 +198,7 @@ class HomePage extends Component {
 						/>
 						<StyledNewsFeed posts={this.props.newsfeed} />
 					</MediaDimmer>
+
 				</InfiniteScroll>
 			</Wrapper>
 		);
