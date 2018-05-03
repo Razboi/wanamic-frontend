@@ -5,7 +5,9 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import PostOptions from "./PostOptions";
 import sinon from "sinon";
+import configureStore from "redux-mock-store";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<PostOptions/>", () => {
@@ -14,17 +16,17 @@ describe( "<PostOptions/>", () => {
 		dislikeSpy = sinon.spy(),
 		commentSpy = sinon.spy(),
 		shareSpy = sinon.spy(),
+		store = mockStore({}),
 		wrapper = shallow(
 			<PostOptions
+				store={store}
 				liked={true}
 				handleDislike={dislikeSpy}
-				switchComments={commentSpy}
-				switchShare={shareSpy}
 			/>
-		),
+		).dive(),
 		wrapper2 = shallow(
-			<PostOptions liked={false} handleLike={likeSpy}/>
-		);
+			<PostOptions liked={false} handleLike={likeSpy} store={store}/>
+		).dive();
 
 	it( "Checks that <PostOptions/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
@@ -44,17 +46,5 @@ describe( "<PostOptions/>", () => {
 		expect( dislikeSpy.called ).to.equal( false );
 		wrapper.find( ".dislikeOption" ).simulate( "click" );
 		expect( dislikeSpy.called ).to.equal( true );
-	});
-
-	it( "Checks that comment option works", () => {
-		expect( commentSpy.called ).to.equal( false );
-		wrapper.find( ".commentOption" ).simulate( "click" );
-		expect( commentSpy.called ).to.equal( true );
-	});
-
-	it( "Checks that share option works", () => {
-		expect( shareSpy.called ).to.equal( false );
-		wrapper.find( ".shareOption" ).simulate( "click" );
-		expect( shareSpy.called ).to.equal( true );
 	});
 });
