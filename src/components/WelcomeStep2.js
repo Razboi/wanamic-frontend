@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 class Step2 extends Component {
 	handleKeyPress = e => {
@@ -38,5 +39,11 @@ class Step2 extends Component {
 		);
 	}
 }
+
+Step2.propTypes = {
+	handleNext: PropTypes.func.isRequired,
+	handleFileChange: PropTypes.func.isRequired,
+	handleChange: PropTypes.func.isRequired
+};
 
 export default Step2;

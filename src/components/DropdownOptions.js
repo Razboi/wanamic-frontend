@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Dropdown, Modal, Form } from "semantic-ui-react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const
 	Options = styled( Dropdown )`
@@ -67,5 +68,11 @@ class DropdownOptions extends Component {
 		);
 	}
 }
+
+DropdownOptions.propTypes = {
+	author: PropTypes.string.isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	handleUpdate: PropTypes.func.isRequired
+};
 
 export default DropdownOptions;

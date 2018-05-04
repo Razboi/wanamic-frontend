@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import api from "../services/api";
+import PropTypes from "prop-types";
 var
 	backgroundImg,
 	profileImg;
@@ -204,5 +205,11 @@ class ExploreProfile extends Component {
 		);
 	}
 }
+
+ExploreProfile.propTypes = {
+	backToMenu: PropTypes.func.isRequired,
+	next: PropTypes.func.isRequired,
+	user: PropTypes.object.isRequired,
+};
 
 export default ExploreProfile;

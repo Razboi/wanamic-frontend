@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Form, Button, Header } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 const
 	FormContainer = styled.div`
@@ -82,5 +83,13 @@ class LoginForm extends Component {
 		);
 	}
 }
+
+LoginForm.propTypes = {
+	handleLogin: PropTypes.func.isRequired,
+	handleChange: PropTypes.func.isRequired,
+	swapForm: PropTypes.func.isRequired,
+	password: PropTypes.string.isRequired,
+	email: PropTypes.string.isRequired,
+};
 
 export default LoginForm;

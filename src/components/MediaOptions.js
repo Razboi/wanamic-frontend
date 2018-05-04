@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, Input, TextArea } from "semantic-ui-react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -104,5 +105,14 @@ class MediaOptions extends Component {
 		);
 	}
 }
+
+MediaOptions.propTypes = {
+	handleSearchMedia: PropTypes.func.isRequired,
+	handlePictureSelect: PropTypes.func.isRequired,
+	handleLink: PropTypes.func.isRequired,
+	handleChange: PropTypes.func.isRequired,
+	handleLinkKeyPress: PropTypes.func.isRequired,
+	shareLink: PropTypes.bool.isRequired
+};
 
 export default MediaOptions;

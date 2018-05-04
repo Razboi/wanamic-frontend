@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const
 	Box = styled( Form )`
@@ -56,5 +57,11 @@ class ShareBox extends Component {
 		);
 	}
 }
+
+ShareBox.propTypes = {
+	handleShare: PropTypes.func.isRequired,
+	handleChange: PropTypes.func.isRequired,
+	sharebox: PropTypes.string.isRequired,
+};
 
 export default ShareBox;

@@ -3,6 +3,7 @@ import Post from "../containers/Post";
 import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
 import Masonry from "react-masonry-component";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled( Masonry )`
@@ -55,5 +56,9 @@ class ExploreContent extends Component {
 		);
 	}
 }
+
+ExploreContent.propTypes = {
+	posts: PropTypes.array.isRequired
+};
 
 export default ExploreContent;

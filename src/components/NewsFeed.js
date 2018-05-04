@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Post from "../containers/Post";
 import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const
 	PostWrapper = styled.div`
@@ -52,5 +53,9 @@ class NewsFeed extends Component {
 		);
 	}
 }
+
+NewsFeed.propTypes = {
+	posts: PropTypes.array.isRequired
+};
 
 export default NewsFeed;
