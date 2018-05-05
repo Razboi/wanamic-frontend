@@ -37,6 +37,10 @@ class ExploreContent extends Component {
 								date={post.createdAt}
 								link={post.link}
 								picture={post.picture}
+								likedBy={post.likedBy}
+								comments={post.comments}
+								sharedBy={post.sharedBy}
+								fakeOptions={post.fakeOptions}
 							/>
 						</PostWrapper>
 						:
@@ -47,8 +51,11 @@ class ExploreContent extends Component {
 								author={post.author}
 								content={post.content}
 								date={post.createdAt}
-								getNewsFeed={this.props.getNewsFeed}
-								updatePost={this.props.updatePost}
+								likedBy={post.likedBy}
+								comments={post.comments}
+								sharedBy={post.sharedBy}
+								sharedPost={post.sharedPost}
+								fakeOptions={post.fakeOptions}
 							/>
 						</PostWrapper>
 				)}

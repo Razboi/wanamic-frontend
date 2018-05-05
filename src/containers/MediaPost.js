@@ -12,6 +12,7 @@ const
 		overflow: hidden;
 		display: grid;
 		position: relative;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	PostHeader = styled( Header )`
 		padding: 10px !important;

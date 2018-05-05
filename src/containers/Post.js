@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 const
 	Wrapper = styled.div`
 		position: relative;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	PostHeader = styled( Header )`
 		padding: 10px 10px 0px 10px !important;

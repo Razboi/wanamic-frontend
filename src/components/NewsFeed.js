@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 
 const
 	PostWrapper = styled.div`
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
 		margin-bottom: 20px;
 	`;
 

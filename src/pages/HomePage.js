@@ -26,15 +26,10 @@ const
 			}
 		}
 	`,
-	LogoutButton = styled( Button )`
-		position: fixed;
-		left: 5px;
-		bottom: 5px;
-		z-index: 3;
-	`,
 	ShareMediaButton = styled( Button )`
 		position: fixed;
-		right: 5px;
+		left: 50%;
+		transform: translateX(-50%);
 		bottom: 5px;
 		z-index: 3;
 	`,
@@ -66,10 +61,7 @@ class HomePage extends Component {
 			skip: 1,
 			isInfiniteLoading: false,
 			hasMore: true,
-			shareLink: false,
-			linkInput: "",
-			linkContent: "",
-			picture: null,
+			picture: null
 		};
 	}
 
@@ -120,38 +112,8 @@ class HomePage extends Component {
 		}
 	};
 
-	handleSearchMedia = media => {
-		this.props.history.push( "/media/" + media );
-	}
-
 	switchMediaOptions = () => {
 		this.props.switchMediaOptions();
-		this.setState({
-			shareLink: false
-		});
-	}
-
-	handleLink = () => {
-		this.setState({ shareLink: true });
-	}
-
-	submitLink = () => {
-		if ( this.state.linkInput ) {
-			api.createMediaLink({
-				link: this.state.linkInput, content: this.state.linkContent
-			})
-				.then( newPost => {
-					this.setState({ posts: [ newPost, ...this.state.posts ] });
-					this.swapMediaOptions();
-				})
-				.catch( err => console.log( err ));
-		}
-	}
-
-	handleLinkKeyPress = e => {
-		if ( e.key === "Enter" ) {
-			this.submitLink();
-		}
 	}
 
 	handlePictureSelect = e => {
@@ -171,23 +133,14 @@ class HomePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<ShareMediaButton primary circular icon="plus" size="large"
+					<ShareMediaButton primary circular icon="plus" size="big"
 						onClick={this.switchMediaOptions}
-					/>
-					<LogoutButton secondary content="Logout"
-						onClick={() => this.props.logout()}
 					/>
 					{this.props.displayShare && <Share /> }
 					{this.props.displayComments && <Comments />}
 
 					{this.props.mediaOptions &&
-						<MediaOptions
-							shareLink={this.state.shareLink}
-							handleLinkKeyPress={this.handleLinkKeyPress}
-							handleChange={this.handleChange}
-							handleSearchMedia={this.handleSearchMedia}
-							handleLink={this.handleLink}
-							handlePictureSelect={this.handlePictureSelect}
+						<MediaOptions handlePictureSelect={this.handlePictureSelect}
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>

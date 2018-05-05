@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Button, Input, TextArea } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import SearchMedia from "../containers/SearchMedia";
+import api from "../services/api";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -29,6 +31,7 @@ const
 		justify-self: center;
 		align-self: center;
 		width: 100%;
+		z-index: 2;
 	`,
 	ShareLinkInput = styled( Input )`
 		width: 80%;
@@ -51,68 +54,129 @@ const
 		overflow: hidden;
 		position: absolute;
 		z-index: -1;
+	`,
+	StyledSearchMedia = styled( SearchMedia )`
+		z-index: 2;
+	`,
+	SwapBackButton = styled( Button )`
+		position: fixed;
+		bottom: 5px;
+		left: 5px;
 	`;
 
 class MediaOptions extends Component {
+	constructor() {
+		super();
+		this.state = {
+			searchMedia: false,
+			shareLink: false,
+			linkUrl: "",
+			linkContent: "",
+			mediaType: ""
+		};
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
+
+	submitLink = () => {
+		if ( this.state.linkUrl ) {
+			api.createMediaLink({
+				link: this.state.linkUrl, content: this.state.linkContent
+			})
+				.then( newPost => {
+					this.setState({ posts: [ newPost, ...this.state.posts ] });
+					this.swapMediaOptions();
+				})
+				.catch( err => console.log( err ));
+		}
+	}
+
+	handleLinkKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			this.submitLink();
+		}
+	}
+
+	switchSearchMedia = media => {
+		this.setState({ searchMedia: !this.state.searchMedia, mediaType: media });
+	}
+
+	switchLink = () => {
+		this.setState({ shareLink: !this.state.shareLink });
+	}
+
 	render() {
-		return (
-			<MediaOptionsWrapper>
-				<MediaDimmer />
-				{this.props.shareLink ?
+		if ( this.state.searchMedia ) {
+			return (
+				<MediaOptionsWrapper>
+					<MediaDimmer />
+					<StyledSearchMedia
+						mediaType={this.state.mediaType}
+						switchSearchMedia={this.switchSearchMedia}
+					/>
+				</MediaOptionsWrapper>
+			);
+		}
+		if ( this.state.shareLink ) {
+			return (
+				<MediaOptionsWrapper>
+					<MediaDimmer />
 					<LinkForm>
 						<ShareLinkInput
-							name="linkInput"
-							onKeyPress={this.props.handleLinkKeyPress}
-							onChange={this.props.handleChange}
+							name="linkUrl"
+							onKeyPress={this.handleLinkKeyPress}
+							onChange={this.handleChange}
 							placeholder="Share your link"
 						/>
 						<ShareLinkContent
 							name="linkContent"
-							onKeyPress={this.props.handleLinkKeyPress}
-							onChange={this.props.handleChange}
+							onKeyPress={this.handleLinkKeyPress}
+							onChange={this.handleChange}
 							placeholder="Anything to say?"
 						/>
 					</LinkForm>
-					:
-					<MediaButtons>
-						<MediaButton secondary circular icon="book" size="huge"
-							onClick={() => this.props.handleSearchMedia( "book" )}
+					<SwapBackButton secondary content="Cancel" onClick={this.switchLink} />
+				</MediaOptionsWrapper>
+			);
+		}
+		return (
+			<MediaOptionsWrapper>
+				<MediaDimmer />
+				<MediaButtons>
+					<MediaButton secondary circular icon="book" size="huge"
+						onClick={() => this.switchSearchMedia( "book" )}
+					/>
+					<MediaButton secondary circular icon="music" size="huge"
+						onClick={() => this.switchSearchMedia( "music" )}
+					/>
+					<MediaButton secondary circular icon="linkify" size="huge"
+						onClick={this.switchLink}
+					/>
+					<PictureUploadWrapper>
+						<MediaButton secondary circular icon="picture" size="huge"
+							onClick={() => document.getElementById( "pictureInput" ).click()}
+						>
+						</MediaButton>
+						<PictureUploadInput type="file" name="picture" id="pictureInput"
+							onChange={this.props.handlePictureSelect}
 						/>
-						<MediaButton secondary circular icon="music" size="huge"
-							onClick={() => this.props.handleSearchMedia( "music" )}
-						/>
-						<MediaButton secondary circular icon="linkify" size="huge"
-							onClick={this.props.handleLink}
-						/>
-						<PictureUploadWrapper>
-							<MediaButton secondary circular icon="picture" size="huge"
-								onClick={() => document.getElementById( "pictureInput" ).click()}
-							>
-							</MediaButton>
-							<PictureUploadInput type="file" name="picture" id="pictureInput"
-								onChange={this.props.handlePictureSelect}
-							/>
-						</PictureUploadWrapper>
-						<MediaButton secondary circular icon="film" size="huge"
-							onClick={() => this.props.handleSearchMedia( "movie" )}
-						/>
-						<MediaButton secondary circular icon="tv" size="huge"
-							onClick={() => this.props.handleSearchMedia( "tv" )}
-						/>
-					</MediaButtons>
-				}
+					</PictureUploadWrapper>
+					<MediaButton secondary circular icon="film" size="huge"
+						onClick={() => this.switchSearchMedia( "movie" )}
+					/>
+					<MediaButton secondary circular icon="tv" size="huge"
+						onClick={() => this.switchSearchMedia( "tv" )}
+					/>
+				</MediaButtons>
 			</MediaOptionsWrapper>
 		);
 	}
 }
 
 MediaOptions.propTypes = {
-	handleSearchMedia: PropTypes.func.isRequired,
-	handlePictureSelect: PropTypes.func.isRequired,
-	handleLink: PropTypes.func.isRequired,
-	handleChange: PropTypes.func.isRequired,
-	handleLinkKeyPress: PropTypes.func.isRequired,
-	shareLink: PropTypes.bool.isRequired
+	handlePictureSelect: PropTypes.func.isRequired
 };
 
 export default MediaOptions;

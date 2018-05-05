@@ -24,7 +24,7 @@ class SettingsPage extends Component {
 					description: res.data.description,
 					fullname: res.data.fullname,
 					username: res.data.username,
-					keywords: "#" + keywordsString
+					keywords: keywordsString
 				});
 			}).catch( err => console.log( err ));
 	}

@@ -3,25 +3,29 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import SearchMediaPage from "./SearchMediaPage";
+import SearchMedia from "./SearchMedia";
+import configureStore from "redux-mock-store";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<SearchMediaPage/>", () => {
+describe( "<SearchMedia/>", () => {
 	var
 		results = [
 			{ trackName: "test", artistName: "tester" },
 			{ trackName: "test2", artistName: "tester2" }
 		],
+		store,
 		wrapper;
 
 	beforeEach(() => {
+		store = mockStore({}),
 		wrapper = shallow(
-			<SearchMediaPage />
-		);
+			<SearchMedia store={store} />
+		).dive();
 	});
 
-	it( "Checks that <SearchMediaPage/> renders", () => {
+	it( "Checks that <SearchMedia/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
@@ -31,7 +35,7 @@ describe( "<SearchMediaPage/>", () => {
 
 	it( "Checks that every children renders when state.selected", () => {
 		wrapper.setState({ selected: true });
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 3 );
 	});
 
 	it( "Expects the length of mediaResults to equal state.results", () => {

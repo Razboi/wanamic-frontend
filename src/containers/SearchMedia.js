@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Input, Image, Divider, Button } from "semantic-ui-react";
+import { Input, Image, Divider, Button, Checkbox } from "semantic-ui-react";
 import axios from "axios";
 import api from "../services/api";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { addPost, switchMediaOptions } from "../services/actions/posts";
 
 var DefaultCover;
 try {
@@ -14,11 +16,12 @@ try {
 
 const
 	Wrapper = styled.div`
+		z-index: 2;
 		height: 100vh;
 		width: 100%;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 12% 83%;
+		grid-template-rows: 12% 88%;
 		grid-template-areas:
 			"s"
 			"r"
@@ -34,6 +37,7 @@ const
 		align-self: center;
 	`,
 	ResultsWrapper = styled.div`
+		overflow-y: scroll;
 		grid-area: r;
 	`,
 	ResultMediaWrapper = styled.div`
@@ -110,17 +114,75 @@ const
 		position: fixed;
 		bottom: 5px;
 		left: 5px;
+	`,
+	ShareOptionsWrapper = styled.div`
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		z-index: 2;
+		display: grid;
+		grid-template-columns: 100%;
+		grid-template-rows: 40% 60%;
+		grid-template-areas:
+			"so"
+			"al"
+	`,
+	ShareOptions = styled.div`
+		grid-area: so;
+		padding: 10px;
+		color: #fff !important;
+		display: flex;
+		flex-direction: column;
+	`,
+	AlertsWrapper = styled.div`
+		grid-area: al;
+		color: #fff !important;
+		justify-self: center;
+	`,
+	Alerts = styled.div`
+		display: flex;
+		flex-direction: column;
+		text-align: center;
+	`,
+	AlertCheck = styled.span`
+		display: flex;
+		margin-top: 10px;
+	`,
+	AlertLabel = styled.b`
+		margin-left: 10px;
+		font-size: 16px;
+	`,
+	PrivacySlider = styled.div`
+		background: ${props => props.range === 2 &&
+			"linear-gradient(to right, #134f7c 50%, rgba(0,0,0,0.75) 50%) !important" };
+		background: ${props => props.range === 3 && "#134f7c !important"};
+		background: rgba(0,0,0,0.75);
+		border-radius: 25px;
+		width: 70%;
+		align-self: center;
+		display: flex;
+		justify-content: space-between;
+	`,
+	PrivacyButton = styled( Button )`
+		margin: 0px !important;
+	`,
+	SliderHeader = styled.h4`
+		text-align: center;
+		align-self: center;
 	`;
 
-class SearchMediaPage extends Component {
+class SearchMedia extends Component {
 	constructor() {
 		super();
 		this.state = {
 			search: "",
 			results: [],
-			selected: false,
+			step: 1,
 			mediaData: null,
-			userInput: ""
+			userInput: "",
+			privacyRange: 1,
+			check18: false,
+			checkSpoiler: false
 		};
 	}
 
@@ -136,7 +198,7 @@ class SearchMediaPage extends Component {
 
 	handleSearch = () => {
 		if ( this.state.search ) {
-			switch ( this.props.match.params.mediaType ) {
+			switch ( this.props.mediaType ) {
 			case "book":
 				this.bookSearch();
 				break;
@@ -189,23 +251,42 @@ class SearchMediaPage extends Component {
 			artist: media.artistName,
 			image: media.artworkUrl100.replace( "100x100bb", "200x200bb" )
 		};
-		this.setState({ selected: true, mediaData: mediaData });
+		this.setState({ mediaData: mediaData, step: this.state.step + 1 });
+	}
+
+	nextStep = () => {
+		this.setState({ step: this.state.step + 1 });
+	}
+
+	prevStep = () => {
+		this.setState({ step: this.state.step - 1 });
 	}
 
 	handleSubmit = () => {
 		var finalData = this.state.mediaData;
 		finalData.content = this.state.userInput;
+		finalData.privacyRange = this.state.privacyRange;
+		finalData.alerts = { check18: this.state.check18,
+			checkSpoiler: this.state.checkSpoiler
+		};
+
 		api.createMediaPost( finalData )
-			.then(() => this.props.history.push( "/" ))
-			.catch( err => console.log( err ));
+			.then( newPost => {
+				this.props.addPost( newPost );
+				this.props.switchMediaOptions();
+			}).catch( err => console.log( err ));
 	}
 
-	handleBack = () => {
-		this.setState({ selected: false });
+	setPrivacyRange = range => {
+		this.setState({ privacyRange: range });
+	}
+
+	handleCheck = ( e, semanticUiProps ) => {
+		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
 	render() {
-		if ( this.state.selected ) {
+		if ( this.state.step === 2 ) {
 			return (
 				<SelectedWrapper>
 					<ShareWrapper>
@@ -234,9 +315,73 @@ class SearchMediaPage extends Component {
 							background={DefaultCover}
 						/>
 					}
-					<BackButton secondary content="Back" onClick={this.handleBack} />
-					<ShareButton primary content="Done" onClick={this.handleSubmit} />
+					<BackButton secondary content="Back" onClick={this.prevStep} />
+					<ShareButton primary content="Next" onClick={this.nextStep} />
 				</SelectedWrapper>
+			);
+		}
+		if ( this.state.step === 3 ) {
+			return (
+				<div>
+					<ShareOptionsWrapper>
+						<ShareOptions>
+							<h3>Share with</h3>
+							<SliderHeader>
+								{this.state.shareRange === 1 && "Friends"}
+								{this.state.shareRange === 2 && "Friends and Followers"}
+								{this.state.shareRange === 3 &&
+									"Everybody (will be included in the explore page)"}
+							</SliderHeader>
+							<PrivacySlider range={this.state.privacyRange}>
+								<PrivacyButton
+									primary
+									circular
+									icon="users"
+									size="huge"
+									onClick={() => this.setPrivacyRange( 1 )}
+								/>
+								<PrivacyButton
+									primary={this.state.privacyRange >= 2 && true}
+									circular
+									icon="binoculars"
+									size="huge"
+									onClick={() => this.setPrivacyRange( 2 )}
+								/>
+								<PrivacyButton
+									primary={this.state.privacyRange === 3 && true}
+									circular
+									icon="globe"
+									size="huge"
+									onClick={() => this.setPrivacyRange( 3 )}
+								/>
+							</PrivacySlider>
+						</ShareOptions>
+						<AlertsWrapper>
+							<h4>Alerts</h4>
+							<Alerts>
+								<AlertCheck>
+									<Checkbox name="check18" onChange={this.handleCheck}/>
+									<AlertLabel>+18</AlertLabel>
+								</AlertCheck>
+								<AlertCheck>
+									<Checkbox name="checkSpoiler" onChange={this.handleCheck}/>
+									<AlertLabel>Spoiler</AlertLabel>
+								</AlertCheck>
+							</Alerts>
+						</AlertsWrapper>
+						<BackButton secondary content="Back" onClick={this.prevStep} />
+						<ShareButton primary content="Done" onClick={this.handleSubmit} />
+					</ShareOptionsWrapper>
+					{this.state.mediaData && this.state.mediaData.image ?
+						<SelectedMediaBackground background={this.state.mediaData.image} />
+						:
+						<SelectedMediaBackground
+							background={DefaultCover}
+						/>
+					}
+					<BackButton secondary content="Back" onClick={this.prevStep} />
+					<ShareButton primary content="Next" onClick={this.nextStep} />
+				</div>
 			);
 		}
 		return (
@@ -262,7 +407,8 @@ class SearchMediaPage extends Component {
 								{media.artworkUrl100
 									?
 									<ResultMediaImage
-										src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )} />
+										src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
+									/>
 									:
 									<ResultMediaImage src={DefaultCover} />
 								}
@@ -272,21 +418,24 @@ class SearchMediaPage extends Component {
 					)}
 				</ResultsWrapper>
 				<SwapBackButton secondary content="Cancel"
-					onClick={() => this.props.history.push( "/" )} />
+					onClick={() => this.props.switchSearchMedia( undefined )} />
 			</Wrapper>
 		);
 	}
 }
 
-SearchMediaPage.propTypes = {
-	match: PropTypes.shape({
-		params: PropTypes.shape({
-			mediaType: PropTypes.string.isRequired
-		})
-	}).isRequired,
-	history: PropTypes.shape({
-		push: PropTypes.func.isRequired
-	}).isRequired,
+SearchMedia.propTypes = {
+	mediaType: PropTypes.string.isRequired,
+	switchSearchMedia: PropTypes.func.isRequired
 };
 
-export default SearchMediaPage;
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		addPost: post => dispatch( addPost( post )),
+		switchMediaOptions: () => dispatch( switchMediaOptions())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( SearchMedia );
