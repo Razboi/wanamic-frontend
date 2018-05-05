@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Input, Image, Button } from "semantic-ui-react";
 import api from "../services/api";
+import PropTypes from "prop-types";
 
 const
 	SelectedWrapper = styled.div`
@@ -121,5 +122,16 @@ class MediaPicture extends Component {
 		);
 	}
 }
+
+MediaPicture.propTypes = {
+	location: PropTypes.shape({
+		state: PropTypes.shape({
+			file: PropTypes.object.isRequired
+		}).isRequired
+	}).isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired,
+};
 
 export default MediaPicture;

@@ -1,32 +1,31 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Dropdown, Modal, Form } from "semantic-ui-react";
+import { Header } from "semantic-ui-react";
 import api from "../services/api";
+import moment from "moment";
+import PostOptions from "../components/PostOptions";
+import SharedPost from "../containers/SharedPost";
+import DropdownOptions from "../components/DropdownOptions";
+import PropTypes from "prop-types";
+import { deletePost, updatePost } from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
-		padding: 10px;
-		margin: 0px 0px 20px 0px;
-		border: 1px solid #D3D3D3;
-		border-radius: 5px;
 		position: relative;
 	`,
 	PostHeader = styled( Header )`
+		padding: 10px 10px 0px 10px !important;
+		margin-bottom: 10px !important;
 	`,
 	Author = styled.span`
 	`,
 	DateTime = styled( Header.Subheader )`
 	`,
-	Options = styled( Dropdown )`
-		position: absolute !important;
-		right: 10px;
-		top: 5px;
-		.dropdown.icon {
-			margin: 0px !important;
-		}
-	`,
-	UpdateModal = styled( Modal )`
-		margin: 0px !important;
+	PostContent = styled.div`
+		height: auto;
+		padding: 0px 10px;
+		margin-bottom: 30px;
 	`;
 
 
@@ -34,91 +33,122 @@ class Post extends Component {
 	constructor() {
 		super();
 		this.state = {
-			updatedPost: "",
-			deleted: false
+			likedBy: []
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
-		if ( nextProps.content ) {
-			return { updatedPost: nextProps.content };
-		}
+		return {
+			likedBy: nextProps.likedBy
+		};
 	}
-
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value });
 
 	handleDelete = () => {
 		api.deletePost( this.props.id )
-			.then(() => this.setState({ deleted: true }))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res.data.updatedOriginalPost ) {
+					this.props.updatePost( res.data.updatedOriginalPost );
+				}
+				this.props.deletePost( this.props.index );
+			}).catch( err => console.log( err ));
 	};
 
-	handleUpdate = () => {
-		// if the post has been updated
-		if ( this.props.content !== this.state.updatedPost ) {
-			api.updatePost( this.props.id, this.state.updatedPost )
-				.then( res => this.props.updatePost( this.props.index, this.state.updatedPost ))
+	handleUpdate = updatedContent => {
+		if ( this.state.content !== updatedContent ) {
+			api.updatePost( this.props.id, updatedContent )
+				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
 	};
 
+	handleLike = () => {
+		this.setState({
+			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+		});
+
+		api.likePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
+
+	handleDislike = () => {
+		var	newLikedBy = this.state.likedBy;
+		const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
+		newLikedBy.splice( index, 1 );
+		this.setState({ likedBy: newLikedBy });
+
+		api.dislikePost( this.props.id )
+			.catch( err => console.log( err ));
+	}
+
 	render() {
-		if ( !this.state.deleted ) {
-			return (
-				<Wrapper>
+		return (
+			<Wrapper>
 
-					<Options direction="left">
+				{ !this.props.fakeOptions &&
+					<DropdownOptions
+						author={this.props.author}
+						handleUpdate={this.handleUpdate}
+						handleDelete={this.handleDelete}
+					/>
+				}
 
-						{ localStorage.getItem( "username" ) === this.props.author ?
-							<Dropdown.Menu className="postDropdown">
-								<UpdateModal trigger={<Dropdown.Item text="Update" />} >
-									<Header>Update your post</Header>
-									<Modal.Content>
-										<Form>
-											<Form.Input
-												className="postUpdateInput"
-												name="updatedPost"
-												onChange={this.handleChange}
-												value={this.state.updatedPost}
-											/>
-											<Form.Button
-												className="postUpdateButton"
-												primary
-												content="Update"
-												onClick={this.handleUpdate}
-											/>
-										</Form>
-									</Modal.Content>
-								</UpdateModal>
+				<PostHeader>
+					<Author className="postAuthor">{this.props.author}</Author>
+					<DateTime className="postDate">
+						{moment( this.props.date ).fromNow()}
+					</DateTime>
+				</PostHeader>
 
-								<Dropdown.Item
-									className="postDeleteOption"
-									text="Delete"
-									onClick={this.handleDelete}
-								/>
-							</Dropdown.Menu>
-							:
-							<Dropdown.Menu className="postDropdown">
-								<Dropdown.Item
-									text="Report"
-								/>
-							</Dropdown.Menu>
-						}
-					</Options>
-
-					<PostHeader>
-						<Author className="postAuthor">{this.props.author}</Author>
-						<DateTime className="postDate">{this.props.date}</DateTime>
-					</PostHeader>
+				<PostContent>
 					<p className="postContent">
 						{this.props.content}
 					</p>
-				</Wrapper>
-			);
-		}
-		return null;
+					{this.props.sharedPost && <SharedPost post={this.props.sharedPost} />}
+				</PostContent>
+
+				{ !this.props.fakeOptions &&
+					<PostOptions
+						fakeOptions={this.props.fakeOptions}
+						handleLike={this.handleLike}
+						handleDislike={this.handleDislike}
+						switchShare={this.props.switchShare}
+						numLiked={this.state.likedBy.length}
+						numComments={this.props.comments.length}
+						numShared={this.props.sharedBy.length}
+						id={this.props.id}
+						index={this.props.index}
+						liked={
+							this.state.likedBy.includes( localStorage.getItem( "username" ))
+						}
+					/>
+				}
+			</Wrapper>
+		);
 	}
 }
 
-export default Post;
+Post.propTypes = {
+	index: PropTypes.number,
+	id: PropTypes.string.isRequired,
+	author: PropTypes.string.isRequired,
+	content: PropTypes.string.isRequired,
+	date: PropTypes.string.isRequired,
+	link: PropTypes.bool,
+	picture: PropTypes.bool,
+	likedBy: PropTypes.array,
+	comments: PropTypes.array,
+	sharedBy: PropTypes.array,
+	sharedPost: PropTypes.object,
+	fakeOptions: PropTypes.bool
+};
+
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		deletePost: postIndex => dispatch( deletePost( postIndex )),
+		updatePost: post => dispatch( updatePost( post ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( Post );

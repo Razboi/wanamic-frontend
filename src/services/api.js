@@ -199,4 +199,83 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	likePost: postId =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/posts/like/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	dislikePost: postId =>
+		axios({
+			method: "patch",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/posts/dislike/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	createComment: ( comment, postId ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				comment: comment,
+				postId: postId
+			},
+			url: "/comments/create/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	deleteComment: ( commentId, postId ) =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				postId: postId
+			},
+			url: "/comments/delete/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	updateComment: ( commentId, newContent ) =>
+		axios({
+			method: "patch",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				newContent: newContent
+			},
+			url: "/comments/update/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getPostComments: ( postId, skip ) =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ), postId: postId },
+			url: "/comments/postComments/" + skip
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	sharePost: ( postId, shareComment ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				postId: postId,
+				shareComment: shareComment
+			},
+			url: "/posts/share/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

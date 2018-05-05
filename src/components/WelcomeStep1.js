@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 class Step1 extends Component {
 	handleKeyPress = e => {
@@ -39,5 +40,10 @@ class Step1 extends Component {
 		);
 	}
 }
+
+Step1.propTypes = {
+	handleChange: PropTypes.func.isRequired,
+	handleSignup: PropTypes.func.isRequired
+};
 
 export default Step1;

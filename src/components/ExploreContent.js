@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Post from "../containers/Post";
-import MediaPost from "../components/MediaPost";
+import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
 import Masonry from "react-masonry-component";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled( Masonry )`
@@ -15,7 +16,6 @@ const
 		@media (max-width: 420px) {
 			width: 48%;
 			margin: 1%;
-			background: #fff;
 		}
 	`;
 
@@ -56,5 +56,9 @@ class ExploreContent extends Component {
 		);
 	}
 }
+
+ExploreContent.propTypes = {
+	posts: PropTypes.array.isRequired
+};
 
 export default ExploreContent;

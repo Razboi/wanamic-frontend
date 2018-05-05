@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import FollowCheck from "../containers/FollowCheck";
+import PropTypes from "prop-types";
 
 const
 	MatchesWrapper = styled.div`
@@ -67,5 +68,12 @@ class Step4 extends Component {
 		);
 	}
 }
+
+Step4.propTypes = {
+	handlePrev: PropTypes.func.isRequired,
+	finish: PropTypes.func.isRequired,
+	handleFollow: PropTypes.func.isRequired,
+	matchedUsers: PropTypes.array.isRequired
+};
 
 export default Step4;

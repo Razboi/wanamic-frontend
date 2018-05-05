@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Wrapper = styled.div`
 `;
@@ -32,6 +33,11 @@ class FollowCheck extends Component {
 		);
 	}
 }
+
+FollowCheck.propTypes = {
+	username: PropTypes.string.isRequired,
+	handleFollow: PropTypes.func.isRequired
+};
 
 
 export default FollowCheck;

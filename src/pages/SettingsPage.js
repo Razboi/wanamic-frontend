@@ -16,7 +16,7 @@ class SettingsPage extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		api.getUserInfo( localStorage.getItem( "username" ))
 			.then( res => {
 				var keywordsString = res.data.keywords.toString().replace( /,/g, " #" );

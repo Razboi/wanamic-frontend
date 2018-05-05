@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Input, Image, Divider, Button } from "semantic-ui-react";
 import axios from "axios";
 import api from "../services/api";
+import PropTypes from "prop-types";
 
 var DefaultCover;
 try {
@@ -276,5 +277,16 @@ class SearchMediaPage extends Component {
 		);
 	}
 }
+
+SearchMediaPage.propTypes = {
+	match: PropTypes.shape({
+		params: PropTypes.shape({
+			mediaType: PropTypes.string.isRequired
+		})
+	}).isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired,
+};
 
 export default SearchMediaPage;

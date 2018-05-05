@@ -1,13 +1,19 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Input, TextArea } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
+import {
+	setNewsfeed, switchMediaOptions, addPost
+} from "../services/actions/posts";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
+import Comments from "../containers/Comments";
+import Share from "../containers/Share";
+import MediaOptions from "../components/MediaOptions";
 
 const
 	Wrapper = styled.div`
@@ -33,7 +39,7 @@ const
 		z-index: 3;
 	`,
 	MediaDimmer = styled.div`
-		filter: ${props => props.show ? "blur(10px)" : "none"};
+		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		height: 100%;
 		width: 100%;
 		display: grid;
@@ -49,47 +55,6 @@ const
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
 		height: 100%;
-	`,
-	MediaOptionsWrapper = styled.div`
-		display: ${props => props.show ? "grid" : "none"};
-		position: fixed;
-		height: 100vh;
-		width: 100%;
-		z-index: 2;
-	`,
-	MediaOptions = styled.div`
-		justify-self: center;
-		align-self: center;
-	`,
-	MediaButton = styled( Button )`
-	`,
-	LinkForm = styled.div`
-		display: grid;
-		justify-self: center;
-		align-self: center;
-		width: 100%;
-	`,
-	ShareLinkInput = styled( Input )`
-		width: 80%;
-		justify-self: center;
-		align-self: center;
-		margin-bottom: 10px;
-	`,
-	ShareLinkContent = styled( TextArea )`
-		width: 90%;
-		justify-self: center;
-		align-self: center;
-	`,
-	PictureUploadWrapper = styled.span`
-		position: relative;
-	`,
-	PictureUploadInput = styled.input`
-		width: 0.1px;
-		height: 0.1px;
-		opacity: 0;
-		overflow: hidden;
-		position: absolute;
-		z-index: -1;
 	`;
 
 
@@ -98,19 +63,17 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			sharebox: "",
-			posts: [],
 			skip: 1,
 			isInfiniteLoading: false,
 			hasMore: true,
-			showMediaOptions: false,
 			shareLink: false,
 			linkInput: "",
 			linkContent: "",
-			picture: null
+			picture: null,
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.refreshNewsFeed();
 	}
 
@@ -120,15 +83,15 @@ class HomePage extends Component {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length < 10 ) {
+						this.props.setNewsfeed( res.data );
 						this.setState({
-							posts: [ ...this.state.posts, ...res.data ],
 							hasMore: false,
 							isInfiniteLoading: false
 						});
 						return;
 					}
+					this.props.setNewsfeed( res.data );
 					this.setState({
-						posts: [ ...this.state.posts, ...res.data ],
 						isInfiniteLoading: false,
 						skip: this.state.skip + 1
 					});
@@ -138,30 +101,19 @@ class HomePage extends Component {
 
 	refreshNewsFeed = () => {
 		api.getNewsFeed( 0 )
-			.then( res => {
-				this.setState({
-					posts: res.data
-				});
-			}).catch( err => console.log( err ));
+			.then( res => this.props.setNewsfeed( res.data ))
+			.catch( err => console.log( err ));
 	}
 
-	updatePost = ( postIndex, updatedContent ) => {
-		var posts = this.state.posts;
-		posts[ postIndex ].content = updatedContent;
-		this.setState({ posts: posts });
-	}
-
-	handleLogout = () =>
-		this.props.logout();
-
-	handleChange = e =>
+	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			const post = this.state.sharebox;
 			api.createPost( post )
-				.then(() => this.refreshNewsFeed())
+				.then( newPost => this.props.addPost( newPost ))
 				.catch( err => console.log( err ));
 
 			this.setState({ sharebox: "" });
@@ -172,9 +124,9 @@ class HomePage extends Component {
 		this.props.history.push( "/media/" + media );
 	}
 
-	swapMediaOptions = () => {
+	switchMediaOptions = () => {
+		this.props.switchMediaOptions();
 		this.setState({
-			showMediaOptions: !this.state.showMediaOptions,
 			shareLink: false
 		});
 	}
@@ -188,7 +140,10 @@ class HomePage extends Component {
 			api.createMediaLink({
 				link: this.state.linkInput, content: this.state.linkContent
 			})
-				.then(() => this.swapMediaOptions())
+				.then( newPost => {
+					this.setState({ posts: [ newPost, ...this.state.posts ] });
+					this.swapMediaOptions();
+				})
 				.catch( err => console.log( err ));
 		}
 	}
@@ -217,69 +172,33 @@ class HomePage extends Component {
 					useWindow={false}
 				>
 					<ShareMediaButton primary circular icon="plus" size="large"
-						onClick={this.swapMediaOptions}
+						onClick={this.switchMediaOptions}
 					/>
 					<LogoutButton secondary content="Logout"
-						onClick={this.handleLogout}
+						onClick={() => this.props.logout()}
 					/>
-					<MediaOptionsWrapper show={this.state.showMediaOptions}>
-						{this.state.shareLink ?
-							<LinkForm>
-								<ShareLinkInput
-									name="linkInput"
-									onKeyPress={this.handleLinkKeyPress}
-									onChange={this.handleChange}
-									placeholder="Share your link"
-								/>
-								<ShareLinkContent
-									name="linkContent"
-									onKeyPress={this.handleLinkKeyPress}
-									onChange={this.handleChange}
-									placeholder="Anything to say?"
-								/>
-							</LinkForm>
-							:
-							<MediaOptions>
-								<MediaButton secondary circular icon="book" size="huge"
-									onClick={() => this.handleSearchMedia( "book" )}
-								/>
-								<MediaButton secondary circular icon="music" size="huge"
-									onClick={() => this.handleSearchMedia( "music" )}
-								/>
-								<MediaButton secondary circular icon="linkify" size="huge"
-									onClick={this.handleLink}
-								/>
-								<PictureUploadWrapper>
-									<MediaButton secondary circular icon="picture" size="huge"
-										onClick={() => document.getElementById( "pictureInput" ).click()}
-									/>
-									<PictureUploadInput type="file" name="picture" id="pictureInput"
-										onChange={this.handlePictureSelect}
-									/>
-								</PictureUploadWrapper>
-								<MediaButton secondary circular icon="film" size="huge"
-									onClick={() => this.handleSearchMedia( "movie" )}
-								/>
-								<MediaButton secondary circular icon="tv" size="huge"
-									onClick={() => this.handleSearchMedia( "tv" )}
-								/>
-							</MediaOptions>
-						}
-					</MediaOptionsWrapper>
-					<MediaDimmer show={this.state.showMediaOptions}>
+					{this.props.displayShare && <Share /> }
+					{this.props.displayComments && <Comments />}
+
+					{this.props.mediaOptions &&
+						<MediaOptions
+							shareLink={this.state.shareLink}
+							handleLinkKeyPress={this.handleLinkKeyPress}
+							handleChange={this.handleChange}
+							handleSearchMedia={this.handleSearchMedia}
+							handleLink={this.handleLink}
+							handlePictureSelect={this.handlePictureSelect}
+						/>}
+
+					<MediaDimmer blur={this.props.mediaOptions}>
 						<StyledShareBox
 							handleChange={this.handleChange}
 							sharebox={this.state.sharebox}
 							handleShare={this.handleShare}
 						/>
-						<StyledNewsFeed
-							posts={this.state.posts}
-							getNewsFeed={this.getNewsFeed}
-							updatePost={this.updatePost}
-							hasMore={this.state.hasMore}
-							skip={this.state.skip}
-						/>
+						<StyledNewsFeed posts={this.props.newsfeed} />
 					</MediaDimmer>
+
 				</InfiniteScroll>
 			</Wrapper>
 		);
@@ -288,6 +207,26 @@ class HomePage extends Component {
 
 HomePage.propTypes = {
 	logout: PropTypes.func.isRequired,
+	setNewsfeed: PropTypes.func.isRequired,
+	switchMediaOptions: PropTypes.func.isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired,
 };
 
-export default connect( null, { logout })( HomePage );
+const
+	mapStateToProps = state => ({
+		newsfeed: state.posts.newsfeed,
+		mediaOptions: state.posts.mediaOptions,
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		addPost: post => dispatch( addPost( post )),
+		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		logout: () => dispatch( logout())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( HomePage );

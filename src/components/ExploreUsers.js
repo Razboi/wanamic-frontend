@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button, Divider, Input } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -172,5 +173,14 @@ class ExploreUsers extends Component {
 		);
 	}
 }
+
+ExploreUsers.propTypes = {
+	handleChange: PropTypes.func.isRequired,
+	getRandom: PropTypes.func.isRequired,
+	getSugested: PropTypes.func.isRequired,
+	getKeywordUser: PropTypes.func.isRequired,
+	getUsername: PropTypes.func.isRequired,
+	user: PropTypes.object.isRequired,
+};
 
 export default ExploreUsers;

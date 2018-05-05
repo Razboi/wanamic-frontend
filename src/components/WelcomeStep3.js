@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import CategoryCheck from "../containers/CategoryCheck";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const ChecksWrapper = styled.div`
 	display: grid;
@@ -44,5 +45,13 @@ class Step3 extends Component {
 		);
 	}
 }
+
+Step3.propTypes = {
+	handlePrev: PropTypes.func.isRequired,
+	categoriesNext: PropTypes.func.isRequired,
+	checkedCategories: PropTypes.array.isRequired,
+	categories: PropTypes.array.isRequired,
+	checked: PropTypes.bool.isRequired
+};
 
 export default Step3;

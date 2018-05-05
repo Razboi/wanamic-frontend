@@ -3,33 +3,31 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import HomePage from "./HomePage";
-import configureStore from "redux-mock-store";
-import createBrowserHistory from "history/createBrowserHistory";
+import Share from "./Share";
 import sinon from "sinon";
+import configureStore from "redux-mock-store";
 
 const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<Homepage/>", () => {
+describe( "<Share/>", () => {
 	var
-		wrapper,
-		store;
+		store = mockStore({ posts: { postToShare: {} } }),
+		swapSpy,
+		wrapper;
 
 	beforeEach(() => {
-		store = mockStore({ posts: [] });
+		swapSpy = sinon.spy(),
 		wrapper = shallow(
-			<HomePage
-				store={store}
-			/>
+			<Share postToShare={{}} switchShare={swapSpy} store={store}/>
 		).dive();
 	});
 
-	it( "Checks that <HomePage/> renders", () => {
+	it( "Checks that <Share/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children().children()).to.have.length( 3 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 });
