@@ -6,6 +6,9 @@ import PostOptions from "../components/PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
+import { deletePost, updatePost } from "../services/actions/posts";
+import { connect } from "react-redux";
+import AlertsFilter from "../components/AlertsFilter";
 
 const
 	Wrapper = styled.div`
@@ -100,6 +103,15 @@ const
 	ContentAuthor = styled.span`
 		font-weight: bold;
 		font-size: 16px;
+	`,
+	PostBody = styled.div`
+		position: relative;
+		overflow: hidden;
+	`,
+	Dimmer = styled.div`
+		filter: ${props => props.blurFilter ?
+		"blur(25px) brightness(80%)" : "blur(0px)"};
+		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
 var mediaPicture;
@@ -108,33 +120,30 @@ class MediaPost extends Component {
 	constructor() {
 		super();
 		this.state = {
-			content: "",
 			likedBy: [],
-			comments: [],
-			sharedBy: [],
-			deleted: false
+			nsfw: false,
+			spoiler: false
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			content: nextProps.content,
 			likedBy: nextProps.likedBy,
-			comments: nextProps.comments,
-			sharedBy: nextProps.sharedBy
+			nsfw: nextProps.alerts.nsfw,
+			spoiler: nextProps.alerts.spoiler
 		};
 	}
 
 	handleDelete = () => {
 		api.deletePost( this.props.id )
-			.then(() => this.setState({ deleted: true }))
+			.then( res => this.props.deletePost( this.props.index ))
 			.catch( err => console.log( err ));
 	};
 
 	handleUpdate = updatedContent => {
 		if ( this.state.content !== updatedContent ) {
-			this.setState({ content: updatedContent });
 			api.updatePost( this.props.id, updatedContent )
+				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
 	};
@@ -158,6 +167,10 @@ class MediaPost extends Component {
 			.catch( err => console.log( err ));
 	}
 
+	handleFilter = type => {
+		this.setState({ [ type ]: false });
+	}
+
 	render() {
 		if ( this.props.picture ) {
 			try {
@@ -167,9 +180,6 @@ class MediaPost extends Component {
 			}
 		}
 
-		if ( this.state.deleted ) {
-			return null;
-		}
 		return (
 			<Wrapper>
 				<PostHeader className="mediaPostHeader">
@@ -177,89 +187,98 @@ class MediaPost extends Component {
 					<DateTime className="postDate">
 						{moment( this.props.date ).fromNow()}
 					</DateTime>
+
+					{ !this.props.fakeOptions &&
+						<DropdownOptions
+							author={this.props.author}
+							handleUpdate={this.handleUpdate}
+							handleDelete={this.handleDelete}
+						/>
+					}
 				</PostHeader>
 
-				{ !this.props.fakeOptions &&
-					<DropdownOptions
-						author={this.props.author}
-						handleUpdate={this.handleUpdate}
-						handleDelete={this.handleDelete}
+				<PostBody>
+					<AlertsFilter
+						handleFilter={this.handleFilter}
+						nsfw={this.state.nsfw}
+						spoiler={this.state.spoiler}
 					/>
-				}
+					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
+						{this.props.link ?
+							<a href={this.props.linkContent.url}>
+								<LinkPreviewWrapper className="linkPreviewWrapper">
+									{this.props.linkContent.embeddedUrl ?
+										<LinkPreviewIframe
+											className="linkPreviewIframe"
+											src={this.props.linkContent.embeddedUrl}
+											frameborder="0"
+											allow="autoplay; encrypted-media"
+											allowfullscreen="allowfullscreen"
+										/>
+										:
+										<LinkPreviewImage
+											className="linkPreviewImage"
+											src={this.props.linkContent.image}
+										/>
+									}
 
-				{this.props.link ?
-					<a href={this.props.linkContent.url}>
-						<LinkPreviewWrapper className="linkPreviewWrapper">
-							{this.props.linkContent.embeddedUrl ?
-								<LinkPreviewIframe
-									className="linkPreviewIframe"
-									src={this.props.linkContent.embeddedUrl}
-									frameborder="0"
-									allow="autoplay; encrypted-media"
-									allowfullscreen="allowfullscreen"
-								/>
-								:
-								<LinkPreviewImage
-									className="linkPreviewImage"
-									src={this.props.linkContent.image}
-								/>
-							}
-
-							<LinkPreviewText className="linkPreviewText">
-								<LinkPreviewHeader>
-									{this.props.linkContent.title}
-								</LinkPreviewHeader>
-								<LinkPreviewDescription>
-									{this.props.linkContent.description}
-								</LinkPreviewDescription>
-								<LinkPreviewHostname>
-									{this.props.linkContent.hostname}
-								</LinkPreviewHostname>
-							</LinkPreviewText>
-						</LinkPreviewWrapper>
-					</a>
-					:
-					<PostMediaContent>
-						<PostMediaBackground background={
-							this.props.picture ? mediaPicture : this.props.mediaContent.image
-						}
-						/>
-						<h4>{this.props.mediaContent.title}</h4>
-						{this.props.picture ?
-							<MediaImage src={mediaPicture} className="mediaPicture" />
+									<LinkPreviewText className="linkPreviewText">
+										<LinkPreviewHeader>
+											{this.props.linkContent.title}
+										</LinkPreviewHeader>
+										<LinkPreviewDescription>
+											{this.props.linkContent.description}
+										</LinkPreviewDescription>
+										<LinkPreviewHostname>
+											{this.props.linkContent.hostname}
+										</LinkPreviewHostname>
+									</LinkPreviewText>
+								</LinkPreviewWrapper>
+							</a>
 							:
-							<MediaImage src={this.props.mediaContent.image}
-								className="mediaArtwork"
+							<PostMediaContent>
+								<PostMediaBackground background={
+									this.props.picture ? mediaPicture : this.props.mediaContent.image
+								}
+								/>
+								<h4>{this.props.mediaContent.title}</h4>
+								{this.props.picture ?
+									<MediaImage src={mediaPicture} className="mediaPicture" />
+									:
+									<MediaImage src={this.props.mediaContent.image}
+										className="mediaArtwork"
+									/>
+								}
+							</PostMediaContent>
+						}
+
+						{ !this.props.fakeOptions &&
+							<PostOptions
+								fakeOptions={this.props.fakeOptions}
+								handleLike={this.handleLike}
+								handleDislike={this.handleDislike}
+								switchShare={this.props.switchShare}
+								numLiked={this.state.likedBy.length}
+								numComments={this.props.comments.length}
+								numShared={this.props.sharedBy.length}
+								id={this.props.id}
+								index={this.props.index}
+								liked={
+									this.state.likedBy.includes( localStorage.getItem( "username" ))
+								}
 							/>
 						}
-					</PostMediaContent>
-				}
 
-				{ !this.props.fakeOptions &&
-					<PostOptions
-						fakeOptions={this.props.fakeOptions}
-						handleLike={this.handleLike}
-						handleDislike={this.handleDislike}
-						switchShare={this.props.switchShare}
-						numLiked={this.state.likedBy.length}
-						numComments={this.props.comments.length}
-						numShared={this.props.sharedBy.length}
-						id={this.props.id}
-						index={this.props.index}
-						liked={
-							this.state.likedBy.includes( localStorage.getItem( "username" ))
+						{this.props.content &&
+							<PostUserContent>
+								<p className="postContent">
+									<ContentAuthor>@{this.props.author} </ContentAuthor>
+									{this.props.content}
+								</p>
+							</PostUserContent>
 						}
-					/>
-				}
-
-				{this.props.content &&
-					<PostUserContent>
-						<p className="postContent">
-							<ContentAuthor>@{this.props.author} </ContentAuthor>
-							{this.state.content}
-						</p>
-					</PostUserContent>
-				}
+					</Dimmer>
+				</PostBody>
 			</Wrapper>
 		);
 	}
@@ -270,6 +289,8 @@ MediaPost.propTypes = {
 	id: PropTypes.string.isRequired,
 	author: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
+	alerts: PropTypes.object.isRequired,
+	privacyRange: PropTypes.number.isRequired,
 	mediaContent: PropTypes.object,
 	linkContent: PropTypes.object,
 	date: PropTypes.string.isRequired,
@@ -281,4 +302,13 @@ MediaPost.propTypes = {
 	fakeOptions: PropTypes.bool
 };
 
-export default MediaPost;
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		deletePost: postIndex => dispatch( deletePost( postIndex )),
+		updatePost: post => dispatch( updatePost( post ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );

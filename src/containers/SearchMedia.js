@@ -181,7 +181,7 @@ class SearchMedia extends Component {
 			mediaData: null,
 			userInput: "",
 			privacyRange: 1,
-			check18: false,
+			checkNsfw: false,
 			checkSpoiler: false
 		};
 	}
@@ -266,8 +266,8 @@ class SearchMedia extends Component {
 		var finalData = this.state.mediaData;
 		finalData.content = this.state.userInput;
 		finalData.privacyRange = this.state.privacyRange;
-		finalData.alerts = { check18: this.state.check18,
-			checkSpoiler: this.state.checkSpoiler
+		finalData.alerts = { nsfw: this.state.checkNsfw,
+			spoiler: this.state.checkSpoiler
 		};
 
 		api.createMediaPost( finalData )
@@ -360,7 +360,7 @@ class SearchMedia extends Component {
 							<h4>Alerts</h4>
 							<Alerts>
 								<AlertCheck>
-									<Checkbox name="check18" onChange={this.handleCheck}/>
+									<Checkbox name="checkNsfw" onChange={this.handleCheck}/>
 									<AlertLabel>+18</AlertLabel>
 								</AlertCheck>
 								<AlertCheck>

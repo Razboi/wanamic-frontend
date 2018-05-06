@@ -4,17 +4,22 @@ import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import MediaPost from "./MediaPost";
+import configureStore from "redux-mock-store";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<MediaPost/>", () => {
 	var
+		store = mockStore({}),
+		alerts = { nsfw: false, spoiler: false },
 		post = {
 			author: "tester", content: "testing", mediaContent: { image: "defaultbg.png" },
 			linkContent: { embeddedUrl: "123" }, createdAt: "123", "likedBy": []
 		},
 		wrapper = shallow(
 			<MediaPost
+				store={store}
 				author={post.author}
 				content={post.content}
 				mediaContent={post.mediaContent}
@@ -22,11 +27,12 @@ describe( "<MediaPost/>", () => {
 				date={post.createdAt}
 				link={post.link}
 				likedBy={post.likedBy}
+				alerts={alerts}
 				picture={true}
 				comments={[]}
 				sharedBy={[]}
 			/>
-		),
+		).dive(),
 		linkWrapper = shallow(
 			<MediaPost
 				author={post.author}
@@ -35,23 +41,25 @@ describe( "<MediaPost/>", () => {
 				linkContent={post.linkContent}
 				date={post.createdAt}
 				link={true}
+				alerts={alerts}
 				picture={post.picture}
 				likedBy={post.likedBy}
 				comments={[]}
 				sharedBy={[]}
+				store={store}
 			/>
-		);
+		).dive();
 
 	it( "Checks that <MediaPost/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
 	it( "Checks that <MediaPost/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 5 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 
 	it( "Checks that mediaPostHeader children renders when link is false", () => {
-		expect( wrapper.find( ".mediaPostHeader" ).children()).to.have.length( 2 );
+		expect( wrapper.find( ".mediaPostHeader" ).children()).to.have.length( 3 );
 	});
 
 	it( "Expect mediaPicture to render instead of mediaArtwork", () => {
@@ -60,11 +68,11 @@ describe( "<MediaPost/>", () => {
 	});
 
 	it( "Checks that <MediaPost/> children render when link is true", () => {
-		expect( linkWrapper.children()).to.have.length( 5 );
+		expect( linkWrapper.children()).to.have.length( 2 );
 	});
 
 	it( "Checks that mediaPostHeader children renders when link is true", () => {
-		expect( linkWrapper.find( ".mediaPostHeader" ).children()).to.have.length( 2 );
+		expect( linkWrapper.find( ".mediaPostHeader" ).children()).to.have.length( 3 );
 	});
 
 	it( "Checks that linkPreviewWrapper children renders", () => {

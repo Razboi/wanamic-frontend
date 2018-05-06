@@ -30,6 +30,8 @@ class NewsFeed extends Component {
 								comments={post.comments}
 								sharedBy={post.sharedBy}
 								fakeOptions={post.fakeOptions}
+								alerts={post.alerts}
+								privacyRange={post.privacyRange}
 							/>
 						</PostWrapper>
 						:
@@ -45,6 +47,8 @@ class NewsFeed extends Component {
 								sharedBy={post.sharedBy}
 								sharedPost={post.sharedPost}
 								fakeOptions={post.fakeOptions}
+								alerts={post.alerts}
+								privacyRange={post.privacyRange}
 							/>
 						</PostWrapper>
 				)}

@@ -179,8 +179,7 @@ ExploreUsers.propTypes = {
 	getRandom: PropTypes.func.isRequired,
 	getSugested: PropTypes.func.isRequired,
 	getKeywordUser: PropTypes.func.isRequired,
-	getUsername: PropTypes.func.isRequired,
-	user: PropTypes.object.isRequired,
+	getUsername: PropTypes.func.isRequired
 };
 
 export default ExploreUsers;

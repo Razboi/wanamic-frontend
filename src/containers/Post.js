@@ -133,6 +133,8 @@ Post.propTypes = {
 	id: PropTypes.string.isRequired,
 	author: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
+	alerts: PropTypes.object.isRequired,
+	privacyRange: PropTypes.number.isRequired,
 	date: PropTypes.string.isRequired,
 	link: PropTypes.bool,
 	picture: PropTypes.bool,
