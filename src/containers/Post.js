@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Header } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
-import PostOptions from "../components/PostOptions";
+import PostOptions from "./PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
@@ -34,14 +34,20 @@ class Post extends Component {
 	constructor() {
 		super();
 		this.state = {
-			likedBy: []
+			likedBy: [],
+			updatedContent: ""
 		};
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			likedBy: nextProps.likedBy
+			likedBy: nextProps.likedBy,
+			updatedContent: nextProps.content
 		};
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	handleDelete = () => {
@@ -54,9 +60,10 @@ class Post extends Component {
 			}).catch( err => console.log( err ));
 	};
 
-	handleUpdate = updatedContent => {
-		if ( this.state.content !== updatedContent ) {
-			api.updatePost( this.props.id, updatedContent )
+	handleUpdate = () => {
+		if ( this.state.content !== this.state.updatedContent
+			&& this.state.updatedContent !== "" ) {
+			api.updatePost( this.props.id, this.state.updatedContent )
 				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
@@ -88,8 +95,10 @@ class Post extends Component {
 				{ !this.props.fakeOptions &&
 					<DropdownOptions
 						author={this.props.author}
+						updatedContent={this.state.updatedContent}
 						handleUpdate={this.handleUpdate}
 						handleDelete={this.handleDelete}
+						handleChange={this.handleChange}
 					/>
 				}
 

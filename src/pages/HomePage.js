@@ -13,7 +13,7 @@ import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
 import Share from "../containers/Share";
-import MediaOptions from "../components/MediaOptions";
+import MediaOptions from "../containers/MediaOptions";
 
 const
 	Wrapper = styled.div`

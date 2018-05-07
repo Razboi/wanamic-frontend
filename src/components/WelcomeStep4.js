@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
-import FollowCheck from "../containers/FollowCheck";
+import FollowCheck from "./FollowCheck";
 import PropTypes from "prop-types";
 
 const

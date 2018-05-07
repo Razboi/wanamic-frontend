@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Header, Image } from "semantic-ui-react";
 import moment from "moment";
-import PostOptions from "../components/PostOptions";
+import PostOptions from "./PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
@@ -122,7 +122,8 @@ class MediaPost extends Component {
 		this.state = {
 			likedBy: [],
 			nsfw: false,
-			spoiler: false
+			spoiler: false,
+			updatedContent: ""
 		};
 	}
 
@@ -130,8 +131,13 @@ class MediaPost extends Component {
 		return {
 			likedBy: nextProps.likedBy,
 			nsfw: nextProps.alerts.nsfw,
-			spoiler: nextProps.alerts.spoiler
+			spoiler: nextProps.alerts.spoiler,
+			updatedContent: nextProps.content
 		};
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	handleDelete = () => {
@@ -140,9 +146,10 @@ class MediaPost extends Component {
 			.catch( err => console.log( err ));
 	};
 
-	handleUpdate = updatedContent => {
-		if ( this.state.content !== updatedContent ) {
-			api.updatePost( this.props.id, updatedContent )
+	handleUpdate = () => {
+		if ( this.state.content !== this.state.updatedContent
+			&& this.state.updatedContent !== "" ) {
+			api.updatePost( this.props.id, this.state.updatedContent )
 				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
@@ -191,8 +198,10 @@ class MediaPost extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							author={this.props.author}
+							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
+							handleChange={this.handleChange}
 						/>
 					}
 				</PostHeader>

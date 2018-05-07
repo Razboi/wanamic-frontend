@@ -30,33 +30,32 @@ class Comment extends Component {
 		super();
 		this.state = {
 			content: "",
-			author: "",
-			post: "",
-			createdAt: "",
-			id: ""
+			updatedContent: ""
 		};
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
 			content: nextProps.comment.content,
-			author: nextProps.comment.author,
-			post: nextProps.comment.post,
-			createdAt: nextProps.comment.createdAt,
-			id: nextProps.comment._id
+			updatedContent: nextProps.comment.content
 		};
 	}
 
 	handleDelete = () => {
-		api.deleteComment( this.state.id, this.state.post )
+		api.deleteComment( this.props.comment._id, this.props.comment.post )
 			.then( res => this.props.handleDelete( this.props.index, res.data ))
 			.catch( err => console.log( err ));
 	};
 
-	handleUpdate = updatedContent => {
-		if ( this.state.content !== updatedContent ) {
-			this.setState({ content: updatedContent });
-			api.updateComment( this.state.id, updatedContent )
+	handleUpdate = () => {
+		if ( this.state.content !== this.state.updatedContent
+			&& this.state.updatedContent !== "" ) {
+			this.setState({ content: this.state.updatedContent });
+			api.updateComment( this.props.comment._id, this.state.updatedContent )
 				.catch( err => console.log( err ));
 		}
 	};
@@ -65,17 +64,19 @@ class Comment extends Component {
 		return (
 			<CommentWrapper>
 				<CommentHeader>
-					<CommentAuthor>{this.state.author}</CommentAuthor>
+					<CommentAuthor>{this.props.comment.author}</CommentAuthor>
 					<CommentDateTime>
-						{moment( this.state.createdAt ).fromNow()}
+						{moment( this.props.comment.createdAt ).fromNow()}
 					</CommentDateTime>
 				</CommentHeader>
 				<CommentContent>{this.state.content}</CommentContent>
 
 				<DropdownOptions
-					author={this.state.author}
+					author={this.props.comment.author}
+					updatedContent={this.state.updatedContent}
 					handleUpdate={this.handleUpdate}
 					handleDelete={this.handleDelete}
+					handleChange={this.handleChange}
 				/>
 				<Divider />
 			</CommentWrapper>

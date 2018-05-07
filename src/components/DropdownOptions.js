@@ -17,16 +17,6 @@ const
 	`;
 
 class DropdownOptions extends Component {
-	constructor() {
-		super();
-		this.state = {
-			updatedPost: ""
-		};
-	}
-
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value });
-
 	render() {
 		return (
 			<Options direction="left">
@@ -37,15 +27,15 @@ class DropdownOptions extends Component {
 								<Form>
 									<Form.Input
 										className="postUpdateInput"
-										name="updatedPost"
-										onChange={this.handleChange}
+										name="updatedContent"
+										value={this.props.updatedContent}
+										onChange={this.props.handleChange}
 									/>
 									<Form.Button
 										className="postUpdateButton"
 										primary
 										content="Update"
-										onClick={() =>
-											this.props.handleUpdate( this.state.updatedPost )}
+										onClick={this.props.handleUpdate}
 									/>
 								</Form>
 							</Modal.Content>
