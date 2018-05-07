@@ -4,6 +4,8 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
 import api from "../services/api";
+import { addPost, switchMediaOptions } from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -86,10 +88,9 @@ class MediaOptions extends Component {
 				link: this.state.linkUrl, content: this.state.linkContent
 			})
 				.then( newPost => {
-					this.setState({ posts: [ newPost, ...this.state.posts ] });
-					this.swapMediaOptions();
-				})
-				.catch( err => console.log( err ));
+					this.props.addPost( newPost );
+					this.props.switchMediaOptions();
+				}).catch( err => console.log( err ));
 		}
 	}
 
@@ -179,4 +180,13 @@ MediaOptions.propTypes = {
 	handlePictureSelect: PropTypes.func.isRequired
 };
 
-export default MediaOptions;
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		addPost: post => dispatch( addPost( post )),
+		switchMediaOptions: () => dispatch( switchMediaOptions())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( MediaOptions );

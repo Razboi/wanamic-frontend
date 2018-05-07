@@ -78,7 +78,9 @@ PostOptions.propTypes = {
 	numComments: PropTypes.number.isRequired,
 	numShared: PropTypes.number.isRequired,
 	switchComments: PropTypes.func.isRequired,
-	switchShare: PropTypes.func.isRequired
+	switchShare: PropTypes.func.isRequired,
+	handleLike: PropTypes.func.isRequired,
+	handleDislike: PropTypes.func.isRequired
 };
 
 const

@@ -5,15 +5,21 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import MediaOptions from "./MediaOptions";
 import sinon from "sinon";
+import configureStore from "redux-mock-store";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<MediaOptions/>", () => {
 	const
+		store = mockStore({}),
 		PictureSelectSpy = sinon.spy(),
 		wrapper = shallow(
-			<MediaOptions handlePictureSelect={PictureSelectSpy} />
-		);
+			<MediaOptions
+				handlePictureSelect={PictureSelectSpy}
+				store={store}
+			/>
+		).dive();
 
 	it( "Checks that <MediaOptions/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );

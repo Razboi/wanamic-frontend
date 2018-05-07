@@ -168,6 +168,18 @@ class ExplorePage extends Component {
 		}
 	}
 
+	handleAddFriend = () => {
+		api.addFriend( this.state.user.username )
+			.then( res => console.log( res ))
+			.catch( err => console.log( err ));
+	}
+
+	handleFollow = () => {
+		api.followUser( this.state.user.username )
+			.then( res => console.log( res ))
+			.catch( err => console.log( err ));
+	}
+
 
 	render() {
 		if ( this.state.renderProfile ) {
@@ -177,6 +189,8 @@ class ExplorePage extends Component {
 					user={this.state.user}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}
+					handleAddFriend={this.handleAddFriend}
+					handleFollow={this.handleFollow}
 				/>
 			);
 		}

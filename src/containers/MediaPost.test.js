@@ -15,38 +15,25 @@ describe( "<MediaPost/>", () => {
 		alerts = { nsfw: false, spoiler: false },
 		post = {
 			author: "tester", content: "testing", mediaContent: { image: "defaultbg.png" },
-			linkContent: { embeddedUrl: "123" }, createdAt: "123", "likedBy": []
+			createdAt: "123", "likedBy": [], alerts: { nsfw: false, spoiler: false },
+			comments: [], sharedBy: [], picture: true
+		},
+		postLink = {
+			author: "tester", content: "testing", mediaContent: { image: "defaultbg.png" },
+			linkContent: { embeddedUrl: "123" }, createdAt: "123", "likedBy": [],
+			link: true, alerts: { nsfw: false, spoiler: false }, comments: [],
+			sharedBy: []
 		},
 		wrapper = shallow(
 			<MediaPost
 				store={store}
-				author={post.author}
-				content={post.content}
-				mediaContent={post.mediaContent}
-				linkContent={post.linkContent}
-				date={post.createdAt}
-				link={post.link}
-				likedBy={post.likedBy}
-				alerts={alerts}
-				picture={true}
-				comments={[]}
-				sharedBy={[]}
+				post={post}
 			/>
 		).dive(),
 		linkWrapper = shallow(
 			<MediaPost
-				author={post.author}
-				content={post.content}
-				mediaContent={post.mediaContent}
-				linkContent={post.linkContent}
-				date={post.createdAt}
-				link={true}
-				alerts={alerts}
-				picture={post.picture}
-				likedBy={post.likedBy}
-				comments={[]}
-				sharedBy={[]}
 				store={store}
+				post={postLink}
 			/>
 		).dive();
 
@@ -74,18 +61,4 @@ describe( "<MediaPost/>", () => {
 	it( "Checks that mediaPostHeader children renders when link is true", () => {
 		expect( linkWrapper.find( ".mediaPostHeader" ).children()).to.have.length( 3 );
 	});
-
-	it( "Checks that linkPreviewWrapper children renders", () => {
-		expect( linkWrapper.find( ".linkPreviewWrapper" ).children()).to.have.length( 2 );
-	});
-
-	it( "Checks that linkPreviewText children renders", () => {
-		expect( linkWrapper.find( ".linkPreviewText" ).children()).to.have.length( 3 );
-	});
-
-	it( "Expect linkPreviewIframe to render instead of linkPreviewImage", () => {
-		expect( linkWrapper.find( ".linkPreviewImage" )).to.have.length( 0 );
-		expect( linkWrapper.find( ".linkPreviewIframe" )).to.have.length( 1 );
-	});
-
 });

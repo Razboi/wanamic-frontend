@@ -9,6 +9,7 @@ import PropTypes from "prop-types";
 import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
+import LinkPreview from "../components/LinkPreview";
 
 const
 	Wrapper = styled.div`
@@ -23,55 +24,6 @@ const
 	Author = styled.span`
 	`,
 	DateTime = styled( Header.Subheader )`
-	`,
-	LinkPreviewWrapper = styled.div`
-		@media (max-width: 420px) {
-			display: grid;
-			grid-template-columns: 100%;
-			grid-row-gap: 7px;
-			grid-template-rows: 50% 50%;
-			grid-template-areas:
-				"img"
-				"txt"
-		}
-		display: grid;
-		grid-template-columns: 40% 60%;
-		grid-column-gap: 7px;
-		grid-template-rows: 100%;
-		grid-template-areas:
-			"img txt"
-	`,
-	LinkPreviewImage = styled( Image )`
-		grid-area: img;
-		width: 100%;
-	`,
-	LinkPreviewIframe = styled.iframe`
-		grid-area: img;
-		width: 100%;
-	`,
-	LinkPreviewText = styled.div`
-		grid-area: txt;
-		padding: 10px;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 25% 65% 10%;
-		grid-template-areas:
-			"head"
-			"desc"
-			"host"
-	`,
-	LinkPreviewHeader = styled.h4`
-		grid-area: head;
-	`,
-	LinkPreviewDescription = styled.p`
-		grid-area: desc;
-		color: #000;
-		font-size: 13px;
-	`,
-	LinkPreviewHostname = styled.span`
-		grid-area: host;
-		color: #808080;
-		font-size: 13px;
 	`,
 	MediaImage = styled( Image )`
 		justify-self: center;
@@ -129,10 +81,10 @@ class MediaPost extends Component {
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			likedBy: nextProps.likedBy,
-			nsfw: nextProps.alerts.nsfw,
-			spoiler: nextProps.alerts.spoiler,
-			updatedContent: nextProps.content
+			likedBy: nextProps.post.likedBy,
+			nsfw: nextProps.post.alerts.nsfw,
+			spoiler: nextProps.post.alerts.spoiler,
+			updatedContent: nextProps.post.content
 		};
 	}
 
@@ -141,7 +93,7 @@ class MediaPost extends Component {
 	}
 
 	handleDelete = () => {
-		api.deletePost( this.props.id )
+		api.deletePost( this.props.post.id )
 			.then( res => this.props.deletePost( this.props.index ))
 			.catch( err => console.log( err ));
 	};
@@ -149,7 +101,7 @@ class MediaPost extends Component {
 	handleUpdate = () => {
 		if ( this.state.content !== this.state.updatedContent
 			&& this.state.updatedContent !== "" ) {
-			api.updatePost( this.props.id, this.state.updatedContent )
+			api.updatePost( this.props.post.id, this.state.updatedContent )
 				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
@@ -160,7 +112,7 @@ class MediaPost extends Component {
 			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
 		});
 
-		api.likePost( this.props.id )
+		api.likePost( this.props.post._id )
 			.catch( err => console.log( err ));
 	}
 
@@ -170,7 +122,7 @@ class MediaPost extends Component {
 		newLikedBy.splice( index, 1 );
 		this.setState({ likedBy: newLikedBy });
 
-		api.dislikePost( this.props.id )
+		api.dislikePost( this.props.post._id )
 			.catch( err => console.log( err ));
 	}
 
@@ -179,9 +131,10 @@ class MediaPost extends Component {
 	}
 
 	render() {
-		if ( this.props.picture ) {
+		if ( this.props.post.picture ) {
 			try {
-				mediaPicture = require( "../images/" + this.props.mediaContent.image );
+				mediaPicture =
+					require( "../images/" + this.props.post.mediaContent.image );
 			} catch ( err ) {
 				console.log( err );
 			}
@@ -190,14 +143,14 @@ class MediaPost extends Component {
 		return (
 			<Wrapper>
 				<PostHeader className="mediaPostHeader">
-					<Author className="postAuthor">{this.props.author}</Author>
+					<Author className="postAuthor">{this.props.post.author}</Author>
 					<DateTime className="postDate">
-						{moment( this.props.date ).fromNow()}
+						{moment( this.props.post.date ).fromNow()}
 					</DateTime>
 
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
-							author={this.props.author}
+							author={this.props.post.author}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
@@ -213,48 +166,20 @@ class MediaPost extends Component {
 						spoiler={this.state.spoiler}
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
-						{this.props.link ?
-							<a href={this.props.linkContent.url}>
-								<LinkPreviewWrapper className="linkPreviewWrapper">
-									{this.props.linkContent.embeddedUrl ?
-										<LinkPreviewIframe
-											className="linkPreviewIframe"
-											src={this.props.linkContent.embeddedUrl}
-											frameborder="0"
-											allow="autoplay; encrypted-media"
-											allowfullscreen="allowfullscreen"
-										/>
-										:
-										<LinkPreviewImage
-											className="linkPreviewImage"
-											src={this.props.linkContent.image}
-										/>
-									}
-
-									<LinkPreviewText className="linkPreviewText">
-										<LinkPreviewHeader>
-											{this.props.linkContent.title}
-										</LinkPreviewHeader>
-										<LinkPreviewDescription>
-											{this.props.linkContent.description}
-										</LinkPreviewDescription>
-										<LinkPreviewHostname>
-											{this.props.linkContent.hostname}
-										</LinkPreviewHostname>
-									</LinkPreviewText>
-								</LinkPreviewWrapper>
-							</a>
+						{this.props.post.link ?
+							<LinkPreview linkContent={this.props.post.linkContent} />
 							:
 							<PostMediaContent>
 								<PostMediaBackground background={
-									this.props.picture ? mediaPicture : this.props.mediaContent.image
+									this.props.post.picture ?
+										mediaPicture : this.props.post.mediaContent.image
 								}
 								/>
-								<h4>{this.props.mediaContent.title}</h4>
-								{this.props.picture ?
+								<h4>{this.props.post.mediaContent.title}</h4>
+								{this.props.post.picture ?
 									<MediaImage src={mediaPicture} className="mediaPicture" />
 									:
-									<MediaImage src={this.props.mediaContent.image}
+									<MediaImage src={this.props.post.mediaContent.image}
 										className="mediaArtwork"
 									/>
 								}
@@ -266,11 +191,10 @@ class MediaPost extends Component {
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
-								switchShare={this.props.switchShare}
 								numLiked={this.state.likedBy.length}
-								numComments={this.props.comments.length}
-								numShared={this.props.sharedBy.length}
-								id={this.props.id}
+								numComments={this.props.post.comments.length}
+								numShared={this.props.post.sharedBy.length}
+								id={this.props.post._id}
 								index={this.props.index}
 								liked={
 									this.state.likedBy.includes( localStorage.getItem( "username" ))
@@ -295,20 +219,7 @@ class MediaPost extends Component {
 
 MediaPost.propTypes = {
 	index: PropTypes.number,
-	id: PropTypes.string.isRequired,
-	author: PropTypes.string.isRequired,
-	content: PropTypes.string.isRequired,
-	alerts: PropTypes.object.isRequired,
-	privacyRange: PropTypes.number.isRequired,
-	mediaContent: PropTypes.object,
-	linkContent: PropTypes.object,
-	date: PropTypes.string.isRequired,
-	link: PropTypes.bool.isRequired,
-	picture: PropTypes.bool.isRequired,
-	likedBy: PropTypes.array,
-	comments: PropTypes.array,
-	sharedBy: PropTypes.array,
-	fakeOptions: PropTypes.bool
+	post: PropTypes.object.isRequired
 };
 
 const

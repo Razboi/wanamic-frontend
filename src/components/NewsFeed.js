@@ -18,37 +18,14 @@ class NewsFeed extends Component {
 						<PostWrapper key={index}>
 							<MediaPost
 								index={index}
-								id={post._id}
-								author={post.author}
-								content={post.content}
-								mediaContent={post.mediaContent}
-								linkContent={post.linkContent}
-								date={post.createdAt}
-								link={post.link}
-								picture={post.picture}
-								likedBy={post.likedBy}
-								comments={post.comments}
-								sharedBy={post.sharedBy}
-								fakeOptions={post.fakeOptions}
-								alerts={post.alerts}
-								privacyRange={post.privacyRange}
+								post={post}
 							/>
 						</PostWrapper>
 						:
 						<PostWrapper key={index}>
 							<Post
 								index={index}
-								id={post._id}
-								author={post.author}
-								content={post.content}
-								date={post.createdAt}
-								likedBy={post.likedBy}
-								comments={post.comments}
-								sharedBy={post.sharedBy}
-								sharedPost={post.sharedPost}
-								fakeOptions={post.fakeOptions}
-								alerts={post.alerts}
-								privacyRange={post.privacyRange}
+								post={post}
 							/>
 						</PostWrapper>
 				)}

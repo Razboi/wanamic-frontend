@@ -15,22 +15,12 @@ class SharedPost extends Component {
 			<Wrapper>
 				{this.props.post.media ?
 					<MediaPost
-						id={this.props.post._id}
-						author={this.props.post.author}
-						content={this.props.post.content}
-						mediaContent={this.props.post.mediaContent}
-						linkContent={this.props.post.linkContent}
-						date={this.props.post.createdAt}
-						link={this.props.post.link}
-						picture={this.props.post.picture}
+						post={this.props.post}
 						fakeOptions={true}
 					/>
 					:
 					<Post
-						id={this.props.post._id}
-						author={this.props.post.author}
-						content={this.props.post.content}
-						date={this.props.post.createdAt}
+						post={this.props.post}
 						fakeOptions={true}
 					/>}
 			</Wrapper>

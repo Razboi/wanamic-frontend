@@ -41,8 +41,8 @@ class Post extends Component {
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			likedBy: nextProps.likedBy,
-			updatedContent: nextProps.content
+			likedBy: nextProps.post.likedBy,
+			updatedContent: nextProps.post.content
 		};
 	}
 
@@ -51,7 +51,7 @@ class Post extends Component {
 	}
 
 	handleDelete = () => {
-		api.deletePost( this.props.id )
+		api.deletePost( this.props.post._id )
 			.then( res => {
 				if ( res.data.updatedOriginalPost ) {
 					this.props.updatePost( res.data.updatedOriginalPost );
@@ -63,7 +63,7 @@ class Post extends Component {
 	handleUpdate = () => {
 		if ( this.state.content !== this.state.updatedContent
 			&& this.state.updatedContent !== "" ) {
-			api.updatePost( this.props.id, this.state.updatedContent )
+			api.updatePost( this.props.post._id, this.state.updatedContent )
 				.then( res => this.props.updatePost( res.data ))
 				.catch( err => console.log( err ));
 		}
@@ -74,7 +74,7 @@ class Post extends Component {
 			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
 		});
 
-		api.likePost( this.props.id )
+		api.likePost( this.props.post._id )
 			.catch( err => console.log( err ));
 	}
 
@@ -84,7 +84,7 @@ class Post extends Component {
 		newLikedBy.splice( index, 1 );
 		this.setState({ likedBy: newLikedBy });
 
-		api.dislikePost( this.props.id )
+		api.dislikePost( this.props.post._id )
 			.catch( err => console.log( err ));
 	}
 
@@ -94,7 +94,7 @@ class Post extends Component {
 
 				{ !this.props.fakeOptions &&
 					<DropdownOptions
-						author={this.props.author}
+						author={this.props.post.author}
 						updatedContent={this.state.updatedContent}
 						handleUpdate={this.handleUpdate}
 						handleDelete={this.handleDelete}
@@ -103,17 +103,18 @@ class Post extends Component {
 				}
 
 				<PostHeader>
-					<Author className="postAuthor">{this.props.author}</Author>
+					<Author className="postAuthor">{this.props.post.author}</Author>
 					<DateTime className="postDate">
-						{moment( this.props.date ).fromNow()}
+						{moment( this.props.post.date ).fromNow()}
 					</DateTime>
 				</PostHeader>
 
 				<PostContent>
 					<p className="postContent">
-						{this.props.content}
+						{this.props.post.content}
 					</p>
-					{this.props.sharedPost && <SharedPost post={this.props.sharedPost} />}
+					{this.props.post.sharedPost &&
+						<SharedPost post={this.props.post.sharedPost} />}
 				</PostContent>
 
 				{ !this.props.fakeOptions &&
@@ -121,11 +122,10 @@ class Post extends Component {
 						fakeOptions={this.props.fakeOptions}
 						handleLike={this.handleLike}
 						handleDislike={this.handleDislike}
-						switchShare={this.props.switchShare}
 						numLiked={this.state.likedBy.length}
-						numComments={this.props.comments.length}
-						numShared={this.props.sharedBy.length}
-						id={this.props.id}
+						numComments={this.props.post.comments.length}
+						numShared={this.props.post.sharedBy.length}
+						id={this.props.post._id}
 						index={this.props.index}
 						liked={
 							this.state.likedBy.includes( localStorage.getItem( "username" ))
@@ -139,19 +139,7 @@ class Post extends Component {
 
 Post.propTypes = {
 	index: PropTypes.number,
-	id: PropTypes.string.isRequired,
-	author: PropTypes.string.isRequired,
-	content: PropTypes.string.isRequired,
-	alerts: PropTypes.object.isRequired,
-	privacyRange: PropTypes.number.isRequired,
-	date: PropTypes.string.isRequired,
-	link: PropTypes.bool,
-	picture: PropTypes.bool,
-	likedBy: PropTypes.array,
-	comments: PropTypes.array,
-	sharedBy: PropTypes.array,
-	sharedPost: PropTypes.object,
-	fakeOptions: PropTypes.bool
+	post: PropTypes.object.isRequired
 };
 
 const

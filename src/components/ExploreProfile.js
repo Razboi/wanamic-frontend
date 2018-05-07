@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import api from "../services/api";
 import PropTypes from "prop-types";
 var
 	backgroundImg,
@@ -135,18 +134,6 @@ class ExploreProfile extends Component {
 		}
 	}
 
-	handleAddFriend = () => {
-		api.addFriend( this.props.user.username )
-			.then( res => console.log( res ))
-			.catch( err => console.log( err ));
-	}
-
-	handleFollow = () => {
-		api.followUser( this.props.user.username )
-			.then( res => console.log( res ))
-			.catch( err => console.log( err ));
-	}
-
 	render() {
 		this.setImages();
 		return (
@@ -167,13 +154,13 @@ class ExploreProfile extends Component {
 					<Options>
 						<Buttons>
 							<Button
-								onClick={this.handleAddFriend}
+								onClick={this.props.handleAddFriend}
 								primary
 								size="tiny"
 								content="Add Friend"
 							/>
 							<Button
-								onClick={this.handleFollow}
+								onClick={this.props.handleFollow}
 								secondary
 								size="tiny"
 								content="Follow"
@@ -210,6 +197,8 @@ ExploreProfile.propTypes = {
 	backToMenu: PropTypes.func.isRequired,
 	next: PropTypes.func.isRequired,
 	user: PropTypes.object.isRequired,
+	handleAddFriend: PropTypes.func.isRequired,
+	handleFollow: PropTypes.func.isRequired
 };
 
 export default ExploreProfile;
