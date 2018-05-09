@@ -70,7 +70,7 @@ NavBar.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		notifications: state.notifications.notifications
+		notifications: state.notifications.newNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({

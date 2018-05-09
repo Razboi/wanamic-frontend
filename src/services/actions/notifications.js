@@ -5,9 +5,10 @@ export const
 	DELETE_NOTIFICATION = "DELETE_NOTIFICATION",
 
 
-	setNotifications = notifications => ({
+	setNotifications = ( allNotifications, newNotifications ) => ({
 		type: SET_NOTIFICATIONS,
-		notifications: notifications
+		allNotifications: allNotifications,
+		newNotifications: newNotifications
 	}),
 
 	addNotification = notification => ({

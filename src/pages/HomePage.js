@@ -66,10 +66,19 @@ class HomePage extends Component {
 
 	componentDidMount() {
 		this.refreshNewsFeed();
+		this.setupNotifications();
+	}
+
+	setupNotifications() {
 		const socket = io( "http://localhost:8000" );
+		api.getNotifications()
+			.then( res => {
+				this.props.setNotifications( res.data.notifications, res.data.newNotifications );
+			}).catch( err => console.log( err ));
 		socket.emit( "register", localStorage.getItem( "token" ));
-		socket.on( "notifications", notifications => {
-			this.props.setNotifications( notifications );
+		socket.on( "notifications", data => {
+			console.log( data );
+			this.props.setNotifications( data.notifications, data.newNotifications );
 		});
 	}
 
@@ -169,7 +178,9 @@ const
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		setNotifications: notifications => dispatch( setNotifications( notifications )),
+		setNotifications: ( allNotifications, newNotifications ) => {
+			dispatch( setNotifications( allNotifications, newNotifications ));
+		},
 		logout: () => dispatch( logout())
 	});
 

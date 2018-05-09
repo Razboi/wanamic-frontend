@@ -1,23 +1,28 @@
 const initialState = {
-	notifications: []
+	allNotifications: [],
+	newNotifications: []
 };
 
 export default function notifications( state = initialState, action = {}) {
 	switch ( action.type ) {
 
 	case "SET_NOTIFICATIONS":
-		return { ...state, notifications: action.notifications };
+		return {
+			...state,
+			allNotifications: action.allNotifications,
+			newNotifications: action.newNotifications
+		};
 
 	case "ADD_NOTIFICATION":
 		return {
 			...state,
-			notifications: [ action.notification, ...state.notifications ]
+			notifications: [ action.notification, ...state.all ]
 		};
 
 	case "DELETE_NOTIFICATION":
 		return {
 			...state,
-			notifications: state.notifications.filter(( notification, index ) => {
+			notifications: state.all.filter(( notification, index ) => {
 				return index !== action.notificationIndex;
 			})
 		};

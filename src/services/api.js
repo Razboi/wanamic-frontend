@@ -278,4 +278,15 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	getNotifications: () =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+			},
+			url: "/notifications/retrieve/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
