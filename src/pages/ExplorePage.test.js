@@ -22,7 +22,7 @@ describe( "<ExplorePage/>", () => {
 	});
 
 	it( "Checks that every <ExplorePage/> children renders", () => {
-		expect( wrapper.children().children()).to.have.length( 2 );
+		expect( wrapper.children().children()).to.have.length( 3 );
 	});
 
 	it( "Checks that changing state.renderProfile changes the return", () => {

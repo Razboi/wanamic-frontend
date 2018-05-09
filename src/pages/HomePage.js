@@ -3,17 +3,19 @@ import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import { logout } from "../services/actions/auth";
 import {
-	setNewsfeed, switchMediaOptions, addPost
+	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
+import { setNotifications } from "../services/actions/notifications";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
+import NavBar from "../components/NavBar";
+import io from "socket.io-client";
 
 const
 	Wrapper = styled.div`
@@ -26,6 +28,14 @@ const
 			}
 		}
 	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		height: 100%;
+		width: 100%;
+		display: grid;
+		grid-template-rows: auto;
+		grid-template-areas:
+			"nf"
+	`,
 	ShareMediaButton = styled( Button )`
 		position: fixed;
 		left: 50%;
@@ -35,17 +45,7 @@ const
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
-		height: 100%;
-		width: 100%;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 10% 90%;
-		grid-template-areas:
-			"sb"
-			"nf"
-	`,
-	StyledShareBox = styled( ShareBox )`
-		grid-area: sb;
+		margin-top: ${props => props.blur ? "0px" : "69.33px"};
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
@@ -57,7 +57,6 @@ class HomePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			sharebox: "",
 			skip: 1,
 			isInfiniteLoading: false,
 			hasMore: true,
@@ -67,6 +66,11 @@ class HomePage extends Component {
 
 	componentDidMount() {
 		this.refreshNewsFeed();
+		const socket = io( "http://localhost:8000" );
+		socket.emit( "register", localStorage.getItem( "token" ));
+		socket.on( "notifications", notifications => {
+			this.props.setNotifications( notifications );
+		});
 	}
 
 	getNewsFeed = () => {
@@ -75,14 +79,14 @@ class HomePage extends Component {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
 					if ( res.data.length < 10 ) {
-						this.props.setNewsfeed( res.data );
+						this.props.addToNewsfeed( res.data );
 						this.setState({
 							hasMore: false,
 							isInfiniteLoading: false
 						});
 						return;
 					}
-					this.props.setNewsfeed( res.data );
+					this.props.addToNewsfeed( res.data );
 					this.setState({
 						isInfiniteLoading: false,
 						skip: this.state.skip + 1
@@ -101,17 +105,6 @@ class HomePage extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleShare = () => {
-		if ( this.state.sharebox !== "" ) {
-			const post = this.state.sharebox;
-			api.createPost( post )
-				.then( newPost => this.props.addPost( newPost ))
-				.catch( err => console.log( err ));
-
-			this.setState({ sharebox: "" });
-		}
-	};
-
 	switchMediaOptions = () => {
 		this.props.switchMediaOptions();
 	}
@@ -126,13 +119,14 @@ class HomePage extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<InfiniteScroll
+				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getNewsFeed}
 					initialLoad={false}
 					useWindow={false}
 				>
+					<NavBar mediaOptions={this.props.mediaOptions} />
 					<ShareMediaButton primary circular icon="plus" size="big"
 						onClick={this.switchMediaOptions}
 					/>
@@ -144,15 +138,10 @@ class HomePage extends Component {
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledShareBox
-							handleChange={this.handleChange}
-							sharebox={this.state.sharebox}
-							handleShare={this.handleShare}
-						/>
 						<StyledNewsFeed posts={this.props.newsfeed} />
 					</MediaDimmer>
 
-				</InfiniteScroll>
+				</StyledInfiniteScroll>
 			</Wrapper>
 		);
 	}
@@ -177,8 +166,10 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		setNotifications: notifications => dispatch( setNotifications( notifications )),
 		logout: () => dispatch( logout())
 	});
 

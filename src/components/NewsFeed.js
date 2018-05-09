@@ -5,6 +5,9 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 
 const
+	Wrapper = styled.div`
+		height: 100%;
+	`,
 	PostWrapper = styled.div`
 		margin-bottom: 20px;
 	`;
@@ -12,7 +15,7 @@ const
 class NewsFeed extends Component {
 	render() {
 		return (
-			<div>
+			<Wrapper>
 				{this.props.posts.map(( post, index ) =>
 					post.media ?
 						<PostWrapper key={index}>
@@ -29,7 +32,7 @@ class NewsFeed extends Component {
 							/>
 						</PostWrapper>
 				)}
-			</div>
+			</Wrapper>
 		);
 	}
 }

@@ -12,7 +12,10 @@ const initialState = {
 export default function posts( state = initialState, action = {}) {
 	switch ( action.type ) {
 	case "SET_NEWSFEED":
-		return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
+		return { ...state, newsfeed: action.posts };
+
+	case "ADD_TO_NEWSFEED":
+		return { ...state, newsfeed: [ ...action.posts, ...state.newsfeed ] };
 
 	case "ADD_POST":
 		return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };

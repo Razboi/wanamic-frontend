@@ -1,6 +1,7 @@
 export const
 	// action types
 	SET_NEWSFEED = "SET_NEWSFEED",
+	ADD_TO_NEWSFEED = "ADD_TO_NEWSFEED",
 	SWITCH_MEDIA_OPTIONS = "SWITCH_MEDIA_OPTIONS",
 	SWITCH_COMMENTS = "SWITCH_COMMENTS",
 	SWITCH_SHARE = "SWITCH_SHARE",
@@ -14,6 +15,11 @@ export const
 	// action creators
 	setNewsfeed = posts => ({
 		type: SET_NEWSFEED,
+		posts: posts
+	}),
+
+	addToNewsfeed = posts => ({
+		type: ADD_TO_NEWSFEED,
 		posts: posts
 	}),
 

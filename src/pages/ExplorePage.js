@@ -6,6 +6,7 @@ import ExploreUsers from "../components/ExploreUsers";
 import ExploreProfile from "../components/ExploreProfile";
 import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
+import NavBar from "../components/NavBar";
 
 const
 	Wrapper = styled.div`
@@ -23,6 +24,7 @@ const
 			height: 100%;
 			width: 100%;
 			display: grid;
+			margin-top: 49.33px;
 			grid-template-columns: 100%;
 			grid-template-rows: 10% auto;
 			grid-template-areas:
@@ -203,6 +205,7 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
+					<NavBar />
 					<Header>
 						<UserSubheader>
 							<Icon
