@@ -289,4 +289,27 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	getPost: postId =>
+		axios({
+			method: "post",
+			data: {
+				postId: postId
+			},
+			url: "/posts/getPost/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	checkNotification: notificationId =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				notificationId: notificationId
+			},
+			url: "/notifications/check/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

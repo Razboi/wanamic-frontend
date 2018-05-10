@@ -4,10 +4,11 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
+import { switchNotifications } from "../services/actions/notifications";
 
 const
 	Wrapper = styled.div`
-		z-index: 3;
+		z-index: 4;
 		width: 100%;
 		height: 49.33px;
 		visibility: ${props => props.hide ? "hidden" : "visible"};
@@ -28,6 +29,16 @@ const
 
 
 class NavBar extends Component {
+	handleHome = () => {
+		if ( this.props.location.pathname !== "/" ) {
+			this.props.history.push( "/" );
+		} else {
+			this.props.displayNotifications ?
+				this.props.switchNotifications()
+				:
+				window.scrollTo( 0, 0 );
+		}
+	}
 	render() {
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
@@ -35,14 +46,14 @@ class NavBar extends Component {
 					<Icon
 						name="home"
 						size="large"
-						onClick={() => this.props.history.push( "/" )}
+						onClick={this.handleHome}
 					/>
 				</NavOption>
-				<NavOption>
+				<NavOption onClick={this.props.switchNotifications}>
 					<Icon name="bell outline" size="large" />
-					{this.props.notifications.length > 0 &&
+					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
-							{this.props.notifications.length}
+							{this.props.newNotifications}
 						</NotificationsLength>
 					}
 				</NavOption>
@@ -70,10 +81,12 @@ NavBar.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		notifications: state.notifications.newNotifications
+		newNotifications: state.notifications.newNotifications,
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
+		switchNotifications: () => dispatch( switchNotifications()),
 	});
 
 export default withRouter(

@@ -6,7 +6,7 @@ import ExploreUsers from "../components/ExploreUsers";
 import ExploreProfile from "../components/ExploreProfile";
 import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
-import NavBar from "../components/NavBar";
+import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`

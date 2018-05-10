@@ -17,7 +17,10 @@ describe( "<Homepage/>", () => {
 		store;
 
 	beforeEach(() => {
-		store = mockStore({ posts: [] });
+		store = mockStore({
+			posts: [],
+			notifications: { displayNotifications: false }
+		});
 		wrapper = shallow(
 			<HomePage
 				store={store}

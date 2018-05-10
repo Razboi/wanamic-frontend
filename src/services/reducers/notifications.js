@@ -1,6 +1,7 @@
 const initialState = {
 	allNotifications: [],
-	newNotifications: []
+	newNotifications: 0,
+	displayNotifications: false
 };
 
 export default function notifications( state = initialState, action = {}) {
@@ -13,18 +14,39 @@ export default function notifications( state = initialState, action = {}) {
 			newNotifications: action.newNotifications
 		};
 
+	case "SWITCH_NOTIFICATIONS":
+		return {
+			...state,
+			displayNotifications: !state.displayNotifications
+		};
+
 	case "ADD_NOTIFICATION":
 		return {
 			...state,
-			notifications: [ action.notification, ...state.all ]
+			allNotifications: [ action.notification, ...state.allNotifications ]
 		};
 
 	case "DELETE_NOTIFICATION":
 		return {
 			...state,
-			notifications: state.all.filter(( notification, index ) => {
+			allNotifications: state.allNotifications.filter(( notification, index ) => {
 				return index !== action.notificationIndex;
 			})
+		};
+
+	case "CHECK_NOTIFICATION":
+		return {
+			...state,
+			allNotifications: state.allNotifications.map(( notification, index ) => {
+				if ( index === action.notificationIndex ) {
+					return {
+						...notification,
+						...state.allNotifications[ action.notificationIndex ].checked = true
+					};
+				}
+				return notification;
+			}),
+			newNotifications: state.newNotifications - 1
 		};
 
 	default:

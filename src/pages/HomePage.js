@@ -14,7 +14,8 @@ import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
-import NavBar from "../components/NavBar";
+import NavBar from "../containers/NavBar";
+import Notifications from "../containers/Notifications";
 import io from "socket.io-client";
 
 const
@@ -141,6 +142,7 @@ class HomePage extends Component {
 					/>
 					{this.props.displayShare && <Share /> }
 					{this.props.displayComments && <Comments />}
+					{this.props.displayNotifications && <Notifications /> }
 
 					{this.props.mediaOptions &&
 						<MediaOptions handlePictureSelect={this.handlePictureSelect}
@@ -170,7 +172,8 @@ const
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
 		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare
+		displayShare: state.posts.displayShare,
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
