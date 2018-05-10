@@ -5,7 +5,6 @@ const initialState = {
 	displayComments: false,
 	displayShare: false,
 	postDetailsId: undefined,
-	postDetailsIndex: undefined,
 	postToShare: {}
 };
 
@@ -57,7 +56,6 @@ export default function posts( state = initialState, action = {}) {
 		return {
 			...state,
 			displayShare: !state.displayShare,
-			postDetailsIndex: action.postIndex,
 			postToShare: state.newsfeed[ action.postIndex ]
 		};
 
@@ -65,8 +63,7 @@ export default function posts( state = initialState, action = {}) {
 		return {
 			...state,
 			displayComments: !state.displayComments,
-			postDetailsId: action.postDetailsId,
-			postDetailsIndex: action.postDetailsIndex
+			postDetailsId: action.postDetailsId
 		};
 
 	default:

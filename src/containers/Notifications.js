@@ -5,8 +5,11 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
 import PostDetails from "./PostDetails";
+import Comments from "./Comments";
 import api from "../services/api";
+import { switchComments } from "../services/actions/posts";
 import { checkNotification } from "../services/actions/notifications";
+import { withRouter } from "react-router";
 
 const
 	Wrapper = styled.div`
@@ -43,15 +46,24 @@ class Notifications extends Component {
 		super();
 		this.state = {
 			displayDetails: false,
+			displayComments: false,
 			postId: ""
 		};
 	}
 
-	handleDetails = ( postId, notificationId, notificationIndex, checked ) => {
-		this.setState({ postId: postId, displayDetails: true });
-		api.checkNotification( notificationId )
+	handleDetails = ( notification, notificationIndex ) => {
+		if ( notification.follow || notification.friendRequest ) {
+			this.props.history.push( "/" + notification.author );
+		}
+		if ( notification.comment ) {
+			this.props.switchComments( notification.object );
+		}
+		if ( !notification.follow && !notification.comment ) {
+			this.setState({ postId: notification.object, displayDetails: true });
+		}
+		api.checkNotification( notification._id )
 			.catch( err => console.log( err ));
-		if ( !checked ) {
+		if ( !notification.checked ) {
 			this.props.checkNotification( notificationIndex );
 		}
 	}
@@ -61,6 +73,11 @@ class Notifications extends Component {
 	}
 
 	render() {
+		if ( this.state.displayComments ) {
+			return (
+				<Comments />
+			);
+		}
 		if ( this.state.displayDetails ) {
 			return (
 				<PostDetails
@@ -75,9 +92,7 @@ class Notifications extends Component {
 				{this.props.notifications.map(( notification, index ) =>
 					<React.Fragment key={index}>
 						<Notification
-							onClick={() => this.handleDetails(
-								notification.object, notification._id, index, notification.checked
-							)}
+							onClick={() => this.handleDetails( notification, index )}
 							checked={notification.checked}
 						>
 							<Content><b>{notification.author}</b> {notification.content}</Content>
@@ -101,7 +116,10 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		checkNotification: index => dispatch( checkNotification( index )),
+		switchComments: ( id ) => dispatch( switchComments( id )),
+		checkNotification: index => dispatch( checkNotification( index ))
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( Notifications );
+export default withRouter(
+	connect( mapStateToProps, mapDispatchToProps )( Notifications )
+);
