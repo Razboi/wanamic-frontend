@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
 import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
+import ProfileOptions from "../components/ProfileOptions";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import PropTypes from "prop-types";
@@ -86,26 +86,6 @@ const
 			color: #D3D3D3;
 		}
 	`,
-	Options = styled.div`
-		@media (max-width: 420px) {
-			grid-area: o;
-			display: grid;
-			grid-template-columns: 100%;
-			grid-template-rows: 33% 66%;
-			grid-template-areas:
-				"buttons"
-				"kw"
-		}
-	`,
-	Buttons = styled.span`
-		grid-area: buttons;
-		align-self: center;
-		justify-self: center;
-	`,
-	Keywords = styled.span`
-		grid-area: kw;
-		align-self: center;
-	`,
 	Description = styled.div`
 		@media (max-width: 420px) {
 			padding: 10px;
@@ -125,24 +105,27 @@ class ProfilePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			user: {},
+			user: { friends: [] },
 			posts: [],
 			hasMore: true,
 			skip: 1,
 			isInfiniteLoading: false,
 			empty: false,
-			sharebox: ""
+			sharebox: "",
+			requested: false
 		};
 	}
 
 	componentDidMount() {
 		this.refreshTimeline();
+		api.isRequested( this.props.match.params.username )
+			.then( res => this.setState({ requested: res.data }))
+			.catch( err => console.log( err ));
+
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
 				this.setImages( res.data.headerImage, res.data.profileImage );
-				this.setState({
-					user: res.data
-				});
+				this.setState({ user: res.data });
 			})
 			.catch( err => {
 				console.log( err );
@@ -234,6 +217,11 @@ class ProfilePage extends Component {
 			.catch( err => console.log( err ));
 	}
 
+	handleReqAccept = () => {
+		api.acceptRequest( this.props.match.params.username )
+			.catch( err => console.log( err ));
+	}
+
 	render() {
 		if ( this.state.inexistent ) {
 			return (
@@ -258,26 +246,15 @@ class ProfilePage extends Component {
 									<NickName>@{this.state.user.username}</NickName>
 								</Names>
 							</BasicInfo>
-							<Options>
-								<Buttons>
-									<Button
-										onClick={this.handleAddFriend}
-										primary
-										size="tiny"
-										content="Add Friend"
-									/>
-									<Button
-										onClick={this.handleFollow}
-										secondary
-										size="tiny"
-										content="Follow"
-									/>
-									<Button size="tiny" icon="mail outline" />
-								</Buttons>
-								<Keywords>
-									{this.state.user.keywords}
-								</Keywords>
-							</Options>
+
+							<ProfileOptions
+								user={this.state.user}
+								handleAddFriend={this.handleAddFriend}
+								handleFollow={this.handleFollow}
+								handleReqAccept={this.handleReqAccept}
+								requested={this.state.requested}
+							/>
+
 							<Description>
 								<p>{this.state.user.description}</p>
 							</Description>

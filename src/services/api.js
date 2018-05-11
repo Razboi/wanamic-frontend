@@ -312,4 +312,28 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	isRequested: targetUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: targetUsername
+			},
+			url: "/friends/isRequested/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	acceptRequest: friendUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: friendUsername
+			},
+			url: "/friends/accept/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };
