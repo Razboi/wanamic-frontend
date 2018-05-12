@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Dropdown } from "semantic-ui-react";
+import { Button, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -32,9 +32,15 @@ class ProfileOptions extends Component {
 			return (
 				<Options>
 					<Buttons>
-						<Button size="tiny" icon="mail outline" />
-					</Buttons>
 
+						<Icon.Group size="large" onClick={this.props.handleDeleteFriend}>
+							<Icon name="user" />
+							<Icon corner name="check" color="green" />
+						</Icon.Group>
+
+						<Button size="tiny" icon="mail outline" />
+
+					</Buttons>
 					<Keywords>
 						{this.props.user.keywords}
 					</Keywords>
@@ -55,7 +61,10 @@ class ProfileOptions extends Component {
 										text="Accept"
 										onClick={this.props.handleReqAccept}
 									/>
-									<Dropdown.Item text="Delete Request" />
+									<Dropdown.Item
+										text="Delete Request"
+										onClick={this.props.handleReqDelete}
+									/>
 								</Dropdown.Menu>
 							</Dropdown>
 						</Button>
@@ -89,6 +98,8 @@ ProfileOptions.propTypes = {
 	handleAddFriend: PropTypes.func.isRequired,
 	handleFollow: PropTypes.func.isRequired,
 	handleReqAccept: PropTypes.func.isRequired,
+	handleReqDelete: PropTypes.func.isRequired,
+	handleDeleteFriend: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };
 

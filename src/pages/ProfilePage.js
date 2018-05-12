@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
 import ProfileOptions from "../components/ProfileOptions";
 import api from "../services/api";
@@ -105,13 +104,12 @@ class ProfilePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			user: { friends: [] },
+			user: undefined,
 			posts: [],
 			hasMore: true,
 			skip: 1,
 			isInfiniteLoading: false,
-			empty: false,
-			sharebox: "",
+			inexistent: false,
 			requested: false
 		};
 	}
@@ -176,44 +174,17 @@ class ProfilePage extends Component {
 	refreshTimeline = () => {
 		api.getTimeline( 0, this.props.match.params.username )
 			.then( res => {
-				this.setState({
-					posts: res.data
-				});
+				this.setState({ posts: res.data });
 			}).catch( err => console.log( err ));
-	}
-
-	updatePost = ( postIndex, updatedContent ) => {
-		var posts = this.state.posts;
-		posts[ postIndex ].content = updatedContent;
-		this.setState({ posts: posts });
-	}
-
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value });
-
-	handleShare = () => {
-		if ( this.state.sharebox !== "" ) {
-			const post = {
-				post: { content: this.state.sharebox }
-			};
-
-			api.createPost( post )
-				.then(() => this.refreshTimeline())
-				.catch( err => console.log( err ));
-
-			this.setState({ sharebox: "" });
-		}
 	}
 
 	handleAddFriend = () => {
 		api.addFriend( this.props.match.params.username )
-			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.props.match.params.username )
-			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
@@ -222,61 +193,66 @@ class ProfilePage extends Component {
 			.catch( err => console.log( err ));
 	}
 
+	handleReqDelete = () => {
+		api.acceptRequest( this.props.match.params.username )
+			.catch( err => console.log( err ));
+	}
+
+	handleDeleteFriend = () => {
+		api.deleteFriend( this.props.match.params.username )
+			.catch( err => console.log( err ));
+	}
+
 	render() {
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
 			);
-		} else {
-			return (
-				<Wrapper>
-					<StyledInfiniteScroll
-						pageStart={this.state.skip}
-						hasMore={this.state.hasMore}
-						loadMore={this.getTimeline}
-						initialLoad={false}
-						useWindow={false}
-					>
-						<Header image={`url(${backgroundImg})`} />
-						<Information>
-							<BasicInfo>
-								<UserImage src={profileImg} />
-								<Names>
-									<UserName>{this.state.user.fullname}</UserName>
-									<NickName>@{this.state.user.username}</NickName>
-								</Names>
-							</BasicInfo>
-
-							<ProfileOptions
-								user={this.state.user}
-								handleAddFriend={this.handleAddFriend}
-								handleFollow={this.handleFollow}
-								handleReqAccept={this.handleReqAccept}
-								requested={this.state.requested}
-							/>
-
-							<Description>
-								<p>{this.state.user.description}</p>
-							</Description>
-						</Information>
-						<Timeline>
-							<ShareBox
-								handleChange={this.handleChange}
-								sharebox={this.state.sharebox}
-								handleShare={this.handleShare}
-							/>
-							<NewsFeed
-								posts={this.state.posts}
-								getNewsFeed={this.getTimeline}
-								updatePost={this.updatePost}
-								hasMore={this.state.hasMore}
-								skip={this.state.skip}
-							/>
-						</Timeline>
-					</StyledInfiniteScroll>
-				</Wrapper>
-			);
 		}
+		if ( !this.state.user ) {
+			return null;
+		}
+		return (
+			<Wrapper>
+				<StyledInfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getTimeline}
+					initialLoad={false}
+					useWindow={false}
+				>
+					<Header image={`url(${backgroundImg})`} />
+
+					<Information>
+						<BasicInfo>
+							<UserImage src={profileImg} />
+							<Names>
+								<UserName>{this.state.user.fullname}</UserName>
+								<NickName>@{this.state.user.username}</NickName>
+							</Names>
+						</BasicInfo>
+
+						<ProfileOptions
+							user={this.state.user}
+							handleAddFriend={this.handleAddFriend}
+							handleFollow={this.handleFollow}
+							handleReqAccept={this.handleReqAccept}
+							handleReqDelete={this.handleReqDelete}
+							requested={this.state.requested}
+							handleDeleteFriend={this.handleDeleteFriend}
+						/>
+
+						<Description>
+							<p>{this.state.user.description}</p>
+						</Description>
+					</Information>
+
+					<Timeline>
+						<NewsFeed posts={this.state.posts} />
+					</Timeline>
+				</StyledInfiniteScroll>
+			</Wrapper>
+		);
 	}
 }
 

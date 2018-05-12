@@ -119,6 +119,15 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
+	deleteFriend: username =>
+		axios({
+			method: "delete",
+			data: { token: localStorage.getItem( "token" ), friendUsername: username },
+			url: "/friends/delete"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
 	followUser: username =>
 		axios({
 			method: "post",

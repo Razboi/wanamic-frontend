@@ -19,6 +19,7 @@ describe( "<ProfilePage/>", () => {
 	});
 
 	it( "Checks that every children renders", () => {
+		wrapper.setState({ user: {} });
 		expect( wrapper.children().children()).to.have.length( 3 );
 	});
 });

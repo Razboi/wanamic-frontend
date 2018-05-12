@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Icon, Label } from "semantic-ui-react";
+import { Icon, Label, Dropdown } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { switchNotifications } from "../services/actions/notifications";
+import { logout } from "../services/actions/auth";
 
 const
 	Wrapper = styled.div`
@@ -68,7 +69,16 @@ class NavBar extends Component {
 					<Icon name="conversation" size="large" />
 				</NavOption>
 				<NavOption>
-					<Icon name="bars" size="large" />
+					<Icon icon="bars" size="large">
+						<Dropdown icon="bars" direction="left">
+							<Dropdown.Menu>
+								<Dropdown.Item
+									text="Logout"
+									onClick={this.props.logout}
+								/>
+							</Dropdown.Menu>
+						</Dropdown>
+					</Icon>
 				</NavOption>
 			</Wrapper>
 		);
@@ -87,6 +97,7 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		switchNotifications: () => dispatch( switchNotifications()),
+		logout: () => dispatch( logout())
 	});
 
 export default withRouter(

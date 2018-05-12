@@ -52,18 +52,20 @@ class Notifications extends Component {
 	}
 
 	handleDetails = ( notification, notificationIndex ) => {
-		if ( notification.follow || notification.friendRequest ) {
+		switch ( true ) {
+		case notification.follow || notification.friendRequest:
 			this.props.history.push( "/" + notification.author );
-		}
-		if ( notification.comment ) {
+			break;
+		case notification.comment:
 			this.props.switchComments( notification.object );
-		}
-		if ( !notification.follow && !notification.comment ) {
+			break;
+		default:
 			this.setState({ postId: notification.object, displayDetails: true });
 		}
-		api.checkNotification( notification._id )
-			.catch( err => console.log( err ));
+
 		if ( !notification.checked ) {
+			api.checkNotification( notification._id )
+				.catch( err => console.log( err ));
 			this.props.checkNotification( notificationIndex );
 		}
 	}
