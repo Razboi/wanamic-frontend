@@ -109,7 +109,9 @@ class Notifications extends Component {
 }
 
 Notifications.propTypes = {
-	notifications: PropTypes.array.isRequired
+	notifications: PropTypes.array.isRequired,
+	switchComments: PropTypes.func.isRequired,
+	checkNotification: PropTypes.func.isRequired,
 };
 
 const

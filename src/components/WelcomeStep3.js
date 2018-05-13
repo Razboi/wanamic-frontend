@@ -51,7 +51,7 @@ Step3.propTypes = {
 	categoriesNext: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
 	categories: PropTypes.array.isRequired,
-	checked: PropTypes.bool.isRequired
+	checked: PropTypes.func.isRequired
 };
 
 export default Step3;

@@ -45,6 +45,7 @@ class NavBar extends Component {
 			<Wrapper hide={this.props.mediaOptions}>
 				<NavOption>
 					<Icon
+						className="test"
 						name="home"
 						size="large"
 						onClick={this.handleHome}
@@ -86,7 +87,11 @@ class NavBar extends Component {
 }
 
 NavBar.propTypes = {
-	mediaOptions: PropTypes.bool
+	mediaOptions: PropTypes.bool,
+	switchNotifications: PropTypes.func.isRequired,
+	logout: PropTypes.func.isRequired,
+	newNotifications: PropTypes.number.isRequired,
+	displayNotifications: PropTypes.bool.isRequired
 };
 
 const

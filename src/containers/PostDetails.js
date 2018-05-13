@@ -40,9 +40,12 @@ class PostDetails extends Component {
 			.catch( err => console.log( err ));
 	}
 	render() {
+		if ( !this.state.post ) {
+			return null;
+		}
 		return (
 			<Wrapper>
-				{this.state.post && <div>
+				<div>
 					<HeaderWrapper>
 						<Icon
 							name="arrow left"
@@ -59,7 +62,7 @@ class PostDetails extends Component {
 							post={this.state.post}
 						/>
 					}
-				</div>}
+				</div>
 			</Wrapper>
 		);
 	}

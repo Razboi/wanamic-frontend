@@ -66,6 +66,8 @@ class AuthPage extends Component {
 						handleSignup={this.handleSignup}
 						handleSignupNext={this.handleSignupNext}
 						step={this.state.signupStep}
+						email={this.state.email}
+						password={this.state.password}
 					/>
 					:
 					<LoginForm

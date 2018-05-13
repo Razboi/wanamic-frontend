@@ -52,6 +52,7 @@ class ProfileOptions extends Component {
 				<Buttons>
 					{this.props.requested ?
 						<Button
+							className="dropdownReqButton"
 							primary
 							size="tiny"
 						>
