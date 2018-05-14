@@ -345,4 +345,49 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	getFriends: () =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" )
+			},
+			url: "/friends/getFriends/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getConversation: friendUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: friendUsername
+			},
+			url: "/messages/retrieve/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	sendMessage: ( friendUsername, content ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: friendUsername,
+				content: content
+			},
+			url: "/messages/add/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getChats: () =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: "/user/getChats/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
 };

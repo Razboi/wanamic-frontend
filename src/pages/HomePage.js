@@ -16,6 +16,7 @@ import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import Notifications from "../containers/Notifications";
+import Messages from "../containers/Messages";
 import io from "socket.io-client";
 
 const
@@ -140,9 +141,10 @@ class HomePage extends Component {
 					<ShareMediaButton primary circular icon="plus" size="big"
 						onClick={this.switchMediaOptions}
 					/>
-					{this.props.displayShare && <Share /> }
+					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments />}
-					{this.props.displayNotifications && <Notifications /> }
+					{this.props.displayNotifications && <Notifications />}
+					{this.props.displayMessages && <Messages />}
 
 					{this.props.mediaOptions &&
 						<MediaOptions handlePictureSelect={this.handlePictureSelect}
@@ -173,7 +175,8 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
-		displayNotifications: state.notifications.displayNotifications
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.messages.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({
