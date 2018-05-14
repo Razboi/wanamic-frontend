@@ -86,6 +86,11 @@ class NavBar extends Component {
 				</NavOption>
 				<NavOption onClick={this.handleMessages}>
 					<Icon name="conversation" size="large" />
+					{this.props.newMessages > 0 &&
+						<NotificationsLength size="small" floating circular color="red">
+							{this.props.newMessages}
+						</NotificationsLength>
+					}
 				</NavOption>
 				<NavOption>
 					<Icon icon="bars" size="large">
@@ -109,12 +114,14 @@ NavBar.propTypes = {
 	switchNotifications: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
+	newMessages: PropTypes.number.isRequired,
 	displayNotifications: PropTypes.bool.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
+		newMessages: state.messages.newMessages,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.messages.displayMessages
 	}),

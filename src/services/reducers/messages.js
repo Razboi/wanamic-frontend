@@ -23,7 +23,8 @@ export default function notifications( state = initialState, action = {}) {
 	case "ADD_MESSAGE":
 		return {
 			...state,
-			allMessages: [ action.message, ...state.allMessages ]
+			allMessages: [ ...state.allMessages, action.message ],
+			newMessages: state.newMessages + 1
 		};
 
 	case "CHECK_MESSAGE":

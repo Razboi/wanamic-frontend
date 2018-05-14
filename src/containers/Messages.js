@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { Divider, Button, Icon, Input } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import moment from "moment";
 import api from "../services/api";
-import { switchMessages } from "../services/actions/messages";
+import { switchMessages, addMessage, setMessages } from "../services/actions/messages";
+import Message from "../components/Message";
 
 const
 	Wrapper = styled.div`
@@ -70,6 +70,7 @@ const
 	MessagesWrapper = styled.div`
 		grid-area: mes;
 		padding: 10px;
+		overflow-y: scroll;
 	`,
 	StyledInput = styled( Input )`
 		grid-area: inp;
@@ -118,9 +119,9 @@ class Messages extends Component {
 				this.setState({
 					receiver: receiver,
 					displayConversation: true,
-					displayFriendsList: false,
-					messages: res.data
+					displayFriendsList: false
 				});
+				this.props.setMessages( res.data, 0 );
 			}).catch( err => console.log( err ));
 	}
 
@@ -133,10 +134,9 @@ class Messages extends Component {
 			};
 			api.sendMessage( this.state.receiver.username, this.state.messageInput )
 				.catch( err => console.log( err ));
-			this.setState({
-				messages: [ newMessage, ...this.state.messages ],
-				messageInput: ""
-			});
+			this.setState({ messageInput: "" });
+			this.props.socket.emit( "sendMessage", newMessage );
+			this.props.addMessage( newMessage );
 		}
 	}
 
@@ -157,11 +157,8 @@ class Messages extends Component {
 						<HeaderTxt>{this.state.receiver.username}</HeaderTxt>
 					</HeaderWrapper>
 					<MessagesWrapper>
-						{this.state.messages.map(( message, index ) =>
-							<div key={index}>
-								<span>{message.author}</span>
-								<p>{message.content}</p>
-							</div>
+						{this.props.messages.map(( message, index ) =>
+							<Message message={message} key={index} />
 						)}
 					</MessagesWrapper>
 					<StyledInput
@@ -233,7 +230,11 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchMessages: ( id ) => dispatch( switchMessages( id ))
+		switchMessages: ( id ) => dispatch( switchMessages( id )),
+		addMessage: message => dispatch( addMessage( message )),
+		setMessages: ( allMessages, newMessages ) => {
+			dispatch( setMessages( allMessages, newMessages ));
+		},
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Messages );
