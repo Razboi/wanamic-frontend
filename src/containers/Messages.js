@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Divider, Button, Icon, Input } from "semantic-ui-react";
+import { Divider, Button } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
-import { switchMessages, addMessage, setMessages } from "../services/actions/messages";
-import Message from "../components/Message";
+import {
+	switchMessages, addMessage, setMessages
+} from "../services/actions/messages";
+import Conversation from "../components/Conversation";
+import FriendsList from "../components/FriendsList";
 
 const
 	Wrapper = styled.div`
@@ -15,13 +18,6 @@ const
 		z-index: 3;
 		background: #fff;
 		padding-top: 49.33px;
-	`,
-	FriendListWrapper = styled.div`
-		height: 100vh;
-		width: 100%;
-		position: absolute;
-		z-index: 4;
-		background: #fff;
 	`,
 	Header = styled.div`
 		border-bottom: 1px solid #000;
@@ -35,45 +31,11 @@ const
 		bottom: 10px;
 		z-index: 3;
 	`,
-	HeaderWrapper = styled.div`
-		height: 49.33px;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
-	`,
-	HeaderTxt = styled.span`
-		margin-left: 15px;
-		font-weight: bold;
-		font-size: 16px;
-	`,
 	Friend = styled.div`
 		padding: 10px;
 	`,
 	StyledDivider = styled( Divider )`
 		margin: 0px !important;
-	`,
-	ConversationWrapper = styled.div`
-		position: absolute;
-		height: 100vh;
-		width: 100%;
-		z-index: 4;
-		background: #fff;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 7% 86% 7%;
-		grid-template-areas:
-			"hea"
-			"mes"
-			"inp"
-	`,
-	MessagesWrapper = styled.div`
-		grid-area: mes;
-		padding: 10px;
-		overflow-y: scroll;
-	`,
-	StyledInput = styled( Input )`
-		grid-area: inp;
 	`;
 
 
@@ -83,9 +45,8 @@ class Messages extends Component {
 		this.state = {
 			friends: [],
 			displayFriendsList: false,
-			messages: [],
 			displayConversation: false,
-			receiver: undefined,
+			receiver: {},
 			messageInput: "",
 			conversations: []
 		};
@@ -151,62 +112,40 @@ class Messages extends Component {
 	render() {
 		if ( this.state.displayConversation ) {
 			return (
-				<ConversationWrapper>
-					<HeaderWrapper>
-						<Icon name="arrow left" onClick={this.switchConversation} />
-						<HeaderTxt>{this.state.receiver.username}</HeaderTxt>
-					</HeaderWrapper>
-					<MessagesWrapper>
-						{this.props.messages.map(( message, index ) =>
-							<Message message={message} key={index} />
-						)}
-					</MessagesWrapper>
-					<StyledInput
-						name="messageInput"
-						value={this.state.messageInput}
-						placeholder="Write a message"
-						onChange={this.handleChange}
-						onKeyPress={this.handleKeyPress}
-					/>
-				</ConversationWrapper>
+				<Conversation
+					receiver={this.state.receiver}
+					messages={this.props.messages}
+					handleKeyPress={this.handleKeyPress}
+					handleChange={this.handleChange}
+					switchConversation={this.switchConversation}
+					messageInput={this.state.messageInput}
+				/>
 			);
 		}
 		if ( this.state.displayFriendsList ) {
 			return (
-				<FriendListWrapper>
-					<HeaderWrapper>
-						<Icon
-							name="arrow left"
-							onClick={this.switchFriendsList}
-						/>
-						<HeaderTxt>Friends</HeaderTxt>
-					</HeaderWrapper>
-					{this.state.friends.map(( friend, index ) =>
-						<React.Fragment key={index}>
-							<Friend onClick={() => this.handleSelectReceiver( friend )}>
-								<span>
-									<b>{friend.username}</b>
-								</span>
-							</Friend>
-							<StyledDivider />
-						</React.Fragment>
-					)}
-				</FriendListWrapper>
+				<FriendsList
+					friends={this.state.friends}
+					handleSelectReceiver={this.handleSelectReceiver}
+					switchFriendsList={this.switchFriendsList}
+				/>
 			);
 		}
 		return (
 			<Wrapper>
 				<Header>Conversations</Header>
-				{this.state.conversations.map(( receiver, index ) =>
-					<React.Fragment key={index}>
-						<Friend onClick={() => this.handleSelectReceiver( receiver )}>
-							<span>
-								<b>{receiver.username}</b>
-							</span>
-						</Friend>
-						<StyledDivider />
-					</React.Fragment>
-				)}
+				<div className="conversationsList">
+					{this.state.conversations.map(( receiver, index ) =>
+						<React.Fragment key={index}>
+							<Friend onClick={() => this.handleSelectReceiver( receiver )}>
+								<span>
+									<b>{receiver.username}</b>
+								</span>
+							</Friend>
+							<StyledDivider />
+						</React.Fragment>
+					)}
+				</div>
 				<NewConversationButton
 					onClick={this.handleNewConversation}
 					primary
