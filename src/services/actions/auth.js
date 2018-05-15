@@ -16,6 +16,7 @@ export const
 			if ( data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());
 			}
 		}).catch( err => console.log( err )),
@@ -25,6 +26,7 @@ export const
 			if ( data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "id", data.id );
 				localStorage.setItem( "NU", true );
 				dispatch( userLoggedIn());
 			}
@@ -33,5 +35,6 @@ export const
 	logout = () => dispatch => {
 		localStorage.removeItem( "token" );
 		localStorage.removeItem( "username" );
+		localStorage.removeItem( "id" );
 		dispatch( userLoggedOut());
 	};

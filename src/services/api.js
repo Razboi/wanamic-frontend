@@ -119,6 +119,15 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
+	deleteFriend: username =>
+		axios({
+			method: "delete",
+			data: { token: localStorage.getItem( "token" ), friendUsername: username },
+			url: "/friends/delete"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
 	followUser: username =>
 		axios({
 			method: "post",
@@ -275,6 +284,64 @@ export default {
 				shareComment: shareComment
 			},
 			url: "/posts/share/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getNotifications: () =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+			},
+			url: "/notifications/retrieve/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	getPost: postId =>
+		axios({
+			method: "post",
+			data: {
+				postId: postId
+			},
+			url: "/posts/getPost/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	checkNotification: notificationId =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				notificationId: notificationId
+			},
+			url: "/notifications/check/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	isRequested: targetUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: targetUsername
+			},
+			url: "/friends/isRequested/"
+		})
+			.then( res => res )
+			.catch( err => console.log( err )),
+
+	acceptRequest: friendUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: friendUsername
+			},
+			url: "/friends/accept/"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),

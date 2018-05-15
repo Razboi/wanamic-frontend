@@ -5,14 +5,16 @@ const initialState = {
 	displayComments: false,
 	displayShare: false,
 	postDetailsId: undefined,
-	postDetailsIndex: undefined,
 	postToShare: {}
 };
 
 export default function posts( state = initialState, action = {}) {
 	switch ( action.type ) {
 	case "SET_NEWSFEED":
-		return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
+		return { ...state, newsfeed: action.posts };
+
+	case "ADD_TO_NEWSFEED":
+		return { ...state, newsfeed: [ ...action.posts, ...state.newsfeed ] };
 
 	case "ADD_POST":
 		return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };
@@ -54,7 +56,6 @@ export default function posts( state = initialState, action = {}) {
 		return {
 			...state,
 			displayShare: !state.displayShare,
-			postDetailsIndex: action.postIndex,
 			postToShare: state.newsfeed[ action.postIndex ]
 		};
 
@@ -62,8 +63,7 @@ export default function posts( state = initialState, action = {}) {
 		return {
 			...state,
 			displayComments: !state.displayComments,
-			postDetailsId: action.postDetailsId,
-			postDetailsIndex: action.postDetailsIndex
+			postDetailsId: action.postDetailsId
 		};
 
 	default:

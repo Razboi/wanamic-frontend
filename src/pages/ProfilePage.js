@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
-import ShareBox from "../components/ShareBox";
 import NewsFeed from "../components/NewsFeed";
+import ProfileOptions from "../components/ProfileOptions";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import PropTypes from "prop-types";
@@ -86,26 +85,6 @@ const
 			color: #D3D3D3;
 		}
 	`,
-	Options = styled.div`
-		@media (max-width: 420px) {
-			grid-area: o;
-			display: grid;
-			grid-template-columns: 100%;
-			grid-template-rows: 33% 66%;
-			grid-template-areas:
-				"buttons"
-				"kw"
-		}
-	`,
-	Buttons = styled.span`
-		grid-area: buttons;
-		align-self: center;
-		justify-self: center;
-	`,
-	Keywords = styled.span`
-		grid-area: kw;
-		align-self: center;
-	`,
 	Description = styled.div`
 		@media (max-width: 420px) {
 			padding: 10px;
@@ -125,24 +104,26 @@ class ProfilePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			user: {},
+			user: undefined,
 			posts: [],
 			hasMore: true,
 			skip: 1,
 			isInfiniteLoading: false,
-			empty: false,
-			sharebox: ""
+			inexistent: false,
+			requested: false
 		};
 	}
 
 	componentDidMount() {
 		this.refreshTimeline();
+		api.isRequested( this.props.match.params.username )
+			.then( res => this.setState({ requested: res.data }))
+			.catch( err => console.log( err ));
+
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
 				this.setImages( res.data.headerImage, res.data.profileImage );
-				this.setState({
-					user: res.data
-				});
+				this.setState({ user: res.data });
 			})
 			.catch( err => {
 				console.log( err );
@@ -193,44 +174,32 @@ class ProfilePage extends Component {
 	refreshTimeline = () => {
 		api.getTimeline( 0, this.props.match.params.username )
 			.then( res => {
-				this.setState({
-					posts: res.data
-				});
+				this.setState({ posts: res.data });
 			}).catch( err => console.log( err ));
-	}
-
-	updatePost = ( postIndex, updatedContent ) => {
-		var posts = this.state.posts;
-		posts[ postIndex ].content = updatedContent;
-		this.setState({ posts: posts });
-	}
-
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value });
-
-	handleShare = () => {
-		if ( this.state.sharebox !== "" ) {
-			const post = {
-				post: { content: this.state.sharebox }
-			};
-
-			api.createPost( post )
-				.then(() => this.refreshTimeline())
-				.catch( err => console.log( err ));
-
-			this.setState({ sharebox: "" });
-		}
 	}
 
 	handleAddFriend = () => {
 		api.addFriend( this.props.match.params.username )
-			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.props.match.params.username )
-			.then( res => console.log( res ))
+			.catch( err => console.log( err ));
+	}
+
+	handleReqAccept = () => {
+		api.acceptRequest( this.props.match.params.username )
+			.catch( err => console.log( err ));
+	}
+
+	handleReqDelete = () => {
+		api.acceptRequest( this.props.match.params.username )
+			.catch( err => console.log( err ));
+	}
+
+	handleDeleteFriend = () => {
+		api.deleteFriend( this.props.match.params.username )
 			.catch( err => console.log( err ));
 	}
 
@@ -239,67 +208,51 @@ class ProfilePage extends Component {
 			return (
 				<h2>This account doesn't exist</h2>
 			);
-		} else {
-			return (
-				<Wrapper>
-					<StyledInfiniteScroll
-						pageStart={this.state.skip}
-						hasMore={this.state.hasMore}
-						loadMore={this.getTimeline}
-						initialLoad={false}
-						useWindow={false}
-					>
-						<Header image={`url(${backgroundImg})`} />
-						<Information>
-							<BasicInfo>
-								<UserImage src={profileImg} />
-								<Names>
-									<UserName>{this.state.user.fullname}</UserName>
-									<NickName>@{this.state.user.username}</NickName>
-								</Names>
-							</BasicInfo>
-							<Options>
-								<Buttons>
-									<Button
-										onClick={this.handleAddFriend}
-										primary
-										size="tiny"
-										content="Add Friend"
-									/>
-									<Button
-										onClick={this.handleFollow}
-										secondary
-										size="tiny"
-										content="Follow"
-									/>
-									<Button size="tiny" icon="mail outline" />
-								</Buttons>
-								<Keywords>
-									{this.state.user.keywords}
-								</Keywords>
-							</Options>
-							<Description>
-								<p>{this.state.user.description}</p>
-							</Description>
-						</Information>
-						<Timeline>
-							<ShareBox
-								handleChange={this.handleChange}
-								sharebox={this.state.sharebox}
-								handleShare={this.handleShare}
-							/>
-							<NewsFeed
-								posts={this.state.posts}
-								getNewsFeed={this.getTimeline}
-								updatePost={this.updatePost}
-								hasMore={this.state.hasMore}
-								skip={this.state.skip}
-							/>
-						</Timeline>
-					</StyledInfiniteScroll>
-				</Wrapper>
-			);
 		}
+		if ( !this.state.user ) {
+			return null;
+		}
+		return (
+			<Wrapper>
+				<StyledInfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getTimeline}
+					initialLoad={false}
+					useWindow={false}
+				>
+					<Header image={`url(${backgroundImg})`} />
+
+					<Information>
+						<BasicInfo>
+							<UserImage src={profileImg} />
+							<Names>
+								<UserName>{this.state.user.fullname}</UserName>
+								<NickName>@{this.state.user.username}</NickName>
+							</Names>
+						</BasicInfo>
+
+						<ProfileOptions
+							user={this.state.user}
+							handleAddFriend={this.handleAddFriend}
+							handleFollow={this.handleFollow}
+							handleReqAccept={this.handleReqAccept}
+							handleReqDelete={this.handleReqDelete}
+							requested={this.state.requested}
+							handleDeleteFriend={this.handleDeleteFriend}
+						/>
+
+						<Description>
+							<p>{this.state.user.description}</p>
+						</Description>
+					</Information>
+
+					<Timeline>
+						<NewsFeed posts={this.state.posts} />
+					</Timeline>
+				</StyledInfiniteScroll>
+			</Wrapper>
+		);
 	}
 }
 

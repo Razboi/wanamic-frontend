@@ -72,6 +72,7 @@ class MediaStep2 extends Component {
 				<ShareWrapper>
 					<ContentInputWrapper>
 						<UserContentInput
+							className="userInput"
 							name="userInput"
 							value={this.props.userInput}
 							placeholder="Share your opinion..."
@@ -96,8 +97,18 @@ class MediaStep2 extends Component {
 						background={this.props.DefaultCover}
 					/>
 				}
-				<BackButton secondary content="Back" onClick={this.props.prevStep} />
-				<ShareButton primary content="Next" onClick={this.props.nextStep} />
+				<BackButton
+					className="prevButton"
+					secondary
+					content="Back"
+					onClick={this.props.prevStep}
+				/>
+				<ShareButton
+					className="nextButton"
+					primary
+					content="Next"
+					onClick={this.props.nextStep}
+				/>
 			</SelectedWrapper>
 		);
 	}

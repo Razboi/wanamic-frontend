@@ -100,6 +100,7 @@ class MediaStep3 extends Component {
 								onClick={() => this.props.setPrivacyRange( 1 )}
 							/>
 							<PrivacyButton
+								className="privacyButton2"
 								primary={this.props.privacyRange >= 2 && true}
 								circular
 								icon="binoculars"
@@ -128,8 +129,18 @@ class MediaStep3 extends Component {
 							</AlertCheck>
 						</Alerts>
 					</AlertsWrapper>
-					<BackButton secondary content="Back" onClick={this.props.prevStep} />
-					<ShareButton primary content="Done" onClick={this.props.handleSubmit} />
+					<BackButton
+						className="prevButton"
+						secondary
+						content="Back"
+						onClick={this.props.prevStep}
+					/>
+					<ShareButton
+						className="nextButton"
+						primary
+						content="Done"
+						onClick={this.props.handleSubmit}
+					/>
 				</ShareOptionsWrapper>
 				{this.props.mediaData && this.props.mediaData.image ?
 					<SelectedMediaBackground background={this.props.mediaData.image} />

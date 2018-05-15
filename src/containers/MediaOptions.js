@@ -3,6 +3,7 @@ import { Button, Input, TextArea } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
+import ShareBox from "../components/ShareBox";
 import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
@@ -64,6 +65,11 @@ const
 		position: fixed;
 		bottom: 5px;
 		left: 5px;
+	`,
+	ShareBoxWrapper = styled.div`
+		z-index: 2;
+		display: grid;
+		align-content: center;
 	`;
 
 class MediaOptions extends Component {
@@ -72,9 +78,11 @@ class MediaOptions extends Component {
 		this.state = {
 			searchMedia: false,
 			shareLink: false,
+			shareState: false,
 			linkUrl: "",
 			linkContent: "",
-			mediaType: ""
+			mediaType: "",
+			sharebox: ""
 		};
 	}
 
@@ -108,6 +116,21 @@ class MediaOptions extends Component {
 		this.setState({ shareLink: !this.state.shareLink });
 	}
 
+	switchState = () => {
+		this.setState({ shareState: !this.state.shareState });
+	}
+
+	handleShare = () => {
+		if ( this.state.sharebox !== "" ) {
+			api.createPost( this.state.sharebox )
+				.then( newPost => {
+					this.props.addPost( newPost );
+					this.props.switchMediaOptions();
+				}).catch( err => console.log( err ));
+			this.setState({ sharebox: "" });
+		}
+	};
+
 	render() {
 		if ( this.state.searchMedia ) {
 			return (
@@ -117,6 +140,20 @@ class MediaOptions extends Component {
 						mediaType={this.state.mediaType}
 						switchSearchMedia={this.switchSearchMedia}
 					/>
+				</MediaOptionsWrapper>
+			);
+		}
+		if ( this.state.shareState ) {
+			return (
+				<MediaOptionsWrapper>
+					<MediaDimmer />
+					<ShareBoxWrapper>
+						<ShareBox
+							handleChange={this.handleChange}
+							sharebox={this.state.sharebox}
+							handleShare={this.handleShare}
+						/>
+					</ShareBoxWrapper>
 				</MediaOptionsWrapper>
 			);
 		}
@@ -169,6 +206,9 @@ class MediaOptions extends Component {
 					/>
 					<MediaButton secondary circular icon="tv" size="huge"
 						onClick={() => this.switchSearchMedia( "tv" )}
+					/>
+					<MediaButton secondary circular icon="pencil" size="huge"
+						onClick={this.switchState}
 					/>
 				</MediaButtons>
 			</MediaOptionsWrapper>

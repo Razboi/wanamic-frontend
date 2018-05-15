@@ -105,7 +105,7 @@ class Post extends Component {
 				<PostHeader>
 					<Author className="postAuthor">{this.props.post.author}</Author>
 					<DateTime className="postDate">
-						{moment( this.props.post.date ).fromNow()}
+						{moment( this.props.post.createdAt ).fromNow()}
 					</DateTime>
 				</PostHeader>
 

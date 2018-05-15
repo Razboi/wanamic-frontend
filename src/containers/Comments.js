@@ -14,7 +14,7 @@ const
 		position: absolute;
 		height: 100vh;
 		width: 100%;
-		z-index: 3;
+		z-index: 4;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
@@ -117,23 +117,19 @@ Comments.propTypes = {
 	setComments: PropTypes.func.isRequired,
 	setNewsfeed: PropTypes.func.isRequired,
 	postId: PropTypes.string.isRequired,
-	postIndex: PropTypes.number.isRequired,
 	newsfeed: PropTypes.array.isRequired,
 	comments: PropTypes.array
 };
 
 const
-	mapStateToProps = state => {
-		return {
-			postId: state.posts.postDetailsId,
-			postIndex: state.posts.postDetailsIndex,
-			newsfeed: state.posts.newsfeed,
-			comments: state.posts.comments
-		};
-	},
+	mapStateToProps = state => ({
+		postId: state.posts.postDetailsId,
+		newsfeed: state.posts.newsfeed,
+		comments: state.posts.comments
+	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id, index ) => dispatch( switchComments( id, index )),
+		switchComments: ( id ) => dispatch( switchComments( id )),
 		setComments: comments => dispatch( setComments( comments )),
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addComment: comment => dispatch( addComment( comment )),
