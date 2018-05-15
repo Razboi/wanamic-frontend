@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { switchNotifications } from "../services/actions/notifications";
+import { switchMessages } from "../services/actions/messages";
 import { logout } from "../services/actions/auth";
 
 const
@@ -33,13 +34,30 @@ class NavBar extends Component {
 	handleHome = () => {
 		if ( this.props.location.pathname !== "/" ) {
 			this.props.history.push( "/" );
-		} else {
-			this.props.displayNotifications ?
-				this.props.switchNotifications()
-				:
-				window.scrollTo( 0, 0 );
+			return;
+		}
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
 		}
 	}
+
+	handleNotifications = () => {
+		this.props.switchNotifications();
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
+	}
+
+	handleMessages = () => {
+		this.props.switchMessages();
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+	}
+
 	render() {
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
@@ -51,7 +69,7 @@ class NavBar extends Component {
 						onClick={this.handleHome}
 					/>
 				</NavOption>
-				<NavOption onClick={this.props.switchNotifications}>
+				<NavOption onClick={this.handleNotifications}>
 					<Icon name="bell outline" size="large" />
 					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
@@ -66,8 +84,13 @@ class NavBar extends Component {
 						onClick={() => this.props.history.push( "/explore" )}
 					/>
 				</NavOption>
-				<NavOption>
+				<NavOption onClick={this.handleMessages}>
 					<Icon name="conversation" size="large" />
+					{this.props.newMessages > 0 &&
+						<NotificationsLength size="small" floating circular color="red">
+							{this.props.newMessages}
+						</NotificationsLength>
+					}
 				</NavOption>
 				<NavOption>
 					<Icon icon="bars" size="large">
@@ -91,17 +114,21 @@ NavBar.propTypes = {
 	switchNotifications: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
+	newMessages: PropTypes.number.isRequired,
 	displayNotifications: PropTypes.bool.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		displayNotifications: state.notifications.displayNotifications
+		newMessages: state.messages.newMessages,
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.messages.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		switchNotifications: () => dispatch( switchNotifications()),
+		switchMessages: ( id ) => dispatch( switchMessages( id )),
 		logout: () => dispatch( logout())
 	});
 

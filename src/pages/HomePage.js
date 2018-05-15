@@ -5,6 +5,7 @@ import { logout } from "../services/actions/auth";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
+import { addMessage } from "../services/actions/messages";
 import { setNotifications } from "../services/actions/notifications";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -16,9 +17,11 @@ import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import Notifications from "../containers/Notifications";
+import Messages from "../containers/Messages";
 import io from "socket.io-client";
 
 const
+	socket = io( "http://localhost:8000" ),
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
@@ -71,15 +74,20 @@ class HomePage extends Component {
 	}
 
 	setupNotifications() {
-		const socket = io( "http://localhost:8000" );
 		api.getNotifications()
 			.then( res => {
 				this.props.setNotifications( res.data.notifications, res.data.newNotifications );
 			}).catch( err => console.log( err ));
-		socket.emit( "register", localStorage.getItem( "token" ));
+		const data = {
+			token: localStorage.getItem( "token" ),
+			username: localStorage.getItem( "username" )
+		};
+		socket.emit( "register", data );
 		socket.on( "notifications", data => {
-			console.log( data );
 			this.props.setNotifications( data.notifications, data.newNotifications );
+		});
+		socket.on( "message", data => {
+			this.props.addMessage( data );
 		});
 	}
 
@@ -140,9 +148,10 @@ class HomePage extends Component {
 					<ShareMediaButton primary circular icon="plus" size="big"
 						onClick={this.switchMediaOptions}
 					/>
-					{this.props.displayShare && <Share /> }
+					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments />}
-					{this.props.displayNotifications && <Notifications /> }
+					{this.props.displayNotifications && <Notifications />}
+					{this.props.displayMessages && <Messages socket={socket} />}
 
 					{this.props.mediaOptions &&
 						<MediaOptions handlePictureSelect={this.handlePictureSelect}
@@ -173,13 +182,15 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
-		displayNotifications: state.notifications.displayNotifications
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.messages.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
+		addMessage: message => dispatch( addMessage( message )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		setNotifications: ( allNotifications, newNotifications ) => {
 			dispatch( setNotifications( allNotifications, newNotifications ));

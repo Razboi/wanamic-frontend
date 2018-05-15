@@ -172,13 +172,11 @@ class ExplorePage extends Component {
 
 	handleAddFriend = () => {
 		api.addFriend( this.state.user.username )
-			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.state.user.username )
-			.then( res => console.log( res ))
 			.catch( err => console.log( err ));
 	}
 
