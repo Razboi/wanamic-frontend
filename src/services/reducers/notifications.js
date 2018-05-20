@@ -23,7 +23,8 @@ export default function notifications( state = initialState, action = {}) {
 	case "ADD_NOTIFICATION":
 		return {
 			...state,
-			allNotifications: [ action.notification, ...state.allNotifications ]
+			allNotifications: [ action.notification, ...state.allNotifications ],
+			newNotifications: state.newNotifications + 1
 		};
 
 	case "DELETE_NOTIFICATION":

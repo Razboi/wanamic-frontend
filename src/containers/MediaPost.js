@@ -113,6 +113,8 @@ class MediaPost extends Component {
 		});
 
 		api.likePost( this.props.post._id )
+			.then( res =>
+				this.props.socket.emit( "sendNotification", res.data ))
 			.catch( err => console.log( err ));
 	}
 

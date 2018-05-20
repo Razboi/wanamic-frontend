@@ -22,6 +22,7 @@ class NewsFeed extends Component {
 							<MediaPost
 								index={index}
 								post={post}
+								socket={this.props.socket}
 							/>
 						</PostWrapper>
 						:
@@ -29,6 +30,7 @@ class NewsFeed extends Component {
 							<Post
 								index={index}
 								post={post}
+								socket={this.props.socket}
 							/>
 						</PostWrapper>
 				)}

@@ -6,7 +6,7 @@ import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
 import { addMessage } from "../services/actions/messages";
-import { setNotifications } from "../services/actions/notifications";
+import { setNotifications, addNotification } from "../services/actions/notifications";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
@@ -84,7 +84,8 @@ class HomePage extends Component {
 		};
 		socket.emit( "register", data );
 		socket.on( "notifications", data => {
-			this.props.setNotifications( data.notifications, data.newNotifications );
+			console.log( data );
+			this.props.addNotification( data );
 		});
 		socket.on( "message", data => {
 			this.props.addMessage( data );
@@ -149,7 +150,7 @@ class HomePage extends Component {
 						onClick={this.switchMediaOptions}
 					/>
 					{this.props.displayShare && <Share />}
-					{this.props.displayComments && <Comments />}
+					{this.props.displayComments && <Comments socket={socket} />}
 					{this.props.displayNotifications && <Notifications />}
 					{this.props.displayMessages && <Messages socket={socket} />}
 
@@ -158,7 +159,7 @@ class HomePage extends Component {
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledNewsFeed posts={this.props.newsfeed} />
+						<StyledNewsFeed posts={this.props.newsfeed} socket={socket} />
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>
@@ -192,6 +193,7 @@ const
 		addPost: post => dispatch( addPost( post )),
 		addMessage: message => dispatch( addMessage( message )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		addNotification: notification => dispatch( addNotification( notification )),
 		setNotifications: ( allNotifications, newNotifications ) => {
 			dispatch( setNotifications( allNotifications, newNotifications ));
 		},

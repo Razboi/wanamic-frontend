@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 
+
 const
 	Wrapper = styled.div`
 		position: relative;
@@ -75,6 +76,8 @@ class Post extends Component {
 		});
 
 		api.likePost( this.props.post._id )
+			.then( res =>
+				this.props.socket.emit( "sendNotification", res.data ))
 			.catch( err => console.log( err ));
 	}
 
@@ -139,7 +142,8 @@ class Post extends Component {
 
 Post.propTypes = {
 	index: PropTypes.number,
-	post: PropTypes.object.isRequired
+	post: PropTypes.object.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 const
