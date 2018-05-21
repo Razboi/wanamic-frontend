@@ -22,7 +22,8 @@ class AuthPage extends Component {
 			username: "",
 			fullname: "",
 			signup: false,
-			signupStep: 1
+			signupStep: 1,
+			error: undefined
 		};
 	}
 
@@ -35,7 +36,9 @@ class AuthPage extends Component {
 	handleLogin = () => {
 		const credentials = { email: this.state.email, password: this.state.password };
 		if ( credentials.email !== "" && credentials.password !== "" ) {
-			this.props.login( credentials ).then(() => this.props.history.push( "/" ));
+			this.props.login( credentials )
+				.then(() => this.props.history.push( "/" ))
+				.catch( err => this.setState({ error: err }));
 		}
 	};
 
@@ -48,12 +51,18 @@ class AuthPage extends Component {
 				credentials.username !== "" && credentials.fullname !== "" ) {
 			this.props.signup( credentials )
 				.then(() => this.props.history.push( "/welcome" ))
-				.catch( err => console.log( err ));
+				.catch( err => {
+					if ( err.response.data === "Email already registered" ) {
+						this.setState({ error: err, signupStep: 1 });
+					} else {
+						this.setState({ error: err });
+					}
+				});
 		}
 	};
 
 	handleSignupNext = () => {
-		this.setState({ signupStep: 2 });
+		this.setState({ signupStep: 2, error: undefined });
 	}
 
 	render() {
@@ -61,6 +70,7 @@ class AuthPage extends Component {
 			<Wrapper>
 				{this.state.signup ?
 					<SignupForm
+						error={this.state.error}
 						handleChange={this.handleChange}
 						swapForm={this.swapForm}
 						handleSignup={this.handleSignup}
@@ -71,6 +81,7 @@ class AuthPage extends Component {
 					/>
 					:
 					<LoginForm
+						error={this.state.error}
 						handleChange={this.handleChange}
 						swapForm={this.swapForm}
 						email={this.state.email}

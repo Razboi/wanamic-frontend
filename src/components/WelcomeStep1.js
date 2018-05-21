@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Message } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 class Step1 extends Component {
@@ -12,6 +12,11 @@ class Step1 extends Component {
 	render() {
 		return (
 			<Form>
+				{this.props.error &&
+					<Message negative>
+						<Message.Header>{this.props.error.response.data}</Message.Header>
+					</Message>
+				}
 				<h2>Step 1</h2>
 				<Form.Input
 					className="fullnameInput"

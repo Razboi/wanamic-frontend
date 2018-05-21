@@ -8,7 +8,9 @@ export default {
 			data: { credentials: credentials }
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	signup: credentials =>
 		axios({
@@ -17,7 +19,9 @@ export default {
 			data: { credentials: credentials }
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	createPost: post =>
 		axios({

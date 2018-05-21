@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button, Header } from "semantic-ui-react";
+import { Form, Button, Header, Message } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 const
@@ -41,6 +41,11 @@ class LoginForm extends Component {
 	render() {
 		return (
 			<FormContainer id="AuthFormContainer">
+				{this.props.error &&
+					<Message negative>
+						<Message.Header>{this.props.error.response.data}</Message.Header>
+					</Message>
+				}
 				<SwapButton
 					className="swapButton"
 					secondary

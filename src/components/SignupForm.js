@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button, Header } from "semantic-ui-react";
+import { Form, Button, Header, Message } from "semantic-ui-react";
 import Step1 from "./WelcomeStep1";
 import PropTypes from "prop-types";
 
@@ -42,6 +42,7 @@ class SignupForm extends Component {
 		if ( this.props.step === 2 ) {
 			return (
 				<Step1
+					error={this.props.error}
 					handleChange={this.props.handleChange}
 					handleSignup={this.props.handleSignup}
 				/>
@@ -49,6 +50,11 @@ class SignupForm extends Component {
 		} else {
 			return (
 				<FormContainer id="AuthFormContainer">
+					{this.props.error &&
+						<Message negative>
+							<Message.Header>{this.props.error.response.data}</Message.Header>
+						</Message>
+					}
 					<SwapButton
 						className="swapButton"
 						secondary
