@@ -76,9 +76,11 @@ class Post extends Component {
 		});
 
 		api.likePost( this.props.post._id )
-			.then( res =>
-				this.props.socket.emit( "sendNotification", res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res.data ) {
+					this.props.socket.emit( "sendNotification", res.data );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleDislike = () => {

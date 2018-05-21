@@ -5,13 +5,11 @@ import ProfileOptions from "../components/ProfileOptions";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import PropTypes from "prop-types";
-import io from "socket.io-client";
 var
 	backgroundImg,
 	profileImg;
 
 const
-	socket = io( "http://localhost:8000" ),
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
@@ -182,13 +180,13 @@ class ProfilePage extends Component {
 
 	handleAddFriend = () => {
 		api.addFriend( this.props.match.params.username )
-			.then( res => socket.emit( "sendNotification", res.data ))
+			.then( res => this.props.socket.emit( "sendNotification", res.data ))
 			.catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.props.match.params.username )
-			.then( res => socket.emit( "sendNotification", res.data ))
+			.then( res => this.props.socket.emit( "sendNotification", res.data ))
 			.catch( err => console.log( err ));
 	}
 

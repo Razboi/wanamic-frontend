@@ -10,6 +10,10 @@ import ExplorePage from "./pages/ExplorePage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 import MediaPicture from "./containers/MediaPicture";
+import io from "socket.io-client";
+
+const
+	socket = io( "http://localhost:8000" );
 
 // Switch will render the first match. /:username must be last
 class App extends Component {
@@ -17,14 +21,14 @@ class App extends Component {
 		return (
 			<div>
 				<Switch>
-					<UserRoute exact path="/" component={HomePage}/>
+					<UserRoute exact path="/" component={HomePage} socket={socket}/>
 					<GuestRoute path="/login" component={AuthPage} />
 					<UserRoute path="/settings" component={SettingsPage}/>
 					<NewUserRoute path="/welcome" component={WelcomePage} />
 					<UserRoute path="/explore" component={ExplorePage} />
 					<UserRoute path="/mediaPicture" component={MediaPicture} />
 
-					<UserRoute path="/:username" component={ProfilePage} />
+					<UserRoute path="/:username" component={ProfilePage} socket={socket} />
 				</Switch>
 			</div>
 		);

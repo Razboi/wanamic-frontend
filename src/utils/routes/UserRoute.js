@@ -11,7 +11,7 @@ const UserRoute = ({ authenticated, component: Component, ...rest }) => (
 				localStorage.getItem( "NU" ) ?
 					<Redirect to="/welcome" />
 					:
-					<Component {...props} />
+					<Component socket={rest.socket} {...props} />
 				:
 				<Redirect to="/login" />}
 	/>

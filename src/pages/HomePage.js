@@ -18,10 +18,8 @@ import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import Notifications from "../containers/Notifications";
 import Messages from "../containers/Messages";
-import io from "socket.io-client";
 
 const
-	socket = io( "http://localhost:8000" ),
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
@@ -82,12 +80,12 @@ class HomePage extends Component {
 			token: localStorage.getItem( "token" ),
 			username: localStorage.getItem( "username" )
 		};
-		socket.emit( "register", data );
-		socket.on( "notifications", data => {
+		this.props.socket.emit( "register", data );
+		this.props.socket.on( "notifications", data => {
 			console.log( data );
 			this.props.addNotification( data );
 		});
-		socket.on( "message", data => {
+		this.props.socket.on( "message", data => {
 			this.props.addMessage( data );
 		});
 	}
@@ -150,16 +148,16 @@ class HomePage extends Component {
 						onClick={this.switchMediaOptions}
 					/>
 					{this.props.displayShare && <Share />}
-					{this.props.displayComments && <Comments socket={socket} />}
+					{this.props.displayComments && <Comments socket={this.props.socket} />}
 					{this.props.displayNotifications && <Notifications />}
-					{this.props.displayMessages && <Messages socket={socket} />}
+					{this.props.displayMessages && <Messages socket={this.props.socket} />}
 
 					{this.props.mediaOptions &&
 						<MediaOptions handlePictureSelect={this.handlePictureSelect}
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledNewsFeed posts={this.props.newsfeed} socket={socket} />
+						<StyledNewsFeed posts={this.props.newsfeed} socket={this.props.socket} />
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>

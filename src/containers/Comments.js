@@ -72,7 +72,9 @@ class Comments extends Component {
 		api.createComment( this.state.comment, this.props.postId )
 			.then( res => {
 				this.setState({ comment: "" });
-				this.props.socket.emit( "sendNotification", res.data.newNotification );
+				res.data.newNotification && this.props.socket.emit(
+					"sendNotification", res.data.newNotification
+				);
 				this.props.addComment( res.data.newComment );
 				this.props.updatePost( res.data.updatedPost );
 			}).catch( err => console.log( err ));
