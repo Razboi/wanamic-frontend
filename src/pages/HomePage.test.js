@@ -14,6 +14,7 @@ Enzyme.configure({ adapter: new Adapter() });
 describe( "<Homepage/>", () => {
 	var
 		wrapper,
+		socketSpy = sinon.spy(),
 		store;
 
 	beforeEach(() => {
@@ -24,6 +25,7 @@ describe( "<Homepage/>", () => {
 		});
 		wrapper = shallow(
 			<HomePage
+				socket={{ emit: socketSpy, on: socketSpy }}
 				store={store}
 			/>
 		).dive();
