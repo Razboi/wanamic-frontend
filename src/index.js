@@ -10,21 +10,27 @@ import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { userLoggedIn } from "./services/actions/auth";
 import "semantic-ui-css/semantic.min.css";
+import api from "./services/api";
 
 const store = createStore( rootReducer, composeWithDevTools(
 	applyMiddleware( thunk )
 ));
 
 if ( localStorage.token ) {
-	store.dispatch( userLoggedIn());
+	api.verifyToken()
+		.then( res => {
+			if ( res === "OK" ) {
+				store.dispatch( userLoggedIn());
+			}
+			ReactDOM.render(
+				<BrowserRouter>
+					<Provider store={store}>
+						<App />
+					</Provider>
+				</BrowserRouter>
+				,
+				document.getElementById( "root" ));
+		});
 }
 
-ReactDOM.render(
-	<BrowserRouter>
-		<Provider store={store}>
-			<App />
-		</Provider>
-	</BrowserRouter>
-	,
-	document.getElementById( "root" ));
 registerServiceWorker();

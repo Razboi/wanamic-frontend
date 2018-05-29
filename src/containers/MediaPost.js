@@ -204,11 +204,11 @@ class MediaPost extends Component {
 							/>
 						}
 
-						{this.props.content &&
+						{this.props.post.content &&
 							<PostUserContent>
 								<p className="postContent">
-									<ContentAuthor>@{this.props.author} </ContentAuthor>
-									{this.props.content}
+									<ContentAuthor>@{this.props.post.author} </ContentAuthor>
+									{this.props.post.content}
 								</p>
 							</PostUserContent>
 						}

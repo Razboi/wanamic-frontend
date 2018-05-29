@@ -23,6 +23,15 @@ export default {
 				throw err;
 			}),
 
+	verifyToken: () =>
+		axios({
+			method: "post",
+			url: "/auth/verify",
+			data: { token: localStorage.getItem( "token" ) }
+		})
+			.then( res => res.data )
+			.catch( err => err ),
+
 	createPost: post =>
 		axios({
 			method: "post",
