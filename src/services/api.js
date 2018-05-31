@@ -30,6 +30,18 @@ export default {
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res.data )
+			.catch( err => err.response.data ),
+
+	refreshToken: () =>
+		axios({
+			method: "post",
+			url: "/auth/token",
+			data: {
+				userId: localStorage.getItem( "id" ),
+				refreshToken: localStorage.getItem( "refreshToken" )
+			}
+		})
+			.then( res => res.data )
 			.catch( err => err ),
 
 	createPost: post =>

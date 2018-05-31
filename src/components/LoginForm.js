@@ -77,7 +77,6 @@ class LoginForm extends Component {
 					<Form.Button
 						type="button"
 						className="loginButton"
-						floated="right"
 						primary
 						content="Log In"
 						onClick={this.props.handleLogin}

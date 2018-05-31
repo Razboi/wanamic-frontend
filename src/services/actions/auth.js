@@ -15,6 +15,7 @@ export const
 		api.login( credentials ).then( data => {
 			if ( data && data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
+				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
 				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());
@@ -38,6 +39,7 @@ export const
 
 	logout = () => dispatch => {
 		localStorage.removeItem( "token" );
+		localStorage.removeItem( "refreshToken" );
 		localStorage.removeItem( "username" );
 		localStorage.removeItem( "id" );
 		dispatch( userLoggedOut());
