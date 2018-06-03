@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Input, Image, Button } from "semantic-ui-react";
 import api from "../services/api";
 import PropTypes from "prop-types";
+import refreshToken from "../utils/refreshToken";
 
 const
 	SelectedWrapper = styled.div`
@@ -88,8 +89,16 @@ class MediaPicture extends Component {
 		data.append( "picture", this.state.imageFile );
 		data.append( "content", this.state.userInput );
 		data.append( "token", localStorage.getItem( "token" ));
-		api.createMediaPicture( data );
-		this.props.history.push( "/" );
+		api.createMediaPicture( data )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleSubmit())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.history.push( "/" );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleBack = () => {

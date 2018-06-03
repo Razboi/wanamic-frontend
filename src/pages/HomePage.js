@@ -18,6 +18,7 @@ import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import Notifications from "../containers/Notifications";
 import Messages from "../containers/Messages";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -60,7 +61,6 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			skip: 1,
-			isInfiniteLoading: false,
 			hasMore: true,
 			picture: null
 		};
@@ -91,23 +91,20 @@ class HomePage extends Component {
 	}
 
 	getNewsFeed = () => {
-		if ( this.state.hasMore && !this.state.isInfiniteLoading ) {
-			this.setState({ isInfiniteLoading: true });
+		if ( this.state.hasMore ) {
 			api.getNewsFeed( this.state.skip )
 				.then( res => {
-					if ( res.data.length < 10 ) {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.getNewsFeed())
+							.catch( err => console.log( err ));
+					} else {
 						this.props.addToNewsfeed( res.data );
 						this.setState({
-							hasMore: false,
-							isInfiniteLoading: false
+							hasMore: res.data.length > 10,
+							skip: this.state.skip + 1
 						});
-						return;
 					}
-					this.props.addToNewsfeed( res.data );
-					this.setState({
-						isInfiniteLoading: false,
-						skip: this.state.skip + 1
-					});
 				}).catch( err => console.log( err ));
 		}
 	}

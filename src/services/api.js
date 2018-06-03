@@ -36,10 +36,7 @@ export default {
 		axios({
 			method: "post",
 			url: "/auth/token",
-			data: {
-				userId: localStorage.getItem( "id" ),
-				refreshToken: localStorage.getItem( "refreshToken" )
-			}
+			data: { refreshToken: localStorage.getItem( "refreshToken" ) }
 		})
 			.then( res => res.data )
 			.catch( err => err ),
@@ -51,7 +48,7 @@ export default {
 			data: { token: localStorage.getItem( "token" ), post: post }
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	createMediaPost: data =>
 		axios({
@@ -60,7 +57,7 @@ export default {
 			data: { token: localStorage.getItem( "token" ), data: data }
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	createMediaLink: data =>
 		axios({
@@ -69,7 +66,7 @@ export default {
 			data: { token: localStorage.getItem( "token" ), data: data }
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	createMediaPicture: data =>
 		axios({
@@ -78,7 +75,7 @@ export default {
 			data: data
 		})
 			.then( res => res.data )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getNewsFeed: skip =>
 		axios({
@@ -87,7 +84,7 @@ export default {
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getTimeline: ( skip, username ) =>
 		axios({
@@ -104,7 +101,7 @@ export default {
 			data: { post: { id: postId, token: localStorage.getItem( "token" ) } }
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	updatePost: ( postId, content ) =>
 		axios({
@@ -116,7 +113,7 @@ export default {
 			} }
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getUserInfo: username =>
 		axios({
@@ -133,7 +130,7 @@ export default {
 			url: "/user/info"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	addFriend: username =>
 		axios({
@@ -223,7 +220,7 @@ export default {
 			url: "/user/setUserKw"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	exploreContent: skip =>
 		axios({
@@ -241,7 +238,7 @@ export default {
 			url: "/posts/like/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	dislikePost: postId =>
 		axios({
@@ -250,7 +247,7 @@ export default {
 			url: "/posts/dislike/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	createComment: ( comment, postId ) =>
 		axios({

@@ -7,6 +7,7 @@ import ShareBox from "../components/ShareBox";
 import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
+import refreshToken from "../utils/refreshToken";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -95,9 +96,15 @@ class MediaOptions extends Component {
 			api.createMediaLink({
 				link: this.state.linkUrl, content: this.state.linkContent
 			})
-				.then( newPost => {
-					this.props.addPost( newPost );
-					this.props.switchMediaOptions();
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.submitLink())
+							.catch( err => console.log( err ));
+					} else {
+						this.props.addPost( res );
+						this.props.switchMediaOptions();
+					}
 				}).catch( err => console.log( err ));
 		}
 	}
@@ -123,11 +130,17 @@ class MediaOptions extends Component {
 	handleShare = () => {
 		if ( this.state.sharebox !== "" ) {
 			api.createPost( this.state.sharebox )
-				.then( newPost => {
-					this.props.addPost( newPost );
-					this.props.switchMediaOptions();
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.handleShare())
+							.catch( err => console.log( err ));
+					} else {
+						this.props.addPost( res );
+						this.props.switchMediaOptions();
+						this.setState({ sharebox: "" });
+					}
 				}).catch( err => console.log( err ));
-			this.setState({ sharebox: "" });
 		}
 	};
 
@@ -217,7 +230,9 @@ class MediaOptions extends Component {
 }
 
 MediaOptions.propTypes = {
-	handlePictureSelect: PropTypes.func.isRequired
+	handlePictureSelect: PropTypes.func.isRequired,
+	addPost: PropTypes.func.isRequired,
+	switchMediaOptions: PropTypes.func.isRequired
 };
 
 const

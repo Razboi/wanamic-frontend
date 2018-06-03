@@ -100,6 +100,10 @@ class NavBar extends Component {
 									text="Logout"
 									onClick={this.props.logout}
 								/>
+								<Dropdown.Item
+									text="Settings"
+									onClick={() => this.props.history.push( "/settings" )}
+								/>
 							</Dropdown.Menu>
 						</Dropdown>
 					</Icon>

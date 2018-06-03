@@ -10,6 +10,7 @@ import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -93,39 +94,71 @@ class MediaPost extends Component {
 	}
 
 	handleDelete = () => {
-		api.deletePost( this.props.post.id )
-			.then( res => this.props.deletePost( this.props.index ))
-			.catch( err => console.log( err ));
+		api.deletePost( this.props.post._id )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleDelete())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.deletePost( this.props.index );
+				}
+			}).catch( err => console.log( err ));
 	};
 
 	handleUpdate = () => {
 		if ( this.state.content !== this.state.updatedContent
 			&& this.state.updatedContent !== "" ) {
-			api.updatePost( this.props.post.id, this.state.updatedContent )
-				.then( res => this.props.updatePost( res.data ))
+			api.updatePost( this.props.post._id, this.state.updatedContent )
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.handleUpdate())
+							.catch( err => console.log( err ));
+					} else {
+						this.props.updatePost( res.data );
+					}
+				})
 				.catch( err => console.log( err ));
 		}
 	};
 
-	handleLike = () => {
-		this.setState({
-			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
-		});
+	handleLike = retry => {
+		if ( !retry ) {
+			this.setState({
+				likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+			});
+		}
 
 		api.likePost( this.props.post._id )
-			.then( res =>
-				this.props.socket.emit( "sendNotification", res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleLike( true ))
+						.catch( err => console.log( err ));
+				} else {
+					this.props.socket.emit( "sendNotification", res.data );
+				}
+			}).catch( err => 	console.log( err ));
 	}
 
-	handleDislike = () => {
-		var	newLikedBy = this.state.likedBy;
-		const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
-		newLikedBy.splice( index, 1 );
-		this.setState({ likedBy: newLikedBy });
+	handleDislike = retry => {
+		var	newLikedBy;
+		if ( !retry ) {
+			newLikedBy = this.state.likedBy;
+			const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
+			newLikedBy.splice( index, 1 );
+			this.setState({ likedBy: newLikedBy });
+		}
 
 		api.dislikePost( this.props.post._id )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleDislike( true ))
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleFilter = type => {

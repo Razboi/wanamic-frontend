@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import MediaStep2 from "../components/MediaStep2";
 import MediaStep3 from "../components/MediaStep3";
+import refreshToken from "../utils/refreshToken";
 
 var
 	DefaultCover,
@@ -158,9 +159,15 @@ class SearchMedia extends Component {
 		};
 
 		api.createMediaPost( finalData )
-			.then( newPost => {
-				this.props.addPost( newPost );
-				this.props.switchMediaOptions();
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleSubmit())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.addPost( res );
+					this.props.switchMediaOptions();
+				}
 			}).catch( err => console.log( err ));
 	}
 

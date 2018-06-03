@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
 import api from "../services/api";
+import refreshToken from "../utils/refreshToken";
 
 
 class SettingsPage extends Component {
@@ -51,8 +52,33 @@ class SettingsPage extends Component {
 		data.append( "username", this.state.username );
 		data.append( "token", localStorage.getItem( "token" ));
 
-		api.setUserInfo( data );
-		api.setUserKw( keywordsArray );
+		this.setInfo( data );
+		this.setKW( keywordsArray );
+	}
+
+	setInfo = data => {
+		api.setUserInfo( data )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => {
+							data.set( "token", localStorage.getItem( "token" ));
+							this.setInfo( data );
+						})
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
+	}
+
+	setKW = keywordsArray => {
+		api.setUserKw( keywordsArray )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.setKW( keywordsArray ))
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	render() {
