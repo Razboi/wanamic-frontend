@@ -49,7 +49,7 @@ class FriendsList extends Component {
 						<React.Fragment key={index}>
 							<Friend
 								className="friend"
-								onClick={() => this.props.handleSelectReceiver( friend )}
+								onClick={() => this.props.handleSelectConversation( friend )}
 							>
 								<span>
 									<b>{friend.username}</b>
@@ -66,7 +66,7 @@ class FriendsList extends Component {
 
 FriendsList.propTypes = {
 	friends: PropTypes.array.isRequired,
-	handleSelectReceiver: PropTypes.func.isRequired,
+	handleSelectConversation: PropTypes.func.isRequired,
 	switchFriendsList: PropTypes.func.isRequired
 };
 

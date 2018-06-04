@@ -5,6 +5,7 @@ import api from "../services/api";
 import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
+import refreshToken from "../utils/refreshToken";
 
 const
 	CommentAuthor = styled.h4`
@@ -47,16 +48,30 @@ class Comment extends Component {
 
 	handleDelete = () => {
 		api.deleteComment( this.props.comment._id, this.props.comment.post )
-			.then( res => this.props.handleDelete( this.props.index, res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleDelete())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.handleDelete( this.props.index, res.data );
+				}
+			}).catch( err => console.log( err ));
 	};
 
 	handleUpdate = () => {
 		if ( this.state.content !== this.state.updatedContent
 			&& this.state.updatedContent !== "" ) {
-			this.setState({ content: this.state.updatedContent });
 			api.updateComment( this.props.comment._id, this.state.updatedContent )
-				.catch( err => console.log( err ));
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.handleUpdate())
+							.catch( err => console.log( err ));
+					} else {
+						this.setState({ content: this.state.updatedContent });
+					}
+				}).catch( err => console.log( err ));
 		}
 	};
 

@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import {
 	switchComments, setComments, setNewsfeed, addComment, deleteComment, updatePost
 } from "../services/actions/posts";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -53,9 +54,20 @@ class Comments extends Component {
 	}
 
 	componentDidMount() {
+		this.getInitialComments();
+	}
+
+	getInitialComments = () => {
 		api.getPostComments( this.props.postId, 0 )
-			.then( res => this.props.setComments( res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getInitialComments())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.setComments( res.data );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleChange = e => {
@@ -71,12 +83,18 @@ class Comments extends Component {
 	handleComment = () => {
 		api.createComment( this.state.comment, this.props.postId )
 			.then( res => {
-				this.setState({ comment: "" });
-				res.data.newNotification && this.props.socket.emit(
-					"sendNotification", res.data.newNotification
-				);
-				this.props.addComment( res.data.newComment );
-				this.props.updatePost( res.data.updatedPost );
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleComment())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ comment: "" });
+					res.data.newNotification && this.props.socket.emit(
+						"sendNotification", res.data.newNotification
+					);
+					this.props.addComment( res.data.newComment );
+					this.props.updatePost( res.data.updatedPost );
+				}
 			}).catch( err => console.log( err ));
 	}
 

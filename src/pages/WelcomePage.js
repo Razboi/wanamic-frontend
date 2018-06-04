@@ -6,6 +6,7 @@ import Step4 from "../components/WelcomeStep4";
 import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -76,9 +77,16 @@ class WelcomePage extends Component {
 
 	categoriesNext = () => {
 		api.getInterestsMatches( this.state.checkedCategories )
-			.then( res => this.setState({ matchedUsers: res.data }))
-			.catch( err => console.log( err ));
-		this.handleNext();
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.categoriesNext())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ matchedUsers: res.data });
+					this.handleNext();
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	finish = () => {
@@ -91,9 +99,15 @@ class WelcomePage extends Component {
 			api.addInterests( this.state.checkedCategories ),
 			api.setupFollow( this.state.toFollow )
 		])
-			.then(() => {
-				localStorage.removeItem( "NU" );
-				this.props.history.push( "/" );
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.finish())
+						.catch( err => console.log( err ));
+				} else {
+					localStorage.removeItem( "NU" );
+					this.props.history.push( "/" );
+				}
 			}).catch( err => console.log( err ));
 	}
 

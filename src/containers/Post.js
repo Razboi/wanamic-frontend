@@ -9,6 +9,7 @@ import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
+import refreshToken from "../utils/refreshToken";
 
 
 const
@@ -70,27 +71,42 @@ class Post extends Component {
 		}
 	};
 
-	handleLike = () => {
-		this.setState({
-			likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
-		});
+	handleLike = retry => {
+		if ( !retry ) {
+			this.setState({
+				likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+			});
+		}
 
 		api.likePost( this.props.post._id )
 			.then( res => {
-				if ( res.data ) {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleLike( true ))
+						.catch( err => console.log( err ));
+				} else {
 					this.props.socket.emit( "sendNotification", res.data );
 				}
-			}).catch( err => console.log( err ));
+			}).catch( err => 	console.log( err ));
 	}
 
-	handleDislike = () => {
-		var	newLikedBy = this.state.likedBy;
-		const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
-		newLikedBy.splice( index, 1 );
-		this.setState({ likedBy: newLikedBy });
+	handleDislike = retry => {
+		var	newLikedBy;
+		if ( !retry ) {
+			newLikedBy = this.state.likedBy;
+			const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
+			newLikedBy.splice( index, 1 );
+			this.setState({ likedBy: newLikedBy });
+		}
 
 		api.dislikePost( this.props.post._id )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleDislike( true ))
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	render() {

@@ -10,6 +10,7 @@ import api from "../services/api";
 import { switchComments } from "../services/actions/posts";
 import { checkNotification } from "../services/actions/notifications";
 import { withRouter } from "react-router";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -64,10 +65,21 @@ class Notifications extends Component {
 		}
 
 		if ( !notification.checked ) {
-			api.checkNotification( notification._id )
-				.catch( err => console.log( err ));
-			this.props.checkNotification( notificationIndex );
+			this.checkNotification( notification, notificationIndex );
 		}
+	}
+
+	checkNotification = ( notification, notificationIndex ) => {
+		api.checkNotification( notification._id )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.checkNotification( notification ))
+						.catch( err => console.log( err ));
+				} else {
+					this.props.checkNotification( notificationIndex );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	switchDetails = () => {

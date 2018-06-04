@@ -139,7 +139,7 @@ export default {
 			url: "/friends/add"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	deleteFriend: username =>
 		axios({
@@ -148,7 +148,7 @@ export default {
 			url: "/friends/delete"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	followUser: username =>
 		axios({
@@ -157,7 +157,7 @@ export default {
 			url: "/followers/follow"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getInterestsMatches: data =>
 		axios({
@@ -166,7 +166,7 @@ export default {
 			url: "/user/match"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	addInterests: data =>
 		axios({
@@ -175,7 +175,7 @@ export default {
 			url: "/user/addInterests"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	setupFollow: users =>
 		axios({
@@ -184,7 +184,7 @@ export default {
 			url: "/followers/setupFollow"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getSugested: skip =>
 		axios({
@@ -193,7 +193,7 @@ export default {
 			url: "/user/sugestedUsers"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getRandom: () =>
 		axios({
@@ -202,7 +202,7 @@ export default {
 			url: "/user/randomUser"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	matchKwUsers: ( data, skip ) =>
 		axios({
@@ -211,7 +211,7 @@ export default {
 			url: "/user/matchKwUsers"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	setUserKw: data =>
 		axios({
@@ -224,8 +224,7 @@ export default {
 
 	exploreContent: skip =>
 		axios({
-			method: "post",
-			data: { token: localStorage.getItem( "token" ) },
+			method: "get",
 			url: "/posts/explore/" + skip
 		})
 			.then( res => res )
@@ -260,7 +259,7 @@ export default {
 			url: "/comments/create/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	deleteComment: ( commentId, postId ) =>
 		axios({
@@ -273,7 +272,7 @@ export default {
 			url: "/comments/delete/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	updateComment: ( commentId, newContent ) =>
 		axios({
@@ -286,7 +285,7 @@ export default {
 			url: "/comments/update/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getPostComments: ( postId, skip ) =>
 		axios({
@@ -295,7 +294,7 @@ export default {
 			url: "/comments/postComments/" + skip
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	sharePost: ( postId, shareComment ) =>
 		axios({
@@ -308,7 +307,7 @@ export default {
 			url: "/posts/share/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getNotifications: () =>
 		axios({
@@ -319,7 +318,7 @@ export default {
 			url: "/notifications/retrieve/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getPost: postId =>
 		axios({
@@ -342,7 +341,7 @@ export default {
 			url: "/notifications/check/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	isRequested: targetUsername =>
 		axios({
@@ -354,7 +353,7 @@ export default {
 			url: "/friends/isRequested/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	acceptRequest: friendUsername =>
 		axios({
@@ -366,7 +365,7 @@ export default {
 			url: "/friends/accept/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getFriends: () =>
 		axios({
@@ -377,7 +376,7 @@ export default {
 			url: "/friends/getFriends/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getConversation: friendUsername =>
 		axios({
@@ -389,7 +388,7 @@ export default {
 			url: "/messages/retrieve/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	sendMessage: ( friendUsername, content ) =>
 		axios({
@@ -402,7 +401,7 @@ export default {
 			url: "/messages/add/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	getChats: () =>
 		axios({
@@ -411,5 +410,5 @@ export default {
 			url: "/user/getChats/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 };

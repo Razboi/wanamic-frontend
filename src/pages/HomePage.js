@@ -69,20 +69,32 @@ class HomePage extends Component {
 	componentDidMount() {
 		this.refreshNewsFeed();
 		this.setupNotifications();
+		this.setupSockets();
 	}
 
 	setupNotifications() {
 		api.getNotifications()
 			.then( res => {
-				this.props.setNotifications( res.data.notifications, res.data.newNotifications );
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.setupNotifications())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.setNotifications(
+						res.data.notifications,
+						res.data.newNotifications
+					);
+				}
 			}).catch( err => console.log( err ));
+	}
+
+	setupSockets = () => {
 		const data = {
 			token: localStorage.getItem( "token" ),
 			username: localStorage.getItem( "username" )
 		};
 		this.props.socket.emit( "register", data );
 		this.props.socket.on( "notifications", data => {
-			console.log( data );
 			this.props.addNotification( data );
 		});
 		this.props.socket.on( "message", data => {

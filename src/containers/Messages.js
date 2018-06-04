@@ -9,6 +9,7 @@ import {
 } from "../services/actions/messages";
 import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -53,9 +54,20 @@ class Messages extends Component {
 	}
 
 	componentDidMount() {
+		this.getActiveChats();
+	}
+
+	getActiveChats = () => {
 		api.getChats()
-			.then( res => this.setState({ conversations: res.data }))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getActiveChats())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ conversations: res.data });
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleChange = e => {
@@ -68,21 +80,34 @@ class Messages extends Component {
 		}
 	}
 
-	handleNewConversation = () => {
+	handleFriendsList = () => {
 		api.getFriends()
-			.then( res => this.setState({ friends: res.data, displayFriendsList: true }))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleFriendsList())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ friends: res.data, displayFriendsList: true });
+				}
+			}).catch( err => console.log( err ));
 	}
 
-	handleSelectReceiver = receiver => {
+	handleSelectConversation = receiver => {
 		api.getConversation( receiver.username )
 			.then( res => {
-				this.setState({
-					receiver: receiver,
-					displayConversation: true,
-					displayFriendsList: false
-				});
-				this.props.setMessages( res.data, 0 );
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleSelectConversation())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({
+						receiver: receiver,
+						displayConversation: true,
+						displayFriendsList: false
+					});
+					this.props.setMessages( res.data, 0 );
+				}
 			}).catch( err => console.log( err ));
 	}
 
@@ -93,11 +118,19 @@ class Messages extends Component {
 				content: this.state.messageInput,
 				receiver: this.state.receiver.username
 			};
+
 			api.sendMessage( this.state.receiver.username, this.state.messageInput )
-				.catch( err => console.log( err ));
-			this.setState({ messageInput: "" });
-			this.props.socket.emit( "sendMessage", newMessage );
-			this.props.addMessage( newMessage );
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.handleSendMessage())
+							.catch( err => console.log( err ));
+					} else {
+						this.setState({ messageInput: "" });
+						this.props.socket.emit( "sendMessage", newMessage );
+						this.props.addMessage( newMessage );
+					}
+				}).catch( err => console.log( err ));
 		}
 	}
 
@@ -126,7 +159,7 @@ class Messages extends Component {
 			return (
 				<FriendsList
 					friends={this.state.friends}
-					handleSelectReceiver={this.handleSelectReceiver}
+					handleSelectConversation={this.handleSelectConversation}
 					switchFriendsList={this.switchFriendsList}
 				/>
 			);
@@ -137,7 +170,7 @@ class Messages extends Component {
 				<div className="conversationsList">
 					{this.state.conversations.map(( receiver, index ) =>
 						<React.Fragment key={index}>
-							<Friend onClick={() => this.handleSelectReceiver( receiver )}>
+							<Friend onClick={() => this.handleSelectConversation( receiver )}>
 								<span>
 									<b>{receiver.username}</b>
 								</span>
@@ -147,7 +180,7 @@ class Messages extends Component {
 					)}
 				</div>
 				<NewConversationButton
-					onClick={this.handleNewConversation}
+					onClick={this.handleFriendsList}
 					primary
 					circular
 					icon="comment"

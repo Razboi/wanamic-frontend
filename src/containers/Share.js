@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import SharedPost from "./SharedPost";
 import { addPost, switchShare, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -73,9 +74,15 @@ class Share extends Component {
 	handleShare = () => {
 		api.sharePost( this.props.postToShare._id, this.state.shareComment )
 			.then( res => {
-				this.props.addPost( res.data );
-				this.props.updatePost( res.data.sharedPost );
-				this.props.switchShare( undefined );
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleShare())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.addPost( res.data );
+					this.props.updatePost( res.data.sharedPost );
+					this.props.switchShare( undefined );
+				}
 			}).catch( err => console.log( err ));
 	}
 

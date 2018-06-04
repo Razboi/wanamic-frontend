@@ -7,6 +7,7 @@ import ExploreProfile from "../components/ExploreProfile";
 import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -88,19 +89,37 @@ class ExplorePage extends Component {
 
 	getSugestedUser = () => {
 		api.getSugested( this.state.skip )
-			.then( res => this.setState({
-				user: res.data, renderProfile: true, typeOfSearch: "sugested",
-				skip: this.state.skip + 1
-			}))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getSugestedUser())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({
+						user: res.data,
+						renderProfile: true,
+						typeOfSearch: "sugested",
+						skip: this.state.skip + 1
+					});
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	getRandomUser = () => {
 		api.getRandom()
-			.then( res => this.setState({
-				user: res.data, renderProfile: true, typeOfSearch: "random"
-			}))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getRandomUser())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({
+						user: res.data,
+						renderProfile: true,
+						typeOfSearch: "random"
+					});
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	getKeywordUser = () => {
@@ -108,14 +127,17 @@ class ExplorePage extends Component {
 		keywordsArray.shift();
 		api.matchKwUsers( keywordsArray, this.state.skip )
 			.then( res => {
-				if ( res.data ) {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getKeywordUser())
+						.catch( err => console.log( err ));
+				} else if ( res.data ) {
 					this.setState({
 						user: res.data, renderProfile: true, typeOfSearch: "keyword",
 						skip: this.state.skip + 1
 					});
 				}
-			})
-			.catch( err => console.log( err ));
+			}).catch( err => console.log( err ));
 	}
 
 	getUsername = () => {

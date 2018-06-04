@@ -5,6 +5,7 @@ import ProfileOptions from "../components/ProfileOptions";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import PropTypes from "prop-types";
+import refreshToken from "../utils/refreshToken";
 var
 	backgroundImg,
 	profileImg;
@@ -116,9 +117,7 @@ class ProfilePage extends Component {
 
 	componentDidMount() {
 		this.refreshTimeline();
-		api.isRequested( this.props.match.params.username )
-			.then( res => this.setState({ requested: res.data }))
-			.catch( err => console.log( err ));
+		this.checkPendingRequest();
 
 		api.getUserInfo( this.props.match.params.username )
 			.then( res => {
@@ -129,6 +128,19 @@ class ProfilePage extends Component {
 				console.log( err );
 				this.setState({ inexistent: true });
 			});
+	}
+
+	checkPendingRequest = () => {
+		api.isRequested( this.props.match.params.username )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.checkPendingRequest())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ requested: res.data });
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	setImages( headerImage, profileImage ) {
@@ -180,19 +192,39 @@ class ProfilePage extends Component {
 
 	handleAddFriend = () => {
 		api.addFriend( this.props.match.params.username )
-			.then( res => this.props.socket.emit( "sendNotification", res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleAddFriend())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.socket.emit( "sendNotification", res.data );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.props.match.params.username )
-			.then( res => this.props.socket.emit( "sendNotification", res.data ))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleFollow())
+						.catch( err => console.log( err ));
+				} else {
+					this.props.socket.emit( "sendNotification", res.data );
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleReqAccept = () => {
 		api.acceptRequest( this.props.match.params.username )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleReqAccept())
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleReqDelete = () => {
@@ -202,7 +234,13 @@ class ProfilePage extends Component {
 
 	handleDeleteFriend = () => {
 		api.deleteFriend( this.props.match.params.username )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleDeleteFriend())
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	render() {
