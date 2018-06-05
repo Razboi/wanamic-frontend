@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, Input } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
@@ -9,17 +9,94 @@ import {
 	switchComments, setComments, setNewsfeed, addComment, deleteComment, updatePost
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
+import { MentionsInput, Mention } from "react-mentions";
 
-const
+const defaultStyle = {
+		control: {
+			backgroundColor: "#fff",
+
+			fontSize: 12,
+			fontWeight: "normal",
+		},
+
+		highlighter: {
+			overflow: "hidden",
+			lineHeight: 1
+		},
+
+		input: {
+			margin: 0,
+		},
+
+		"&singleLine": {
+			control: {
+				display: "inline-block",
+
+				width: 130,
+			},
+
+			highlighter: {
+				padding: 1,
+				border: "2px inset transparent",
+			},
+
+			input: {
+				padding: 1,
+
+				border: "2px inset",
+			},
+		},
+
+		"&multiLine": {
+			control: {
+				fontFamily: "monospace",
+				border: "1px solid silver",
+			},
+
+			highlighter: {
+				padding: 9,
+			},
+
+			input: {
+				padding: 9,
+				minHeight: 63,
+				outline: 0,
+				border: 0,
+			},
+		},
+
+		suggestions: {
+			list: {
+				backgroundColor: "white",
+				border: "1px solid rgba(0,0,0,0.15)",
+				fontSize: 10,
+			},
+
+			item: {
+				padding: "5px 15px",
+				borderBottom: "1px solid rgba(0,0,0,0.15)",
+
+				"&focused": {
+					backgroundColor: "#cee4e5",
+				},
+			},
+		},
+	},
+
+	defaultMentionStyle = {
+		color: "#cee4e5",
+		fontWeight: "bold"
+	},
 	Wrapper = styled.div`
 		position: absolute;
 		height: 100vh;
 		width: 100%;
+		overflow: hidden;
 		z-index: 4;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 7% 86% 7%;
+		grid-template-rows: 7% 79% 14%;
 		grid-template-areas:
 			"hea"
 			"com"
@@ -36,8 +113,12 @@ const
 		grid-area: com;
 		padding: 10px;
 	`,
-	StyledInput = styled( Input )`
+	StyledInput = styled( MentionsInput )`
 		grid-area: inp;
+		.commentInput__control {
+			height: 100% !important;
+		}
+
 	`,
 	HeaderTxt = styled.span`
 		margin-left: 15px;
@@ -49,7 +130,12 @@ class Comments extends Component {
 	constructor() {
 		super();
 		this.state = {
-			comment: ""
+			comment: "",
+			friends: [
+				{ id: "@alan.t", display: "Alan Turing" },
+				{ id: "@elonmusk", display: "Elon Reeves Musk" },
+				{ id: "@marc_recatala", display: "Marc Recatala" },
+			]
 		};
 	}
 
@@ -71,7 +157,7 @@ class Comments extends Component {
 	}
 
 	handleChange = e => {
-		this.setState({ [ e.target.name ]: e.target.value });
+		this.setState({ comment: e.target.value });
 	}
 
 	handleKeyPress = e => {
@@ -121,13 +207,24 @@ class Comments extends Component {
 					)}
 				</CommentsWrapper>
 				<StyledInput
+					markup="{{__id__}}"
 					className="commentInput"
 					name="comment"
 					value={this.state.comment}
 					placeholder="Comment..."
 					onChange={this.handleChange}
 					onKeyPress={this.handleKeyPress}
-				/>
+					style={defaultStyle}
+				>
+					<Mention
+						trigger="@"
+						data={this.state.friends}
+						renderSuggestion={( suggestion, search, highlightedDisplay ) => (
+							<div className="user">{highlightedDisplay}</div>
+						)}
+						style={defaultMentionStyle}
+					/>
+				</StyledInput>
 			</Wrapper>
 		);
 	}
