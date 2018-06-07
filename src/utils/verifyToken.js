@@ -9,6 +9,9 @@ const verifyToken = store => {
 
 				if ( res === "jwt expired" ) {
 					api.refreshToken().then( res => {
+						if ( !res.token ) {
+							reject( "New token is undefined" );
+						}
 						localStorage.setItem( "token", res.token );
 						store.dispatch( userLoggedIn());
 						resolve();

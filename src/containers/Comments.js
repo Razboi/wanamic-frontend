@@ -112,6 +112,7 @@ const defaultStyle = {
 	CommentsWrapper = styled.div`
 		grid-area: com;
 		padding: 10px;
+		overflow-y: scroll;
 	`,
 	StyledInput = styled( MentionsInput )`
 		grid-area: inp;
@@ -131,16 +132,14 @@ class Comments extends Component {
 		super();
 		this.state = {
 			comment: "",
-			friends: [
-				{ id: "@alan.t", display: "Alan Turing" },
-				{ id: "@elonmusk", display: "Elon Reeves Musk" },
-				{ id: "@marc_recatala", display: "Marc Recatala" },
-			]
+			socialCircle: [],
+			mentions: []
 		};
 	}
 
 	componentDidMount() {
 		this.getInitialComments();
+		this.getSocialCircle();
 	}
 
 	getInitialComments = () => {
@@ -156,6 +155,19 @@ class Comments extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	getSocialCircle = () => {
+		api.getSocialCircle()
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getSocialCircle())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ socialCircle: res.data });
+				}
+			}).catch( err => console.log( err ));
+	}
+
 	handleChange = e => {
 		this.setState({ comment: e.target.value });
 	}
@@ -167,7 +179,11 @@ class Comments extends Component {
 	}
 
 	handleComment = () => {
-		api.createComment( this.state.comment, this.props.postId )
+		const mentions = this.state.mentions.filter( mention => {
+			return this.state.comment.includes( mention );
+		});
+
+		api.createComment( this.state.comment, this.props.postId, mentions )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -189,6 +205,12 @@ class Comments extends Component {
 		this.props.updatePost( updatedPost );
 	};
 
+	handleMention = ( id, display ) => {
+		if ( !this.state.mentions.includes( id )) {
+			this.setState({ mentions: [ ...this.state.mentions, id ] });
+		}
+	}
+
 	render() {
 		return (
 			<Wrapper>
@@ -207,7 +229,7 @@ class Comments extends Component {
 					)}
 				</CommentsWrapper>
 				<StyledInput
-					markup="{{__id__}}"
+					markup="@__id__"
 					className="commentInput"
 					name="comment"
 					value={this.state.comment}
@@ -215,10 +237,13 @@ class Comments extends Component {
 					onChange={this.handleChange}
 					onKeyPress={this.handleKeyPress}
 					style={defaultStyle}
+					displayTransform={id => `@${id}`}
 				>
 					<Mention
 						trigger="@"
-						data={this.state.friends}
+						data={this.state.socialCircle}
+						appendSpaceOnAdd={true}
+						onAdd={this.handleMention}
 						renderSuggestion={( suggestion, search, highlightedDisplay ) => (
 							<div className="user">{highlightedDisplay}</div>
 						)}

@@ -248,13 +248,14 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	createComment: ( comment, postId ) =>
+	createComment: ( comment, postId, mentions ) =>
 		axios({
 			method: "post",
 			data: {
 				token: localStorage.getItem( "token" ),
 				comment: comment,
-				postId: postId
+				postId: postId,
+				mentions: mentions
 			},
 			url: "/comments/create/"
 		})
@@ -374,6 +375,17 @@ export default {
 				token: localStorage.getItem( "token" )
 			},
 			url: "/friends/getFriends/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
+
+	getSocialCircle: () =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" )
+			},
+			url: "/user/getSocialCircle/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
