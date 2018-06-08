@@ -179,11 +179,13 @@ class Comments extends Component {
 	}
 
 	handleComment = () => {
-		const mentions = this.state.mentions.filter( mention => {
+		var i;
+
+		const verifiedMentions = this.state.mentions.filter( mention => {
 			return this.state.comment.includes( mention );
 		});
 
-		api.createComment( this.state.comment, this.props.postId, mentions )
+		api.createComment( this.state.comment, this.props.postId, verifiedMentions )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -191,9 +193,19 @@ class Comments extends Component {
 						.catch( err => console.log( err ));
 				} else {
 					this.setState({ comment: "" });
-					res.data.newNotification && this.props.socket.emit(
-						"sendNotification", res.data.newNotification
+					res.data.commentNotification && this.props.socket.emit(
+						"sendNotification", res.data.commentNotification
 					);
+
+					if ( res.data.mentionsNotifications ) {
+						const notifLength = res.data.mentionsNotifications.length;
+						for ( i = 0; i < notifLength; i++ ) {
+							this.props.socket.emit(
+								"sendNotification", res.data.mentionsNotifications[ i ]
+							);
+						}
+					}
+
 					this.props.addComment( res.data.newComment );
 					this.props.updatePost( res.data.updatedPost );
 				}
