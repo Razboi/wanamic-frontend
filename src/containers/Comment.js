@@ -24,6 +24,14 @@ const
 	`,
 	CommentWrapper = styled.div`
 		position: relative;
+	`,
+	CommentOptions = styled.div`
+		display: flex;
+		flex-direction: row;
+		font-size: 14px;
+		color: #808080;
+	`,
+	ReplyOption = styled.span`
 	`;
 
 class Comment extends Component {
@@ -93,6 +101,11 @@ class Comment extends Component {
 					handleDelete={this.handleDelete}
 					handleChange={this.handleChange}
 				/>
+				<CommentOptions>
+					<ReplyOption onClick={this.props.handleReply}>
+						Reply
+					</ReplyOption>
+				</CommentOptions>
 				<Divider />
 			</CommentWrapper>
 		);
@@ -101,7 +114,8 @@ class Comment extends Component {
 
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired
+	handleDelete: PropTypes.func.isRequired,
+	handleReply: PropTypes.func.isRequired
 };
 
 export default Comment;

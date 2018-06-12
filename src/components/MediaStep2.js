@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, Image } from "semantic-ui-react";
+import { Button, Image, TextArea } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -23,7 +23,7 @@ const
 		display: grid;
 		padding-bottom: 40px;
 	`,
-	UserContentInput = styled( Input )`
+	UserContentInput = styled( TextArea )`
 		width: 80%;
 		justify-self: center;
 		align-self: end;
@@ -75,7 +75,7 @@ class MediaStep2 extends Component {
 							className="userInput"
 							name="userInput"
 							value={this.props.userInput}
-							placeholder="Share your opinion..."
+							placeholder="Share your opinion, tag @users and add #hashtags..."
 							onChange={this.props.handleChange}
 							onKeyPress={this.handleKeyPress}
 						/>

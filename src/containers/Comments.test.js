@@ -22,7 +22,7 @@ describe( "<Comments/>", () => {
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children()).to.have.length( 4 );
 	});
 
 	it( "Checks that every comment renders", () => {

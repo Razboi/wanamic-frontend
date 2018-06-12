@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon } from "semantic-ui-react";
+import { Icon, TextArea } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
@@ -9,84 +9,10 @@ import {
 	switchComments, setComments, setNewsfeed, addComment, deleteComment, updatePost
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
-import { MentionsInput, Mention } from "react-mentions";
+import extract from "mention-hashtag";
+import InputTrigger from "react-input-trigger";
 
-const defaultStyle = {
-		control: {
-			backgroundColor: "#fff",
-
-			fontSize: 12,
-			fontWeight: "normal",
-		},
-
-		highlighter: {
-			overflow: "hidden",
-			lineHeight: 1
-		},
-
-		input: {
-			margin: 0,
-		},
-
-		"&singleLine": {
-			control: {
-				display: "inline-block",
-
-				width: 130,
-			},
-
-			highlighter: {
-				padding: 1,
-				border: "2px inset transparent",
-			},
-
-			input: {
-				padding: 1,
-
-				border: "2px inset",
-			},
-		},
-
-		"&multiLine": {
-			control: {
-				fontFamily: "monospace",
-				border: "1px solid silver",
-			},
-
-			highlighter: {
-				padding: 9,
-			},
-
-			input: {
-				padding: 9,
-				minHeight: 63,
-				outline: 0,
-				border: 0,
-			},
-		},
-
-		suggestions: {
-			list: {
-				backgroundColor: "white",
-				border: "1px solid rgba(0,0,0,0.15)",
-				fontSize: 10,
-			},
-
-			item: {
-				padding: "5px 15px",
-				borderBottom: "1px solid rgba(0,0,0,0.15)",
-
-				"&focused": {
-					backgroundColor: "#cee4e5",
-				},
-			},
-		},
-	},
-
-	defaultMentionStyle = {
-		color: "#cee4e5",
-		fontWeight: "bold"
-	},
+const
 	Wrapper = styled.div`
 		position: absolute;
 		height: 100vh;
@@ -114,17 +40,23 @@ const defaultStyle = {
 		padding: 10px;
 		overflow-y: scroll;
 	`,
-	StyledInput = styled( MentionsInput )`
-		grid-area: inp;
-		.commentInput__control {
-			height: 100% !important;
-		}
-
-	`,
+	StyledTextArea = {
+		width: "100%",
+		height: "100%",
+		gridArea: "inp"
+	},
 	HeaderTxt = styled.span`
 		margin-left: 15px;
 		font-weight: bold;
 		font-size: 16px;
+	`,
+	Suggestions = styled.div`
+		grid-area: com;
+		z-index: 2;
+		background: #fff;
+		padding: 10px;
+		overflow-y: scroll;
+		display: ${props => props.showSuggestions ? "block" : "none"};
 	`;
 
 class Comments extends Component {
@@ -133,7 +65,9 @@ class Comments extends Component {
 		this.state = {
 			comment: "",
 			socialCircle: [],
-			mentions: []
+			showSuggestions: false,
+			suggestionsTop: undefined,
+			suggestionsLeft: undefined
 		};
 	}
 
@@ -169,23 +103,23 @@ class Comments extends Component {
 	}
 
 	handleChange = e => {
-		this.setState({ comment: e.target.value });
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
+			e.preventDefault();
 			this.handleComment();
 		}
 	}
 
 	handleComment = () => {
 		var i;
+		const { mentions, hashtags } = extract(
+			this.state.comment, { symbol: false, type: "all" }
+		);
 
-		const verifiedMentions = this.state.mentions.filter( mention => {
-			return this.state.comment.includes( mention );
-		});
-
-		api.createComment( this.state.comment, this.props.postId, verifiedMentions )
+		api.createComment( this.state.comment, this.props.postId, mentions )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -217,9 +151,16 @@ class Comments extends Component {
 		this.props.updatePost( updatedPost );
 	};
 
-	handleMention = ( id, display ) => {
-		if ( !this.state.mentions.includes( id )) {
-			this.setState({ mentions: [ ...this.state.mentions, id ] });
+	handleReply = targetUser => {
+		this.setState({ comment: "@" + targetUser + " " });
+	}
+	toggleSuggestions = metaData => {
+		if ( metaData.hookType === "start" ) {
+			this.setState({
+				showSuggestions: true,
+				suggestionsLeft: metaData.cursor.left,
+				suggestionsTop: metaData.cursor.top + metaData.cursor.height,
+			});
 		}
 	}
 
@@ -230,6 +171,7 @@ class Comments extends Component {
 					<Icon name="arrow left" onClick={() => this.props.switchComments()} />
 					<HeaderTxt>Comments</HeaderTxt>
 				</HeaderWrapper>
+
 				<CommentsWrapper className="commentsWrapper">
 					{this.props.comments.map(( comment, index ) =>
 						<Comment
@@ -237,31 +179,31 @@ class Comments extends Component {
 							index={index}
 							comment={comment}
 							handleDelete={this.handleDelete}
+							handleReply={() => this.handleReply( comment.author )}
 						/>
 					)}
 				</CommentsWrapper>
-				<StyledInput
-					markup="@__id__"
-					className="commentInput"
-					name="comment"
-					value={this.state.comment}
-					placeholder="Comment..."
-					onChange={this.handleChange}
-					onKeyPress={this.handleKeyPress}
-					style={defaultStyle}
-					displayTransform={id => `@${id}`}
+
+				<InputTrigger
+					trigger={{ keyCode: 50 }}
+					onStart={metaData => this.toggleSuggestions( metaData ) }
+					onType={obj => console.log( obj ) }
+					onCancel={obj => console.log( obj ) }
 				>
-					<Mention
-						trigger="@"
-						data={this.state.socialCircle}
-						appendSpaceOnAdd={true}
-						onAdd={this.handleMention}
-						renderSuggestion={( suggestion, search, highlightedDisplay ) => (
-							<div className="user">{highlightedDisplay}</div>
-						)}
-						style={defaultMentionStyle}
+					<textarea
+						style={StyledTextArea}
+						name="comment"
+						value={this.state.comment}
+						placeholder="Comment..."
+						onChange={this.handleChange}
+						onKeyPress={this.handleKeyPress}
 					/>
-				</StyledInput>
+				</InputTrigger>
+				<Suggestions
+					showSuggestions={this.state.showSuggestions}
+					top={this.state.suggestionsTop}
+					left={this.state.suggestionsLeft}
+				/>
 			</Wrapper>
 		);
 	}

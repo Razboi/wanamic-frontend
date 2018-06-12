@@ -23,6 +23,6 @@ describe( "<Comment/>", () => {
 	});
 
 	it( "Checks that <Comment/> children render", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 5 );
 	});
 });
