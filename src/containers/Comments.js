@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, TextArea } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
@@ -57,6 +57,13 @@ const
 		padding: 10px;
 		overflow-y: scroll;
 		display: ${props => props.showSuggestions ? "block" : "none"};
+	`,
+	Suggestion = styled.div`
+		display: flex;
+		flex-direction: column;
+		padding: 10px 0px;
+		border-bottom: 1px solid #808080;
+		background: ${props => props.selection === props.index ? "#808080" : "none"};
 	`;
 
 class Comments extends Component {
@@ -67,7 +74,10 @@ class Comments extends Component {
 			socialCircle: [],
 			showSuggestions: false,
 			suggestionsTop: undefined,
-			suggestionsLeft: undefined
+			suggestionsLeft: undefined,
+			mentionInput: "",
+			currentSelection: 0,
+			startPosition: undefined
 		};
 	}
 
@@ -109,15 +119,52 @@ class Comments extends Component {
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
 			e.preventDefault();
-			this.handleComment();
+			if ( this.state.showSuggestions ) {
+				const
+					{ socialCircle, comment, startPosition, currentSelection } = this.state,
+					user = socialCircle[ currentSelection ],
+					updatedComment =
+						comment.slice( 0, startPosition - 1 )
+						+ "@" + user.username + " " +
+						comment.slice( startPosition + user.username.length, comment.length );
+
+				this.setState({
+					comment: updatedComment,
+					startPosition: undefined,
+					showSuggestions: false,
+					suggestionsLeft: undefined,
+					suggestionsTop: undefined,
+					mentionInput: "",
+					currentSelection: 0
+				});
+
+				this.endHandler();
+			} else {
+				this.handleComment();
+			}
+		}
+
+		if ( this.state.showSuggestions ) {
+			if ( e.keyCode === 40 &&
+			this.state.currentSelection !== this.state.socialCircle.length - 1 ) {
+				e.preventDefault();
+				this.setState({
+					currentSelection: this.state.currentSelection + 1
+				});
+			}
+
+			if ( e.keyCode === 38 && this.state.currentSelection !== 0 ) {
+				e.preventDefault();
+				this.setState({
+					currentSelection: this.state.currentSelection - 1
+				});
+			}
 		}
 	}
 
 	handleComment = () => {
 		var i;
-		const { mentions, hashtags } = extract(
-			this.state.comment, { symbol: false, type: "all" }
-		);
+		const mentions = extract( this.state.comment, { symbol: false });
 
 		api.createComment( this.state.comment, this.props.postId, mentions )
 			.then( res => {
@@ -154,13 +201,32 @@ class Comments extends Component {
 	handleReply = targetUser => {
 		this.setState({ comment: "@" + targetUser + " " });
 	}
+
 	toggleSuggestions = metaData => {
 		if ( metaData.hookType === "start" ) {
 			this.setState({
+				startPosition: metaData.cursor.selectionStart,
 				showSuggestions: true,
 				suggestionsLeft: metaData.cursor.left,
 				suggestionsTop: metaData.cursor.top + metaData.cursor.height,
 			});
+		}
+
+		if ( metaData.hookType === "cancel" ) {
+			this.setState({
+				startPosition: undefined,
+				showSuggestions: false,
+				suggestionsLeft: undefined,
+				suggestionsTop: undefined,
+				mentionInput: "",
+				currentSelection: 0
+			});
+		}
+	}
+
+	handleMentionInput = metaData => {
+		if ( this.state.showSuggestions ) {
+			this.setState({ mentionInput: metaData.text });
 		}
 	}
 
@@ -187,8 +253,9 @@ class Comments extends Component {
 				<InputTrigger
 					trigger={{ keyCode: 50 }}
 					onStart={metaData => this.toggleSuggestions( metaData ) }
-					onType={obj => console.log( obj ) }
-					onCancel={obj => console.log( obj ) }
+					onCancel={metaData => this.toggleSuggestions( metaData ) }
+					onType={metaData => this.handleMentionInput( metaData ) }
+					endTrigger={endHandler => this.endHandler = endHandler }
 				>
 					<textarea
 						style={StyledTextArea}
@@ -196,14 +263,31 @@ class Comments extends Component {
 						value={this.state.comment}
 						placeholder="Comment..."
 						onChange={this.handleChange}
-						onKeyPress={this.handleKeyPress}
+						onKeyDown={this.handleKeyPress}
 					/>
 				</InputTrigger>
 				<Suggestions
 					showSuggestions={this.state.showSuggestions}
 					top={this.state.suggestionsTop}
 					left={this.state.suggestionsLeft}
-				/>
+				>
+					{this.state.socialCircle
+						.filter( user =>
+							user.fullname.toLowerCase().indexOf(
+								this.state.mentionInput.toLowerCase()) !== -1
+							||
+							user.username.indexOf( this.state.mentionInput ) !== -1
+						)
+						.map(( user, index ) => (
+							<Suggestion
+								key={index}
+								index={index}
+								selection={this.state.currentSelection}>
+								<b>{user.fullname}</b>
+								<span>@{user.username}</span>
+							</Suggestion>
+						))}
+				</Suggestions>
 			</Wrapper>
 		);
 	}

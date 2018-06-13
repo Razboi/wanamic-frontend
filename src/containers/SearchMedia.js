@@ -9,6 +9,7 @@ import { addPost, switchMediaOptions } from "../services/actions/posts";
 import MediaStep2 from "../components/MediaStep2";
 import MediaStep3 from "../components/MediaStep3";
 import refreshToken from "../utils/refreshToken";
+import extract from "mention-hashtag";
 
 var
 	DefaultCover,

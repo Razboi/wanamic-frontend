@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { Button, Image, TextArea } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import api from "../services/api";
+import refreshToken from "../utils/refreshToken";
+import InputTrigger from "react-input-trigger";
 
 const
 	SelectedWrapper = styled.div`
@@ -23,12 +26,12 @@ const
 		display: grid;
 		padding-bottom: 40px;
 	`,
-	UserContentInput = styled( TextArea )`
-		width: 80%;
-		justify-self: center;
-		align-self: end;
-		z-index: 2;
-	`,
+	UserContentInput = {
+		width: "80%",
+		justifySelf: "center",
+		alignSelf: "end",
+		zIndex: 2
+	},
 	SelectedMediaImgWrapper = styled.div`
 		grid-area: img;
 		display: grid;
@@ -56,13 +59,130 @@ const
 		position: absolute;
 		bottom: 5px;
 		right: 5px;
+	`,
+	Suggestions = styled.div`
+		grid-area: com;
+		z-index: 2;
+		background: #fff;
+		padding: 10px;
+		overflow-y: scroll;
+		display: ${props => props.showSuggestions ? "block" : "none"};
+	`,
+	Suggestion = styled.div`
+		display: flex;
+		flex-direction: column;
+		padding: 10px 0px;
+		border-bottom: 1px solid #808080;
+		background: ${props => props.selection === props.index ? "#808080" : "none"};
+	`,
+	StyledInputTrigger = styled( InputTrigger ) `
+		z-index: 2 !important;
 	`;
 
 
 class MediaStep2 extends Component {
+	constructor() {
+		super();
+		this.state = {
+			description: "",
+			socialCircle: [],
+			showSuggestions: false,
+			suggestionsTop: undefined,
+			suggestionsLeft: undefined,
+			mentionInput: "",
+			currentSelection: 0,
+			startPosition: undefined
+		};
+	}
+
+	componentDidMount() {
+		this.getSocialCircle();
+	}
+
+	getSocialCircle = () => {
+		api.getSocialCircle()
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getSocialCircle())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ socialCircle: res.data });
+				}
+			}).catch( err => console.log( err ));
+	}
+
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
-			this.props.prevStep();
+			e.preventDefault();
+			if ( this.state.showSuggestions ) {
+				const
+					{ socialCircle, comment, startPosition, currentSelection } = this.state,
+					user = socialCircle[ currentSelection ],
+					updatedComment =
+						comment.slice( 0, startPosition - 1 )
+						+ "@" + user.username + " " +
+						comment.slice( startPosition + user.username.length, comment.length );
+
+				this.setState({
+					comment: updatedComment,
+					startPosition: undefined,
+					showSuggestions: false,
+					suggestionsLeft: undefined,
+					suggestionsTop: undefined,
+					mentionInput: "",
+					currentSelection: 0
+				});
+
+				this.endHandler();
+			} else {
+				this.props.prevStep();
+			}
+		}
+
+		if ( this.state.showSuggestions ) {
+			if ( e.keyCode === 40 &&
+			this.state.currentSelection !== this.state.socialCircle.length - 1 ) {
+				e.preventDefault();
+				this.setState({
+					currentSelection: this.state.currentSelection + 1
+				});
+			}
+
+			if ( e.keyCode === 38 && this.state.currentSelection !== 0 ) {
+				e.preventDefault();
+				this.setState({
+					currentSelection: this.state.currentSelection - 1
+				});
+			}
+		}
+	}
+
+	toggleSuggestions = metaData => {
+		if ( metaData.hookType === "start" ) {
+			this.setState({
+				startPosition: metaData.cursor.selectionStart,
+				showSuggestions: true,
+				suggestionsLeft: metaData.cursor.left,
+				suggestionsTop: metaData.cursor.top + metaData.cursor.height,
+			});
+		}
+
+		if ( metaData.hookType === "cancel" ) {
+			this.setState({
+				startPosition: undefined,
+				showSuggestions: false,
+				suggestionsLeft: undefined,
+				suggestionsTop: undefined,
+				mentionInput: "",
+				currentSelection: 0
+			});
+		}
+	}
+
+	handleMentionInput = metaData => {
+		if ( this.state.showSuggestions ) {
+			this.setState({ mentionInput: metaData.text });
 		}
 	}
 
@@ -71,14 +191,45 @@ class MediaStep2 extends Component {
 			<SelectedWrapper>
 				<ShareWrapper>
 					<ContentInputWrapper>
-						<UserContentInput
-							className="userInput"
-							name="userInput"
-							value={this.props.userInput}
-							placeholder="Share your opinion, tag @users and add #hashtags..."
-							onChange={this.props.handleChange}
-							onKeyPress={this.handleKeyPress}
-						/>
+						<StyledInputTrigger
+							trigger={{ keyCode: 50 }}
+							onStart={metaData => this.toggleSuggestions( metaData ) }
+							onCancel={metaData => this.toggleSuggestions( metaData ) }
+							onType={metaData => this.handleMentionInput( metaData ) }
+							endTrigger={endHandler => this.endHandler = endHandler }
+						>
+							<textarea
+								style={UserContentInput}
+								className="userInput"
+								name="userInput"
+								value={this.props.userInput}
+								placeholder="Share your opinion, tag @users and add #hashtags..."
+								onChange={this.props.handleChange}
+								onKeyDown={this.handleKeyPress}
+							/>
+						</StyledInputTrigger>
+						<Suggestions
+							showSuggestions={this.state.showSuggestions}
+							top={this.state.suggestionsTop}
+							left={this.state.suggestionsLeft}
+						>
+							{this.state.socialCircle
+								.filter( user =>
+									user.fullname.toLowerCase().indexOf(
+										this.state.mentionInput.toLowerCase()) !== -1
+									||
+									user.username.indexOf( this.state.mentionInput ) !== -1
+								)
+								.map(( user, index ) => (
+									<Suggestion
+										key={index}
+										index={index}
+										selection={this.state.currentSelection}>
+										<b>{user.fullname}</b>
+										<span>@{user.username}</span>
+									</Suggestion>
+								))}
+						</Suggestions>
 					</ContentInputWrapper>
 					<SelectedMediaImgWrapper>
 						{this.props.mediaData && this.props.mediaData.image ?
