@@ -150,6 +150,7 @@ class MediaOptions extends Component {
 				<MediaOptionsWrapper>
 					<MediaDimmer />
 					<StyledSearchMedia
+						socket={this.props.socket}
 						mediaType={this.state.mediaType}
 						switchSearchMedia={this.switchSearchMedia}
 					/>

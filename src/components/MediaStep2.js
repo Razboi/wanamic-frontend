@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Image, TextArea } from "semantic-ui-react";
+import { Button, Image } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import api from "../services/api";
@@ -28,8 +28,12 @@ const
 	`,
 	UserContentInput = {
 		width: "80%",
-		justifySelf: "center",
-		alignSelf: "end",
+		alignSelf: "flex-end",
+		zIndex: 2
+	},
+	InputTriggerStyles = {
+		display: "flex",
+		justifyContent: "center",
 		zIndex: 2
 	},
 	SelectedMediaImgWrapper = styled.div`
@@ -61,8 +65,11 @@ const
 		right: 5px;
 	`,
 	Suggestions = styled.div`
-		grid-area: com;
-		z-index: 2;
+		grid-area: img;
+		position: absolute;
+		z-index: 3;
+		height: 100%;
+		width: 100%;
 		background: #fff;
 		padding: 10px;
 		overflow-y: scroll;
@@ -74,9 +81,6 @@ const
 		padding: 10px 0px;
 		border-bottom: 1px solid #808080;
 		background: ${props => props.selection === props.index ? "#808080" : "none"};
-	`,
-	StyledInputTrigger = styled( InputTrigger ) `
-		z-index: 2 !important;
 	`;
 
 
@@ -117,15 +121,15 @@ class MediaStep2 extends Component {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
-					{ socialCircle, comment, startPosition, currentSelection } = this.state,
+					{ socialCircle, description, startPosition, currentSelection } = this.state,
 					user = socialCircle[ currentSelection ],
-					updatedComment =
-						comment.slice( 0, startPosition - 1 )
+					updatedDescription =
+						description.slice( 0, startPosition - 1 )
 						+ "@" + user.username + " " +
-						comment.slice( startPosition + user.username.length, comment.length );
+						description.slice( startPosition + user.username.length, description.length );
 
 				this.setState({
-					comment: updatedComment,
+					description: updatedDescription,
 					startPosition: undefined,
 					showSuggestions: false,
 					suggestionsLeft: undefined,
@@ -136,7 +140,7 @@ class MediaStep2 extends Component {
 
 				this.endHandler();
 			} else {
-				this.props.prevStep();
+				this.props.nextStep( this.state.description );
 			}
 		}
 
@@ -186,12 +190,17 @@ class MediaStep2 extends Component {
 		}
 	}
 
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
+
 	render() {
 		return (
 			<SelectedWrapper>
 				<ShareWrapper>
 					<ContentInputWrapper>
-						<StyledInputTrigger
+						<InputTrigger
+							style={InputTriggerStyles}
 							trigger={{ keyCode: 50 }}
 							onStart={metaData => this.toggleSuggestions( metaData ) }
 							onCancel={metaData => this.toggleSuggestions( metaData ) }
@@ -201,13 +210,13 @@ class MediaStep2 extends Component {
 							<textarea
 								style={UserContentInput}
 								className="userInput"
-								name="userInput"
-								value={this.props.userInput}
+								name="description"
+								value={this.state.description}
 								placeholder="Share your opinion, tag @users and add #hashtags..."
-								onChange={this.props.handleChange}
+								onChange={this.handleChange}
 								onKeyDown={this.handleKeyPress}
 							/>
-						</StyledInputTrigger>
+						</InputTrigger>
 						<Suggestions
 							showSuggestions={this.state.showSuggestions}
 							top={this.state.suggestionsTop}
@@ -258,7 +267,7 @@ class MediaStep2 extends Component {
 					className="nextButton"
 					primary
 					content="Next"
-					onClick={this.props.nextStep}
+					onClick={() => this.props.nextStep( this.state.description )}
 				/>
 			</SelectedWrapper>
 		);
@@ -270,7 +279,6 @@ MediaStep2.propTypes = {
 	prevStep: PropTypes.func.isRequired,
 	nextStep: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
-	userInput: PropTypes.string.isRequired,
 	DefaultCover: PropTypes.string.isRequired
 };
 

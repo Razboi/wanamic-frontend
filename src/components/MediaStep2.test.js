@@ -12,7 +12,6 @@ describe( "<MediaStep2/>", () => {
 	var
 		prevStepSpy = sinon.spy(),
 		nextStepSpy = sinon.spy(),
-		handleChangeSpy = sinon.spy(),
 		wrapper = shallow(
 			<MediaStep2
 				mediaData={{}}
@@ -20,7 +19,6 @@ describe( "<MediaStep2/>", () => {
 				DefaultCover={""}
 				prevStep={prevStepSpy}
 				nextStep={nextStepSpy}
-				handleChange={handleChangeSpy}
 			/>
 		);
 
@@ -43,12 +41,4 @@ describe( "<MediaStep2/>", () => {
 		wrapper.find( ".prevButton" ).simulate( "click" );
 		expect( prevStepSpy.called ).to.equal( true );
 	});
-
-	it( "Checks that changing userInput calls handleChangeSpy", () => {
-		const event = { target: { name: "userInput", value: "test" } };
-		expect( handleChangeSpy.called ).to.equal( false );
-		wrapper.find( ".userInput" ).simulate( "change", event );
-		expect( handleChangeSpy.called ).to.equal( true );
-	});
-
 });

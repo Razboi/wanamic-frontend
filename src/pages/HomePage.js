@@ -162,7 +162,9 @@ class HomePage extends Component {
 					{this.props.displayMessages && <Messages socket={this.props.socket} />}
 
 					{this.props.mediaOptions &&
-						<MediaOptions handlePictureSelect={this.handlePictureSelect}
+						<MediaOptions
+							handlePictureSelect={this.handlePictureSelect}
+							socket={this.props.socket}
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>

@@ -79,7 +79,7 @@ class SearchMedia extends Component {
 			results: [],
 			step: 1,
 			mediaData: null,
-			userInput: "",
+			description: "",
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
@@ -161,21 +161,33 @@ class SearchMedia extends Component {
 		this.setState({ mediaData: mediaData, step: this.state.step + 1 });
 	}
 
-	nextStep = () => {
-		this.setState({ step: this.state.step + 1 });
+	nextStep = description => {
+		this.setState({
+			step: this.state.step + 1,
+			description: description
+		});
 	}
 
 	prevStep = () => {
 		this.setState({ step: this.state.step - 1 });
 	}
 
-	handleSubmit = () => {
-		var finalData = this.state.mediaData;
-		finalData.content = this.state.userInput;
-		finalData.privacyRange = this.state.privacyRange;
+	handleSubmit = async() => {
+		var
+			i,
+			finalData = this.state.mediaData;
+		const
+			{ description, privacyRange, checkNsfw, checkSpoiler } = this.state,
+			{ mentions, hashtags } = await extract(
+				description, { symbol: false, type: "all" }
+			);
+		finalData.mentions = mentions;
+		finalData.hashtags = hashtags;
+		finalData.content = description;
+		finalData.privacyRange = privacyRange;
 		finalData.alerts = {
-			nsfw: this.state.checkNsfw,
-			spoiler: this.state.checkSpoiler
+			nsfw: checkNsfw,
+			spoiler: checkSpoiler
 		};
 
 		api.createMediaPost( finalData )
@@ -185,8 +197,17 @@ class SearchMedia extends Component {
 						.then(() => this.handleSubmit())
 						.catch( err => console.log( err ));
 				} else {
-					this.props.addPost( res );
+					this.props.addPost( res.newPost );
 					this.props.switchMediaOptions();
+
+					if ( res.mentionsNotifications ) {
+						const notifLength = res.mentionsNotifications.length;
+						for ( i = 0; i < notifLength; i++ ) {
+							this.props.socket.emit(
+								"sendNotification", res.mentionsNotifications[ i ]
+							);
+						}
+					}
 				}
 			}).catch( err => console.log( err ));
 	}
@@ -208,7 +229,7 @@ class SearchMedia extends Component {
 					prevStep={this.prevStep}
 					nextStep={this.nextStep}
 					mediaData={this.state.mediaData}
-					userInput={this.state.userInput}
+					description={this.state.description}
 					DefaultCover={DefaultCover}
 				/>
 			);
