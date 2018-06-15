@@ -36,16 +36,6 @@ describe( "<ShareBox/>", () => {
 		expect( wrapper.find( "#ShareBox" ).children()).to.have.length( 2 );
 	});
 
-	it( "Checks that when ShareBoxInput changes calls handleChange", () => {
-		const event = { target: { name: "sharebox", value: "testing" } };
-		wrapper.find( "#ShareBoxInput" ).simulate( "change", event );
-		expect( spyHandleChange.called ).to.equal( true );
-	});
-
-	it( "Checks that ShareBoxInput value equals the passed prop ", () => {
-		expect( wrapper.find( "#ShareBoxInput" ).prop( "value" )).to.equal( sharebox );
-	});
-
 	it( "Checks that when ShareBoxButton is clicked calls handleShare", () => {
 		wrapper.find( "#ShareBoxButton" ).simulate( "click" );
 		expect( spyHandleShare.called ).to.equal( true );

@@ -41,11 +41,16 @@ export default {
 			.then( res => res.data )
 			.catch( err => err ),
 
-	createPost: post =>
+	createPost: ( userInput, mentions, hashtags ) =>
 		axios({
 			method: "post",
 			url: "/posts/create",
-			data: { token: localStorage.getItem( "token" ), post: post }
+			data: {
+				token: localStorage.getItem( "token" ),
+				userInput: userInput,
+				mentions: mentions,
+				hashtags: hashtags
+			}
 		})
 			.then( res => res.data )
 			.catch( err => err.response.data ),

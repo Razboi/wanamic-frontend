@@ -217,11 +217,7 @@ class MediaStep2 extends Component {
 								onKeyDown={this.handleKeyPress}
 							/>
 						</InputTrigger>
-						<Suggestions
-							showSuggestions={this.state.showSuggestions}
-							top={this.state.suggestionsTop}
-							left={this.state.suggestionsLeft}
-						>
+						<Suggestions showSuggestions={this.state.showSuggestions}>
 							{this.state.socialCircle
 								.filter( user =>
 									user.fullname.toLowerCase().indexOf(

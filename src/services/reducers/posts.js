@@ -14,7 +14,7 @@ export default function posts( state = initialState, action = {}) {
 		return { ...state, newsfeed: action.posts };
 
 	case "ADD_TO_NEWSFEED":
-		return { ...state, newsfeed: [ ...action.posts, ...state.newsfeed ] };
+		return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
 
 	case "ADD_POST":
 		return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };

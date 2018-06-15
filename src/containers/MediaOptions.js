@@ -8,6 +8,7 @@ import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
+import extract from "mention-hashtag";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -66,11 +67,6 @@ const
 		position: fixed;
 		bottom: 5px;
 		left: 5px;
-	`,
-	ShareBoxWrapper = styled.div`
-		z-index: 2;
-		display: grid;
-		align-content: center;
 	`;
 
 class MediaOptions extends Component {
@@ -82,8 +78,7 @@ class MediaOptions extends Component {
 			shareState: false,
 			linkUrl: "",
 			linkContent: "",
-			mediaType: "",
-			sharebox: ""
+			mediaType: ""
 		};
 	}
 
@@ -127,18 +122,29 @@ class MediaOptions extends Component {
 		this.setState({ shareState: !this.state.shareState });
 	}
 
-	handleShare = () => {
-		if ( this.state.sharebox !== "" ) {
-			api.createPost( this.state.sharebox )
+	handleShare = async userInput => {
+		var i;
+		if ( userInput !== "" ) {
+			const { mentions, hashtags } = await extract(
+				userInput, { symbol: false, type: "all" }
+			);
+			api.createPost( userInput, mentions, hashtags )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
 							.then(() => this.handleShare())
 							.catch( err => console.log( err ));
-					} else {
-						this.props.addPost( res );
+					} else if ( res ) {
+						this.props.addPost( res.newPost );
 						this.props.switchMediaOptions();
-						this.setState({ sharebox: "" });
+						if ( res.mentionsNotifications ) {
+							const notifLength = res.mentionsNotifications.length;
+							for ( i = 0; i < notifLength; i++ ) {
+								this.props.socket.emit(
+									"sendNotification", res.mentionsNotifications[ i ]
+								);
+							}
+						}
 					}
 				}).catch( err => console.log( err ));
 		}
@@ -161,13 +167,7 @@ class MediaOptions extends Component {
 			return (
 				<MediaOptionsWrapper>
 					<MediaDimmer />
-					<ShareBoxWrapper>
-						<ShareBox
-							handleChange={this.handleChange}
-							sharebox={this.state.sharebox}
-							handleShare={this.handleShare}
-						/>
-					</ShareBoxWrapper>
+					<ShareBox handleShare={this.handleShare} />
 				</MediaOptionsWrapper>
 			);
 		}

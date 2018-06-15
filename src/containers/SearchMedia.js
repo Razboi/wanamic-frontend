@@ -196,7 +196,7 @@ class SearchMedia extends Component {
 					refreshToken()
 						.then(() => this.handleSubmit())
 						.catch( err => console.log( err ));
-				} else {
+				} else if ( res ) {
 					this.props.addPost( res.newPost );
 					this.props.switchMediaOptions();
 
