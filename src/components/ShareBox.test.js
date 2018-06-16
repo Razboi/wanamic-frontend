@@ -24,6 +24,7 @@ describe( "<ShareBox/>", () => {
 				handleChange={spyHandleChange}
 				sharebox={sharebox}
 				handleShare={spyHandleShare}
+				socialCircle={[]}
 			/>
 		);
 	});

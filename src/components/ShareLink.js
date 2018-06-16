@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import { Form } from "semantic-ui-react";
-import styled from "styled-components";
+import { Button, Image, Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
 
 const
 	Wrapper = styled.div`
 		z-index: 2;
 		display: grid;
-		grid-template-rows: 10% 90%;
+		grid-template-rows: 18% 82%;
 		grid-template-areas:
 			"box"
 			"sug"
@@ -17,25 +17,25 @@ const
 		display: grid;
 		grid-area: box;
 	`,
-	Box = styled( Form )`
-		grid-template-columns: 80% 20%;
-		display: grid;
-		align-self: center;
-		padding: 0px 7px;
-	`,
 	TextAreaStyle = {
-		gridColumn: "1/2",
 		margin: "0px",
 		borderRadius: "0px",
+		width: "90%",
+		justifySelf: "center"
 	},
-	BoxButton = styled( Form.Button )`
-		grid-column: 2/3;
-		.ui.button {
-			margin: 0px;
-			height: 100%;
-			width: 100%;
-			border-radius: 0px;
-		}
+	InputTriggerStyle = {
+		display: "grid"
+	},
+	ShareLinkInput = styled( Input )`
+		width: 90%;
+		justify-self: center;
+		align-self: center;
+		margin-bottom: 10px;
+	`,
+	SwapBackButton = styled( Button )`
+		position: fixed;
+		bottom: 5px;
+		left: 5px;
 	`,
 	Suggestions = styled.div`
 		grid-area: sug;
@@ -56,11 +56,12 @@ const
 	`;
 
 
-class ShareBox extends Component {
+class ShareLink extends Component {
 	constructor() {
 		super();
 		this.state = {
-			userInput: "",
+			link: "",
+			description: "",
 			showSuggestions: false,
 			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
@@ -75,15 +76,15 @@ class ShareBox extends Component {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
-					{ userInput, startPosition, currentSelection } = this.state,
+					{ description, startPosition, currentSelection } = this.state,
 					user = this.props.socialCircle[ currentSelection ],
-					updatedUserInput =
-						userInput.slice( 0, startPosition - 1 )
+					updatedDescription =
+						description.slice( 0, startPosition - 1 )
 						+ "@" + user.username + " " +
-						userInput.slice( startPosition + user.username.length, userInput.length );
+						description.slice( startPosition + user.username.length, description.length );
 
 				this.setState({
-					userInput: updatedUserInput,
+					description: updatedDescription,
 					startPosition: undefined,
 					showSuggestions: false,
 					suggestionsLeft: undefined,
@@ -94,8 +95,7 @@ class ShareBox extends Component {
 
 				this.endHandler();
 			} else {
-				this.props.handleShare( this.state.userInput );
-				this.setState({ userInput: "" });
+				this.props.submitLink( this.state.description, this.state.link );
 			}
 		}
 
@@ -153,33 +153,31 @@ class ShareBox extends Component {
 		return (
 			<Wrapper>
 				<BoxContainer>
-					<Box id="ShareBox">
-						<InputTrigger
-							trigger={{ keyCode: 50 }}
-							onStart={metaData => this.toggleSuggestions( metaData ) }
-							onCancel={metaData => this.toggleSuggestions( metaData ) }
-							onType={metaData => this.handleMentionInput( metaData ) }
-							endTrigger={endHandler => this.endHandler = endHandler }
-						>
-							<textarea
-								rows="2"
-								style={TextAreaStyle}
-								id="ShareBoxInput"
-								placeholder="Share something cool"
-								name="userInput"
-								value={this.state.userInput}
-								onChange={this.handleChange}
-								onKeyDown={this.handleKeyPress}
-							/>
-						</InputTrigger>
-
-						<BoxButton
-							id="ShareBoxButton"
-							primary
-							content="Share"
-							onClick={this.props.handleShare}
+					<ShareLinkInput
+						style={TextAreaStyle}
+						name="link"
+						onKeyDown={this.handleKeyPress}
+						onChange={this.handleChange}
+						placeholder="Share your link"
+					/>
+					<InputTrigger
+						style={InputTriggerStyle}
+						trigger={{ keyCode: 50 }}
+						onStart={metaData => this.toggleSuggestions( metaData ) }
+						onCancel={metaData => this.toggleSuggestions( metaData ) }
+						onType={metaData => this.handleMentionInput( metaData ) }
+						endTrigger={endHandler => this.endHandler = endHandler }
+					>
+						<textarea
+							rows="2"
+							style={TextAreaStyle}
+							placeholder="Anything to say?"
+							name="description"
+							value={this.state.description}
+							onChange={this.handleChange}
+							onKeyDown={this.handleKeyPress}
 						/>
-					</Box>
+					</InputTrigger>
 				</BoxContainer>
 
 				<Suggestions showSuggestions={this.state.showSuggestions}>
@@ -205,9 +203,9 @@ class ShareBox extends Component {
 	}
 }
 
-ShareBox.propTypes = {
-	handleShare: PropTypes.func.isRequired,
+ShareLink.propTypes = {
 	socialCircle: PropTypes.array.isRequired,
+	submitLink: PropTypes.func.isRequired,
 };
 
-export default ShareBox;
+export default ShareLink;

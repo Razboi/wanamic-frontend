@@ -83,26 +83,8 @@ class SearchMedia extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
-			socialCircle: [],
 			mentions: []
 		};
-	}
-
-	componentDidMount() {
-		this.getSocialCircle();
-	}
-
-	getSocialCircle = () => {
-		api.getSocialCircle()
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.getSocialCircle())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({ socialCircle: res.data });
-				}
-			}).catch( err => console.log( err ));
 	}
 
 	handleChange = e => {
@@ -224,7 +206,7 @@ class SearchMedia extends Component {
 		if ( this.state.step === 2 ) {
 			return (
 				<MediaStep2
-					socialCircle={this.state.socialCircle}
+					socialCircle={this.props.socialCircle}
 					handleChange={this.handleChange}
 					prevStep={this.prevStep}
 					nextStep={this.nextStep}

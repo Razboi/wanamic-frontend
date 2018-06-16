@@ -19,6 +19,7 @@ describe( "<MediaStep2/>", () => {
 				DefaultCover={""}
 				prevStep={prevStepSpy}
 				nextStep={nextStepSpy}
+				socialCircle={[]}
 			/>
 		);
 

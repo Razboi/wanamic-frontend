@@ -4,6 +4,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
 import ShareBox from "../components/ShareBox";
+import ShareLink from "../components/ShareLink";
 import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
@@ -31,24 +32,6 @@ const
 	MediaButton = styled( Button )`
 		background: #000 !important;
 	`,
-	LinkForm = styled.div`
-		display: grid;
-		justify-self: center;
-		align-self: center;
-		width: 100%;
-		z-index: 2;
-	`,
-	ShareLinkInput = styled( Input )`
-		width: 80%;
-		justify-self: center;
-		align-self: center;
-		margin-bottom: 10px;
-	`,
-	ShareLinkContent = styled( TextArea )`
-		width: 90%;
-		justify-self: center;
-		align-self: center;
-	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;
 	`,
@@ -62,50 +45,75 @@ const
 	`,
 	StyledSearchMedia = styled( SearchMedia )`
 		z-index: 2;
-	`,
-	SwapBackButton = styled( Button )`
-		position: fixed;
-		bottom: 5px;
-		left: 5px;
 	`;
 
 class MediaOptions extends Component {
 	constructor() {
 		super();
 		this.state = {
+			socialCircle: [],
 			searchMedia: false,
 			shareLink: false,
 			shareState: false,
-			linkUrl: "",
-			linkContent: "",
 			mediaType: ""
 		};
+	}
+
+	componentDidMount() {
+		this.getSocialCircle();
+	}
+
+	getSocialCircle = () => {
+		api.getSocialCircle()
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getSocialCircle())
+						.catch( err => console.log( err ));
+				} else {
+					this.setState({ socialCircle: res.data });
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	submitLink = () => {
-		if ( this.state.linkUrl ) {
-			api.createMediaLink({
-				link: this.state.linkUrl, content: this.state.linkContent
-			})
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.submitLink())
-							.catch( err => console.log( err ));
-					} else {
-						this.props.addPost( res );
-						this.props.switchMediaOptions();
-					}
-				}).catch( err => console.log( err ));
+	submitLink = async( description, link ) => {
+		var i;
+
+		if ( !link ) {
+			return;
 		}
+		const { mentions, hashtags } = await extract(
+			description, { symbol: false, type: "all" }
+		);
+
+		api.createMediaLink( link, description, mentions, hashtags )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.submitLink())
+						.catch( err => console.log( err ));
+				} else if ( res ) {
+					this.props.addPost( res.newPost );
+					this.props.switchMediaOptions();
+					if ( res.mentionsNotifications ) {
+						const notifLength = res.mentionsNotifications.length;
+						for ( i = 0; i < notifLength; i++ ) {
+							this.props.socket.emit(
+								"sendNotification", res.mentionsNotifications[ i ]
+							);
+						}
+					}
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleLinkKeyPress = e => {
 		if ( e.key === "Enter" ) {
+			e.preventDefault();
 			this.submitLink();
 		}
 	}
@@ -124,7 +132,7 @@ class MediaOptions extends Component {
 
 	handleShare = async userInput => {
 		var i;
-		if ( userInput !== "" ) {
+		if ( userInput ) {
 			const { mentions, hashtags } = await extract(
 				userInput, { symbol: false, type: "all" }
 			);
@@ -159,6 +167,7 @@ class MediaOptions extends Component {
 						socket={this.props.socket}
 						mediaType={this.state.mediaType}
 						switchSearchMedia={this.switchSearchMedia}
+						socialCircle={this.state.socialCircle}
 					/>
 				</MediaOptionsWrapper>
 			);
@@ -167,7 +176,10 @@ class MediaOptions extends Component {
 			return (
 				<MediaOptionsWrapper>
 					<MediaDimmer />
-					<ShareBox handleShare={this.handleShare} />
+					<ShareBox
+						handleShare={this.handleShare}
+						socialCircle={this.state.socialCircle}
+					/>
 				</MediaOptionsWrapper>
 			);
 		}
@@ -175,21 +187,10 @@ class MediaOptions extends Component {
 			return (
 				<MediaOptionsWrapper>
 					<MediaDimmer />
-					<LinkForm>
-						<ShareLinkInput
-							name="linkUrl"
-							onKeyPress={this.handleLinkKeyPress}
-							onChange={this.handleChange}
-							placeholder="Share your link"
-						/>
-						<ShareLinkContent
-							name="linkContent"
-							onKeyPress={this.handleLinkKeyPress}
-							onChange={this.handleChange}
-							placeholder="Anything to say?"
-						/>
-					</LinkForm>
-					<SwapBackButton secondary content="Cancel" onClick={this.switchLink} />
+					<ShareLink
+						submitLink={this.submitLink}
+						socialCircle={this.state.socialCircle}
+					/>
 				</MediaOptionsWrapper>
 			);
 		}

@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Button, Image } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import api from "../services/api";
-import refreshToken from "../utils/refreshToken";
 import InputTrigger from "react-input-trigger";
 
 const
@@ -89,7 +87,6 @@ class MediaStep2 extends Component {
 		super();
 		this.state = {
 			description: "",
-			socialCircle: [],
 			showSuggestions: false,
 			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
@@ -99,30 +96,13 @@ class MediaStep2 extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.getSocialCircle();
-	}
-
-	getSocialCircle = () => {
-		api.getSocialCircle()
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.getSocialCircle())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({ socialCircle: res.data });
-				}
-			}).catch( err => console.log( err ));
-	}
-
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
-					{ socialCircle, description, startPosition, currentSelection } = this.state,
-					user = socialCircle[ currentSelection ],
+					{ description, startPosition, currentSelection } = this.state,
+					user = this.props.socialCircle[ currentSelection ],
 					updatedDescription =
 						description.slice( 0, startPosition - 1 )
 						+ "@" + user.username + " " +
@@ -146,7 +126,7 @@ class MediaStep2 extends Component {
 
 		if ( this.state.showSuggestions ) {
 			if ( e.keyCode === 40 &&
-			this.state.currentSelection !== this.state.socialCircle.length - 1 ) {
+			this.state.currentSelection !== this.props.socialCircle.length - 1 ) {
 				e.preventDefault();
 				this.setState({
 					currentSelection: this.state.currentSelection + 1
@@ -218,7 +198,7 @@ class MediaStep2 extends Component {
 							/>
 						</InputTrigger>
 						<Suggestions showSuggestions={this.state.showSuggestions}>
-							{this.state.socialCircle
+							{this.props.socialCircle
 								.filter( user =>
 									user.fullname.toLowerCase().indexOf(
 										this.state.mentionInput.toLowerCase()) !== -1
@@ -275,7 +255,8 @@ MediaStep2.propTypes = {
 	prevStep: PropTypes.func.isRequired,
 	nextStep: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
-	DefaultCover: PropTypes.string.isRequired
+	DefaultCover: PropTypes.string.isRequired,
+	socialCircle: PropTypes.array.isRequired,
 };
 
 export default MediaStep2;

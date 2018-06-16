@@ -64,11 +64,17 @@ export default {
 			.then( res => res.data )
 			.catch( err => err.response.data ),
 
-	createMediaLink: data =>
+	createMediaLink: ( link, description, mentions, hashtags ) =>
 		axios({
 			method: "post",
 			url: "/posts/mediaLink",
-			data: { token: localStorage.getItem( "token" ), data: data }
+			data: {
+				token: localStorage.getItem( "token" ),
+				link: link,
+				description: description,
+				mentions: mentions,
+				hashtags: hashtags
+			}
 		})
 			.then( res => res.data )
 			.catch( err => err.response.data ),
