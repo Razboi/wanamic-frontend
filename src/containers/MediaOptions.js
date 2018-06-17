@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Button, Input, TextArea } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
 import ShareBox from "../components/ShareBox";
 import ShareLink from "../components/ShareLink";
+import MediaPicture from "./MediaPicture";
 import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
@@ -55,7 +56,9 @@ class MediaOptions extends Component {
 			searchMedia: false,
 			shareLink: false,
 			shareState: false,
-			mediaType: ""
+			sharePicture: false,
+			mediaType: "",
+			mediaData: {}
 		};
 	}
 
@@ -126,6 +129,10 @@ class MediaOptions extends Component {
 		this.setState({ shareLink: !this.state.shareLink });
 	}
 
+	switchPicture = () => {
+		this.setState({ sharePicture: !this.state.sharePicture });
+	}
+
 	switchState = () => {
 		this.setState({ shareState: !this.state.shareState });
 	}
@@ -157,6 +164,58 @@ class MediaOptions extends Component {
 				}).catch( err => console.log( err ));
 		}
 	};
+
+	handlePicture = e => {
+		this.setState({
+			mediaData: {
+				imageFile: e.target.files[ 0 ],
+				image: URL.createObjectURL( e.target.files[ 0 ])
+			},
+			sharePicture: true
+		});
+	}
+
+	submitPicture = async description => {
+		var
+			data = new FormData(),
+			i;
+
+		const
+			{ mediaData } = this.state,
+			{ mentions, hashtags } = await extract(
+				description, { symbol: false, type: "all" }
+			);
+
+		if ( !mediaData.imageFile ) {
+			return;
+		}
+
+		await data.append( "picture", mediaData.imageFile );
+		await data.append( "content", description );
+		await data.append( "mentions", mentions );
+		await data.append( "hashtags", hashtags );
+		await data.append( "token", localStorage.getItem( "token" ));
+
+		api.createMediaPicture( data )
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.submitPicture())
+						.catch( err => console.log( err ));
+				} else if ( res ) {
+					this.props.addPost( res.newPost );
+					this.props.switchMediaOptions();
+					if ( res.mentionsNotifications ) {
+						const notifLength = res.mentionsNotifications.length;
+						for ( i = 0; i < notifLength; i++ ) {
+							this.props.socket.emit(
+								"sendNotification", res.mentionsNotifications[ i ]
+							);
+						}
+					}
+				}
+			}).catch( err => console.log( err ));
+	}
 
 	render() {
 		if ( this.state.searchMedia ) {
@@ -194,6 +253,19 @@ class MediaOptions extends Component {
 				</MediaOptionsWrapper>
 			);
 		}
+		if ( this.state.sharePicture ) {
+			return (
+				<MediaOptionsWrapper>
+					<MediaDimmer />
+					<MediaPicture
+						mediaData={this.state.mediaData}
+						socialCircle={this.state.socialCircle}
+						switchPicture={this.switchPicture}
+						submitPicture={this.submitPicture}
+					/>
+				</MediaOptionsWrapper>
+			);
+		}
 		return (
 			<MediaOptionsWrapper>
 				<MediaDimmer />
@@ -213,7 +285,7 @@ class MediaOptions extends Component {
 						>
 						</MediaButton>
 						<PictureUploadInput type="file" name="picture" id="pictureInput"
-							onChange={this.props.handlePictureSelect}
+							onChange={this.handlePicture}
 						/>
 					</PictureUploadWrapper>
 					<MediaButton secondary circular icon="film" size="huge"
@@ -232,7 +304,6 @@ class MediaOptions extends Component {
 }
 
 MediaOptions.propTypes = {
-	handlePictureSelect: PropTypes.func.isRequired,
 	addPost: PropTypes.func.isRequired,
 	switchMediaOptions: PropTypes.func.isRequired
 };

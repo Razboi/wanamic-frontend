@@ -10,7 +10,7 @@
     "react-dom": "^16.4.1",
     "react-google-login": "^3.2.1",
     "react-infinite-scroller": "^1.1.4",
-    "react-input-trigger": "git+https://github.com/Razboi/react-input-trigger.git",
+    "react-input-trigger": "^1.1.2",
     "react-masonry-component": "^6.2.1",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

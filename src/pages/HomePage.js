@@ -61,8 +61,7 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			skip: 1,
-			hasMore: true,
-			picture: null
+			hasMore: true
 		};
 	}
 
@@ -127,21 +126,6 @@ class HomePage extends Component {
 			.catch( err => console.log( err ));
 	}
 
-	handleChange = e => {
-		this.setState({ [ e.target.name ]: e.target.value });
-	}
-
-	switchMediaOptions = () => {
-		this.props.switchMediaOptions();
-	}
-
-	handlePictureSelect = e => {
-		this.props.history.push({
-			pathname: "/mediaPicture",
-			state: { file: e.target.files[ 0 ] }
-		});
-	}
-
 	render() {
 		return (
 			<Wrapper>
@@ -154,7 +138,7 @@ class HomePage extends Component {
 				>
 					<NavBar mediaOptions={this.props.mediaOptions} />
 					<ShareMediaButton primary circular icon="plus" size="big"
-						onClick={this.switchMediaOptions}
+						onClick={() => this.props.switchMediaOptions()}
 					/>
 					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments socket={this.props.socket} />}
@@ -163,7 +147,6 @@ class HomePage extends Component {
 
 					{this.props.mediaOptions &&
 						<MediaOptions
-							handlePictureSelect={this.handlePictureSelect}
 							socket={this.props.socket}
 						/>}
 

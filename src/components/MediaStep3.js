@@ -142,12 +142,8 @@ class MediaStep3 extends Component {
 						onClick={this.props.handleSubmit}
 					/>
 				</ShareOptionsWrapper>
-				{this.props.mediaData && this.props.mediaData.image ?
+				{this.props.mediaData && this.props.mediaData.image &&
 					<SelectedMediaBackground background={this.props.mediaData.image} />
-					:
-					<SelectedMediaBackground
-						background={this.props.DefaultCover}
-					/>
 				}
 			</div>
 		);
@@ -155,12 +151,12 @@ class MediaStep3 extends Component {
 }
 
 MediaStep3.propTypes = {
+	handleCheck: PropTypes.func.isRequired,
 	setPrivacyRange: PropTypes.func.isRequired,
 	privacyRange: PropTypes.number.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
-	mediaData: PropTypes.object.isRequired,
-	DefaultCover: PropTypes.string.isRequired
+	mediaData: PropTypes.object.isRequired
 };
 
 export default MediaStep3;

@@ -28,7 +28,7 @@ describe( "<MediaStep2/>", () => {
 	});
 
 	it( "Checks that <MediaStep2/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 3 );
 	});
 
 	it( "Checks that nextButton calls nextStep", () => {

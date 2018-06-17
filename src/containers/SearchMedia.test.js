@@ -12,8 +12,8 @@ Enzyme.configure({ adapter: new Adapter() });
 describe( "<SearchMedia/>", () => {
 	var
 		results = [
-			{ trackName: "test", artistName: "tester" },
-			{ trackName: "test2", artistName: "tester2" }
+			{ trackName: "test", artistName: "tester", artworkUrl100: "" },
+			{ trackName: "test2", artistName: "tester2", artworkUrl100: "" }
 		],
 		store,
 		wrapper;

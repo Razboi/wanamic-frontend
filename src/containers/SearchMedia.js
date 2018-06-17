@@ -11,15 +11,7 @@ import MediaStep3 from "../components/MediaStep3";
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
 
-var
-	DefaultCover,
-	itunesAPI;
-
-try {
-	DefaultCover = require( "../images/defaultBook.jpg" );
-} catch ( err ) {
-	console.log( err );
-}
+var itunesAPI;
 
 const
 	Wrapper = styled.div`
@@ -212,7 +204,6 @@ class SearchMedia extends Component {
 					nextStep={this.nextStep}
 					mediaData={this.state.mediaData}
 					description={this.state.description}
-					DefaultCover={DefaultCover}
 				/>
 			);
 		}
@@ -225,7 +216,6 @@ class SearchMedia extends Component {
 					handleSubmit={this.handleSubmit}
 					mediaData={this.state.mediaData}
 					privacyRange={this.state.privacyRange}
-					DefaultCover={DefaultCover}
 				/>
 			);
 		}
@@ -249,14 +239,10 @@ class SearchMedia extends Component {
 									<h3>{media.trackName}</h3>
 									<span>{media.artistName}</span>
 								</ResultMediaInfo>
-								{media.artworkUrl100
-									?
-									<ResultMediaImage
-										src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
-									/>
-									:
-									<ResultMediaImage src={DefaultCover} />
-								}
+
+								<ResultMediaImage
+									src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
+								/>
 							</ResultMediaWrapper>
 							<Divider />
 						</div>

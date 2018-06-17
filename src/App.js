@@ -9,7 +9,6 @@ import WelcomePage from "./pages/WelcomePage";
 import ExplorePage from "./pages/ExplorePage";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
-import MediaPicture from "./containers/MediaPicture";
 import io from "socket.io-client";
 
 const
@@ -25,8 +24,7 @@ class App extends Component {
 					<GuestRoute path="/login" component={AuthPage} />
 					<UserRoute path="/settings" component={SettingsPage}/>
 					<NewUserRoute path="/welcome" component={WelcomePage} />
-					<UserRoute path="/explore" component={ExplorePage} />
-					<UserRoute path="/mediaPicture" component={MediaPicture} />
+					<UserRoute path="/explore" component={ExplorePage} socket={socket} />
 
 					<UserRoute path="/:username" component={ProfilePage} socket={socket} />
 				</Switch>

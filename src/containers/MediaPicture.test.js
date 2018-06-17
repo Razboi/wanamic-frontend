@@ -9,26 +9,13 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<MediaPicture/>", () => {
 	var
-		wrapper,
-		location = {
-			state: {
-			}
-		};
+		wrapper;
 
 	wrapper = shallow(
-		<MediaPicture location={location} />
+		<MediaPicture/>
 	);
 
 	it( "Checks that <MediaPicture/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
-
-	it( "Checks that <MediaPicture/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
-	});
-
-	it( "Checks that sharePictureForm children renders", () => {
-		expect( wrapper.find( ".sharePictureForm" ).children()).to.have.length( 2 );
-	});
-
 });

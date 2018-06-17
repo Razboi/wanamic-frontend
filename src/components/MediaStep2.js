@@ -217,21 +217,13 @@ class MediaStep2 extends Component {
 						</Suggestions>
 					</ContentInputWrapper>
 					<SelectedMediaImgWrapper>
-						{this.props.mediaData && this.props.mediaData.image ?
+						{this.props.mediaData && this.props.mediaData.image &&
 							<SelectedMediaImg src={this.props.mediaData.image} />
-							:
-							<SelectedMediaImg
-								src={this.props.DefaultCover}
-							/>
 						}
 					</SelectedMediaImgWrapper>
 				</ShareWrapper>
-				{this.props.mediaData && this.props.mediaData.image ?
+				{this.props.mediaData && this.props.mediaData.image &&
 					<SelectedMediaBackground background={this.props.mediaData.image} />
-					:
-					<SelectedMediaBackground
-						background={this.props.DefaultCover}
-					/>
 				}
 				<BackButton
 					className="prevButton"
@@ -251,11 +243,9 @@ class MediaStep2 extends Component {
 }
 
 MediaStep2.propTypes = {
-	handleChange: PropTypes.func.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	nextStep: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
-	DefaultCover: PropTypes.string.isRequired,
 	socialCircle: PropTypes.array.isRequired,
 };
 

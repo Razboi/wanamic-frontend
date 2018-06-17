@@ -29,7 +29,7 @@ describe( "<MediaStep3/>", () => {
 	});
 
 	it( "Checks that <MediaStep3/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 2 );
+		expect( wrapper.children()).to.have.length( 1 );
 		expect( wrapper.children().children()).to.have.length( 4 );
 	});
 

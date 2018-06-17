@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Image, Input } from "semantic-ui-react";
+import { Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
@@ -31,11 +31,6 @@ const
 		justify-self: center;
 		align-self: center;
 		margin-bottom: 10px;
-	`,
-	SwapBackButton = styled( Button )`
-		position: fixed;
-		bottom: 5px;
-		left: 5px;
 	`,
 	Suggestions = styled.div`
 		grid-area: sug;
