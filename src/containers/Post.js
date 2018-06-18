@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
-
+import AlertsFilter from "../components/AlertsFilter";
 
 const
 	Wrapper = styled.div`
@@ -18,8 +18,7 @@ const
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	PostHeader = styled( Header )`
-		padding: 10px 10px 0px 10px !important;
-		margin-bottom: 10px !important;
+		padding: 10px !important;
 	`,
 	Author = styled.span`
 	`,
@@ -29,6 +28,16 @@ const
 		height: auto;
 		padding: 0px 10px;
 		margin-bottom: 30px;
+	`,
+	PostBody = styled.div`
+		position: relative;
+		overflow: hidden;
+	`,
+	Dimmer = styled.div`
+		background: ${props => props.blurFilter && "rgba( 0, 0, 0, 0.8 )"};
+		filter: ${props => props.blurFilter ?
+		"blur(25px)" : "blur(0px)"};
+		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
 
@@ -37,15 +46,19 @@ class Post extends Component {
 		super();
 		this.state = {
 			likedBy: [],
+			nsfw: false,
+			spoiler: false,
 			updatedContent: ""
 		};
 	}
 
-	static getDerivedStateFromProps( nextProps, prevState ) {
-		return {
-			likedBy: nextProps.post.likedBy,
-			updatedContent: nextProps.post.content
-		};
+	componentDidMount() {
+		this.setState({
+			likedBy: this.props.post.likedBy,
+			nsfw: this.props.post.alerts.nsfw,
+			spoiler: this.props.post.alerts.spoiler,
+			updatedContent: this.props.post.content
+		});
 	}
 
 	handleChange = e => {
@@ -109,50 +122,62 @@ class Post extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	handleFilter = type => {
+		this.setState({ [ type ]: false });
+	}
+
 	render() {
 		return (
 			<Wrapper>
-
-				{ !this.props.fakeOptions &&
-					<DropdownOptions
-						author={this.props.post.author}
-						updatedContent={this.state.updatedContent}
-						handleUpdate={this.handleUpdate}
-						handleDelete={this.handleDelete}
-						handleChange={this.handleChange}
-					/>
-				}
-
 				<PostHeader>
 					<Author className="postAuthor">{this.props.post.author}</Author>
 					<DateTime className="postDate">
 						{moment( this.props.post.createdAt ).fromNow()}
 					</DateTime>
+
+					{ !this.props.fakeOptions &&
+						<DropdownOptions
+							author={this.props.post.author}
+							updatedContent={this.state.updatedContent}
+							handleUpdate={this.handleUpdate}
+							handleDelete={this.handleDelete}
+							handleChange={this.handleChange}
+						/>
+					}
 				</PostHeader>
 
-				<PostContent>
-					<p className="postContent">
-						{this.props.post.content}
-					</p>
-					{this.props.post.sharedPost &&
-						<SharedPost post={this.props.post.sharedPost} />}
-				</PostContent>
-
-				{ !this.props.fakeOptions &&
-					<PostOptions
-						fakeOptions={this.props.fakeOptions}
-						handleLike={this.handleLike}
-						handleDislike={this.handleDislike}
-						numLiked={this.state.likedBy.length}
-						numComments={this.props.post.comments.length}
-						numShared={this.props.post.sharedBy.length}
-						id={this.props.post._id}
-						index={this.props.index}
-						liked={
-							this.state.likedBy.includes( localStorage.getItem( "username" ))
-						}
+				<PostBody>
+					<AlertsFilter
+						handleFilter={this.handleFilter}
+						nsfw={this.state.nsfw}
+						spoiler={this.state.spoiler}
 					/>
-				}
+					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
+						<PostContent>
+							<p className="postContent">
+								{this.props.post.content}
+							</p>
+							{this.props.post.sharedPost &&
+								<SharedPost post={this.props.post.sharedPost} />}
+						</PostContent>
+
+						{ !this.props.fakeOptions &&
+							<PostOptions
+								fakeOptions={this.props.fakeOptions}
+								handleLike={this.handleLike}
+								handleDislike={this.handleDislike}
+								numLiked={this.state.likedBy.length}
+								numComments={this.props.post.comments.length}
+								numShared={this.props.post.sharedBy.length}
+								id={this.props.post._id}
+								index={this.props.index}
+								liked={
+									this.state.likedBy.includes( localStorage.getItem( "username" ))
+								}
+							/>
+						}
+					</Dimmer>
+				</PostBody>
 			</Wrapper>
 		);
 	}

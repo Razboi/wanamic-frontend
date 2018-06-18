@@ -41,7 +41,7 @@ export default {
 			.then( res => res.data )
 			.catch( err => err ),
 
-	createPost: ( userInput, mentions, hashtags ) =>
+	createPost: ( userInput, mentions, hashtags, privacyRange, alerts ) =>
 		axios({
 			method: "post",
 			url: "/posts/create",
@@ -49,7 +49,9 @@ export default {
 				token: localStorage.getItem( "token" ),
 				userInput: userInput,
 				mentions: mentions,
-				hashtags: hashtags
+				hashtags: hashtags,
+				privacyRange: privacyRange,
+				alerts: alerts
 			}
 		})
 			.then( res => res.data )
@@ -64,7 +66,7 @@ export default {
 			.then( res => res.data )
 			.catch( err => err.response.data ),
 
-	createMediaLink: ( link, description, mentions, hashtags ) =>
+	createMediaLink: ( link, description, mentions, hashtags, privacyRange, alerts ) =>
 		axios({
 			method: "post",
 			url: "/posts/mediaLink",
@@ -73,7 +75,9 @@ export default {
 				link: link,
 				description: description,
 				mentions: mentions,
-				hashtags: hashtags
+				hashtags: hashtags,
+				privacyRange: privacyRange,
+				alerts: alerts
 			}
 		})
 			.then( res => res.data )

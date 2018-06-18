@@ -83,7 +83,7 @@ class MediaOptions extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	submitLink = async( description, link ) => {
+	submitLink = async( description, link, privacyRange, alerts ) => {
 		var i;
 
 		if ( !link ) {
@@ -93,7 +93,9 @@ class MediaOptions extends Component {
 			description, { symbol: false, type: "all" }
 		);
 
-		api.createMediaLink( link, description, mentions, hashtags )
+		api.createMediaLink(
+			link, description, mentions, hashtags, privacyRange, alerts
+		)
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -137,17 +139,17 @@ class MediaOptions extends Component {
 		this.setState({ shareState: !this.state.shareState });
 	}
 
-	handleShare = async userInput => {
+	shareTextPost = async( userInput, privacyRange, alerts ) => {
 		var i;
 		if ( userInput ) {
 			const { mentions, hashtags } = await extract(
 				userInput, { symbol: false, type: "all" }
 			);
-			api.createPost( userInput, mentions, hashtags )
+			api.createPost( userInput, mentions, hashtags, privacyRange, alerts )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
-							.then(() => this.handleShare())
+							.then(() => this.shareTextPost())
 							.catch( err => console.log( err ));
 					} else if ( res ) {
 						this.props.addPost( res.newPost );
@@ -175,7 +177,7 @@ class MediaOptions extends Component {
 		});
 	}
 
-	submitPicture = async description => {
+	submitPicture = async( description, privacyRange, alerts ) => {
 		var
 			data = new FormData(),
 			i;
@@ -194,6 +196,8 @@ class MediaOptions extends Component {
 		await data.append( "content", description );
 		await data.append( "mentions", mentions );
 		await data.append( "hashtags", hashtags );
+		await data.append( "privacyRange", privacyRange );
+		await data.append( "alerts", alerts );
 		await data.append( "token", localStorage.getItem( "token" ));
 
 		api.createMediaPicture( data )
@@ -236,7 +240,7 @@ class MediaOptions extends Component {
 				<MediaOptionsWrapper>
 					<MediaDimmer />
 					<ShareBox
-						handleShare={this.handleShare}
+						shareTextPost={this.shareTextPost}
 						socialCircle={this.state.socialCircle}
 					/>
 				</MediaOptionsWrapper>

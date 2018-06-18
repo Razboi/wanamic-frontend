@@ -3,6 +3,7 @@ import { Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
+import MediaStep3 from "../components/MediaStep3";
 
 const
 	Wrapper = styled.div`
@@ -57,12 +58,16 @@ class ShareLink extends Component {
 		this.state = {
 			link: "",
 			description: "",
+			step: 1,
+			privacyRange: 1,
+			checkNsfw: false,
+			checkSpoiler: false,
+			startPosition: undefined,
 			showSuggestions: false,
-			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
+			suggestionsTop: undefined,
 			mentionInput: "",
-			currentSelection: 0,
-			startPosition: undefined
+			currentSelection: 0
 		};
 	}
 
@@ -90,7 +95,7 @@ class ShareLink extends Component {
 
 				this.endHandler();
 			} else {
-				this.props.submitLink( this.state.description, this.state.link );
+				this.nextStep();
 			}
 		}
 
@@ -144,13 +149,52 @@ class ShareLink extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
+	nextStep = () => {
+		this.setState({ step: this.state.step + 1 });
+	}
+
+	prevStep = () => {
+		if ( this.state.step !== 1 ) {
+			this.setState({ step: this.state.step - 1 });
+		}
+	}
+
+	setPrivacyRange = range => {
+		this.setState({ privacyRange: range });
+	}
+
+	handleCheck = ( e, semanticUiProps ) => {
+		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
+	}
+
+	handleSubmit = () => {
+		const {
+				description, link, privacyRange, checkNsfw, checkSpoiler
+			} = this.state,
+			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+		this.props.submitLink( description, link, privacyRange, alerts );
+	}
+
 	render() {
+		if ( this.state.step === 2 ) {
+			return (
+				<MediaStep3
+					handleCheck={this.handleCheck}
+					setPrivacyRange={this.setPrivacyRange}
+					prevStep={this.prevStep}
+					handleSubmit={this.handleSubmit}
+					mediaData={{}}
+					privacyRange={this.state.privacyRange}
+				/>
+			);
+		}
 		return (
 			<Wrapper>
 				<BoxContainer>
 					<ShareLinkInput
 						style={TextAreaStyle}
 						name="link"
+						value={this.state.link}
 						onKeyDown={this.handleKeyPress}
 						onChange={this.handleChange}
 						placeholder="Share your link"

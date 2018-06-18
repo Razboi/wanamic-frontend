@@ -3,6 +3,7 @@ import { Form } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import InputTrigger from "react-input-trigger";
+import MediaStep3 from "../components/MediaStep3";
 
 const
 	Wrapper = styled.div`
@@ -61,6 +62,10 @@ class ShareBox extends Component {
 		super();
 		this.state = {
 			userInput: "",
+			step: 1,
+			privacyRange: 1,
+			checkNsfw: false,
+			checkSpoiler: false,
 			showSuggestions: false,
 			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
@@ -94,8 +99,7 @@ class ShareBox extends Component {
 
 				this.endHandler();
 			} else {
-				this.props.handleShare( this.state.userInput );
-				this.setState({ userInput: "" });
+				this.nextStep();
 			}
 		}
 
@@ -149,7 +153,47 @@ class ShareBox extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
+	nextStep = () => {
+		this.setState({ step: this.state.step + 1 });
+	}
+
+	prevStep = () => {
+		if ( this.state.step !== 1 ) {
+			this.setState({ step: this.state.step - 1 });
+		}
+	}
+
+	setPrivacyRange = range => {
+		this.setState({ privacyRange: range });
+	}
+
+	handleCheck = ( e, semanticUiProps ) => {
+		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
+	}
+
+	handleSubmit = () => {
+		const {
+				userInput, privacyRange, checkNsfw, checkSpoiler
+			} = this.state,
+			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+
+		this.props.shareTextPost( userInput, privacyRange, alerts );
+		this.setState({ userInput: "" });
+	}
+
 	render() {
+		if ( this.state.step === 2 ) {
+			return (
+				<MediaStep3
+					handleCheck={this.handleCheck}
+					setPrivacyRange={this.setPrivacyRange}
+					prevStep={this.prevStep}
+					handleSubmit={this.handleSubmit}
+					mediaData={{}}
+					privacyRange={this.state.privacyRange}
+				/>
+			);
+		}
 		return (
 			<Wrapper>
 				<BoxContainer>
@@ -206,7 +250,7 @@ class ShareBox extends Component {
 }
 
 ShareBox.propTypes = {
-	handleShare: PropTypes.func.isRequired,
+	shareTextPost: PropTypes.func.isRequired,
 	socialCircle: PropTypes.array.isRequired,
 };
 

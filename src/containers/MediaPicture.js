@@ -47,7 +47,12 @@ class MediaPicture extends Component {
 	}
 
 	handleSubmit = () => {
-		this.props.submitPicture( this.state.description );
+		const {
+				description, privacyRange, checkNsfw, checkSpoiler
+			} = this.state,
+			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+
+		this.props.submitPicture( description, privacyRange, alerts );
 	}
 
 	render() {

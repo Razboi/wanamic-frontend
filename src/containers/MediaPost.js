@@ -63,7 +63,7 @@ const
 	`,
 	Dimmer = styled.div`
 		filter: ${props => props.blurFilter ?
-		"blur(25px) brightness(80%)" : "blur(0px)"};
+		"blur(25px) brightness(50%)" : "blur(0px)"};
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
@@ -80,13 +80,13 @@ class MediaPost extends Component {
 		};
 	}
 
-	static getDerivedStateFromProps( nextProps, prevState ) {
-		return {
-			likedBy: nextProps.post.likedBy,
-			nsfw: nextProps.post.alerts.nsfw,
-			spoiler: nextProps.post.alerts.spoiler,
-			updatedContent: nextProps.post.content
-		};
+	componentDidMount() {
+		this.setState({
+			likedBy: this.props.post.likedBy,
+			nsfw: this.props.post.alerts.nsfw,
+			spoiler: this.props.post.alerts.spoiler,
+			updatedContent: this.props.post.content
+		});
 	}
 
 	handleChange = e => {
