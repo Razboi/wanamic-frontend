@@ -73,7 +73,7 @@ class ExplorePage extends Component {
 			usernameSearch: "",
 			renderProfile: false,
 			typeOfSearch: "",
-			skip: 1,
+			skip: 0,
 			hasMore: true,
 			isInfiniteLoading: false,
 			content: true,
@@ -94,7 +94,7 @@ class ExplorePage extends Component {
 					refreshToken()
 						.then(() => this.getSugestedUser())
 						.catch( err => console.log( err ));
-				} else {
+				} else if ( res.data ) {
 					this.setState({
 						user: res.data,
 						renderProfile: true,
@@ -112,7 +112,7 @@ class ExplorePage extends Component {
 					refreshToken()
 						.then(() => this.getRandomUser())
 						.catch( err => console.log( err ));
-				} else {
+				} else if ( res ) {
 					this.setState({
 						user: res.data,
 						renderProfile: true,
