@@ -40,7 +40,8 @@ class NewsFeed extends Component {
 }
 
 NewsFeed.propTypes = {
-	posts: PropTypes.array.isRequired
+	posts: PropTypes.array.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 export default NewsFeed;

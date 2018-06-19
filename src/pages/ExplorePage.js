@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import ExploreUsers from "../components/ExploreUsers";
-import ExploreProfile from "../components/ExploreProfile";
+import UserProfile from "../containers/UserProfile";
 import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
@@ -73,10 +73,11 @@ class ExplorePage extends Component {
 			usernameSearch: "",
 			renderProfile: false,
 			typeOfSearch: "",
-			skip: 0,
+			skip: 1,
 			hasMore: true,
 			content: true,
-			posts: []
+			posts: [],
+			user: {}
 		};
 	}
 
@@ -206,39 +207,18 @@ class ExplorePage extends Component {
 		}
 	}
 
-	handleAddFriend = () => {
-		api.addFriend( this.state.user.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleAddFriend())
-						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
-	}
-
-	handleFollow = () => {
-		api.followUser( this.state.user.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleFollow())
-						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
-	}
-
 
 	render() {
 		if ( this.state.renderProfile ) {
 			return (
-				<ExploreProfile
+				<UserProfile
 					className="exploreProfile"
 					user={this.state.user}
+					username={this.state.user.username}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}
-					handleAddFriend={this.handleAddFriend}
-					handleFollow={this.handleFollow}
+					socket={this.props.socket}
+					explore={true}
 				/>
 			);
 		}

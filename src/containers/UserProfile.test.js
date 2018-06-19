@@ -3,18 +3,18 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import ProfilePage from "./ProfilePage";
+import UserProfile from "./UserProfile";
+import sinon from "sinon";
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<ProfilePage/>", () => {
-	const wrapper = shallow(
-		<ProfilePage
-			match={{ params: { username: "test@gmail.com" } }}
-		/>
-	);
+describe( "<UserProfile/>", () => {
+	var
+		wrapper = shallow(
+			<UserProfile socket={{}} username={"test"}/>
+		);
 
-	it( "Checks that <ProfilePage/> renders", () => {
+	it( "Checks that <UserProfile/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 });
