@@ -75,16 +75,26 @@ class ExplorePage extends Component {
 			typeOfSearch: "",
 			skip: 0,
 			hasMore: true,
-			isInfiniteLoading: false,
 			content: true,
 			posts: []
 		};
 	}
 
 	componentDidMount() {
+		this.refreshPosts();
+	}
+
+	refreshPosts = () => {
 		api.exploreContent( 0 )
-			.then( res => this.setState({ posts: res.data }))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.refreshPosts())
+						.catch( err => console.log( err ));
+				} else if ( res.data ) {
+					this.setState({ posts: res.data });
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	getSugestedUser = () => {
@@ -112,7 +122,7 @@ class ExplorePage extends Component {
 					refreshToken()
 						.then(() => this.getRandomUser())
 						.catch( err => console.log( err ));
-				} else if ( res ) {
+				} else if ( res.data ) {
 					this.setState({
 						user: res.data,
 						renderProfile: true,
@@ -142,8 +152,15 @@ class ExplorePage extends Component {
 
 	getUsername = () => {
 		api.getUserInfo( this.state.usernameSearch )
-			.then( res => this.setState({ user: res.data, renderProfile: true }))
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.getUsername())
+						.catch( err => console.log( err ));
+				} else if ( res.data ) {
+					this.setState({ user: res.data, renderProfile: true });
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleChange = e => {
@@ -171,35 +188,44 @@ class ExplorePage extends Component {
 	}
 
 	getPosts = () => {
-		if ( this.state.hasMore && !this.state.isInfiniteLoading ) {
-			this.setState({ isInfiniteLoading: true });
+		if ( this.state.hasMore ) {
 			api.exploreContent( this.state.skip )
 				.then( res => {
-					if ( res.data.length < 10 ) {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.getPosts())
+							.catch( err => console.log( err ));
+					} else if ( res.data ) {
 						this.setState({
 							posts: [ ...this.state.posts, ...res.data ],
-							hasMore: false,
-							isInfiniteLoading: false
+							hasMore: res.data.length > 10,
+							skip: this.state.skip + 1
 						});
-						return;
 					}
-					this.setState({
-						posts: [ ...this.state.posts, ...res.data ],
-						isInfiniteLoading: false,
-						skip: this.state.skip + 1
-					});
 				}).catch( err => console.log( err ));
 		}
 	}
 
 	handleAddFriend = () => {
 		api.addFriend( this.state.user.username )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleAddFriend())
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 	handleFollow = () => {
 		api.followUser( this.state.user.username )
-			.catch( err => console.log( err ));
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.handleFollow())
+						.catch( err => console.log( err ));
+				}
+			}).catch( err => console.log( err ));
 	}
 
 

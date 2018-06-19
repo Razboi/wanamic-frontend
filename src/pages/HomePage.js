@@ -122,7 +122,15 @@ class HomePage extends Component {
 
 	refreshNewsFeed = () => {
 		api.getNewsFeed( 0 )
-			.then( res => this.props.setNewsfeed( res.data ))
+			.then( res => {
+				if ( res === "jwt expired" ) {
+					refreshToken()
+						.then(() => this.refreshNewsFeed())
+						.catch( err => console.log( err ));
+				} else if ( res.data ) {
+					this.props.setNewsfeed( res.data );
+				}
+			})
 			.catch( err => console.log( err ));
 	}
 
