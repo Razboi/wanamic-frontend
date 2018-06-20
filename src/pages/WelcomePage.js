@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import setUserKw from "../utils/setUserKWs";
 
 const
 	Wrapper = styled.div`
@@ -23,6 +24,7 @@ class WelcomePage extends Component {
 		super();
 		this.state = {
 			description: "",
+			keywords: "",
 			userImage: null,
 			step: 1,
 			checkedCategories: [],
@@ -105,6 +107,7 @@ class WelcomePage extends Component {
 						.then(() => this.finish())
 						.catch( err => console.log( err ));
 				} else {
+					setUserKw( this.state.keywords );
 					localStorage.removeItem( "NU" );
 					this.props.history.push( "/" );
 				}
@@ -119,6 +122,8 @@ class WelcomePage extends Component {
 						handleNext={this.handleNext}
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
+						description={this.state.description}
+						keywords={this.state.keywords}
 					/>
 				}
 

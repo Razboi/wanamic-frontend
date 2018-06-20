@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Form } from "semantic-ui-react";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
-
+import setUserKw from "../utils/setUserKWs";
 
 class SettingsPage extends Component {
 	constructor() {
@@ -41,10 +41,7 @@ class SettingsPage extends Component {
 
 
 	handleSubmit = () => {
-		var
-			keywordsArray = ( this.state.keywords ).split( /\s*#/ ),
-			data = new FormData();
-		keywordsArray.shift();
+		var data = new FormData();
 		data.append( "userImage", this.state.userImage );
 		data.append( "headerImage", this.state.headerImage );
 		data.append( "description", this.state.description );
@@ -53,7 +50,6 @@ class SettingsPage extends Component {
 		data.append( "token", localStorage.getItem( "token" ));
 
 		this.setInfo( data );
-		this.setKW( keywordsArray );
 	}
 
 	setInfo = data => {
@@ -66,17 +62,8 @@ class SettingsPage extends Component {
 							this.setInfo( data );
 						})
 						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
-	}
-
-	setKW = keywordsArray => {
-		api.setUserKw( keywordsArray )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.setKW( keywordsArray ))
-						.catch( err => console.log( err ));
+				} else if ( res ) {
+					setUserKw( this.state.keywords );
 				}
 			}).catch( err => console.log( err ));
 	}

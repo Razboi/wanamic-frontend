@@ -103,8 +103,9 @@ export default {
 
 	getTimeline: ( skip, username ) =>
 		axios({
-			method: "get",
+			method: "post",
 			url: "posts/" + username + "/" + skip,
+			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),

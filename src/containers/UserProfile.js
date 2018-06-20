@@ -126,7 +126,7 @@ class UserProfile extends Component {
 	}
 
 	static getDerivedStateFromProps( props, state ) {
-		if ( props.user !== state.user ) {
+		if ( props.user && props.user !== state.user ) {
 			return {
 				user: props.user
 			};
@@ -153,7 +153,6 @@ class UserProfile extends Component {
 		} else {
 			api.getUserInfo( this.props.username )
 				.then( res => {
-					this.setImages();
 					this.setState({ user: res.data });
 				})
 				.catch( err => {
@@ -178,6 +177,7 @@ class UserProfile extends Component {
 
 	setImages() {
 		const { user } = this.state;
+
 		try {
 			if ( user.headerImage ) {
 				backgroundImg = require( "../images/" + user.headerImage );
@@ -241,6 +241,7 @@ class UserProfile extends Component {
 						.catch( err => console.log( err ));
 				} else {
 					this.props.socket.emit( "sendNotification", res.data );
+					this.refreshTimeline();
 				}
 			}).catch( err => console.log( err ));
 	}
