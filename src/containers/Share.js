@@ -79,8 +79,8 @@ class Share extends Component {
 						.then(() => this.handleShare())
 						.catch( err => console.log( err ));
 				} else {
-					this.props.addPost( res.data );
-					this.props.updatePost( res.data.sharedPost );
+					this.props.addPost( res.data.newPost );
+					this.props.updatePost( res.data.clickedPost );
 					this.props.switchShare( undefined );
 				}
 			}).catch( err => console.log( err ));
@@ -110,7 +110,13 @@ class Share extends Component {
 					/>
 					<ShareMain>
 						<PostToShare>
-							<SharedPost post={this.props.postToShare} />
+							<SharedPost
+								post={this.props.postToShare.sharedPost ?
+									this.props.postToShare.sharedPost
+									:
+									this.props.postToShare
+								}
+							/>
 						</PostToShare>
 					</ShareMain>
 				</ShareWrapper>

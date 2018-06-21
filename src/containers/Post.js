@@ -48,17 +48,33 @@ class Post extends Component {
 			likedBy: [],
 			nsfw: false,
 			spoiler: false,
-			updatedContent: ""
+			updatedContent: "",
+			id: ""
 		};
 	}
 
-	componentDidMount() {
-		this.setState({
-			likedBy: this.props.post.likedBy,
-			nsfw: this.props.post.alerts.nsfw,
-			spoiler: this.props.post.alerts.spoiler,
-			updatedContent: this.props.post.content
-		});
+	static getDerivedStateFromProps( props, state ) {
+		const { post } = props;
+		if ( post._id === state.id ) {
+			return null;
+		}
+		if ( post.sharedPost ) {
+			return {
+				likedBy: post.likedBy,
+				nsfw: post.sharedPost.alerts.nsfw,
+				spoiler: post.sharedPost.alerts.spoiler,
+				updatedContent: post.content,
+				id: post._id
+			};
+		} else {
+			return {
+				likedBy: post.likedBy,
+				nsfw: post.alerts.nsfw,
+				spoiler: post.alerts.spoiler,
+				updatedContent: post.content,
+				id: post._id
+			};
+		}
 	}
 
 	handleChange = e => {
