@@ -31,12 +31,12 @@ describe( "<LoginForm/>", () => {
 	});
 
 	it( "Checks that <LoginForm/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 
 	it( "Checks that clicking swap button calls swapForm", () => {
 		expect( swapSpy.called ).to.equal( false );
-		wrapper.find( ".swapButton" ).simulate( "click" );
+		wrapper.find( ".swapLink" ).simulate( "click" );
 		expect( swapSpy.called ).to.equal( true );
 	});
 

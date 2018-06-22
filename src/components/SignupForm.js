@@ -1,33 +1,74 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button, Header, Message } from "semantic-ui-react";
+import { Form, Button, Message } from "semantic-ui-react";
 import Step1 from "./WelcomeStep1";
 import PropTypes from "prop-types";
 
 const
+	Wrapper = styled.div`
+		display: grid;
+		height: 100%;
+		width: 100%;
+		grid-template-columns: 100%;
+		grid-template-rows: 40% 60%;
+		grid-template-areas:
+			"header"
+			"form"
+	`,
+	HeaderContainer = styled.div`
+		grid-area: header;
+		display: grid;
+	`,
+	HeaderLogo = styled.span`
+	align-self: center;
+	justify-self: center;
+	font-size: 2rem;
+	`,
 	FormContainer = styled.div`
 		@media (max-width: 420px) {
-			width: 90%;
-			height: 60%;
-			margin: auto;
-			padding: 25px;
+			grid-area: form;
+			display: grid;
 		}
-		border: 1px solid #808080;
-		width: 300px;
-		height: 400px;
-		grid-row: 1 / 3;
-		margin: 0px auto;
 	`,
-
-	FormHeader = styled( Header )`
-		margin-bottom: 30px;
+	StyledForm = styled( Form )`
+		width: 90%;
+		height: 60%;
+		align-self: flex-start;
+		justify-self: center;
+	`,
+	EmailInput = styled( Form.Input )`
+		input {
+			border-width: 0px 0px 1px 0px !important;
+			border-radius: 0px !important;
+		}
+		i {
+			left: -10px !important;
+		}
+		margin: 0 !important;
+	`,
+	PasswordInput = styled( Form.Input )`
+		input {
+			border-width: 0px 0px 1px 0px !important;
+			border-radius: 0px !important;
+		}
+		i {
+			left: -10px !important;
+		}
+		margin: 2rem 0 0 0 !important;
+	`,
+	SignupButton = styled( Button )`
+		width: 100% !important;
+		margin: 3rem 0 0 0 !important;
+		font-size: 1.2rem !important;
+	`,
+	ForgotPw = styled.div`
+		margin-top: 1rem;
 		text-align: center;
 	`,
-
-	SwapButton = styled( Button )`
-		position: absolute;
-		right: 10px;
-		top: 10px;
+	NewAccount = styled.span`
+		align-self: flex-end;
+		justify-self: center;
+		margin-bottom: 1rem;
 	`;
 
 
@@ -49,47 +90,57 @@ class SignupForm extends Component {
 			);
 		} else {
 			return (
-				<FormContainer id="AuthFormContainer">
-					{this.props.error &&
-						<Message negative>
-							<Message.Header>{this.props.error.response.data}</Message.Header>
-						</Message>
-					}
-					<SwapButton
-						className="swapButton"
-						secondary
-						content="Log In"
-						onClick={this.props.swapForm}
-					/>
-					<FormHeader className="formHeader" content="Sign Up" />
-					<Form id="AuthForm">
-						<Form.Input
-							className="emailInput"
-							label="Email"
-							name="email"
-							onChange={this.props.handleChange}
-							onKeyPress={this.handleKeyPress}
-							value={this.props.email}
-						/>
-						<Form.Input
-							className="passwordInput"
-							label="Password"
-							type="password"
-							name="password"
-							onChange={this.props.handleChange}
-							onKeyPress={this.handleKeyPress}
-							value={this.props.password}
-						/>
-						<Form.Button
-							type="button"
-							className="signupButton"
-							floated="right"
-							primary
-							content="Sign Up"
-							onClick={this.props.handleSignupNext}
-						/>
-					</Form>
-				</FormContainer>
+				<Wrapper>
+
+					<HeaderContainer className="formHeader">
+						<HeaderLogo>Wanamic</HeaderLogo>
+					</HeaderContainer>
+
+					<FormContainer id="AuthFormContainer">
+						{this.props.error &&
+							<Message negative>
+								<Message.Header>{this.props.error.response.data}</Message.Header>
+							</Message>
+						}
+
+						<StyledForm id="AuthForm">
+							<EmailInput
+								className="emailInput"
+								placeholder="Email"
+								name="email"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.email}
+								icon="mail"
+								iconPosition="left"
+							/>
+							<PasswordInput
+								className="passwordInput"
+								placeholder="Password"
+								type="password"
+								name="password"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.password}
+								icon="lock"
+								iconPosition="left"
+							/>
+
+							<SignupButton
+								type="button"
+								className="signupButton"
+								content="Sign Up"
+								onClick={this.props.handleSignupNext}
+							/>
+
+							<ForgotPw>Forgot your password?</ForgotPw>
+
+						</StyledForm>
+						<NewAccount className="swapLink" onClick={this.props.swapForm}>
+							Already have an account? <b>Sign In</b>
+						</NewAccount>
+					</FormContainer>
+				</Wrapper>
 			);
 		}
 	}
