@@ -8,8 +8,8 @@ const
 	Wrapper = styled.div`
 		height: 100%;
 	`,
-	PostWrapper = styled.div`
-		margin-bottom: 20px;
+	PostWrapper = styled.article`
+		/* margin-bottom: 1rem; */
 	`;
 
 class NewsFeed extends Component {

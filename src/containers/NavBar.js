@@ -19,7 +19,7 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
-		background: #2185d0;
+		background: rgba(0,0,0,0.166);
 	`,
 	NavOption = styled.span`
 		color: #fff !important;

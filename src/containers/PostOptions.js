@@ -7,10 +7,11 @@ import { switchComments, switchShare } from "../services/actions/posts";
 
 const
 	Wrapper = styled.div`
-		margin: 15px 0px;
+		height: 52px;
 		width: 100%;
 		display: flex;
 		justify-content: space-around;
+		align-items: center;
 	`,
 	Option = styled.div`
 	`;

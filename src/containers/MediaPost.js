@@ -17,18 +17,38 @@ const
 		overflow: hidden;
 		display: grid;
 		position: relative;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
 	`,
 	PostHeader = styled( Header )`
-		padding: 10px !important;
+		height: 60px;
+		display: flex;
+		flex-direction: row;
+		padding: 0 1rem !important;
+		margin: 0 !important;
+		align-items: center !important;
 	`,
+	HeaderInfo = styled.div`
+		display: flex;
+		flex-direction: column;
+		margin-left: 0.5rem;
+	`,
+	AuthorImg = styled( Image )`
+		width: 30px !important;
+		height: 30px !important;
+	`,
+	StyledOptions = {
+		position: "absolute",
+		right: "1rem",
+		top: "1rem",
+	},
 	Author = styled.span`
+		font-size: 1.2rem !important;
 	`,
 	DateTime = styled( Header.Subheader )`
+		font-size: 1rem !important;
 	`,
 	MediaImage = styled( Image )`
 		justify-self: center;
-		align-self: center;
 	`,
 	PostMediaContent = styled.div`
 		display: grid;
@@ -50,8 +70,7 @@ const
 		transform: scale(1.2);
 	`,
 	PostUserContent = styled.div`
-		padding: 0px 10px;
-		margin-bottom: 30px;
+		padding: 1rem 1rem 2rem 1rem;
 	`,
 	ContentAuthor = styled.span`
 		font-weight: bold;
@@ -67,7 +86,9 @@ const
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
-var mediaPicture;
+var
+	mediaPicture,
+	userPicture;
 
 class MediaPost extends Component {
 	constructor() {
@@ -182,25 +203,35 @@ class MediaPost extends Component {
 	}
 
 	render() {
-		if ( this.props.post.picture ) {
-			try {
+		try {
+			if ( this.props.post.authorImg ) {
+				userPicture = require( "../images/" + this.props.post.authorImg );
+			} else {
+				userPicture = require( "../images/defaultUser.png" );
+			}
+
+			if ( this.props.post.picture ) {
 				mediaPicture =
 					require( "../images/" + this.props.post.mediaContent.image );
-			} catch ( err ) {
-				console.log( err );
 			}
+		} catch ( err ) {
+			console.log( err );
 		}
 
 		return (
 			<Wrapper>
 				<PostHeader className="mediaPostHeader">
-					<Author className="postAuthor">{this.props.post.author}</Author>
-					<DateTime className="postDate">
-						{moment( this.props.post.createdAt ).fromNow()}
-					</DateTime>
+					<AuthorImg circular src={userPicture} />
+					<HeaderInfo>
+						<Author className="postAuthor">{this.props.post.author}</Author>
+						<DateTime className="postDate">
+							{moment( this.props.post.createdAt ).fromNow()}
+						</DateTime>
+					</HeaderInfo>
 
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
+							style={StyledOptions}
 							author={this.props.post.author}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}

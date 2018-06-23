@@ -48,7 +48,7 @@ const
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
-		margin-top: ${props => props.blur ? "0px" : "69.33px"};
+		margin-top: ${props => props.blur ? "0px" : "49.33px"};
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
@@ -145,7 +145,7 @@ class HomePage extends Component {
 					useWindow={false}
 				>
 					<NavBar mediaOptions={this.props.mediaOptions} />
-					<ShareMediaButton primary circular icon="plus" size="big"
+					<ShareMediaButton circular icon="plus" size="big"
 						onClick={() => this.props.switchMediaOptions()}
 					/>
 					{this.props.displayShare && <Share />}
