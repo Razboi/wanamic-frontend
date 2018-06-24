@@ -39,19 +39,28 @@ const
 		right: "1rem",
 		top: "1rem",
 	},
-	Author = styled.span`
+	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
+		color: hsl(0,0%,13%) !important;
+	`,
+	AuthorUsername = styled.span`
+		font-size: 1rem;
+		color: rgba(0,0,0,0.65);
+		font-weight: normal;
+		margin-left: 0.25rem;
 	`,
 	DateTime = styled( Header.Subheader )`
+		color: rgba(0,0,0,0.45) !important;
 		font-size: 1rem !important;
 	`,
 	ContentWrapper = styled.div`
 		display: flex;
 		padding: 0px 1rem;
-		min-height: 60px;
+		min-height: 25px;
 	`,
 	UserContent = styled.p`
 		align-self: center;
+		word-break: break-all;
 	`,
 	PostBody = styled.div`
 		position: relative;
@@ -182,7 +191,12 @@ class Post extends Component {
 				<PostHeader>
 					<AuthorImg circular src={userPicture} />
 					<HeaderInfo>
-						<Author className="postAuthor">{this.props.post.author}</Author>
+						<AuthorFullname className="postAuthor">
+							{this.props.post.authorFullname}
+							<AuthorUsername>
+								@{this.props.post.author}
+							</AuthorUsername>
+						</AuthorFullname>
 						<DateTime className="postDate">
 							{moment( this.props.post.createdAt ).fromNow()}
 						</DateTime>

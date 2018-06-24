@@ -4,6 +4,11 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 
 const
+	StyledDropdown = styled( Dropdown )`
+		i {
+			color: rgba(0,0,0,0.45) !important;
+		}
+	`,
 	UpdateModal = styled( Modal )`
 		margin: 0px !important;
 	`;
@@ -11,7 +16,7 @@ const
 class DropdownOptions extends Component {
 	render() {
 		return (
-			<Dropdown style={this.props.style} direction="left">
+			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
 				{ localStorage.getItem( "username" ) === this.props.author ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal trigger={<Dropdown.Item text="Update" />} >
@@ -46,7 +51,7 @@ class DropdownOptions extends Component {
 						/>
 					</Dropdown.Menu>
 				}
-			</Dropdown>
+			</StyledDropdown>
 		);
 	}
 }

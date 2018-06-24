@@ -41,11 +41,19 @@ const
 		right: "1rem",
 		top: "1rem",
 	},
-	Author = styled.span`
+	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
+		color: hsl(0,0%,13%) !important;
+	`,
+	AuthorUsername = styled.span`
+		font-size: 1rem;
+		color: rgba(0,0,0,0.65);
+		font-weight: normal;
+		margin-left: 0.25rem;
 	`,
 	DateTime = styled( Header.Subheader )`
 		font-size: 1rem !important;
+		color: rgba(0,0,0,0.45) !important;
 	`,
 	MediaImage = styled( Image )`
 		justify-self: center;
@@ -72,9 +80,10 @@ const
 	PostUserContent = styled.div`
 		padding: 1rem 1rem 2rem 1rem;
 	`,
-	ContentAuthor = styled.span`
+	Description = styled.span`
 		font-weight: bold;
 		font-size: 16px;
+		word-break: break-all;
 	`,
 	PostBody = styled.div`
 		position: relative;
@@ -223,7 +232,12 @@ class MediaPost extends Component {
 				<PostHeader className="mediaPostHeader">
 					<AuthorImg circular src={userPicture} />
 					<HeaderInfo>
-						<Author className="postAuthor">{this.props.post.author}</Author>
+						<AuthorFullname className="postAuthor">
+							{this.props.post.authorFullname}
+							<AuthorUsername>
+								@{this.props.post.author}
+							</AuthorUsername>
+						</AuthorFullname>
 						<DateTime className="postDate">
 							{moment( this.props.post.createdAt ).fromNow()}
 						</DateTime>
@@ -287,7 +301,7 @@ class MediaPost extends Component {
 						{this.props.post.content &&
 							<PostUserContent>
 								<p className="postContent">
-									<ContentAuthor>@{this.props.post.author} </ContentAuthor>
+									<Description>@{this.props.post.author} </Description>
 									{this.props.post.content}
 								</p>
 							</PostUserContent>
