@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Label, Dropdown } from "semantic-ui-react";
+import { Icon, Label, Dropdown, Image } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
@@ -7,6 +7,8 @@ import { connect } from "react-redux";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/messages";
 import { logout } from "../services/actions/auth";
+
+var profileImage;
 
 const
 	Wrapper = styled.div`
@@ -24,6 +26,13 @@ const
 	NavOption = styled.span`
 		color: #fff !important;
 		position: relative;
+		i {
+			font-size: 1.5rem !important;
+		}
+	`,
+	ProfileImg = styled( Image )`
+		width: 30px !important;
+		height: 30px !important;
 	`,
 	NotificationsLength = styled( Label )`
 
@@ -34,7 +43,18 @@ class NavBar extends Component {
 	handleHome = () => {
 		if ( this.props.location.pathname !== "/" ) {
 			this.props.history.push( "/" );
-			return;
+		}
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
+	}
+
+	handleExplore = () => {
+		if ( this.props.location.pathname !== "/explore" ) {
+			this.props.history.push( "/explore" );
 		}
 		if ( this.props.displayNotifications ) {
 			this.props.switchNotifications();
@@ -59,10 +79,22 @@ class NavBar extends Component {
 	}
 
 	render() {
+		try {
+			if ( localStorage.getItem( "uimg" )) {
+				profileImage = require( "../images/" + localStorage.getItem( "uimg" ));
+			} else {
+				profileImage = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
 				<NavOption>
 					<Icon
+						color={this.props.location.pathname === "/" &&
+									!this.props.displayMessages &&
+									!this.props.displayNotifications ? "black" : "white"}
 						className="test"
 						name="home"
 						size="large"
@@ -70,7 +102,11 @@ class NavBar extends Component {
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleNotifications}>
-					<Icon name="bell outline" size="large" />
+					<Icon
+						name="bell outline"
+						size="large"
+						color={this.props.displayNotifications ? "black" : "white"}
+					/>
 					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
 							{this.props.newNotifications}
@@ -81,11 +117,18 @@ class NavBar extends Component {
 					<Icon
 						name="search"
 						size="large"
-						onClick={() => this.props.history.push( "/explore" )}
+						color={this.props.location.pathname === "/explore" &&
+									!this.props.displayMessages &&
+									!this.props.displayNotifications ? "black" : "white"}
+						onClick={this.handleExplore}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleMessages}>
-					<Icon name="conversation" size="large" />
+					<Icon
+						name="conversation"
+						size="large"
+						color={this.props.displayMessages ? "black" : "white"}
+					/>
 					{this.props.newMessages > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
 							{this.props.newMessages}
@@ -93,20 +136,20 @@ class NavBar extends Component {
 					}
 				</NavOption>
 				<NavOption>
-					<Icon icon="bars" size="large">
-						<Dropdown icon="bars" direction="left">
-							<Dropdown.Menu>
-								<Dropdown.Item
-									text="Logout"
-									onClick={this.props.logout}
-								/>
-								<Dropdown.Item
-									text="Settings"
-									onClick={() => this.props.history.push( "/settings" )}
-								/>
-							</Dropdown.Menu>
-						</Dropdown>
-					</Icon>
+					<Dropdown
+						trigger={<ProfileImg circular src={profileImage} />}
+						icon={null} direction="left">
+						<Dropdown.Menu>
+							<Dropdown.Item
+								text="Logout"
+								onClick={this.props.logout}
+							/>
+							<Dropdown.Item
+								text="Settings"
+								onClick={() => this.props.history.push( "/settings" )}
+							/>
+						</Dropdown.Menu>
+					</Dropdown>
 				</NavOption>
 			</Wrapper>
 		);

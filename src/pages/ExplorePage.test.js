@@ -3,18 +3,31 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
+import configureStore from "redux-mock-store";
 import ExplorePage from "./ExplorePage";
 import sinon from "sinon";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<ExplorePage/>", () => {
-	var wrapper;
+	var
+		wrapper,
+		socketSpy = sinon.spy(),
+		store;
 
 	beforeEach(() => {
+		store = mockStore({
+			posts: [],
+			notifications: { displayNotifications: false },
+			messages: { displayMessages: false }
+		});
 		wrapper = shallow(
-			<ExplorePage />
-		);
+			<ExplorePage
+				socket={{ emit: socketSpy, on: socketSpy }}
+				store={store}
+			/>
+		).dive();
 	});
 
 	it( "Checks that <ExplorePage/> renders", () => {

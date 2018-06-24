@@ -8,6 +8,16 @@ import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
+import Notifications from "../containers/Notifications";
+import Messages from "../containers/Messages";
+import {
+	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
+} from "../services/actions/posts";
+import { logout } from "../services/actions/auth";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { addMessage } from "../services/actions/messages";
+import { setNotifications, addNotification } from "../services/actions/notifications";
 
 const
 	Wrapper = styled.div`
@@ -231,6 +241,8 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
+					{this.props.displayNotifications && <Notifications />}
+					{this.props.displayMessages && <Messages socket={this.props.socket} />}
 					<NavBar />
 					<Header>
 						<UserSubheader>
@@ -273,4 +285,36 @@ class ExplorePage extends Component {
 	}
 }
 
-export default ExplorePage;
+ExplorePage.propTypes = {
+	logout: PropTypes.func.isRequired,
+	setNewsfeed: PropTypes.func.isRequired,
+	switchMediaOptions: PropTypes.func.isRequired,
+	history: PropTypes.shape({
+		push: PropTypes.func.isRequired
+	}).isRequired,
+};
+
+const
+	mapStateToProps = state => ({
+		newsfeed: state.posts.newsfeed,
+		mediaOptions: state.posts.mediaOptions,
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare,
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.messages.displayMessages
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
+		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
+		addPost: post => dispatch( addPost( post )),
+		addMessage: message => dispatch( addMessage( message )),
+		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		addNotification: notification => dispatch( addNotification( notification )),
+		setNotifications: ( allNotifications, newNotifications ) => {
+			dispatch( setNotifications( allNotifications, newNotifications ));
+		},
+		logout: () => dispatch( logout())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( ExplorePage );
