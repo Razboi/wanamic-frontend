@@ -8,29 +8,28 @@ import MediaStep3 from "../components/MediaStep3";
 const
 	Wrapper = styled.div`
 		z-index: 2;
-		display: grid;
-		grid-template-rows: 10% 90%;
-		grid-template-areas:
-			"box"
-			"sug"
-	`,
-	BoxContainer = styled.div`
-		display: grid;
-		grid-area: box;
+		display: flex;
+		position: fixed;
+		height: 100vh;
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
 	`,
 	Box = styled( Form )`
-		grid-template-columns: 80% 20%;
-		display: grid;
-		align-self: center;
-		padding: 0px 7px;
+		display: flex;
+		margin: 1rem 0;
+		width: 90%;
+		@media (max-width: 500px)  {
+			width: 95%;
+		}
+		@media (min-width: 700px)  {
+			width: 600px;
+		}
 	`,
 	TextAreaStyle = {
-		gridColumn: "1/2",
-		margin: "0px",
-		borderRadius: "0px",
+		width: "100%"
 	},
 	BoxButton = styled( Form.Button )`
-		grid-column: 2/3;
 		.ui.button {
 			margin: 0px;
 			height: 100%;
@@ -39,14 +38,14 @@ const
 		}
 	`,
 	Suggestions = styled.div`
-		grid-area: sug;
 		z-index: 3;
-		height: 100%;
-		width: 100%;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100vw;
 		background: #fff;
 		padding: 10px;
 		overflow-y: scroll;
-		display: ${props => props.showSuggestions ? "block" : "none"};
+		display: ${props => props.showSuggestions ? "flex" : "none"};
 	`,
 	Suggestion = styled.div`
 		display: flex;
@@ -98,7 +97,7 @@ class ShareBox extends Component {
 				});
 
 				this.endHandler();
-			} else {
+			} else if ( this.state.userInput ) {
 				this.nextStep();
 			}
 		}
@@ -196,35 +195,33 @@ class ShareBox extends Component {
 		}
 		return (
 			<Wrapper>
-				<BoxContainer>
-					<Box id="ShareBox">
-						<InputTrigger
-							trigger={{ keyCode: 50 }}
-							onStart={metaData => this.toggleSuggestions( metaData ) }
-							onCancel={metaData => this.toggleSuggestions( metaData ) }
-							onType={metaData => this.handleMentionInput( metaData ) }
-							endTrigger={endHandler => this.endHandler = endHandler }
-						>
-							<textarea
-								rows="2"
-								style={TextAreaStyle}
-								id="ShareBoxInput"
-								placeholder="Share something cool"
-								name="userInput"
-								value={this.state.userInput}
-								onChange={this.handleChange}
-								onKeyDown={this.handleKeyPress}
-							/>
-						</InputTrigger>
-
-						<BoxButton
-							id="ShareBoxButton"
-							primary
-							content="Share"
-							onClick={this.props.handleShare}
+				<Box id="ShareBox">
+					<InputTrigger
+						style={TextAreaStyle}
+						trigger={{ keyCode: 50 }}
+						onStart={metaData => this.toggleSuggestions( metaData ) }
+						onCancel={metaData => this.toggleSuggestions( metaData ) }
+						onType={metaData => this.handleMentionInput( metaData ) }
+						endTrigger={endHandler => this.endHandler = endHandler }
+					>
+						<textarea
+							rows="2"
+							id="ShareBoxInput"
+							placeholder="Share something cool"
+							name="userInput"
+							value={this.state.userInput}
+							onChange={this.handleChange}
+							onKeyDown={this.handleKeyPress}
 						/>
-					</Box>
-				</BoxContainer>
+					</InputTrigger>
+
+					<BoxButton
+						id="ShareBoxButton"
+						primary
+						content="Share"
+						onClick={this.props.handleShare}
+					/>
+				</Box>
 
 				<Suggestions showSuggestions={this.state.showSuggestions}>
 					{this.props.socialCircle

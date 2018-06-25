@@ -94,7 +94,7 @@ class NavBar extends Component {
 					<Icon
 						color={this.props.location.pathname === "/" &&
 									!this.props.displayMessages &&
-									!this.props.displayNotifications ? "black" : "white"}
+									!this.props.displayNotifications ? "black" : null}
 						className="test"
 						name="home"
 						size="large"
@@ -105,7 +105,7 @@ class NavBar extends Component {
 					<Icon
 						name="bell outline"
 						size="large"
-						color={this.props.displayNotifications ? "black" : "white"}
+						color={this.props.displayNotifications ? "black" : null}
 					/>
 					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
@@ -119,7 +119,7 @@ class NavBar extends Component {
 						size="large"
 						color={this.props.location.pathname === "/explore" &&
 									!this.props.displayMessages &&
-									!this.props.displayNotifications ? "black" : "white"}
+									!this.props.displayNotifications ? "black" : null}
 						onClick={this.handleExplore}
 					/>
 				</NavOption>
@@ -127,7 +127,7 @@ class NavBar extends Component {
 					<Icon
 						name="conversation"
 						size="large"
-						color={this.props.displayMessages ? "black" : "white"}
+						color={this.props.displayMessages ? "black" : null}
 					/>
 					{this.props.newMessages > 0 &&
 						<NotificationsLength size="small" floating circular color="red">

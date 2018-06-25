@@ -14,7 +14,8 @@ import extract from "mention-hashtag";
 
 const
 	MediaOptionsWrapper = styled.div`
-		display: grid;
+		display: flex;
+		justify-content: center;
 		position: fixed;
 		height: 100vh;
 		width: 100%;
@@ -27,8 +28,20 @@ const
 		background: rgba(0,0,0,0.35)
 	`,
 	MediaButtons = styled.div`
-		justify-self: center;
+		display: flex;
+		justify-content: space-between;
 		align-self: center;
+		@media (min-height: 575px) {
+			flex-direction: column;
+			height: 70%;
+		}
+		@media (max-width: 450px) and (max-height: 575px) {
+			flex-wrap: wrap;
+			width: 50%;
+			justify-content: space-around;
+			height: 60%;
+    	align-content: space-between;
+		}
 	`,
 	MediaButton = styled( Button )`
 		background: #000 !important;
@@ -237,13 +250,13 @@ class MediaOptions extends Component {
 		}
 		if ( this.state.shareState ) {
 			return (
-				<MediaOptionsWrapper>
+				<div>
 					<MediaDimmer />
 					<ShareBox
 						shareTextPost={this.shareTextPost}
 						socialCircle={this.state.socialCircle}
 					/>
-				</MediaOptionsWrapper>
+				</div>
 			);
 		}
 		if ( this.state.shareLink ) {
