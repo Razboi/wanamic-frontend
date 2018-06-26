@@ -137,18 +137,22 @@ class MediaOptions extends Component {
 	}
 
 	switchSearchMedia = media => {
+		this.props.toggleMediaButton();
 		this.setState({ searchMedia: !this.state.searchMedia, mediaType: media });
 	}
 
 	switchLink = () => {
+		this.props.toggleMediaButton();
 		this.setState({ shareLink: !this.state.shareLink });
 	}
 
 	switchPicture = () => {
+		this.props.toggleMediaButton();
 		this.setState({ sharePicture: !this.state.sharePicture });
 	}
 
 	switchState = () => {
+		this.props.toggleMediaButton();
 		this.setState({ shareState: !this.state.shareState });
 	}
 
@@ -181,6 +185,7 @@ class MediaOptions extends Component {
 	};
 
 	handlePicture = e => {
+		this.props.toggleMediaButton();
 		this.setState({
 			mediaData: {
 				imageFile: e.target.files[ 0 ],
@@ -237,7 +242,7 @@ class MediaOptions extends Component {
 	render() {
 		if ( this.state.searchMedia ) {
 			return (
-				<MediaOptionsWrapper>
+				<div>
 					<MediaDimmer />
 					<StyledSearchMedia
 						socket={this.props.socket}
@@ -245,7 +250,7 @@ class MediaOptions extends Component {
 						switchSearchMedia={this.switchSearchMedia}
 						socialCircle={this.state.socialCircle}
 					/>
-				</MediaOptionsWrapper>
+				</div>
 			);
 		}
 		if ( this.state.shareState ) {
@@ -261,18 +266,18 @@ class MediaOptions extends Component {
 		}
 		if ( this.state.shareLink ) {
 			return (
-				<MediaOptionsWrapper>
+				<div>
 					<MediaDimmer />
 					<ShareLink
 						submitLink={this.submitLink}
 						socialCircle={this.state.socialCircle}
 					/>
-				</MediaOptionsWrapper>
+				</div>
 			);
 		}
 		if ( this.state.sharePicture ) {
 			return (
-				<MediaOptionsWrapper>
+				<div>
 					<MediaDimmer />
 					<MediaPicture
 						mediaData={this.state.mediaData}
@@ -280,7 +285,7 @@ class MediaOptions extends Component {
 						switchPicture={this.switchPicture}
 						submitPicture={this.submitPicture}
 					/>
-				</MediaOptionsWrapper>
+				</div>
 			);
 		}
 		return (
@@ -322,7 +327,8 @@ class MediaOptions extends Component {
 
 MediaOptions.propTypes = {
 	addPost: PropTypes.func.isRequired,
-	switchMediaOptions: PropTypes.func.isRequired
+	switchMediaOptions: PropTypes.func.isRequired,
+	toggleMediaButton: PropTypes.func.isRequired
 };
 
 const

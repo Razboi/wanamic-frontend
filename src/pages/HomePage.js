@@ -61,7 +61,8 @@ class HomePage extends Component {
 		super();
 		this.state = {
 			skip: 1,
-			hasMore: true
+			hasMore: true,
+			mediaButton: true
 		};
 	}
 
@@ -134,6 +135,10 @@ class HomePage extends Component {
 			.catch( err => console.log( err ));
 	}
 
+	toggleMediaButton = () => {
+		this.setState({ mediaButton: !this.state.mediaButton });
+	}
+
 	render() {
 		return (
 			<Wrapper>
@@ -145,9 +150,15 @@ class HomePage extends Component {
 					useWindow={false}
 				>
 					<NavBar mediaOptions={this.props.mediaOptions} />
-					<ShareMediaButton circular icon="plus" size="big"
-						onClick={() => this.props.switchMediaOptions()}
-					/>
+					{this.state.mediaButton &&
+						<ShareMediaButton
+							circular
+							icon="plus"
+							size="big"
+							onClick={() => this.props.switchMediaOptions()}
+						/>
+					}
+
 					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments socket={this.props.socket} />}
 					{this.props.displayNotifications && <Notifications />}
@@ -155,6 +166,7 @@ class HomePage extends Component {
 
 					{this.props.mediaOptions &&
 						<MediaOptions
+							toggleMediaButton={this.toggleMediaButton}
 							socket={this.props.socket}
 						/>}
 

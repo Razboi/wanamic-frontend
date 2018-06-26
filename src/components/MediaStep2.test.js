@@ -28,18 +28,18 @@ describe( "<MediaStep2/>", () => {
 	});
 
 	it( "Checks that <MediaStep2/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children()).to.have.length( 1 );
 	});
 
-	it( "Checks that nextButton calls nextStep", () => {
+	it( "Checks that nextIcon calls nextStep", () => {
 		expect( nextStepSpy.called ).to.equal( false );
-		wrapper.find( ".nextButton" ).simulate( "click" );
+		wrapper.find( ".nextIcon" ).simulate( "click" );
 		expect( nextStepSpy.called ).to.equal( true );
 	});
 
-	it( "Checks that prevButton calls prevStep", () => {
+	it( "Checks that backIcon calls prevStep", () => {
 		expect( prevStepSpy.called ).to.equal( false );
-		wrapper.find( ".prevButton" ).simulate( "click" );
+		wrapper.find( ".backIcon" ).simulate( "click" );
 		expect( prevStepSpy.called ).to.equal( true );
 	});
 });

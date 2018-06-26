@@ -1,23 +1,46 @@
 import React, { Component } from "react";
-import { Button, Checkbox } from "semantic-ui-react";
+import { Button, Checkbox, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const
-	ShareOptionsWrapper = styled.div`
+	Wrapper = styled.div`
+		overflow: hidden;
+	`,
+	Options = styled.div`
 		height: 100%;
 		width: 100%;
 		position: absolute;
 		z-index: 2;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 40% 60%;
+		grid-template-rows: 7% 33% 60%;
 		grid-template-areas:
+			"he"
 			"so"
 			"al"
 	`,
+	HeaderWrapper = styled.div`
+		grid-area: he;
+		display: flex;
+		z-index: 2;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0px 10px;
+		color: #fff;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	HeaderTxt = styled.span`
+		font-weight: bold;
+		font-size: 1rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 65%;
+	`,
 	ShareOptions = styled.div`
 		grid-area: so;
+		align-self: center;
 		padding: 10px;
 		color: #fff !important;
 		display: flex;
@@ -59,16 +82,6 @@ const
 		text-align: center;
 		align-self: center;
 	`,
-	BackButton = styled( Button )`
-		position: absolute;
-		bottom: 5px;
-		left: 5px;
-	`,
-	ShareButton = styled( Button )`
-		position: absolute;
-		bottom: 5px;
-		right: 5px;
-	`,
 	SelectedMediaBackground = styled.div`
 		height: 100vh;
 		background-image: url(${props => props.background});
@@ -81,10 +94,22 @@ const
 class MediaStep3 extends Component {
 	render() {
 		return (
-			<div>
-				<ShareOptionsWrapper>
+			<Wrapper>
+				<Options>
+					<HeaderWrapper>
+						<Icon
+							className="backIcon"
+							name="arrow left"
+							onClick={this.props.prevStep}
+						/>
+						<HeaderTxt>Share with</HeaderTxt>
+						<Icon
+							className="nextIcon"
+							name="check"
+							onClick={this.props.handleSubmit}
+						/>
+					</HeaderWrapper>
 					<ShareOptions>
-						<h3>Share with</h3>
 						<SliderHeader>
 							{this.props.privacyRange === 1 && "Friends"}
 							{this.props.privacyRange === 2 && "Friends and Followers"}
@@ -129,23 +154,12 @@ class MediaStep3 extends Component {
 							</AlertCheck>
 						</Alerts>
 					</AlertsWrapper>
-					<BackButton
-						className="prevButton"
-						secondary
-						content="Back"
-						onClick={this.props.prevStep}
-					/>
-					<ShareButton
-						className="nextButton"
-						primary
-						content="Done"
-						onClick={this.props.handleSubmit}
-					/>
-				</ShareOptionsWrapper>
+
+				</Options>
 				{this.props.mediaData && this.props.mediaData.image &&
 					<SelectedMediaBackground background={this.props.mediaData.image} />
 				}
-			</div>
+			</Wrapper>
 		);
 	}
 }

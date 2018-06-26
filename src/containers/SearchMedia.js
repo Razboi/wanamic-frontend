@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Input, Image, Divider, Button } from "semantic-ui-react";
+import { Input, Image, Divider, Button, Icon } from "semantic-ui-react";
 import axios from "axios";
 import api from "../services/api";
 import PropTypes from "prop-types";
@@ -18,12 +18,26 @@ const
 		z-index: 2;
 		height: 100vh;
 		width: 100%;
+		position: fixed;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 12% 88%;
+		grid-template-rows: 7% 10% 83%;
 		grid-template-areas:
+			"h"
 			"s"
 			"r"
+	`,
+	HeaderWrapper = styled.div`
+		grid-area: h;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	HeaderTxt = styled.span`
+		margin-left: 15px;
+		font-weight: bold;
+		font-size: 16px;
 	`,
 	SearchWrapper = styled.div`
 		grid-area: s;
@@ -31,7 +45,7 @@ const
 		border-bottom: 1px solid #D3D3D3;
 	`,
 	SearchInput = styled( Input )`
-		width: 80%;
+		width: 90%;
 		justify-self: center;
 		align-self: center;
 	`,
@@ -55,11 +69,6 @@ const
 	`,
 	ResultMediaInfo = styled.div`
 		grid-area: inf;
-	`,
-	SwapBackButton = styled( Button )`
-		position: fixed;
-		bottom: 5px;
-		left: 5px;
 	`;
 
 
@@ -221,6 +230,13 @@ class SearchMedia extends Component {
 		}
 		return (
 			<Wrapper>
+				<HeaderWrapper>
+					<Icon
+						name="arrow left"
+						onClick={() => this.props.switchSearchMedia()}
+					/>
+					<HeaderTxt>Comments</HeaderTxt>
+				</HeaderWrapper>
 				<SearchWrapper>
 					<SearchInput
 						value={this.state.search}
@@ -248,8 +264,6 @@ class SearchMedia extends Component {
 						</div>
 					)}
 				</ResultsWrapper>
-				<SwapBackButton secondary content="Cancel"
-					onClick={() => this.props.switchSearchMedia( undefined )} />
 			</Wrapper>
 		);
 	}

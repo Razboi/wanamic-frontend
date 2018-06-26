@@ -1,23 +1,42 @@
 import React, { Component } from "react";
-import { Button, Image } from "semantic-ui-react";
+import { Button, Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
 
 const
-	SelectedWrapper = styled.div`
+	Wrapper = styled.div`
 		overflow: hidden;
 	`,
-	ShareWrapper = styled.div`
+	Content = styled.div`
 		position: absolute;
 		height: 100vh;
 		width: 100%;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 35% 65%;
+		grid-template-rows: 7% 33% 60%;
 		grid-template-areas:
+			"hea"
 			"inp"
 			"img"
+	`,
+	HeaderWrapper = styled.div`
+		grid-area: hea;
+		display: flex;
+		z-index: 2;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0px 10px;
+		color: #fff;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	HeaderTxt = styled.span`
+		font-weight: bold;
+		font-size: 1rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 65%;
 	`,
 	ContentInputWrapper = styled.div`
 		grid-area: inp;
@@ -176,8 +195,21 @@ class MediaStep2 extends Component {
 
 	render() {
 		return (
-			<SelectedWrapper>
-				<ShareWrapper>
+			<Wrapper>
+				<Content>
+					<HeaderWrapper>
+						<Icon
+							className="backIcon"
+							name="arrow left"
+							onClick={this.props.prevStep}
+						/>
+						<HeaderTxt>{this.props.mediaData.title}</HeaderTxt>
+						<Icon
+							className="nextIcon"
+							name="check"
+							onClick={() => this.props.nextStep( this.state.description )}
+						/>
+					</HeaderWrapper>
 					<ContentInputWrapper>
 						<InputTrigger
 							style={InputTriggerStyles}
@@ -221,23 +253,11 @@ class MediaStep2 extends Component {
 							<SelectedMediaImg src={this.props.mediaData.image} />
 						}
 					</SelectedMediaImgWrapper>
-				</ShareWrapper>
+				</Content>
 				{this.props.mediaData && this.props.mediaData.image &&
 					<SelectedMediaBackground background={this.props.mediaData.image} />
 				}
-				<BackButton
-					className="prevButton"
-					secondary
-					content="Back"
-					onClick={this.props.prevStep}
-				/>
-				<ShareButton
-					className="nextButton"
-					primary
-					content="Next"
-					onClick={() => this.props.nextStep( this.state.description )}
-				/>
-			</SelectedWrapper>
+			</Wrapper>
 		);
 	}
 }
