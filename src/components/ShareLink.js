@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Input } from "semantic-ui-react";
+import { Input, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
@@ -8,40 +8,60 @@ import MediaStep3 from "../components/MediaStep3";
 const
 	Wrapper = styled.div`
 		z-index: 2;
-		display: grid;
-		grid-template-rows: 18% 82%;
-		grid-template-areas:
-			"box"
-			"sug"
+		display: flex;
+		position: fixed;
+		height: 100vh;
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
+	`,
+	HeaderWrapper = styled.div`
+		display: flex;
+		z-index: 2;
+		width: 100%;
+		height: 7%;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0px 10px;
+		color: #fff;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	HeaderTxt = styled.span`
+		font-weight: bold;
+		font-size: 1rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 65%;
 	`,
 	BoxContainer = styled.div`
-		display: grid;
-		grid-area: box;
+		display: flex;
+		width: 90%;
+		flex-direction: column;
+		margin-top: 1rem;
+		@media (max-width: 500px)  {
+			width: 95%;
+		}
+		@media (min-width: 700px)  {
+			width: 600px;
+		}
 	`,
 	TextAreaStyle = {
-		margin: "0px",
-		borderRadius: "0px",
-		width: "90%",
-		justifySelf: "center"
-	},
-	InputTriggerStyle = {
-		display: "grid"
+		width: "100%",
+		marginTop: "1rem"
 	},
 	ShareLinkInput = styled( Input )`
-		width: 90%;
-		justify-self: center;
-		align-self: center;
-		margin-bottom: 10px;
+		width: 100%;
 	`,
 	Suggestions = styled.div`
-		grid-area: sug;
 		z-index: 3;
-		height: 100%;
-		width: 100%;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100vw;
 		background: #fff;
 		padding: 10px;
 		overflow-y: scroll;
-		display: ${props => props.showSuggestions ? "block" : "none"};
+		display: ${props => props.showSuggestions ? "flex" : "none"};
 	`,
 	Suggestion = styled.div`
 		display: flex;
@@ -150,7 +170,9 @@ class ShareLink extends Component {
 	}
 
 	nextStep = () => {
-		this.setState({ step: this.state.step + 1 });
+		if ( this.state.link ) {
+			this.setState({ step: this.state.step + 1 });
+		}
 	}
 
 	prevStep = () => {
@@ -190,6 +212,18 @@ class ShareLink extends Component {
 		}
 		return (
 			<Wrapper>
+				<HeaderWrapper>
+					<Icon
+						name="arrow left"
+						onClick={() => this.props.switchLink()}
+					/>
+					<HeaderTxt>Share link</HeaderTxt>
+					<Icon
+						className="nextIcon"
+						name="check"
+						onClick={this.nextStep}
+					/>
+				</HeaderWrapper>
 				<BoxContainer>
 					<ShareLinkInput
 						style={TextAreaStyle}
@@ -200,7 +234,6 @@ class ShareLink extends Component {
 						placeholder="Share your link"
 					/>
 					<InputTrigger
-						style={InputTriggerStyle}
 						trigger={{ keyCode: 50 }}
 						onStart={metaData => this.toggleSuggestions( metaData ) }
 						onCancel={metaData => this.toggleSuggestions( metaData ) }
@@ -208,7 +241,7 @@ class ShareLink extends Component {
 						endTrigger={endHandler => this.endHandler = endHandler }
 					>
 						<textarea
-							rows="2"
+							rows="4"
 							style={TextAreaStyle}
 							placeholder="Anything to say?"
 							name="description"

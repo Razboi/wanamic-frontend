@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Input, Image, Divider, Button, Icon } from "semantic-ui-react";
+import { Input, Image, Divider, Icon } from "semantic-ui-react";
 import axios from "axios";
 import api from "../services/api";
 import PropTypes from "prop-types";
@@ -35,9 +35,12 @@ const
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	HeaderTxt = styled.span`
-		margin-left: 15px;
+		margin: auto;
 		font-weight: bold;
 		font-size: 16px;
+	`,
+	BackIcon = styled( Icon )`
+		position: absolute;
 	`,
 	SearchWrapper = styled.div`
 		grid-area: s;
@@ -84,8 +87,13 @@ class SearchMedia extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
-			mentions: []
+			mentions: [],
+			mediaType: ""
 		};
+	}
+
+	componentDidMount() {
+		this.setupParams();
 	}
 
 	handleChange = e => {
@@ -94,45 +102,50 @@ class SearchMedia extends Component {
 
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
-			this.handleSearch();
+			this.itunesSearch();
 		}
 	}
 
-	handleSearch = () => {
-		if ( this.state.search ) {
-			switch ( this.props.mediaType ) {
-			case "book":
-				itunesAPI =
-					"https://itunes.apple.com/search?limit=11&media=ebook&term=";
-				this.itunesSearch();
-				break;
-			case "music":
-				itunesAPI =
-					"https://itunes.apple.com/search?limit=11&media=music&term=";
-				this.itunesSearch();
-				break;
-			case "movie":
-				itunesAPI =
-					"https://itunes.apple.com/search?limit=11&media=movie&term=";
-				this.itunesSearch();
-				break;
-			case "tv":
-				itunesAPI =
-					"https://itunes.apple.com/search?limit=11&media=tvShow&term=";
-				this.itunesSearch();
-				break;
-			default:
-				itunesAPI =
-					"https://itunes.apple.com/search?limit=11&media=ebook&term=";
-				this.itunesSearch();
-			}
+	setupParams = () => {
+		switch ( this.props.mediaType ) {
+		case "book":
+			this.setState({ mediaType: "books" });
+			itunesAPI =
+				"https://itunes.apple.com/search?limit=11&media=ebook&term=";
+			this.itunesSearch();
+			break;
+		case "music":
+			this.setState({ mediaType: "music" });
+			itunesAPI =
+				"https://itunes.apple.com/search?limit=11&media=music&term=";
+			this.itunesSearch();
+			break;
+		case "movie":
+			this.setState({ mediaType: "movies" });
+			itunesAPI =
+				"https://itunes.apple.com/search?limit=11&media=movie&term=";
+			this.itunesSearch();
+			break;
+		case "tv":
+			this.setState({ mediaType: "TV shows" });
+			itunesAPI =
+				"https://itunes.apple.com/search?limit=11&media=tvShow&term=";
+			this.itunesSearch();
+			break;
+		default:
+			this.setState({ mediaType: "books" });
+			itunesAPI =
+				"https://itunes.apple.com/search?limit=11&media=ebook&term=";
+			this.itunesSearch();
 		}
 	}
 
 	itunesSearch = () => {
-		axios.get( itunesAPI + this.state.search )
-			.then( res => this.setState({ results: res.data.results }))
-			.catch( err => console.log( err ));
+		if ( this.state.search ) {
+			axios.get( itunesAPI + this.state.search )
+				.then( res => this.setState({ results: res.data.results }))
+				.catch( err => console.log( err ));
+		}
 	}
 
 	handleSelected = media => {
@@ -182,6 +195,7 @@ class SearchMedia extends Component {
 				} else if ( res ) {
 					this.props.addPost( res.newPost );
 					this.props.switchMediaOptions();
+					this.props.toggleMediaButton();
 
 					if ( res.mentionsNotifications ) {
 						const notifLength = res.mentionsNotifications.length;
@@ -231,11 +245,11 @@ class SearchMedia extends Component {
 		return (
 			<Wrapper>
 				<HeaderWrapper>
-					<Icon
+					<BackIcon
 						name="arrow left"
 						onClick={() => this.props.switchSearchMedia()}
 					/>
-					<HeaderTxt>Comments</HeaderTxt>
+					<HeaderTxt>Share {this.state.mediaType}</HeaderTxt>
 				</HeaderWrapper>
 				<SearchWrapper>
 					<SearchInput

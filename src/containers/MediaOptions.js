@@ -117,6 +117,7 @@ class MediaOptions extends Component {
 				} else if ( res ) {
 					this.props.addPost( res.newPost );
 					this.props.switchMediaOptions();
+					this.props.toggleMediaButton();
 					if ( res.mentionsNotifications ) {
 						const notifLength = res.mentionsNotifications.length;
 						for ( i = 0; i < notifLength; i++ ) {
@@ -171,6 +172,7 @@ class MediaOptions extends Component {
 					} else if ( res ) {
 						this.props.addPost( res.newPost );
 						this.props.switchMediaOptions();
+						this.props.toggleMediaButton();
 						if ( res.mentionsNotifications ) {
 							const notifLength = res.mentionsNotifications.length;
 							for ( i = 0; i < notifLength; i++ ) {
@@ -227,6 +229,7 @@ class MediaOptions extends Component {
 				} else if ( res ) {
 					this.props.addPost( res.newPost );
 					this.props.switchMediaOptions();
+					this.props.toggleMediaButton();
 					if ( res.mentionsNotifications ) {
 						const notifLength = res.mentionsNotifications.length;
 						for ( i = 0; i < notifLength; i++ ) {
@@ -249,6 +252,7 @@ class MediaOptions extends Component {
 						mediaType={this.state.mediaType}
 						switchSearchMedia={this.switchSearchMedia}
 						socialCircle={this.state.socialCircle}
+						toggleMediaButton={this.props.toggleMediaButton}
 					/>
 				</div>
 			);
@@ -259,6 +263,7 @@ class MediaOptions extends Component {
 					<MediaDimmer />
 					<ShareBox
 						shareTextPost={this.shareTextPost}
+						switchState={this.switchState}
 						socialCircle={this.state.socialCircle}
 					/>
 				</div>
@@ -270,6 +275,7 @@ class MediaOptions extends Component {
 					<MediaDimmer />
 					<ShareLink
 						submitLink={this.submitLink}
+						switchLink={this.switchLink}
 						socialCircle={this.state.socialCircle}
 					/>
 				</div>

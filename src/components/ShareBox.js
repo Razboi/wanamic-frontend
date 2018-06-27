@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import InputTrigger from "react-input-trigger";
@@ -15,6 +15,26 @@ const
 		flex-direction: column;
 		align-items: center;
 	`,
+	HeaderWrapper = styled.div`
+		display: flex;
+		z-index: 2;
+		width: 100%;
+		height: 7%;
+		align-self: flex-start;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0px 10px;
+		color: #fff;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	HeaderTxt = styled.span`
+		font-weight: bold;
+		font-size: 1rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 65%;
+	`,
 	Box = styled( Form )`
 		display: flex;
 		margin: 1rem 0;
@@ -29,14 +49,6 @@ const
 	TextAreaStyle = {
 		width: "100%"
 	},
-	BoxButton = styled( Form.Button )`
-		.ui.button {
-			margin: 0px;
-			height: 100%;
-			width: 100%;
-			border-radius: 0px;
-		}
-	`,
 	Suggestions = styled.div`
 		z-index: 3;
 		flex-direction: column;
@@ -195,6 +207,18 @@ class ShareBox extends Component {
 		}
 		return (
 			<Wrapper>
+				<HeaderWrapper>
+					<Icon
+						name="arrow left"
+						onClick={() => this.props.switchState()}
+					/>
+					<HeaderTxt>Share state</HeaderTxt>
+					<Icon
+						className="nextIcon"
+						name="check"
+						onClick={this.nextStep}
+					/>
+				</HeaderWrapper>
 				<Box id="ShareBox">
 					<InputTrigger
 						style={TextAreaStyle}
@@ -214,13 +238,6 @@ class ShareBox extends Component {
 							onKeyDown={this.handleKeyPress}
 						/>
 					</InputTrigger>
-
-					<BoxButton
-						id="ShareBoxButton"
-						primary
-						content="Share"
-						onClick={this.props.handleShare}
-					/>
 				</Box>
 
 				<Suggestions showSuggestions={this.state.showSuggestions}>

@@ -23,7 +23,6 @@ describe( "<ShareBox/>", () => {
 			<ShareBox
 				handleChange={spyHandleChange}
 				sharebox={sharebox}
-				handleShare={spyHandleShare}
 				socialCircle={[]}
 			/>
 		);
@@ -34,11 +33,6 @@ describe( "<ShareBox/>", () => {
 	});
 
 	it( "Checks that #ShareBox children render", () => {
-		expect( wrapper.find( "#ShareBox" ).children()).to.have.length( 2 );
-	});
-
-	it( "Checks that when ShareBoxButton is clicked calls handleShare", () => {
-		wrapper.find( "#ShareBoxButton" ).simulate( "click" );
-		expect( spyHandleShare.called ).to.equal( true );
+		expect( wrapper.find( "#ShareBox" ).children()).to.have.length( 1 );
 	});
 });

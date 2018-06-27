@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Image, Icon } from "semantic-ui-react";
+import { Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import InputTrigger from "react-input-trigger";
@@ -70,16 +70,6 @@ const
 		justify-self: center;
 		align-self: start;
 		z-index: 2;
-	`,
-	BackButton = styled( Button )`
-		position: absolute;
-		bottom: 5px;
-		left: 5px;
-	`,
-	ShareButton = styled( Button )`
-		position: absolute;
-		bottom: 5px;
-		right: 5px;
 	`,
 	Suggestions = styled.div`
 		grid-area: img;
@@ -203,7 +193,13 @@ class MediaStep2 extends Component {
 							name="arrow left"
 							onClick={this.props.prevStep}
 						/>
-						<HeaderTxt>{this.props.mediaData.title}</HeaderTxt>
+						<HeaderTxt>
+							{this.props.mediaData.title ?
+								this.props.mediaData.title
+								:
+								"Description"
+							}
+						</HeaderTxt>
 						<Icon
 							className="nextIcon"
 							name="check"
