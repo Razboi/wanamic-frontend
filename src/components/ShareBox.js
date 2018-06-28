@@ -3,7 +3,8 @@ import { Form, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import InputTrigger from "react-input-trigger";
-import MediaStep3 from "../components/MediaStep3";
+import MediaStep3 from "./MediaStep3";
+import Suggestions from "./Suggestions";
 
 const
 	Wrapper = styled.div`
@@ -48,24 +49,7 @@ const
 	`,
 	TextAreaStyle = {
 		width: "100%"
-	},
-	Suggestions = styled.div`
-		z-index: 3;
-		flex-direction: column;
-		flex-grow: 1;
-		width: 100vw;
-		background: #fff;
-		padding: 10px;
-		overflow-y: scroll;
-		display: ${props => props.showSuggestions ? "flex" : "none"};
-	`,
-	Suggestion = styled.div`
-		display: flex;
-		flex-direction: column;
-		padding: 10px 0px;
-		border-bottom: 1px solid #808080;
-		background: ${props => props.selection === props.index ? "#808080" : "none"};
-	`;
+	};
 
 
 class ShareBox extends Component {
@@ -130,6 +114,27 @@ class ShareBox extends Component {
 				});
 			}
 		}
+	}
+
+	selectFromMentions = user => {
+		const
+			{ userInput, startPosition } = this.state,
+			updatedUserInput =
+				userInput.slice( 0, startPosition - 1 )
+				+ "@" + user.username + " " +
+				userInput.slice( startPosition + user.username.length, userInput.length );
+
+		this.setState({
+			userInput: updatedUserInput,
+			startPosition: undefined,
+			showSuggestions: false,
+			suggestionsLeft: undefined,
+			suggestionsTop: undefined,
+			mentionInput: "",
+			currentSelection: 0
+		});
+
+		this.endHandler();
 	}
 
 	toggleSuggestions = metaData => {
@@ -240,24 +245,12 @@ class ShareBox extends Component {
 					</InputTrigger>
 				</Box>
 
-				<Suggestions showSuggestions={this.state.showSuggestions}>
-					{this.props.socialCircle
-						.filter( user =>
-							user.fullname.toLowerCase().indexOf(
-								this.state.mentionInput.toLowerCase()) !== -1
-							||
-							user.username.indexOf( this.state.mentionInput ) !== -1
-						)
-						.map(( user, index ) => (
-							<Suggestion
-								key={index}
-								index={index}
-								selection={this.state.currentSelection}>
-								<b>{user.fullname}</b>
-								<span>@{user.username}</span>
-							</Suggestion>
-						))}
-				</Suggestions>
+				<Suggestions
+					socialCircle={this.props.socialCircle}
+					showSuggestions={this.state.showSuggestions}
+					mentionInput={this.state.mentionInput}
+					selectFromMentions={this.selectFromMentions}
+				/>
 			</Wrapper>
 		);
 	}

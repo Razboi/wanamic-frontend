@@ -11,6 +11,7 @@ import {
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
 import InputTrigger from "react-input-trigger";
+import Suggestions from "../components/Suggestions";
 
 const
 	Wrapper = styled.div`
@@ -50,20 +51,9 @@ const
 		font-weight: bold;
 		font-size: 16px;
 	`,
-	Suggestions = styled.div`
+	SuggestionsWrapper = styled.div`
 		grid-area: com;
 		z-index: 2;
-		background: #fff;
-		padding: 10px;
-		overflow-y: scroll;
-		display: ${props => props.showSuggestions ? "block" : "none"};
-	`,
-	Suggestion = styled.div`
-		display: flex;
-		flex-direction: column;
-		padding: 10px 0px;
-		border-bottom: 1px solid #808080;
-		background: ${props => props.selection === props.index ? "#808080" : "none"};
 	`;
 
 class Comments extends Component {
@@ -224,6 +214,27 @@ class Comments extends Component {
 		}
 	}
 
+	selectFromMentions = user => {
+		const
+			{ comment, startPosition } = this.state,
+			updatedUserInput =
+				comment.slice( 0, startPosition - 1 )
+				+ "@" + user.username + " " +
+				comment.slice( startPosition + user.username.length, comment.length );
+
+		this.setState({
+			comment: updatedUserInput,
+			startPosition: undefined,
+			showSuggestions: false,
+			suggestionsLeft: undefined,
+			suggestionsTop: undefined,
+			mentionInput: "",
+			currentSelection: 0
+		});
+
+		this.endHandler();
+	}
+
 	handleMentionInput = metaData => {
 		if ( this.state.showSuggestions ) {
 			this.setState({ mentionInput: metaData.text });
@@ -266,24 +277,15 @@ class Comments extends Component {
 						onKeyDown={this.handleKeyPress}
 					/>
 				</InputTrigger>
-				<Suggestions showSuggestions={this.state.showSuggestions}>
-					{this.state.socialCircle
-						.filter( user =>
-							user.fullname.toLowerCase().indexOf(
-								this.state.mentionInput.toLowerCase()) !== -1
-							||
-							user.username.indexOf( this.state.mentionInput ) !== -1
-						)
-						.map(( user, index ) => (
-							<Suggestion
-								key={index}
-								index={index}
-								selection={this.state.currentSelection}>
-								<b>{user.fullname}</b>
-								<span>@{user.username}</span>
-							</Suggestion>
-						))}
-				</Suggestions>
+				<SuggestionsWrapper>
+					<Suggestions
+						socialCircle={this.state.socialCircle}
+						showSuggestions={this.state.showSuggestions}
+						mentionInput={this.state.mentionInput}
+						selectFromMentions={this.selectFromMentions}
+						media={"true"}
+					/>
+				</SuggestionsWrapper>
 			</Wrapper>
 		);
 	}
