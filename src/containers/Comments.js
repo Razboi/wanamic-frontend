@@ -37,8 +37,8 @@ const
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	CommentsWrapper = styled.div`
+		z-index: 3;
 		grid-area: com;
-		padding: 10px;
 		overflow-y: scroll;
 	`,
 	StyledTextArea = {

@@ -1,37 +1,71 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Divider } from "semantic-ui-react";
+import { Header, Image } from "semantic-ui-react";
 import api from "../services/api";
 import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
 
+var userPicture;
+
 const
-	CommentAuthor = styled.h4`
-		margin: 0px;
+	Wrapper = styled.div`
+		position: relative;
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		padding-bottom: 1rem;
 	`,
-	CommentContent = styled.p`
-		margin: 5px 0px;
-	`,
-	CommentDateTime = styled.span`
-		color: #808080;
-		margin-left: 5px;
-	`,
-	CommentHeader = styled.span`
+	CommentHeader = styled( Header )`
+		height: 60px;
 		display: flex;
 		flex-direction: row;
+		padding: 0 1rem !important;
+		margin: 0 !important;
+		align-items: center !important;
 	`,
-	CommentWrapper = styled.div`
-		position: relative;
+	HeaderInfo = styled.div`
+		display: flex;
+		flex-direction: column;
+		margin-left: 0.5rem;
+	`,
+	AuthorImg = styled( Image )`
+		width: 30px !important;
+		height: 30px !important;
+	`,
+	AuthorFullname = styled.span`
+		font-size: 1.2rem !important;
+		color: hsl(0,0%,13%) !important;
+	`,
+	AuthorUsername = styled.span`
+		font-size: 1rem;
+		color: rgba(0,0,0,0.65);
+		font-weight: normal;
+		margin-left: 0.25rem;
+	`,
+	DateTime = styled( Header.Subheader )`
+		color: rgba(0,0,0,0.45) !important;
+		font-size: 1rem !important;
+	`,
+	Content = styled.p`
+		align-self: center;
+		word-break: break-all;
+		display: flex;
+		padding: 0px 1rem;
+		min-height: 25px;
+	`,
+	StyledOptions = {
+		position: "absolute",
+		right: "1rem",
+		top: "1rem",
+	},
+	ReplyOption = styled.span`
+		font-size: 1rem;
+		color: rgba(0,0,0,0.65);
+		font-weight: bold;
 	`,
 	CommentOptions = styled.div`
 		display: flex;
-		flex-direction: row;
-		font-size: 14px;
-		color: #808080;
-	`,
-	ReplyOption = styled.span`
+		justify-content: center;
 	`;
 
 class Comment extends Component {
@@ -84,30 +118,50 @@ class Comment extends Component {
 	};
 
 	render() {
+		try {
+			if ( this.props.comment.authorImg ) {
+				userPicture = require( "../images/" + this.props.comment.authorImg );
+			} else {
+				userPicture = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
-			<CommentWrapper>
+			<Wrapper>
 				<CommentHeader>
-					<CommentAuthor>{this.props.comment.author}</CommentAuthor>
-					<CommentDateTime>
-						{moment( this.props.comment.createdAt ).fromNow()}
-					</CommentDateTime>
-				</CommentHeader>
-				<CommentContent>{this.state.content}</CommentContent>
+					<AuthorImg circular src={userPicture} />
+					<HeaderInfo>
+						<AuthorFullname className="postAuthor">
+							{this.props.comment.authorFullname}
+							<AuthorUsername>
+								@{this.props.comment.author}
+							</AuthorUsername>
+						</AuthorFullname>
+						<DateTime className="postDate">
+							{moment( this.props.comment.createdAt ).fromNow()}
+						</DateTime>
+					</HeaderInfo>
 
-				<DropdownOptions
-					author={this.props.comment.author}
-					updatedContent={this.state.updatedContent}
-					handleUpdate={this.handleUpdate}
-					handleDelete={this.handleDelete}
-					handleChange={this.handleChange}
-				/>
+					{ !this.props.fakeOptions &&
+						<DropdownOptions
+							style={StyledOptions}
+							author={this.props.comment.author}
+							updatedContent={this.state.updatedContent}
+							handleUpdate={this.handleUpdate}
+							handleDelete={this.handleDelete}
+							handleChange={this.handleChange}
+						/>
+					}
+				</CommentHeader>
+				<Content>{this.state.content}</Content>
+
 				<CommentOptions>
 					<ReplyOption onClick={this.props.handleReply}>
 						Reply
 					</ReplyOption>
 				</CommentOptions>
-				<Divider />
-			</CommentWrapper>
+			</Wrapper>
 		);
 	}
 }
