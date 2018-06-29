@@ -253,6 +253,7 @@ class SearchMedia extends Component {
 				</HeaderWrapper>
 				<SearchWrapper>
 					<SearchInput
+						autoFocus
 						value={this.state.search}
 						icon="search"
 						name="search"

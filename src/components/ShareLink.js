@@ -231,6 +231,7 @@ class ShareLink extends Component {
 				</HeaderWrapper>
 				<BoxContainer>
 					<ShareLinkInput
+						autoFocus
 						style={TextAreaStyle}
 						name="link"
 						value={this.state.link}

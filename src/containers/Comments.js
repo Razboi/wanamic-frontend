@@ -53,7 +53,8 @@ const
 	`,
 	SuggestionsWrapper = styled.div`
 		grid-area: com;
-		z-index: 2;
+		z-index: 3;
+		visibility: ${props => props.showSuggestions ? "visible" : "hidden"};
 	`;
 
 class Comments extends Component {
@@ -269,6 +270,7 @@ class Comments extends Component {
 					endTrigger={endHandler => this.endHandler = endHandler }
 				>
 					<textarea
+						autoFocus
 						style={StyledTextArea}
 						name="comment"
 						value={this.state.comment}
@@ -277,7 +279,7 @@ class Comments extends Component {
 						onKeyDown={this.handleKeyPress}
 					/>
 				</InputTrigger>
-				<SuggestionsWrapper>
+				<SuggestionsWrapper showSuggestions={this.state.showSuggestions}>
 					<Suggestions
 						socialCircle={this.state.socialCircle}
 						showSuggestions={this.state.showSuggestions}

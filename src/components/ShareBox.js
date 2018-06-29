@@ -234,6 +234,7 @@ class ShareBox extends Component {
 						endTrigger={endHandler => this.endHandler = endHandler }
 					>
 						<textarea
+							autoFocus
 							rows="2"
 							id="ShareBoxInput"
 							placeholder="Share something cool"

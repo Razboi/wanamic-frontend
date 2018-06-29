@@ -21,8 +21,8 @@ const
 		margin-top: 0px !important;
 	`,
 	SugestionImg = styled( Image )`
-		width: 30px !important;
-		height: 30px !important;
+		width: 35px !important;
+		height: 35px !important;
 	`,
 	SugestionData = styled.div`
 		display: flex;

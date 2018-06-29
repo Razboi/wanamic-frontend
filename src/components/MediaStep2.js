@@ -225,6 +225,7 @@ class MediaStep2 extends Component {
 							endTrigger={endHandler => this.endHandler = endHandler }
 						>
 							<textarea
+								autoFocus
 								style={UserContentInput}
 								className="description"
 								name="description"

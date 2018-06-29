@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Divider } from "semantic-ui-react";
+import { Image } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
@@ -22,8 +22,20 @@ const
 		padding-top: 49.33px;
 	`,
 	Notification = styled.div`
-		padding: 10px;
-		background: ${props => props.checked ? "#fff" : "#D3D3D3"}
+		display: flex;
+		flex-direction: row;
+		padding: 1rem;
+		background: ${props => props.checked ? "#fff" : "rgba(0, 0, 0, .1)"};
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
+	`,
+	NotificationImg = styled( Image )`
+		width: 35px !important;
+		height: 35px !important;
+	`,
+	NotificationData = styled.div`
+		display: flex;
+		flex-direction: column;
+		margin-left: 0.5rem;
 	`,
 	TimeAgo = styled.span`
 		color: #808080;
@@ -37,9 +49,6 @@ const
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;
-	`,
-	StyledDivider = styled( Divider )`
-		margin: 0px !important;
 	`;
 
 class Notifications extends Component {
@@ -109,10 +118,23 @@ class Notifications extends Component {
 							onClick={() => this.handleDetails( notification, index )}
 							checked={notification.checked}
 						>
-							<Content><b>{notification.author}</b> {notification.content}</Content>
-							<TimeAgo>{moment( notification.createdAt ).fromNow()}</TimeAgo>
+							<NotificationImg
+								circular
+								src={notification.authorImg ?
+									require( "../images/" + notification.authorImg )
+									:
+									require( "../images/defaultUser.png" )
+								}
+							/>
+							<NotificationData>
+								<Content>
+									<b>{notification.authorFullname}</b> {notification.content}
+								</Content>
+								<TimeAgo>
+									{moment( notification.createdAt ).fromNow()}
+								</TimeAgo>
+							</NotificationData>
 						</Notification>
-						<StyledDivider />
 					</React.Fragment>
 				)}
 			</Wrapper>
