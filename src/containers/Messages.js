@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Divider, Button } from "semantic-ui-react";
+import { Image, Button, Header } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
@@ -20,7 +20,7 @@ const
 		background: #fff;
 		padding-top: 49.33px;
 	`,
-	Header = styled.div`
+	PageHeader = styled.div`
 		border-bottom: 1px solid #000;
 		padding: 15px 10px;
 		font-size: 17px;
@@ -32,11 +32,29 @@ const
 		bottom: 10px;
 		z-index: 3;
 	`,
-	Friend = styled.div`
-		padding: 10px;
+	OpenConversation = styled.div`
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1rem;
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
 	`,
-	StyledDivider = styled( Divider )`
-		margin: 0px !important;
+	UserImg = styled( Image )`
+		width: 30px !important;
+		height: 30px !important;
+	`,
+	TextInfo = styled( Header )`
+		display: flex;
+		flex: 1 0 0%;
+		flex-direction: column;
+		margin-left: 0.5rem !important;
+		margin-top: 0 !important;
+	`,
+	UserFullname = styled.span`
+		font-size: 1.1rem !important;
+	`,
+	LastMessage = styled( Header.Subheader )`
 	`;
 
 
@@ -166,17 +184,30 @@ class Messages extends Component {
 		}
 		return (
 			<Wrapper>
-				<Header>Conversations</Header>
+				<PageHeader>Conversations</PageHeader>
 				<div className="conversationsList">
 					{this.state.conversations.map(( receiver, index ) =>
-						<React.Fragment key={index}>
-							<Friend onClick={() => this.handleSelectConversation( receiver )}>
-								<span>
-									<b>{receiver.username}</b>
-								</span>
-							</Friend>
-							<StyledDivider />
-						</React.Fragment>
+						<OpenConversation
+							key={index}
+							onClick={() => this.handleSelectConversation( receiver )}
+						>
+							<UserImg
+								circular
+								src={receiver.profileImage ?
+									require( "../images/" + receiver.profileImage )
+									:
+									require( "../images/defaultUser.png" )
+								}
+							/>
+							<TextInfo>
+								<UserFullname>
+									{receiver.fullname}
+								</UserFullname>
+								<LastMessage>
+									Test
+								</LastMessage>
+							</TextInfo>
+						</OpenConversation>
 					)}
 				</div>
 				<NewConversationButton
