@@ -24,6 +24,8 @@ const
 	Notification = styled.div`
 		display: flex;
 		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
 		padding: 1rem;
 		background: ${props => props.checked ? "#fff" : "rgba(0, 0, 0, .1)"};
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
@@ -31,11 +33,17 @@ const
 	NotificationImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
+		align-self: flex-start;
+	`,
+	MediaImg = styled( Image )`
+		width: 40px !important;
+		height: 40px !important;
 	`,
 	NotificationData = styled.div`
 		display: flex;
+		flex: 1 0 0%;
 		flex-direction: column;
-		margin-left: 0.5rem;
+		margin: 0 0.5rem;
 	`,
 	TimeAgo = styled.span`
 		color: #808080;
@@ -134,6 +142,15 @@ class Notifications extends Component {
 									{moment( notification.createdAt ).fromNow()}
 								</TimeAgo>
 							</NotificationData>
+							{notification.mediaImg &&
+								<MediaImg
+									src={notification.externalImg ?
+										notification.mediaImg
+										:
+										require( "../images/" + notification.mediaImg )
+									}
+								/>
+							}
 						</Notification>
 					</React.Fragment>
 				)}
