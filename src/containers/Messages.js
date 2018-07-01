@@ -98,6 +98,14 @@ class Messages extends Component {
 		}
 	}
 
+	handleNewConversation = receiver => {
+		this.setState({
+			receiver: receiver,
+			displayConversation: true,
+			displayFriendsList: false
+		});
+	}
+
 	handleFriendsList = () => {
 		api.getFriends()
 			.then( res => {
@@ -130,14 +138,16 @@ class Messages extends Component {
 	}
 
 	handleSendMessage = () => {
-		if ( this.state.messageInput ) {
+		const { messageInput, receiver } = this.state;
+		if ( messageInput ) {
+
 			const newMessage = {
 				author: localStorage.getItem( "username" ),
-				content: this.state.messageInput,
-				receiver: this.state.receiver.username
+				content: messageInput,
+				receiver: receiver.username
 			};
 
-			api.sendMessage( this.state.receiver.username, this.state.messageInput )
+			api.sendMessage( receiver.username, messageInput )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
@@ -177,7 +187,7 @@ class Messages extends Component {
 			return (
 				<FriendsList
 					friends={this.state.friends}
-					handleSelectConversation={this.handleSelectConversation}
+					handleNewConversation={this.handleNewConversation}
 					switchFriendsList={this.switchFriendsList}
 				/>
 			);
@@ -186,22 +196,24 @@ class Messages extends Component {
 			<Wrapper>
 				<PageHeader>Conversations</PageHeader>
 				<div className="conversationsList">
-					{this.state.conversations.map(( receiver, index ) =>
+					{this.state.conversations.map(( chat, index ) =>
 						<OpenConversation
 							key={index}
-							onClick={() => this.handleSelectConversation( receiver )}
+							onClick={() =>
+								this.handleSelectConversation( chat.target.username )
+							}
 						>
 							<UserImg
 								circular
-								src={receiver.profileImage ?
-									require( "../images/" + receiver.profileImage )
+								src={chat.target.profileImage ?
+									require( "../images/" + chat.target.profileImage )
 									:
 									require( "../images/defaultUser.png" )
 								}
 							/>
 							<TextInfo>
 								<UserFullname>
-									{receiver.fullname}
+									{chat.target.fullname}
 								</UserFullname>
 								<LastMessage>
 									Test

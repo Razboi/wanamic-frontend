@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Input } from "semantic-ui-react";
+import { Icon, Input, Header, Image } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Message from "./Message";
@@ -13,7 +13,7 @@ const
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 7% 86% 7%;
+		grid-template-rows: 10% 83% 7%;
 		grid-template-areas:
 			"hea"
 			"mes"
@@ -28,16 +28,35 @@ const
 		grid-area: inp;
 	`,
 	HeaderWrapper = styled.div`
-		height: 49.33px;
+		grid-area: hea;
 		display: flex;
+		flex-direction: row;
 		align-items: center;
-		padding-left: 10px;
+		padding-left: 0.5rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
-	HeaderTxt = styled.span`
-		margin-left: 15px;
-		font-weight: bold;
-		font-size: 16px;
+	UserInfo = styled.div`
+		display: flex;
+		align-items: center;
+		flex: 1 0 0%;
+		margin-left: 0.5rem;
+	`,
+	FriendImg = styled( Image )`
+		width: 35px !important;
+		height: 35px !important;
+		align-self: flex-start;
+	`,
+	TextInfo = styled( Header )`
+		display: flex;
+		align-items: center;
+		margin-top: 0 !important;
+		margin-left: 0.66rem !important;
+	`,
+	Fullname = styled.span`
+		font-size: 1.1475rem !important;
+	`,
+	Username = styled( Header.Subheader )`
+		margin-left: 0.25rem !important;
 	`;
 
 
@@ -52,7 +71,20 @@ class Conversation extends Component {
 						name="arrow left"
 						onClick={this.props.switchConversation}
 					/>
-					<HeaderTxt>{this.props.receiver.username}</HeaderTxt>
+					<UserInfo>
+						<FriendImg
+							circular
+							src={this.props.receiver.profileImage ?
+								require( "../images/" + this.props.receiver.profileImage )
+								:
+								require( "../images/defaultUser.png" )
+							}
+						/>
+						<TextInfo>
+							<Fullname>{this.props.receiver.fullname}</Fullname>
+							<Username>@{this.props.receiver.username}</Username>
+						</TextInfo>
+					</UserInfo>
 				</HeaderWrapper>
 				<MessagesWrapper className="messagesWrapper">
 					{this.props.messages.map(( message, index ) =>
@@ -72,7 +104,7 @@ class Conversation extends Component {
 }
 
 Conversation.propTypes = {
-	receiver: PropTypes.obj,
+	receiver: PropTypes.object.isRequired,
 	messages: PropTypes.array.isRequired,
 	handleKeyPress: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,

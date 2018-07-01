@@ -12,11 +12,11 @@ describe( "<FriendsList/>", () => {
 	var
 		friends = [ "hi", "sup" ],
 		switchFriendsListSpy = sinon.spy(),
-		handleSelectConversationSpy = sinon.spy(),
+		handleNewConversationSpy = sinon.spy(),
 		wrapper = shallow(
 			<FriendsList
 				switchFriendsList={switchFriendsListSpy}
-				handleSelectConversation={handleSelectConversationSpy}
+				handleNewConversation={handleNewConversationSpy}
 				friends={friends}
 			/>
 		);
@@ -40,9 +40,9 @@ describe( "<FriendsList/>", () => {
 		expect( switchFriendsListSpy.called ).to.equal( true );
 	});
 
-	it( "Checks that clicking friend calls handleSelectReceiver", () => {
-		expect( handleSelectConversationSpy.called ).to.equal( false );
+	it( "Checks that clicking friend calls handleNewConversation", () => {
+		expect( handleNewConversationSpy.called ).to.equal( false );
 		wrapper.find( ".friend" ).first().simulate( "click" );
-		expect( handleSelectConversationSpy.called ).to.equal( true );
+		expect( handleNewConversationSpy.called ).to.equal( true );
 	});
 });
