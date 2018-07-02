@@ -16,7 +16,7 @@ import {
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { addMessage } from "../services/actions/messages";
+import { addMessage } from "../services/actions/conversations";
 import { setNotifications, addNotification } from "../services/actions/notifications";
 
 const
@@ -301,7 +301,7 @@ const
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.messages.displayMessages
+		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({

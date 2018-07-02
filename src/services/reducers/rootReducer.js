@@ -2,11 +2,11 @@ import { combineReducers } from "redux";
 import authenticated from "./user";
 import posts from "./posts";
 import notifications from "./notifications";
-import messages from "./messages";
+import conversations from "./conversations";
 
 export default combineReducers({
 	authenticated,
 	posts,
 	notifications,
-	messages
+	conversations
 });

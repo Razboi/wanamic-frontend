@@ -5,7 +5,7 @@ import { logout } from "../services/actions/auth";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
-import { addMessage } from "../services/actions/messages";
+import { addMessage } from "../services/actions/conversations";
 import { setNotifications, addNotification } from "../services/actions/notifications";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -196,7 +196,7 @@ const
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.messages.displayMessages
+		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({

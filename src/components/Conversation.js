@@ -64,9 +64,10 @@ const
 
 class Conversation extends Component {
 	setUserImage = () => {
+		const { conversation } = this.props;
 		try {
-			this.props.receiver.profileImage ?
-				userImage = require( "../images/" + this.props.receiver.profileImage )
+			conversation.target.profileImage ?
+				userImage = require( "../images/" + conversation.target.profileImage )
 				:
 				userImage = require( "../images/defaultUser.png" );
 		} catch ( err ) {
@@ -75,6 +76,10 @@ class Conversation extends Component {
 	}
 
 	render() {
+		const {
+			conversation, switchConversation, messageInput, handleChange,
+			handleKeyPress
+		} = this.props;
 		this.setUserImage();
 		return (
 			<ConversationWrapper>
@@ -82,7 +87,7 @@ class Conversation extends Component {
 					<Icon
 						className="arrowBack"
 						name="arrow left"
-						onClick={this.props.switchConversation}
+						onClick={switchConversation}
 					/>
 					<UserInfo>
 						<FriendImg
@@ -90,22 +95,22 @@ class Conversation extends Component {
 							src={userImage}
 						/>
 						<TextInfo>
-							<Fullname>{this.props.receiver.fullname}</Fullname>
-							<Username>@{this.props.receiver.username}</Username>
+							<Fullname>{conversation.target.fullname}</Fullname>
+							<Username>@{conversation.target.username}</Username>
 						</TextInfo>
 					</UserInfo>
 				</HeaderWrapper>
 				<MessagesWrapper className="messagesWrapper">
-					{this.props.messages.map(( message, index ) =>
+					{conversation.messages.map(( message, index ) =>
 						<Message message={message} key={index} />
 					)}
 				</MessagesWrapper>
 				<StyledInput
 					name="messageInput"
-					value={this.props.messageInput}
+					value={messageInput}
 					placeholder="Write a message"
-					onChange={this.props.handleChange}
-					onKeyPress={this.props.handleKeyPress}
+					onChange={handleChange}
+					onKeyPress={handleKeyPress}
 				/>
 			</ConversationWrapper>
 		);
@@ -113,8 +118,7 @@ class Conversation extends Component {
 }
 
 Conversation.propTypes = {
-	receiver: PropTypes.object.isRequired,
-	messages: PropTypes.array.isRequired,
+	conversation: PropTypes.object.isRequired,
 	handleKeyPress: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	switchConversation: PropTypes.func.isRequired,

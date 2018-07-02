@@ -12,8 +12,13 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<Messages/>", () => {
 	const
-		messages = [],
-		store = mockStore({ messages: messages }),
+		conversations = [],
+		store = mockStore({
+			conversations: {
+				allConversations: [],
+				currentConversation: {}
+			}
+		}),
 		wrapper = shallow(
 			<Messages store={store} />
 		).dive();

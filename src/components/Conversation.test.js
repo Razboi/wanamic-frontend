@@ -10,13 +10,12 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<Conversation/>", () => {
 	var
-		messages = [ "hi", "sup" ],
+		conversation = { target: {}, messages: [] },
 		switchConversationSpy = sinon.spy(),
 		wrapper = shallow(
 			<Conversation
 				switchConversation={switchConversationSpy}
-				receiver={"username"}
-				messages={messages}
+				conversation={conversation}
 				messageInput={""}
 			/>
 		);
@@ -31,7 +30,9 @@ describe( "<Conversation/>", () => {
 
 	it( "Checks that all the messages render", () => {
 		const renderedMessages = wrapper.find( ".messagesWrapper" ).children();
-		expect( renderedMessages ).to.have.length( messages.length );
+		expect( renderedMessages ).to.have.length(
+			conversation.messages.length
+		);
 	});
 
 	it( "Checks that clicking arrowBack calls switchConversation", () => {

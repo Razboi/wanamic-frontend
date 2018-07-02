@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { switchNotifications } from "../services/actions/notifications";
-import { switchMessages } from "../services/actions/messages";
+import { switchMessages } from "../services/actions/conversations";
 import { logout } from "../services/actions/auth";
 
 var profileImage;
@@ -168,9 +168,9 @@ NavBar.propTypes = {
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		newMessages: state.messages.newMessages,
+		newMessages: state.conversations.newMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.messages.displayMessages
+		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({

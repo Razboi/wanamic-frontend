@@ -21,7 +21,7 @@ describe( "<Homepage/>", () => {
 		store = mockStore({
 			posts: [],
 			notifications: { displayNotifications: false },
-			messages: { displayMessages: false }
+			conversations: { displayMessages: false }
 		});
 		wrapper = shallow(
 			<HomePage
