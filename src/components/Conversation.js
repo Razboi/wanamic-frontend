@@ -4,6 +4,8 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import Message from "./Message";
 
+var userImage;
+
 const
 	ConversationWrapper = styled.div`
 		position: absolute;
@@ -61,8 +63,19 @@ const
 
 
 class Conversation extends Component {
+	setUserImage = () => {
+		try {
+			this.props.receiver.profileImage ?
+				userImage = require( "../images/" + this.props.receiver.profileImage )
+				:
+				userImage = require( "../images/defaultUser.png" );
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
 
 	render() {
+		this.setUserImage();
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper>
@@ -74,11 +87,7 @@ class Conversation extends Component {
 					<UserInfo>
 						<FriendImg
 							circular
-							src={this.props.receiver.profileImage ?
-								require( "../images/" + this.props.receiver.profileImage )
-								:
-								require( "../images/defaultUser.png" )
-							}
+							src={userImage}
 						/>
 						<TextInfo>
 							<Fullname>{this.props.receiver.fullname}</Fullname>

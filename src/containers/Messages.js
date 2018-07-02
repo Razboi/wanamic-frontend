@@ -120,21 +120,12 @@ class Messages extends Component {
 	}
 
 	handleSelectConversation = receiver => {
-		api.getConversation( receiver.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleSelectConversation())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({
-						receiver: receiver,
-						displayConversation: true,
-						displayFriendsList: false
-					});
-					this.props.setMessages( res.data, 0 );
-				}
-			}).catch( err => console.log( err ));
+		this.setState({
+			receiver: receiver,
+			displayConversation: true,
+			displayFriendsList: false
+		});
+		// this.props.setMessages( res.data, 0 );
 	}
 
 	handleSendMessage = () => {
@@ -200,7 +191,7 @@ class Messages extends Component {
 						<OpenConversation
 							key={index}
 							onClick={() =>
-								this.handleSelectConversation( chat.target.username )
+								this.handleSelectConversation( chat.target )
 							}
 						>
 							<UserImg

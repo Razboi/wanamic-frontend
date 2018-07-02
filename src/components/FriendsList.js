@@ -48,6 +48,31 @@ const
 
 
 class FriendsList extends Component {
+	constructor() {
+		super();
+		this.state = {
+			friendsImages: []
+		};
+	}
+
+	componentDidMount() {
+		this.setFriendsImages();
+	}
+
+	setFriendsImages = async() => {
+		var images = [];
+		for ( const friend of this.props.friends ) {
+			try {
+				await friend.profileImage ?
+					images.push( require( "../images/" + friend.profileImage ))
+					:
+					images.push( require( "../images/defaultUser.png" ));
+			} catch ( err ) {
+				console.log( err );
+			}
+		}
+		this.setState({ friendsImages: images });
+	}
 
 	render() {
 		return (
@@ -62,25 +87,20 @@ class FriendsList extends Component {
 				</HeaderWrapper>
 				<div className="friendsList">
 					{this.props.friends.map(( friend, index ) =>
-						<React.Fragment key={index}>
-							<Friend
-								className="friend"
-								onClick={() => this.props.handleNewConversation( friend )}
-							>
-								<FriendImg
-									circular
-									src={friend.profileImage ?
-										require( "../images/" + friend.profileImage )
-										:
-										require( "../images/defaultUser.png" )
-									}
-								/>
-								<FriendData>
-									<Fullname>{friend.fullname}</Fullname>
-									<Username>@{friend.username}</Username>
-								</FriendData>
-							</Friend>
-						</React.Fragment>
+						<Friend
+							key={index}
+							className="friend"
+							onClick={() => this.props.handleNewConversation( friend )}
+						>
+							<FriendImg
+								circular
+								src={this.state.friendsImages[ index ]}
+							/>
+							<FriendData>
+								<Fullname>{friend.fullname}</Fullname>
+								<Username>@{friend.username}</Username>
+							</FriendData>
+						</Friend>
 					)}
 				</div>
 			</FriendListWrapper>
