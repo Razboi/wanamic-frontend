@@ -15,9 +15,10 @@ export const
 		type: SWITCH_MESSAGES
 	}),
 
-	addMessage = message => ({
+	addMessage = ( message, isNewMessage ) => ({
 		type: ADD_MESSAGE,
-		message: message
+		message: message,
+		isNewMessage: isNewMessage
 	}),
 
 	checkMessage = messageIndex => ({

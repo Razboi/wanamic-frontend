@@ -24,7 +24,10 @@ export default function notifications( state = initialState, action = {}) {
 		return {
 			...state,
 			allMessages: [ ...state.allMessages, action.message ],
-			newMessages: state.newMessages + 1
+			newMessages: action.isNewMessage ?
+				state.newMessages + 1
+				:
+				state.newMessages
 		};
 
 	case "CHECK_MESSAGE":

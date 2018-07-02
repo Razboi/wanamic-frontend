@@ -98,7 +98,7 @@ class HomePage extends Component {
 			this.props.addNotification( data );
 		});
 		this.props.socket.on( "message", data => {
-			this.props.addMessage( data );
+			this.props.addMessage( data, true );
 		});
 	}
 
@@ -203,7 +203,7 @@ const
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
-		addMessage: message => dispatch( addMessage( message )),
+		addMessage: ( message, isNew ) => dispatch( addMessage( message, isNew )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		addNotification: notification => dispatch( addNotification( notification )),
 		setNotifications: ( allNotifications, newNotifications ) => {

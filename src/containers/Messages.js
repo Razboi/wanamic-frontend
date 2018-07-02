@@ -98,12 +98,33 @@ class Messages extends Component {
 		}
 	}
 
-	handleNewConversation = receiver => {
+	handleNewConversation = async receiver => {
+		const conversation = await api.getConversation( receiver.username );
+		if ( conversation === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.handleFriendsList();
+		} else if ( conversation.data ) {
+			this.handleSelectConversation( conversation.data );
+		} else {
+			this.setState({
+				receiver: receiver,
+				displayConversation: true,
+				displayFriendsList: false
+			});
+		}
+	}
+
+	handleSelectConversation = conversation => {
 		this.setState({
-			receiver: receiver,
+			receiver: conversation.target,
 			displayConversation: true,
 			displayFriendsList: false
 		});
+		this.props.setMessages( conversation.messages, 0 );
 	}
 
 	handleFriendsList = () => {
@@ -117,15 +138,6 @@ class Messages extends Component {
 					this.setState({ friends: res.data, displayFriendsList: true });
 				}
 			}).catch( err => console.log( err ));
-	}
-
-	handleSelectConversation = receiver => {
-		this.setState({
-			receiver: receiver,
-			displayConversation: true,
-			displayFriendsList: false
-		});
-		// this.props.setMessages( res.data, 0 );
 	}
 
 	handleSendMessage = () => {
@@ -191,7 +203,7 @@ class Messages extends Component {
 						<OpenConversation
 							key={index}
 							onClick={() =>
-								this.handleSelectConversation( chat.target )
+								this.handleSelectConversation( chat )
 							}
 						>
 							<UserImg
@@ -207,7 +219,7 @@ class Messages extends Component {
 									{chat.target.fullname}
 								</UserFullname>
 								<LastMessage>
-									Test
+									{chat.messages[ 0 ].content}
 								</LastMessage>
 							</TextInfo>
 						</OpenConversation>

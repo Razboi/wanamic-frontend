@@ -413,7 +413,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				friendUsername: friendUsername
 			},
-			url: "/messages/retrieve/"
+			url: "/conversations/retrieve/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -426,7 +426,7 @@ export default {
 				friendUsername: friendUsername,
 				content: content
 			},
-			url: "/messages/add/"
+			url: "/conversations/add/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
