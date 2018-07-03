@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import api from "../services/api";
 import {
 	switchMessages, addMessage, setConversations, selectConversation,
-	updateConversation, addConversation
+	updateConversation, addConversation, setupNewConversation
 } from "../services/actions/conversations";
 import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
@@ -103,33 +103,33 @@ class Messages extends Component {
 		}
 	}
 
-	handleNewConversation = async receiver => {
-		// CHECK IF CONVER ALREADY ON OPENCHATS
-		const conversation = await api.getConversation( receiver.username );
-		if ( conversation === "jwt expired" ) {
-			try {
-				await refreshToken();
-			} catch ( err ) {
-				console.log( err );
-			}
-			this.handleNewConversation();
-		} else if ( conversation.data ) {
-			this.handleSelectConversation( conversation.data );
-		} else {
-			this.setState({
-				displayConversation: true,
-				displayFriendsList: false
-			});
-		}
-	}
-
-	handleSelectConversation = ( conversation, index ) => {
+	displayConversation = () => {
 		this.setState({
 			displayConversation: true,
 			displayFriendsList: false
 		});
-		conversation.index = index;
-		this.props.selectConversation( conversation );
+	}
+
+	handleNewConversation = async selectedUser => {
+		const { conversations, setupNewConversation } = this.props;
+		for ( const [ i, conversation ] of conversations.entries()) {
+			if ( conversation.target.username === selectedUser.username ) {
+				this.handleSelectConversation( i );
+				return;
+			}
+		}
+
+		const newConversation = {
+			target: selectedUser,
+			messages: []
+		};
+		await setupNewConversation( newConversation );
+		this.displayConversation();
+	}
+
+	handleSelectConversation = index => {
+		this.props.selectConversation( index );
+		this.displayConversation();
 	}
 
 	handleFriendsList = async() => {
@@ -148,19 +148,19 @@ class Messages extends Component {
 
 	handleSendMessage = async() => {
 		const
+			{ conversations, selectedConversation, newConversation
+			} = this.props,
 			{ messageInput } = this.state,
-			conversation = this.props.currentConversation;
+			conversation = newConversation ?
+				newConversation
+				:
+				conversations[ selectedConversation ];
+
 		if ( messageInput ) {
-			const
-				newMessage = {
-					author: localStorage.getItem( "username" ),
-					content: messageInput,
-					receiver: conversation.target.username
-				},
-				response = await api.sendMessage(
-					conversation.target.username, messageInput
-				);
-			if ( response === "jwt expired" ) {
+			const res = await api.sendMessage(
+				conversation.target.username, messageInput
+			);
+			if ( res === "jwt expired" ) {
 				try {
 					await refreshToken();
 				} catch ( err ) {
@@ -169,11 +169,14 @@ class Messages extends Component {
 				this.handleSendMessage();
 			} else {
 				this.setState({ messageInput: "" });
-				this.props.socket.emit( "sendMessage", newMessage );
-				response.data.newConversation ?
-					this.props.addConversation( response.data.newConversation )
-					:
-					this.props.updateConversation( newMessage, conversation.index );
+				if ( newConversation ) {
+					this.props.socket.emit( "sendMessage", res.data.newConversation );
+					this.props.addConversation( res.data.newConversation );
+					return;
+				}
+				this.props.socket.emit( "sendMessage", res.data.newMessage );
+				this.props.updateConversation(
+					res.data.newMessage, selectedConversation );
 			}
 		}
 	}
@@ -187,10 +190,17 @@ class Messages extends Component {
 	}
 
 	render() {
+		const {
+			conversations, selectedConversation, newConversation
+		} = this.props;
 		if ( this.state.displayConversation ) {
 			return (
 				<Conversation
-					conversation={this.props.currentConversation}
+					conversation={newConversation ?
+						newConversation
+						:
+						conversations[ selectedConversation ]
+					}
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
 					switchConversation={this.switchConversation}
@@ -215,7 +225,7 @@ class Messages extends Component {
 						<OpenConversation
 							key={index}
 							onClick={() =>
-								this.handleSelectConversation( chat, index )
+								this.handleSelectConversation( index )
 							}
 						>
 							<UserImg
@@ -251,20 +261,22 @@ class Messages extends Component {
 
 Messages.propTypes = {
 	conversations: PropTypes.array.isRequired,
-	currentConversation: PropTypes.object.isRequired,
+	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		conversations: state.conversations.allConversations,
-		currentConversation: state.conversations.currentConversation
+		selectedConversation: state.conversations.selectedConversation,
+		newConversation: state.conversations.newConversation
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setConversations: convers => dispatch( setConversations( convers )),
 		addConversation: conver => dispatch( addConversation( conver )),
-		selectConversation: conver => dispatch( selectConversation( conver )),
+		selectConversation: index => dispatch( selectConversation( index )),
+		setupNewConversation: conver => dispatch( setupNewConversation( conver )),
 		switchMessages: ( id ) => dispatch( switchMessages( id )),
 		addMessage: message => dispatch( addMessage( message )),
 		updateConversation: ( message, index ) =>

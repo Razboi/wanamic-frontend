@@ -1,6 +1,7 @@
 export const
 	SET_CONVERSATIONS = "SET_CONVERSATIONS",
 	SELECT_CONVERSATION = "SELECT_CONVERSATION",
+	SETUP_NEW_CONVERSATION = "SETUP_NEW_CONVERSATION",
 	ADD_CONVERSATION = "ADD_CONVERSATION",
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
 	SET_NEW_MESSAGES = "SET_NEW_MESSAGES",
@@ -14,8 +15,13 @@ export const
 		conversations: conversations
 	}),
 
-	selectConversation = conversation => ({
+	selectConversation = index => ({
 		type: SELECT_CONVERSATION,
+		index: index
+	}),
+
+	setupNewConversation = conversation => ({
+		type: SETUP_NEW_CONVERSATION,
 		conversation: conversation
 	}),
 
