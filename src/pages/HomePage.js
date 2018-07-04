@@ -9,7 +9,8 @@ import {
 	setNotifications, addNotification
 } from "../services/actions/notifications";
 import {
-	notifyNewMessage, addConversation, updateConversation
+	setChatNotifications, addConversation, updateConversation,
+	addChatNotification
 } from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -90,6 +91,8 @@ class HomePage extends Component {
 				notifications.data.notifications,
 				notifications.data.newNotifications
 			);
+			this.props.setChatNotifications(
+				notifications.data.chatNotifications );
 		}
 	}
 
@@ -105,7 +108,7 @@ class HomePage extends Component {
 		this.props.socket.on( "message", async message => {
 			const {
 				displayMessages, conversations, addConversation,
-				notifyNewMessage, updateConversation
+				addChatNotification, updateConversation, chatNotifications
 			} = this.props;
 
 			if ( displayMessages ) {
@@ -118,8 +121,8 @@ class HomePage extends Component {
 				const newConversation = await api.getConversation(
 					message.author );
 				addConversation( newConversation.data );
-			} else {
-				notifyNewMessage( message.author );
+			} else if ( !chatNotifications.includes( message.author )) {
+				addChatNotification( message.author );
 			}
 		});
 	}
@@ -219,7 +222,8 @@ const
 		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages,
-		conversations: state.conversations.allConversations
+		conversations: state.conversations.allConversations,
+		chatNotifications: state.conversations.notifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -227,12 +231,12 @@ const
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		notifyNewMessage: messageAuthor =>
-			dispatch( notifyNewMessage( messageAuthor )),
+		setChatNotifications: authors => dispatch( setChatNotifications( authors )),
 		addConversation: conver => dispatch( addConversation( conver )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
-		addNotification: notification => dispatch( addNotification( notification )),
+		addNotification: notif => dispatch( addNotification( notif )),
+		addChatNotification: notif => dispatch( addChatNotification( notif )),
 		setNotifications: ( allNotifications, newNotifications ) => {
 			dispatch( setNotifications( allNotifications, newNotifications ));
 		},

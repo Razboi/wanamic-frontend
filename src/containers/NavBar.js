@@ -129,9 +129,9 @@ class NavBar extends Component {
 						size="large"
 						color={this.props.displayMessages ? "black" : null}
 					/>
-					{this.props.newMessagesFrom.length > 0 &&
+					{this.props.chatNotifications.length > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
-							{this.props.newMessagesFrom.length}
+							{this.props.chatNotifications.length}
 						</NotificationsLength>
 					}
 				</NavOption>
@@ -161,14 +161,14 @@ NavBar.propTypes = {
 	switchNotifications: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
-	newMessages: PropTypes.number.isRequired,
+	newMessagesCount: PropTypes.array.isRequired,
 	displayNotifications: PropTypes.bool.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		newMessagesFrom: state.conversations.newMessagesFrom,
+		chatNotifications: state.conversations.notifications,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages
 	}),

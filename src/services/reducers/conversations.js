@@ -2,7 +2,7 @@ const initialState = {
 	allConversations: [],
 	selectedConversation: 0,
 	newConversation: undefined,
-	newMessagesFrom: [],
+	notifications: [],
 	displayMessages: false
 };
 
@@ -19,9 +19,9 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			selectedConversation: action.index,
-			newMessagesFrom: state.newMessagesFrom.filter( author => {
-				return author !== state.allConversations[ action.index ].target.username;
-			})
+			notifications: state.notifications.filter( author =>
+				author !== state.allConversations[ action.index ].target.username
+			)
 		};
 
 	case "SETUP_NEW_CONVERSATION":
@@ -57,25 +57,16 @@ export default function conversations( state = initialState, action = {}) {
 			displayMessages: !state.displayMessages
 		};
 
-	case "NOTIFY_NEW_MESSAGE":
+	case "SET_CHAT_NOTIFICATIONS":
 		return {
 			...state,
-			newMessagesFrom: [ action.messageAuthor, ...state.newMessagesFrom ]
+			notifications: action.notifications
 		};
 
-	case "CHECK_MESSAGE":
+	case "ADD_CHAT_NOTIFICATION":
 		return {
 			...state,
-			currentMessages: state.currentMessages.map(( message, index ) => {
-				if ( index === action.messageIndex ) {
-					return {
-						...message,
-						...state.currentMessages[ action.messageIndex ].checked = true
-					};
-				}
-				return message;
-			}),
-			newMessages: state.newMessages - 1
+			notifications: [ action.newNotification, ...state.notifications ]
 		};
 
 	default:

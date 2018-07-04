@@ -41,6 +41,7 @@ const
 		justify-content: space-between;
 		padding: 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		background: ${props => props.newMessages ? "rgba(0, 0, 0, .5)" : "none"};
 	`,
 	UserImg = styled( Image )`
 		width: 30px !important;
@@ -128,8 +129,16 @@ class Messages extends Component {
 	}
 
 	handleSelectConversation = index => {
-		this.props.selectConversation( index );
+		const {
+			conversations, selectConversation, newMessagesCount,
+			decrementNewMessagesCount
+		} = this.props;
+		selectConversation( index );
 		this.displayConversation();
+		if ( conversations[ index ].newMessagesCount > 0
+			&& newMessagesCount > 0 ) {
+			decrementNewMessagesCount();
+		}
 	}
 
 	handleFriendsList = async() => {
@@ -222,9 +231,8 @@ class Messages extends Component {
 					{this.props.conversations.map(( chat, index ) =>
 						<OpenConversation
 							key={index}
-							onClick={() =>
-								this.handleSelectConversation( index )
-							}
+							onClick={() => this.handleSelectConversation( index ) }
+							newMessages={chat.newMessagesCount > 0}
 						>
 							<UserImg
 								circular
@@ -260,14 +268,16 @@ class Messages extends Component {
 Messages.propTypes = {
 	conversations: PropTypes.array.isRequired,
 	selectedConversation: PropTypes.number.isRequired,
-	switchMessages: PropTypes.func.isRequired
+	switchMessages: PropTypes.func.isRequired,
+	newMessagesCount: PropTypes.number.isRequired,
 };
 
 const
 	mapStateToProps = state => ({
 		conversations: state.conversations.allConversations,
 		selectedConversation: state.conversations.selectedConversation,
-		newConversation: state.conversations.newConversation
+		newConversation: state.conversations.newConversation,
+		newMessagesCount: state.conversations.newMessagesCount
 	}),
 
 	mapDispatchToProps = dispatch => ({

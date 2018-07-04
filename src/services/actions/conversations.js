@@ -4,8 +4,8 @@ export const
 	SETUP_NEW_CONVERSATION = "SETUP_NEW_CONVERSATION",
 	ADD_CONVERSATION = "ADD_CONVERSATION",
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
-	SET_NEW_MESSAGES = "SET_NEW_MESSAGES",
-	NOTIFY_NEW_MESSAGE = "NOTIFY_NEW_MESSAGE",
+	SET_CHAT_NOTIFICATIONS = "SET_CHAT_NOTIFICATIONS",
+	ADD_CHAT_NOTIFICATION = "ADD_CHAT_NOTIFICATION",
 	SWITCH_MESSAGES = "SWITCH_MESSAGES",
 	CHECK_MESSAGE = "CHECK_MESSAGE",
 
@@ -40,12 +40,12 @@ export const
 		type: SWITCH_MESSAGES
 	}),
 
-	notifyNewMessage = messageAuthor => ({
-		type: NOTIFY_NEW_MESSAGE,
-		messageAuthor: messageAuthor
+	setChatNotifications = authors => ({
+		type: SET_CHAT_NOTIFICATIONS,
+		notifications: authors
 	}),
 
-	checkMessage = messageIndex => ({
-		type: CHECK_MESSAGE,
-		messageIndex: messageIndex
+	addChatNotification = author => ({
+		type: ADD_CHAT_NOTIFICATION,
+		newNotification: author
 	});
