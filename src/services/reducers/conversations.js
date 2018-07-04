@@ -2,8 +2,7 @@ const initialState = {
 	allConversations: [],
 	selectedConversation: 0,
 	newConversation: undefined,
-	currentConversation: {},
-	newMessages: 0,
+	newMessagesFrom: [],
 	displayMessages: false
 };
 
@@ -19,7 +18,10 @@ export default function conversations( state = initialState, action = {}) {
 	case "SELECT_CONVERSATION":
 		return {
 			...state,
-			selectedConversation: action.index
+			selectedConversation: action.index,
+			newMessagesFrom: state.newMessagesFrom.filter( author => {
+				return author !== state.allConversations[ action.index ].target.username;
+			})
 		};
 
 	case "SETUP_NEW_CONVERSATION":
@@ -54,18 +56,11 @@ export default function conversations( state = initialState, action = {}) {
 			...state,
 			displayMessages: !state.displayMessages
 		};
-		// REMOVE CURRENTCONVER
-	case "ADD_MESSAGE":
+
+	case "NOTIFY_NEW_MESSAGE":
 		return {
 			...state,
-			currentConversation: {
-				...state.currentConversation,
-				messages: [ action.message, ...state.currentConversation.messages ]
-			},
-			newMessages: action.isNewMessage ?
-				state.newMessages + 1
-				:
-				state.newMessages
+			newMessagesFrom: [ action.messageAuthor, ...state.newMessagesFrom ]
 		};
 
 	case "CHECK_MESSAGE":

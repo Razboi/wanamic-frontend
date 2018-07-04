@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
 import {
-	switchMessages, addMessage, setConversations, selectConversation,
+	switchMessages, setConversations, selectConversation,
 	updateConversation, addConversation, setupNewConversation
 } from "../services/actions/conversations";
 import Conversation from "../components/Conversation";
@@ -99,6 +99,7 @@ class Messages extends Component {
 
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
+			e.preventDefault();
 			this.handleSendMessage();
 		}
 	}
@@ -118,12 +119,11 @@ class Messages extends Component {
 				return;
 			}
 		}
-
 		const newConversation = {
 			target: selectedUser,
 			messages: []
 		};
-		await setupNewConversation( newConversation );
+		setupNewConversation( newConversation );
 		this.displayConversation();
 	}
 
@@ -169,24 +169,22 @@ class Messages extends Component {
 				this.handleSendMessage();
 			} else {
 				this.setState({ messageInput: "" });
+				this.props.socket.emit( "sendMessage", res.data.newMessage );
 				if ( newConversation ) {
-					this.props.socket.emit( "sendMessage", res.data.newConversation );
 					this.props.addConversation( res.data.newConversation );
 					return;
 				}
-				this.props.socket.emit( "sendMessage", res.data.newMessage );
 				this.props.updateConversation(
 					res.data.newMessage, selectedConversation );
 			}
 		}
 	}
 
-	switchFriendsList = () => {
-		this.setState({ displayFriendsList: !this.state.displayFriendsList });
-	}
-
-	switchConversation = () => {
-		this.setState({ displayConversation: !this.state.displayConversation });
+	backToOpenConversations = () => {
+		this.setState({
+			displayFriendsList: false,
+			displayConversation: false
+		});
 	}
 
 	render() {
@@ -203,7 +201,7 @@ class Messages extends Component {
 					}
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
-					switchConversation={this.switchConversation}
+					back={this.backToOpenConversations}
 					messageInput={this.state.messageInput}
 				/>
 			);
@@ -213,7 +211,7 @@ class Messages extends Component {
 				<FriendsList
 					friends={this.state.friends}
 					handleNewConversation={this.handleNewConversation}
-					switchFriendsList={this.switchFriendsList}
+					back={this.backToOpenConversations}
 				/>
 			);
 		}
@@ -278,7 +276,6 @@ const
 		selectConversation: index => dispatch( selectConversation( index )),
 		setupNewConversation: conver => dispatch( setupNewConversation( conver )),
 		switchMessages: ( id ) => dispatch( switchMessages( id )),
-		addMessage: message => dispatch( addMessage( message )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
 	});

@@ -11,10 +11,10 @@ Enzyme.configure({ adapter: new Adapter() });
 describe( "<Conversation/>", () => {
 	var
 		conversation = { target: {}, messages: [] },
-		switchConversationSpy = sinon.spy(),
+		backSpy = sinon.spy(),
 		wrapper = shallow(
 			<Conversation
-				switchConversation={switchConversationSpy}
+				back={backSpy}
 				conversation={conversation}
 				messageInput={""}
 			/>
@@ -35,9 +35,9 @@ describe( "<Conversation/>", () => {
 		);
 	});
 
-	it( "Checks that clicking arrowBack calls switchConversation", () => {
-		expect( switchConversationSpy.called ).to.equal( false );
+	it( "Checks that clicking arrowBack calls back", () => {
+		expect( backSpy.called ).to.equal( false );
 		wrapper.find( ".arrowBack" ).simulate( "click" );
-		expect( switchConversationSpy.called ).to.equal( true );
+		expect( backSpy.called ).to.equal( true );
 	});
 });

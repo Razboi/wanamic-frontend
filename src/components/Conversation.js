@@ -77,7 +77,7 @@ class Conversation extends Component {
 
 	render() {
 		const {
-			conversation, switchConversation, messageInput, handleChange,
+			conversation, back, messageInput, handleChange,
 			handleKeyPress
 		} = this.props;
 		this.setUserImage();
@@ -87,7 +87,7 @@ class Conversation extends Component {
 					<Icon
 						className="arrowBack"
 						name="arrow left"
-						onClick={switchConversation}
+						onClick={back}
 					/>
 					<UserInfo>
 						<FriendImg
@@ -121,7 +121,7 @@ Conversation.propTypes = {
 	conversation: PropTypes.object.isRequired,
 	handleKeyPress: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	switchConversation: PropTypes.func.isRequired,
+	back: PropTypes.func.isRequired,
 	messageInput: PropTypes.string.isRequired
 };
 

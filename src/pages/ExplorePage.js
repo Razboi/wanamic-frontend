@@ -16,7 +16,7 @@ import {
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { addMessage } from "../services/actions/conversations";
+import { notifyNewMessage } from "../services/actions/conversations";
 import { setNotifications, addNotification } from "../services/actions/notifications";
 
 const
@@ -308,7 +308,7 @@ const
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
-		addMessage: message => dispatch( addMessage( message )),
+		notifyNewMessage: () => dispatch( notifyNewMessage()),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		addNotification: notification => dispatch( addNotification( notification )),
 		setNotifications: ( allNotifications, newNotifications ) => {

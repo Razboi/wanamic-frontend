@@ -5,8 +5,12 @@ import { logout } from "../services/actions/auth";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
-import { addMessage } from "../services/actions/conversations";
-import { setNotifications, addNotification } from "../services/actions/notifications";
+import {
+	setNotifications, addNotification
+} from "../services/actions/notifications";
+import {
+	notifyNewMessage, addConversation, updateConversation
+} from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
@@ -72,33 +76,51 @@ class HomePage extends Component {
 		this.setupSockets();
 	}
 
-	setupNotifications() {
-		api.getNotifications()
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.setupNotifications())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.setNotifications(
-						res.data.notifications,
-						res.data.newNotifications
-					);
-				}
-			}).catch( err => console.log( err ));
+	async setupNotifications() {
+		const notifications = await api.getNotifications();
+		if ( notifications === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.setupNotifications();
+		} else {
+			this.props.setNotifications(
+				notifications.data.notifications,
+				notifications.data.newNotifications
+			);
+		}
 	}
 
 	setupSockets = () => {
-		const data = {
+		const userData = {
 			token: localStorage.getItem( "token" ),
 			username: localStorage.getItem( "username" )
 		};
-		this.props.socket.emit( "register", data );
-		this.props.socket.on( "notifications", data => {
-			this.props.addNotification( data );
+		this.props.socket.emit( "register", userData );
+		this.props.socket.on( "notifications", notification => {
+			this.props.addNotification( notification );
 		});
-		this.props.socket.on( "message", data => {
-			this.props.addMessage( data, true );
+		this.props.socket.on( "message", async message => {
+			const {
+				displayMessages, conversations, addConversation,
+				notifyNewMessage, updateConversation
+			} = this.props;
+
+			if ( displayMessages ) {
+				for ( const [ i, conversation ] of conversations.entries()) {
+					if ( conversation.target.username === message.author ) {
+						updateConversation( message, i );
+						return;
+					}
+				}
+				const newConversation = await api.getConversation(
+					message.author );
+				addConversation( newConversation.data );
+			} else {
+				notifyNewMessage( message.author );
+			}
 		});
 	}
 
@@ -196,15 +218,20 @@ const
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages
+		displayMessages: state.conversations.displayMessages,
+		conversations: state.conversations.allConversations
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
-		addMessage: ( message, isNew ) => dispatch( addMessage( message, isNew )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		notifyNewMessage: messageAuthor =>
+			dispatch( notifyNewMessage( messageAuthor )),
+		addConversation: conver => dispatch( addConversation( conver )),
+		updateConversation: ( message, index ) =>
+			dispatch( updateConversation( message, index )),
 		addNotification: notification => dispatch( addNotification( notification )),
 		setNotifications: ( allNotifications, newNotifications ) => {
 			dispatch( setNotifications( allNotifications, newNotifications ));

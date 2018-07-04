@@ -11,11 +11,11 @@ Enzyme.configure({ adapter: new Adapter() });
 describe( "<FriendsList/>", () => {
 	var
 		friends = [ "hi", "sup" ],
-		switchFriendsListSpy = sinon.spy(),
+		backSpy = sinon.spy(),
 		handleNewConversationSpy = sinon.spy(),
 		wrapper = shallow(
 			<FriendsList
-				switchFriendsList={switchFriendsListSpy}
+				back={backSpy}
 				handleNewConversation={handleNewConversationSpy}
 				friends={friends}
 			/>
@@ -34,10 +34,10 @@ describe( "<FriendsList/>", () => {
 		expect( renderedMessages ).to.have.length( friends.length );
 	});
 
-	it( "Checks that clicking arrowBack calls switchFriendsList", () => {
-		expect( switchFriendsListSpy.called ).to.equal( false );
+	it( "Checks that clicking arrowBack calls back", () => {
+		expect( backSpy.called ).to.equal( false );
 		wrapper.find( ".arrowBack" ).simulate( "click" );
-		expect( switchFriendsListSpy.called ).to.equal( true );
+		expect( backSpy.called ).to.equal( true );
 	});
 
 	it( "Checks that clicking friend calls handleNewConversation", () => {

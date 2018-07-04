@@ -129,9 +129,9 @@ class NavBar extends Component {
 						size="large"
 						color={this.props.displayMessages ? "black" : null}
 					/>
-					{this.props.newMessages > 0 &&
+					{this.props.newMessagesFrom.length > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
-							{this.props.newMessages}
+							{this.props.newMessagesFrom.length}
 						</NotificationsLength>
 					}
 				</NavOption>
@@ -168,7 +168,7 @@ NavBar.propTypes = {
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		newMessages: state.conversations.newMessages,
+		newMessagesFrom: state.conversations.newMessagesFrom,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages
 	}),

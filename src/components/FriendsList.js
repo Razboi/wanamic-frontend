@@ -80,7 +80,7 @@ class FriendsList extends Component {
 				<HeaderWrapper>
 					<Icon
 						name="arrow left"
-						onClick={this.props.switchFriendsList}
+						onClick={this.props.back}
 						className="arrowBack"
 					/>
 					<HeaderTxt>Friends</HeaderTxt>
@@ -111,7 +111,7 @@ class FriendsList extends Component {
 FriendsList.propTypes = {
 	friends: PropTypes.array.isRequired,
 	handleNewConversation: PropTypes.func.isRequired,
-	switchFriendsList: PropTypes.func.isRequired
+	back: PropTypes.func.isRequired
 };
 
 

@@ -5,7 +5,7 @@ export const
 	ADD_CONVERSATION = "ADD_CONVERSATION",
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
 	SET_NEW_MESSAGES = "SET_NEW_MESSAGES",
-	ADD_MESSAGE = "ADD_MESSAGE",
+	NOTIFY_NEW_MESSAGE = "NOTIFY_NEW_MESSAGE",
 	SWITCH_MESSAGES = "SWITCH_MESSAGES",
 	CHECK_MESSAGE = "CHECK_MESSAGE",
 
@@ -40,10 +40,9 @@ export const
 		type: SWITCH_MESSAGES
 	}),
 
-	addMessage = ( message, isNewMessage ) => ({
-		type: ADD_MESSAGE,
-		message: message,
-		isNewMessage: isNewMessage
+	notifyNewMessage = messageAuthor => ({
+		type: NOTIFY_NEW_MESSAGE,
+		messageAuthor: messageAuthor
 	}),
 
 	checkMessage = messageIndex => ({
