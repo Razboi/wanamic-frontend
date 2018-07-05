@@ -10,17 +10,15 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<Message/>", () => {
 	var
+		stayScrolledSpy = sinon.spy(),
 		wrapper = shallow(
 			<Message
 				message={{ author: "me", content: "sup" }}
+				stayScrolled={stayScrolledSpy}
 			/>
 		);
 
 	it( "Checks that <Message/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
-	});
-
-	it( "Checks that <Message/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
 	});
 });

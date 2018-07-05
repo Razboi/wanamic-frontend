@@ -9,7 +9,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import Notifications from "../containers/Notifications";
-import Messages from "../containers/Messages";
+import ChatsList from "../containers/ChatsList";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
@@ -241,7 +241,8 @@ class ExplorePage extends Component {
 					useWindow={false}
 				>
 					{this.props.displayNotifications && <Notifications />}
-					{this.props.displayMessages && <Messages socket={this.props.socket} />}
+					{this.props.displayMessages && <ChatsList
+						socket={this.props.socket} />}
 					<NavBar />
 					<Header>
 						<UserSubheader>

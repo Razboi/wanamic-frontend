@@ -3,11 +3,13 @@ import { Icon, Input, Header, Image, Dropdown } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Message from "./Message";
+import StayScrolled from "react-stay-scrolled";
 
 var userImage;
 
 const
 	ConversationWrapper = styled.div`
+		overflow: hidden;
 		position: absolute;
 		height: 100vh;
 		width: 100%;
@@ -21,8 +23,9 @@ const
 			"mes"
 			"inp"
 	`,
-	MessagesWrapper = styled.div`
+	MessagesWrapper = styled( StayScrolled )`
 		grid-area: mes;
+		position: relative;
 		padding: 10px;
 		overflow-y: scroll;
 	`,
@@ -73,6 +76,7 @@ const
 
 
 class Conversation extends Component {
+
 	setUserImage = () => {
 		const { conversation } = this.props;
 		try {
@@ -124,12 +128,14 @@ class Conversation extends Component {
 						</Dropdown.Menu>
 					</StyledDropdown>
 				</HeaderWrapper>
-				<MessagesWrapper className="messagesWrapper">
+				<MessagesWrapper component="div" className="messagesWrapper">
 					{conversation.messages.map(( message, index ) =>
 						<Message message={message} key={index} />
 					)}
 				</MessagesWrapper>
+
 				<StyledInput
+					autoFocus
 					name="messageInput"
 					value={messageInput}
 					placeholder="Write a message"

@@ -22,7 +22,7 @@ import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import Notifications from "../containers/Notifications";
-import Messages from "../containers/Messages";
+import ChatsList from "../containers/ChatsList";
 import refreshToken from "../utils/refreshToken";
 
 const
@@ -187,9 +187,11 @@ class HomePage extends Component {
 					}
 
 					{this.props.displayShare && <Share />}
-					{this.props.displayComments && <Comments socket={this.props.socket} />}
+					{this.props.displayComments && <Comments
+						socket={this.props.socket} />}
 					{this.props.displayNotifications && <Notifications />}
-					{this.props.displayMessages && <Messages socket={this.props.socket} />}
+					{this.props.displayMessages && <ChatsList
+						socket={this.props.socket} />}
 
 					{this.props.mediaOptions &&
 						<MediaOptions
@@ -198,7 +200,8 @@ class HomePage extends Component {
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledNewsFeed posts={this.props.newsfeed} socket={this.props.socket} />
+						<StyledNewsFeed posts={this.props.newsfeed}
+							socket={this.props.socket} />
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>

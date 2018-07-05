@@ -53,7 +53,7 @@ export default function conversations( state = initialState, action = {}) {
 				if ( index === action.index ) {
 					return {
 						...conver,
-						messages: [ action.message, ...conver.messages ]
+						messages: [ ...conver.messages, action.message ]
 					};
 				}
 				return conver;

@@ -77,7 +77,7 @@ const
 	`;
 
 
-class Messages extends Component {
+class ChatsList extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -282,11 +282,14 @@ class Messages extends Component {
 									{chat.target.fullname}
 								</UserFullname>
 								<LastMessage>
-									@{chat.messages[ 0 ].author}: {chat.messages[ 0 ].content}
+									@{chat.messages[ chat.messages.length - 1 ].author}: {
+										chat.messages[ chat.messages.length - 1 ].content}
 								</LastMessage>
 							</TextInfo>
 							<LastMessageTime>
-								{moment( chat.messages[ 0 ].createdAt ).fromNow( true )}
+								{moment(
+									chat.messages[ chat.messages.length - 1 ].createdAt
+								).fromNow( true )}
 							</LastMessageTime>
 							{chat.newMessagesCount > 0 &&
 								<NewMessagesCount
@@ -310,11 +313,11 @@ class Messages extends Component {
 	}
 }
 
-Messages.propTypes = {
+ChatsList.propTypes = {
 	conversations: PropTypes.array.isRequired,
 	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired,
-	chatNotifications: PropTypes.number.isRequired,
+	chatNotifications: PropTypes.array.isRequired,
 };
 
 const
@@ -322,7 +325,7 @@ const
 		conversations: state.conversations.allConversations,
 		selectedConversation: state.conversations.selectedConversation,
 		newConversation: state.conversations.newConversation,
-		chatNotifications: state.conversations.chatNotifications
+		chatNotifications: state.conversations.notifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -336,4 +339,4 @@ const
 			dispatch( updateConversation( message, index )),
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( Messages );
+export default connect( mapStateToProps, mapDispatchToProps )( ChatsList );

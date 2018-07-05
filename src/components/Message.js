@@ -1,41 +1,50 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Divider } from "semantic-ui-react";
 import moment from "moment";
 import PropTypes from "prop-types";
+import { scrolled } from "react-stay-scrolled";
 
 const
-	MessageAuthor = styled.h4`
-		margin: 0px;
+	MessageWrapper = styled.div`
+		overflow: hidden;
+		position: relative;
+		width: 60%
+		margin-bottom: 1rem;
+    border-radius: 6px;
+    padding: 10px;
+		margin-left: ${props => props.fromUser ?
+		"auto" : "none"};
+		background-color: ${props => props.fromUser ?
+		"lightblue" : "lightgrey"};
 	`,
 	MessageContent = styled.p`
-		margin: 5px 0px;
+		font-size: 1.1rem;
+		word-break: break-word;
 	`,
 	MessageDateTime = styled.span`
+		position: absolute;
+		right: 5px;
+		bottom: 0;
 		color: #808080;
-		margin-left: 5px;
-	`,
-	MessageHeader = styled.span`
-		display: flex;
-		flex-direction: row;
-	`,
-	MessageWrapper = styled.div`
-		position: relative;
+		font-size: 0.75rem;
 	`;
 
 class Message extends Component {
+	componentDidMount() {
+		this.props.stayScrolled();
+	}
 	render() {
 		return (
-			<MessageWrapper>
-				<MessageHeader>
-					<MessageAuthor>{this.props.message.author}</MessageAuthor>
-					<MessageDateTime>
-						{moment( this.props.message.createdAt ).fromNow()}
-					</MessageDateTime>
-				</MessageHeader>
+			<MessageWrapper
+				fromUser={
+					this.props.message.author === localStorage.getItem( "username" )
+				}
+			>
 				<MessageContent>{this.props.message.content}</MessageContent>
 
-				<Divider />
+				<MessageDateTime>
+					{moment( this.props.message.createdAt ).format( "HH:mm" )}
+				</MessageDateTime>
 			</MessageWrapper>
 		);
 	}
@@ -45,4 +54,4 @@ Message.propTypes = {
 	message: PropTypes.object.isRequired
 };
 
-export default Message;
+export default scrolled( Message );
