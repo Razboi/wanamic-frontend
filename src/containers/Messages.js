@@ -6,7 +6,8 @@ import PropTypes from "prop-types";
 import api from "../services/api";
 import {
 	switchMessages, setConversations, selectConversation,
-	updateConversation, addConversation, setupNewConversation
+	updateConversation, addConversation, setupNewConversation,
+	deleteChat
 } from "../services/actions/conversations";
 import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
@@ -113,6 +114,21 @@ class Messages extends Component {
 		if ( e.key === "Enter" ) {
 			e.preventDefault();
 			this.handleSendMessage();
+		}
+	}
+
+	handleDeleteChat = async targetUsername => {
+		const response = await api.deleteChat( targetUsername );
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.handleDeleteChat();
+		} else {
+			this.backToOpenConversations();
+			this.props.deleteChat( targetUsername );
 		}
 	}
 
@@ -228,6 +244,7 @@ class Messages extends Component {
 					}
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
+					handleDeleteChat={this.handleDeleteChat}
 					back={this.backToOpenConversations}
 					messageInput={this.state.messageInput}
 				/>
@@ -311,6 +328,7 @@ const
 	mapDispatchToProps = dispatch => ({
 		setConversations: convers => dispatch( setConversations( convers )),
 		addConversation: conver => dispatch( addConversation( conver )),
+		deleteChat: targetUsername => dispatch( deleteChat( targetUsername )),
 		selectConversation: index => dispatch( selectConversation( index )),
 		setupNewConversation: conver => dispatch( setupNewConversation( conver )),
 		switchMessages: ( id ) => dispatch( switchMessages( id )),

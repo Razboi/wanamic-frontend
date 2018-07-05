@@ -4,6 +4,7 @@ export const
 	SETUP_NEW_CONVERSATION = "SETUP_NEW_CONVERSATION",
 	ADD_CONVERSATION = "ADD_CONVERSATION",
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
+	DELETE_CHAT = "DELETE_CHAT",
 	SET_CHAT_NOTIFICATIONS = "SET_CHAT_NOTIFICATIONS",
 	ADD_CHAT_NOTIFICATION = "ADD_CHAT_NOTIFICATION",
 	INCREMENT_CHAT_NEW_MESSAGES = "INCREMENT_CHAT_NEW_MESSAGES",
@@ -28,6 +29,11 @@ export const
 	addConversation = conversation => ({
 		type: ADD_CONVERSATION,
 		conversation: conversation
+	}),
+
+	deleteChat = targetUsername => ({
+		type: DELETE_CHAT,
+		targetUsername: targetUsername
 	}),
 
 	updateConversation = ( message, index ) => ({

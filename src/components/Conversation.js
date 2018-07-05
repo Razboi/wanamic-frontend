@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Input, Header, Image } from "semantic-ui-react";
+import { Icon, Input, Header, Image, Dropdown } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Message from "./Message";
@@ -32,33 +32,43 @@ const
 	HeaderWrapper = styled.div`
 		grid-area: hea;
 		display: flex;
+		justify-content: space-evenly;
 		flex-direction: row;
 		align-items: center;
-		padding-left: 0.5rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	BackArrow = styled( Icon )`
+		font-size: 1.3rem !important;
+		i {
+			font-size: 1.3rem !important;
+		};
 	`,
 	UserInfo = styled.div`
 		display: flex;
 		align-items: center;
-		flex: 1 0 0%;
-		margin-left: 0.5rem;
 	`,
 	FriendImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
 		align-self: flex-start;
+		margin-right: 0.5rem !important;
 	`,
 	TextInfo = styled( Header )`
 		display: flex;
 		align-items: center;
-		margin-top: 0 !important;
-		margin-left: 0.66rem !important;
+		margin: 0 !important;
 	`,
 	Fullname = styled.span`
 		font-size: 1.1475rem !important;
 	`,
 	Username = styled( Header.Subheader )`
-		margin-left: 0.25rem !important;
+		margin: 0 !important;
+	`,
+	StyledDropdown = styled( Dropdown )`
+		i {
+			color: rgba(0,0,0,0.45) !important;
+			font-size: 1.3rem !important;
+		};
 	`;
 
 
@@ -84,11 +94,12 @@ class Conversation extends Component {
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper>
-					<Icon
+					<BackArrow
 						className="arrowBack"
 						name="arrow left"
 						onClick={back}
 					/>
+
 					<UserInfo>
 						<FriendImg
 							circular
@@ -99,6 +110,19 @@ class Conversation extends Component {
 							<Username>@{conversation.target.username}</Username>
 						</TextInfo>
 					</UserInfo>
+
+					<StyledDropdown icon="setting" direction="left">
+						<Dropdown.Menu className="postDropdown">
+							<Dropdown.Item
+								className="postDeleteOption"
+								text="Delete Conversation"
+								onClick={() =>
+									this.props.handleDeleteChat(
+										conversation.target.username
+									)}
+							/>
+						</Dropdown.Menu>
+					</StyledDropdown>
 				</HeaderWrapper>
 				<MessagesWrapper className="messagesWrapper">
 					{conversation.messages.map(( message, index ) =>
@@ -121,6 +145,7 @@ Conversation.propTypes = {
 	conversation: PropTypes.object.isRequired,
 	handleKeyPress: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
+	handleDeleteChat: PropTypes.func.isRequired,
 	back: PropTypes.func.isRequired,
 	messageInput: PropTypes.string.isRequired
 };

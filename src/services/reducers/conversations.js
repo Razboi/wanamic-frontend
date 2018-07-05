@@ -60,6 +60,14 @@ export default function conversations( state = initialState, action = {}) {
 			})
 		};
 
+	case "DELETE_CHAT":
+		return {
+			...state,
+			allConversations: state.allConversations.filter( conver =>
+				conver.target.username !== action.targetUsername
+			)
+		};
+
 	case "SWITCH_MESSAGES":
 		return {
 			...state,

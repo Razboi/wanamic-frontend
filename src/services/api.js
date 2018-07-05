@@ -451,4 +451,16 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
+
+	deleteChat: targetUsername =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: targetUsername
+			},
+			url: "/conversations/delete/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
 };
