@@ -10,7 +10,7 @@ import {
 } from "../services/actions/notifications";
 import {
 	setChatNotifications, addConversation, updateConversation,
-	addChatNotification
+	addChatNotification, incrementChatNewMessages
 } from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -108,21 +108,23 @@ class HomePage extends Component {
 		this.props.socket.on( "message", async message => {
 			const {
 				displayMessages, conversations, addConversation,
-				addChatNotification, updateConversation, chatNotifications
+				addChatNotification, updateConversation, chatNotifications,
+				incrementChatNewMessages
 			} = this.props;
-
+			if ( !chatNotifications.includes( message.author )) {
+				addChatNotification( message.author );
+			}
 			if ( displayMessages ) {
 				for ( const [ i, conversation ] of conversations.entries()) {
 					if ( conversation.target.username === message.author ) {
 						updateConversation( message, i );
+						incrementChatNewMessages( i );
 						return;
 					}
 				}
 				const newConversation = await api.getConversation(
 					message.author );
 				addConversation( newConversation.data );
-			} else if ( !chatNotifications.includes( message.author )) {
-				addChatNotification( message.author );
 			}
 		});
 	}
@@ -235,6 +237,7 @@ const
 		addConversation: conver => dispatch( addConversation( conver )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
+		incrementChatNewMessages: index => dispatch( incrementChatNewMessages( index )),
 		addNotification: notif => dispatch( addNotification( notif )),
 		addChatNotification: notif => dispatch( addChatNotification( notif )),
 		setNotifications: ( allNotifications, newNotifications ) => {

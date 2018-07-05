@@ -6,8 +6,8 @@ export const
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
 	SET_CHAT_NOTIFICATIONS = "SET_CHAT_NOTIFICATIONS",
 	ADD_CHAT_NOTIFICATION = "ADD_CHAT_NOTIFICATION",
+	INCREMENT_CHAT_NEW_MESSAGES = "INCREMENT_CHAT_NEW_MESSAGES",
 	SWITCH_MESSAGES = "SWITCH_MESSAGES",
-	CHECK_MESSAGE = "CHECK_MESSAGE",
 
 
 	setConversations = conversations => ({
@@ -48,4 +48,9 @@ export const
 	addChatNotification = author => ({
 		type: ADD_CHAT_NOTIFICATION,
 		newNotification: author
+	}),
+
+	incrementChatNewMessages = index => ({
+		type: INCREMENT_CHAT_NEW_MESSAGES,
+		index: index
 	});

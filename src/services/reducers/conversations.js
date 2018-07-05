@@ -21,7 +21,16 @@ export default function conversations( state = initialState, action = {}) {
 			selectedConversation: action.index,
 			notifications: state.notifications.filter( author =>
 				author !== state.allConversations[ action.index ].target.username
-			)
+			),
+			allConversations: state.allConversations.map(( conver, index ) => {
+				if ( index === action.index ) {
+					return {
+						...conver,
+						newMessagesCount: 0
+					};
+				}
+				return conver;
+			})
 		};
 
 	case "SETUP_NEW_CONVERSATION":
@@ -67,6 +76,20 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			notifications: [ action.newNotification, ...state.notifications ]
+		};
+
+	case "INCREMENT_CHAT_NEW_MESSAGES":
+		return {
+			...state,
+			allConversations: state.allConversations.map(( conver, index ) => {
+				if ( index === action.index ) {
+					return {
+						...conver,
+						newMessagesCount: conver.newMessagesCount += 1
+					};
+				}
+				return conver;
+			})
 		};
 
 	default:

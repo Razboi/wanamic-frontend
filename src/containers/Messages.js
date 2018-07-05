@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Image, Button, Header } from "semantic-ui-react";
+import { Image, Button, Header, Label } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
@@ -11,6 +11,7 @@ import {
 import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
 import refreshToken from "../utils/refreshToken";
+import moment from "moment";
 
 const
 	Wrapper = styled.div`
@@ -36,23 +37,23 @@ const
 	`,
 	OpenConversation = styled.div`
 		display: flex;
+		position: relative;
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
-		padding: 1rem;
+		padding: 0.66rem 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
-		background: ${props => props.newMessages ? "rgba(0, 0, 0, .5)" : "none"};
+		background: ${props => props.newMessages ? "rgba(0, 0, 0, .07)" : "none"};
 	`,
 	UserImg = styled( Image )`
-		width: 30px !important;
-		height: 30px !important;
+		width: 35px !important;
+		height: 35px !important;
 	`,
 	TextInfo = styled( Header )`
 		display: flex;
 		flex: 1 0 0%;
 		flex-direction: column;
-		margin-left: 0.5rem !important;
-		margin-top: 0 !important;
+		margin: 0 0 0 0.5rem !important;
 		overflow: hidden !important;
 	`,
 	UserFullname = styled.span`
@@ -62,6 +63,16 @@ const
 		white-space: nowrap !important;
 		overflow: hidden !important;
 		text-overflow: ellipsis !important;
+	`,
+	LastMessageTime = styled.span`
+		font-size: 0.87rem;
+		color: rgba(0,0,0,0.78);
+		align-self: self-start;
+	`,
+	NewMessagesCount = styled( Label )`
+		position: absolute;
+		right: 1.1rem;
+		bottom: 0.5rem;
 	`;
 
 
@@ -129,15 +140,22 @@ class Messages extends Component {
 	}
 
 	handleSelectConversation = index => {
-		const {
-			conversations, selectConversation, newMessagesCount,
-			decrementNewMessagesCount
-		} = this.props;
-		selectConversation( index );
+		this.props.selectConversation( index );
 		this.displayConversation();
-		if ( conversations[ index ].newMessagesCount > 0
-			&& newMessagesCount > 0 ) {
-			decrementNewMessagesCount();
+		this.clearChatNotifications( this.props.conversations[ index ]);
+	}
+
+	clearChatNotifications = async conversation => {
+		const response = await api.clearChatNotifications(
+			conversation.target.username
+		);
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.clearChatNotifications( conversation );
 		}
 	}
 
@@ -250,6 +268,16 @@ class Messages extends Component {
 									@{chat.messages[ 0 ].author}: {chat.messages[ 0 ].content}
 								</LastMessage>
 							</TextInfo>
+							<LastMessageTime>
+								{moment( chat.messages[ 0 ].createdAt ).fromNow( true )}
+							</LastMessageTime>
+							{chat.newMessagesCount > 0 &&
+								<NewMessagesCount
+									size="tiny" circular color="red"
+								>
+									{chat.newMessagesCount}
+								</NewMessagesCount>
+							}
 						</OpenConversation>
 					)}
 				</div>
@@ -269,7 +297,7 @@ Messages.propTypes = {
 	conversations: PropTypes.array.isRequired,
 	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired,
-	newMessagesCount: PropTypes.number.isRequired,
+	chatNotifications: PropTypes.number.isRequired,
 };
 
 const
@@ -277,7 +305,7 @@ const
 		conversations: state.conversations.allConversations,
 		selectedConversation: state.conversations.selectedConversation,
 		newConversation: state.conversations.newConversation,
-		newMessagesCount: state.conversations.newMessagesCount
+		chatNotifications: state.conversations.chatNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({

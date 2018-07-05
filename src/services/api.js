@@ -439,4 +439,16 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
+
+	clearChatNotifications: targetUsername =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: targetUsername
+			},
+			url: "/conversations/clearNotifications/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
 };

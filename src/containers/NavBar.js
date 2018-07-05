@@ -161,7 +161,7 @@ NavBar.propTypes = {
 	switchNotifications: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
-	newMessagesCount: PropTypes.array.isRequired,
+	chatNotifications: PropTypes.array.isRequired,
 	displayNotifications: PropTypes.bool.isRequired
 };
 
