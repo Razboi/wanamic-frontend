@@ -5,6 +5,8 @@ import refreshToken from "../utils/refreshToken";
 import setUserKw from "../utils/setUserKWs";
 import styled from "styled-components";
 import AccountSettings from "../components/AccountSettings";
+import PasswordSettings from "../components/PasswordSettings";
+import EmailSettings from "../components/EmailSettings";
 
 const
 	Wrapper = styled.div`
@@ -57,13 +59,10 @@ class SettingsPage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			tab: 0,
-			userImage: null,
-			headerImage: null,
-			description: "",
-			fullname: "",
-			keywords: "",
-			username: ""
+			tab: 0, userImage: null, headerImage: null, description: "",
+			fullname: "", keywords: "", username: "", currentPassword: "",
+			newPassword: "", confirmPassword: "", currentEmail: "",
+			newEmail: ""
 		};
 	}
 
@@ -126,6 +125,19 @@ class SettingsPage extends Component {
 		this.setState({ tab: tabNumber });
 	}
 
+	updatePassword = () => {
+		const { currentPassword, newPassword, confirmPassword } = this.state;
+		if ( currentPassword && newPassword && confirmPassword ) {
+		}
+	}
+
+	updateEmail = () => {
+		const { currentEmail, newEmail } = this.state;
+		if ( currentEmail && newEmail ) {
+			// MODULAR CHECK FOR PASSWORD AND EMAIL UPDATE
+		}
+	}
+
 	render() {
 		if ( this.state.tab === 1 ) {
 			return (
@@ -138,6 +150,29 @@ class SettingsPage extends Component {
 					description={this.state.description}
 					username={this.state.username}
 					fullname={this.state.fullname}
+				/>
+			);
+		}
+		if ( this.state.tab === 3 ) {
+			return (
+				<PasswordSettings
+					updatePassword={this.updatePassword}
+					handleChange={this.handleChange}
+					backToMain={this.backToMain}
+					currentPassword={this.state.currentPassword}
+					newPassword={this.state.newPassword}
+					confirmPassword={this.state.confirmPassword}
+				/>
+			);
+		}
+		if ( this.state.tab === 4 ) {
+			return (
+				<EmailSettings
+					updateEmail={this.updateEmail}
+					handleChange={this.handleChange}
+					backToMain={this.backToMain}
+					currentEmail={this.state.currentEmail}
+					newEmail={this.state.newEmail}
 				/>
 			);
 		}
@@ -158,10 +193,10 @@ class SettingsPage extends Component {
 					<Option>
 						Content preferences<RightArrow name="angle right"/>
 					</Option>
-					<Option>
+					<Option onClick={() => this.changeTab( 3 )}>
 						Password<RightArrow name="angle right"/>
 					</Option>
-					<Option>
+					<Option onClick={() => this.changeTab( 4 )}>
 						Email<RightArrow name="angle right"/>
 					</Option>
 					<Option>
