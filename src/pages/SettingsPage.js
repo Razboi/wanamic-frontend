@@ -1,13 +1,63 @@
 import React, { Component } from "react";
-import { Form } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
 import setUserKw from "../utils/setUserKWs";
+import styled from "styled-components";
+import AccountSettings from "../components/AccountSettings";
+
+const
+	Wrapper = styled.div`
+		position: absolute;
+		height: 100vh;
+		width: 100%;
+		display: grid;
+		grid-template-columns: 100%;
+		grid-template-rows: 9% 91%;
+		grid-template-areas:
+			"hea"
+			"opt"
+	`,
+	HeaderWrapper = styled.div`
+		grid-area: hea;
+		display: flex;
+		align-items: center;
+		padding-left: 10px;
+		border-bottom: 1px solid rgba(0, 0, 0, .5);
+	`,
+	BackArrow = styled( Icon )`
+		font-size: 1.3rem !important;
+		margin: 0 !important;
+	`,
+	HeaderTxt = styled.span`
+		margin-left: 1rem;
+		font-weight: bold;
+		font-size: 1.28rem;
+	`,
+	Options = styled.div`
+		grid-area: opt;
+		::-webkit-scrollbar {
+			display: none !important;
+		}
+		overflow-y: scroll;
+	`,
+	Option = styled.div`
+		display: flex;
+		font-size: 1.03rem;
+		padding: 1.5rem 1rem !important;
+		border-bottom: 1px solid rgba(0, 0, 0, .2);
+	`,
+	RightArrow = styled( Icon )`
+		font-size: 1.15rem !important;
+		margin: 0 0 0 auto !important;
+		color: rgba(0, 0, 0, .5);
+	`;
 
 class SettingsPage extends Component {
 	constructor() {
 		super();
 		this.state = {
+			tab: 0,
 			userImage: null,
 			headerImage: null,
 			description: "",
@@ -68,58 +118,57 @@ class SettingsPage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	backToMain = () => {
+		this.setState({ tab: 0 });
+	}
+
+	changeTab = tabNumber => {
+		this.setState({ tab: tabNumber });
+	}
+
 	render() {
+		if ( this.state.tab === 1 ) {
+			return (
+				<AccountSettings
+					handleSubmit={this.handleSubmit}
+					handleFileChange={this.handleFileChange}
+					handleChange={this.handleChange}
+					backToMain={this.backToMain}
+					keywords={this.state.keywords}
+					description={this.state.description}
+					username={this.state.username}
+					fullname={this.state.fullname}
+				/>
+			);
+		}
 		return (
-			<div>
-				<Form>
-					<h2>User Settings</h2>
-					<Form.Input
-						className="fullnameInput"
-						onChange={this.handleChange}
-						name="fullname"
-						label="Full Name"
-						value={this.state.fullname}
+			<Wrapper>
+				<HeaderWrapper>
+					<BackArrow
+						name="arrow left"
+						onClick={() => this.props.history.push( "/" )}
 					/>
-					<Form.Input
-						className="usernameInput"
-						onChange={this.handleChange}
-						name="username"
-						label="Username"
-						value={this.state.username}
-					/>
-					<Form.TextArea
-						className="descriptionArea"
-						onChange={this.handleChange}
-						name="description"
-						label="Description"
-						value={this.state.description}
-					/>
-					<Form.Input
-						className="keywordsInput"
-						onChange={this.handleChange}
-						name="keywords"
-						label="Keywords"
-						value={this.state.keywords}
-					/>
-					<Form.Input
-						className="profileImageInput"
-						name="userImage"
-						onChange={this.handleFileChange}
-						label="Profile Image"
-						type="file"
-					/>
-					<Form.Input
-						className="headerImageInput"
-						name="headerImage"
-						onChange={this.handleFileChange}
-						label="Header Image"
-						type="file"
-					/>
-					<Form.Button
-						primary content="Submit" onClick={this.handleSubmit}
-					/>
-				</Form>
-			</div>
+					<HeaderTxt>Settings</HeaderTxt>
+				</HeaderWrapper>
+				<Options>
+					<Option onClick={() => this.changeTab( 1 )}>
+						Account
+						<RightArrow name="angle right"/>
+					</Option>
+					<Option>
+						Content preferences<RightArrow name="angle right"/>
+					</Option>
+					<Option>
+						Password<RightArrow name="angle right"/>
+					</Option>
+					<Option>
+						Email<RightArrow name="angle right"/>
+					</Option>
+					<Option>
+						Delete account<RightArrow name="angle right"/>
+					</Option>
+				</Options>
+			</Wrapper>
 		);
 	}
 }
