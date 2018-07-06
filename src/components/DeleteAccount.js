@@ -51,12 +51,12 @@ const
 			color: rgba(0,0,0,0.45) !important;
 		}
 	`,
-	SaveButton = styled( Button )`
+	DeleteButton = styled( Button )`
 		display: flex !important;
-		margin: 1rem 0 0 auto !important;
+		margin: 1rem auto 0 0 !important;
 	`;
 
-class AccountSettings extends Component {
+class DeleteAccount extends Component {
 	render() {
 		return (
 			<Wrapper>
@@ -65,69 +65,39 @@ class AccountSettings extends Component {
 						name="arrow left"
 						onClick={this.props.backToMain}
 					/>
-					<HeaderTxt>Account</HeaderTxt>
+					<HeaderTxt>Delete your account</HeaderTxt>
 				</HeaderWrapper>
 				<Options>
 					<Form>
 						<FormInput
-							className="fullnameInput"
 							onChange={this.props.handleChange}
-							name="fullname"
-							label="Full Name"
-							value={this.props.fullname}
-						/>
-						<FormInput
-							className="usernameInput"
-							onChange={this.props.handleChange}
-							name="username"
-							label="Username"
-							value={this.props.username}
+							name="deletePassword"
+							label="To continue, enter your password"
+							value={this.props.deletePassword}
 						/>
 						<FormTextarea
-							className="descriptionArea"
 							onChange={this.props.handleChange}
-							name="description"
-							label="Description"
-							value={this.props.description}
-						/>
-						<FormInput
-							className="keywordsInput"
-							onChange={this.props.handleChange}
-							name="keywords"
-							label="Keywords"
-							value={this.props.keywords}
-						/>
-						<FormInput
-							className="profileImageInput"
-							name="userImage"
-							onChange={this.props.handleFileChange}
-							label="Profile Image"
-							type="file"
-						/>
-						<FormInput
-							className="headerImageInput"
-							name="headerImage"
-							onChange={this.props.handleFileChange}
-							label="Header Image"
-							type="file"
+							name="deleteFeedback"
+							label="Why are you deleting your account?"
+							value={this.props.deleteFeedback}
 						/>
 					</Form>
-					<SaveButton content="Save" onClick={this.props.handleSubmit} />
+					<DeleteButton
+						content="Delete my account"
+						onClick={this.props.deleteAccount}
+					/>
 				</Options>
 			</Wrapper>
 		);
 	}
 }
 
-AccountSettings.propTypes = {
-	handleSubmit: PropTypes.func.isRequired,
-	handleFileChange: PropTypes.func.isRequired,
+DeleteAccount.propTypes = {
+	deleteAccount: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
-	keywords: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
-	username: PropTypes.string.isRequired,
-	fullname: PropTypes.string.isRequired
+	deletePassword: PropTypes.string.isRequired,
+	deleteFeedback: PropTypes.string.isRequired
 };
 
-export default AccountSettings;
+export default DeleteAccount;

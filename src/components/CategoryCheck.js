@@ -10,16 +10,8 @@ const Wrapper = styled.div`
 
 
 class CategoryCheck extends Component {
-	constructor() {
-		super();
-		this.state = {
-			checked: false
-		};
-	}
-
 	toggle = () => {
-		this.props.checked( this.props.category, !this.state.checked );
-		this.setState({ checked: !this.state.checked });
+		this.props.checked( this.props.category, !this.props.checked );
 	}
 
 	render() {
@@ -28,7 +20,7 @@ class CategoryCheck extends Component {
 				<Button
 					onClick={this.toggle}
 					content={this.props.category}
-					primary={this.state.checked}
+					primary={this.props.checked}
 				/>
 			</Wrapper>
 		);

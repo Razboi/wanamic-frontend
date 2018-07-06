@@ -7,6 +7,8 @@ import styled from "styled-components";
 import AccountSettings from "../components/AccountSettings";
 import PasswordSettings from "../components/PasswordSettings";
 import EmailSettings from "../components/EmailSettings";
+import DeleteAccount from "../components/DeleteAccount";
+import ContentSettings from "../components/ContentSettings";
 
 const
 	Wrapper = styled.div`
@@ -53,7 +55,12 @@ const
 		font-size: 1.15rem !important;
 		margin: 0 0 0 auto !important;
 		color: rgba(0, 0, 0, .5);
-	`;
+	`,
+	categories = [
+		"Art", "Technology", "Cooking", "Science", "Travel", "Films", "Health",
+		"Fitness", "Beauty", "Humor", "Business", "Music", "Photography", "TV",
+		"Family", "Sports", "Gaming", "Motor", "Books", "Pets", "Fashion"
+	];
 
 class SettingsPage extends Component {
 	constructor() {
@@ -62,7 +69,8 @@ class SettingsPage extends Component {
 			tab: 0, userImage: null, headerImage: null, description: "",
 			fullname: "", keywords: "", username: "", currentPassword: "",
 			newPassword: "", confirmPassword: "", currentEmail: "",
-			newEmail: ""
+			newEmail: "", deletePassword: "", deleteFeedback: "",
+			checkedCategories: []
 		};
 	}
 
@@ -74,7 +82,8 @@ class SettingsPage extends Component {
 					description: res.data.description,
 					fullname: res.data.fullname,
 					username: res.data.username,
-					keywords: keywordsString
+					keywords: keywordsString,
+					checkedCategories: res.data.interests
 				});
 			}).catch( err => console.log( err ));
 	}
@@ -125,17 +134,85 @@ class SettingsPage extends Component {
 		this.setState({ tab: tabNumber });
 	}
 
-	updatePassword = () => {
-		const { currentPassword, newPassword, confirmPassword } = this.state;
-		if ( currentPassword && newPassword && confirmPassword ) {
+	updatePassword = async() => {
+		const
+			{ currentPassword, newPassword, confirmPassword } = this.state;
+		if ( !currentPassword || !newPassword || !confirmPassword ) {
+			console.log( "Empty data" );
+			return;
+		}
+		if ( newPassword !== confirmPassword ) {
+			console.log( "Passwords don't match" );
+			return;
+		}
+		if ( newPassword === currentPassword ) {
+			console.log( "Current password and new password can't be the same" );
+			return;
+		}
+		const response = await api.updatePassword(
+			currentPassword, newPassword
+		);
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.updatePassword();
+		} else {
+			this.setState({
+				currentPassword: "",
+				newPassword: "",
+				confirmPassword: ""
+			});
 		}
 	}
 
-	updateEmail = () => {
+	updateEmail = async() => {
 		const { currentEmail, newEmail } = this.state;
-		if ( currentEmail && newEmail ) {
-			// MODULAR CHECK FOR PASSWORD AND EMAIL UPDATE
+		if ( !currentEmail || !newEmail ) {
+			console.log( "Empty data" );
+			return;
 		}
+		if ( currentEmail === newEmail ) {
+			console.log( "Current email and new email can't be the same" );
+			return;
+		}
+		const response = await api.updateEmail(
+			currentEmail, newEmail
+		);
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.updateEmail();
+		} else {
+			this.setState({ currentEmail: "", newEmail: "" });
+		}
+	}
+
+	deleteAccount = () => {
+		console.log( "Delete" );
+	}
+
+	handleCategoryCheck = ( category, isChecked ) => {
+		var arrayOfChecked;
+		if ( isChecked ) {
+			this.setState({
+				checkedCategories: [ ...this.state.checkedCategories, category ]
+			});
+		} else {
+			arrayOfChecked = this.state.checkedCategories;
+			const index = arrayOfChecked.indexOf( category );
+			arrayOfChecked.splice( index, 1 );
+			this.setState({ checkedCategories: arrayOfChecked });
+		}
+	}
+
+	updatePreferences = () => {
+		console.log( "updated" );
 	}
 
 	render() {
@@ -150,6 +227,17 @@ class SettingsPage extends Component {
 					description={this.state.description}
 					username={this.state.username}
 					fullname={this.state.fullname}
+				/>
+			);
+		}
+		if ( this.state.tab === 2 ) {
+			return (
+				<ContentSettings
+					updatePreferences={this.updatePreferences}
+					checkedCategories={this.state.checkedCategories}
+					backToMain={this.backToMain}
+					categories={categories}
+					handleCategoryCheck={this.handleCategoryCheck}
 				/>
 			);
 		}
@@ -176,6 +264,17 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
+		if ( this.state.tab === 5 ) {
+			return (
+				<DeleteAccount
+					deleteAccount={this.deleteAccount}
+					handleChange={this.handleChange}
+					backToMain={this.backToMain}
+					deletePassword={this.state.deletePassword}
+					deleteFeedback={this.state.deleteFeedback}
+				/>
+			);
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -190,7 +289,7 @@ class SettingsPage extends Component {
 						Account
 						<RightArrow name="angle right"/>
 					</Option>
-					<Option>
+					<Option onClick={() => this.changeTab( 2 )}>
 						Content preferences<RightArrow name="angle right"/>
 					</Option>
 					<Option onClick={() => this.changeTab( 3 )}>
@@ -199,7 +298,7 @@ class SettingsPage extends Component {
 					<Option onClick={() => this.changeTab( 4 )}>
 						Email<RightArrow name="angle right"/>
 					</Option>
-					<Option>
+					<Option onClick={() => this.changeTab( 5 )}>
 						Delete account<RightArrow name="angle right"/>
 					</Option>
 				</Options>

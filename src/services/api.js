@@ -463,4 +463,30 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
+
+	updatePassword: ( currentPassword, newPassword ) =>
+		axios({
+			method: "patch",
+			data: {
+				token: localStorage.getItem( "token" ),
+				currentPassword: currentPassword,
+				newPassword: newPassword
+			},
+			url: "/user/updatePassword/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
+
+	updateEmail: ( currentEmail, newEmail ) =>
+		axios({
+			method: "patch",
+			data: {
+				token: localStorage.getItem( "token" ),
+				currentEmail: currentEmail,
+				newEmail: newEmail
+			},
+			url: "/user/updateEmail/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
 };
