@@ -25,6 +25,9 @@ const
 	`,
 	MessagesWrapper = styled( StayScrolled )`
 		grid-area: mes;
+		::-webkit-scrollbar {
+			display: none !important;
+		}
 		position: relative;
 		padding: 10px;
 		overflow-y: scroll;

@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { Icon } from "semantic-ui-react";
 import api from "../services/api";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { logout } from "../services/actions/auth";
 import refreshToken from "../utils/refreshToken";
 import setUserKw from "../utils/setUserKWs";
 import styled from "styled-components";
@@ -193,26 +196,56 @@ class SettingsPage extends Component {
 		}
 	}
 
-	deleteAccount = () => {
-		console.log( "Delete" );
-	}
-
-	handleCategoryCheck = ( category, isChecked ) => {
-		var arrayOfChecked;
-		if ( isChecked ) {
-			this.setState({
-				checkedCategories: [ ...this.state.checkedCategories, category ]
-			});
+	deleteAccount = async() => {
+		const { deletePassword, deleteFeedback } = this.state;
+		if ( !deletePassword ) {
+			console.log( "Empty data" );
+			return;
+		}
+		const response = await api.deleteAccount(
+			deletePassword, deleteFeedback );
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.deleteAccount();
 		} else {
-			arrayOfChecked = this.state.checkedCategories;
-			const index = arrayOfChecked.indexOf( category );
-			arrayOfChecked.splice( index, 1 );
-			this.setState({ checkedCategories: arrayOfChecked });
+			this.props.logout();
 		}
 	}
 
-	updatePreferences = () => {
-		console.log( "updated" );
+	handleCategoryClick = category => {
+		var arrayOfChecked = this.state.checkedCategories;
+		if ( arrayOfChecked.includes( category )) {
+			const index = arrayOfChecked.indexOf( category );
+			arrayOfChecked.splice( index, 1 );
+			this.setState({ checkedCategories: arrayOfChecked });
+		} else {
+			this.setState({
+				checkedCategories: [ ...arrayOfChecked, category ]
+			});
+		}
+	}
+
+	updatePreferences = async() => {
+		const { checkedCategories } = this.state;
+		if ( checkedCategories.length <= 0 ) {
+			console.log( "Empty data" );
+			return;
+		}
+		const response = await api.updateInterests( checkedCategories );
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.updatePreferences();
+		} else {
+			this.setState({ tab: 0 });
+		}
 	}
 
 	render() {
@@ -237,7 +270,7 @@ class SettingsPage extends Component {
 					checkedCategories={this.state.checkedCategories}
 					backToMain={this.backToMain}
 					categories={categories}
-					handleCategoryCheck={this.handleCategoryCheck}
+					handleCategoryClick={this.handleCategoryClick}
 				/>
 			);
 		}
@@ -307,4 +340,18 @@ class SettingsPage extends Component {
 	}
 }
 
-export default SettingsPage;
+
+SettingsPage.propTypes = {
+	logout: PropTypes.func.isRequired
+};
+
+const
+	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		logout: () => dispatch( logout())
+	});
+
+
+export default connect( mapStateToProps, mapDispatchToProps )( SettingsPage );

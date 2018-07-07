@@ -4,13 +4,19 @@ import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import SettingsPage from "./SettingsPage";
+import configureStore from "redux-mock-store";
+import sinon from "sinon";
+
+const mockStore = configureStore();
 
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<SettingsPage/>", () => {
-	const wrapper = shallow(
-		<SettingsPage />
-	);
+	const
+		store = mockStore({}),
+		wrapper = shallow(
+			<SettingsPage store={store} />
+		).dive();
 
 	it( "Checks that <SettingsPage/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );

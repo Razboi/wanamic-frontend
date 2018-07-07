@@ -98,7 +98,7 @@ class WelcomePage extends Component {
 		data.append( "token", localStorage.getItem( "token" ));
 		Promise.all([
 			api.setUserInfo( data ),
-			api.addInterests( this.state.checkedCategories ),
+			api.updateInterests( this.state.checkedCategories ),
 			api.setupFollow( this.state.toFollow )
 		])
 			.then( res => {

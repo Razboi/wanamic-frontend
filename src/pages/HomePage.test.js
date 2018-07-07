@@ -5,7 +5,6 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import HomePage from "./HomePage";
 import configureStore from "redux-mock-store";
-import createBrowserHistory from "history/createBrowserHistory";
 import sinon from "sinon";
 
 const mockStore = configureStore();

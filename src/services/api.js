@@ -184,11 +184,14 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	addInterests: data =>
+	updateInterests: newInterests =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), data: data },
-			url: "/user/addInterests"
+			data: {
+				token: localStorage.getItem( "token" ),
+				newInterests: newInterests
+			},
+			url: "/user/updateInterests"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -486,6 +489,19 @@ export default {
 				newEmail: newEmail
 			},
 			url: "/user/updateEmail/"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
+
+	deleteAccount: ( password, feedback ) =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				password: password,
+				feedback: feedback
+			},
+			url: "/user/deleteAccount/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),

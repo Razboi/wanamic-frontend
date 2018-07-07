@@ -32,8 +32,6 @@ const
 		font-size: 1.25rem;
 	`,
 	Options = styled.div`
-		display: flex;
-		flex-wrap: wrap;
 		grid-area: opt;
 		padding: 1rem !important;
 		::-webkit-scrollbar {
@@ -41,8 +39,13 @@ const
 		}
 		overflow-y: scroll;
 	`,
+	Categories = styled.div`
+		flex-wrap: wrap;
+		display: flex;
+	`,
 	CategoryButton = styled( Button )`
 		margin: 0.5rem !important;
+		flex: 1 0 0%;
 	`,
 	SaveButton = styled( Button )`
 		display: flex !important;
@@ -61,15 +64,22 @@ class ContentSettings extends Component {
 					<HeaderTxt>Content preferences</HeaderTxt>
 				</HeaderWrapper>
 				<Options>
-					{this.props.categories.map(( category, index ) =>
-						<CategoryButton
-							onClick={() => this.props.check( category )}
-							content={category}
-							primary={this.props.checkedCategories.includes( category )}
-							size="small"
-						/>
-					)}
+					<Categories>
+						{this.props.categories.map(( category, index ) =>
+							<CategoryButton
+								onClick={() =>
+									this.props.handleCategoryClick( category )
+								}
+								content={category}
+								secondary={
+									this.props.checkedCategories.includes( category )
+								}
+							/>
+						)}
+					</Categories>
+
 					<SaveButton
+						primary
 						disabled={this.props.checkedCategories.length === 0}
 						content="Save"
 						onClick={this.props.updatePreferences}
@@ -85,7 +95,7 @@ ContentSettings.propTypes = {
 	backToMain: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
 	categories: PropTypes.array.isRequired,
-	handleCategoryCheck: PropTypes.func.isRequired
+	handleCategoryClick: PropTypes.func.isRequired
 };
 
 export default ContentSettings;
