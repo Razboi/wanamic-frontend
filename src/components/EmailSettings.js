@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Icon, Button } from "semantic-ui-react";
+import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -63,6 +63,11 @@ class EmailSettings extends Component {
 				</HeaderWrapper>
 				<Options>
 					<Form>
+						{this.props.error &&
+							<Message negative>
+								<Message.Header>{this.props.error}</Message.Header>
+							</Message>
+						}
 						<FormInput
 							type="email"
 							onChange={this.props.handleChange}
@@ -90,7 +95,8 @@ EmailSettings.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
 	currentEmail: PropTypes.string.isRequired,
-	newEmail: PropTypes.string.isRequired
+	newEmail: PropTypes.string.isRequired,
+	error: PropTypes.string.isRequired
 };
 
 export default EmailSettings;

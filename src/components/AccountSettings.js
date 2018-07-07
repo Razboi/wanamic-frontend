@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Icon, Button } from "semantic-ui-react";
+import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -69,6 +69,11 @@ class AccountSettings extends Component {
 				</HeaderWrapper>
 				<Options>
 					<Form>
+						{this.props.error &&
+							<Message negative>
+								<Message.Header>{this.props.error}</Message.Header>
+							</Message>
+						}
 						<FormInput
 							className="fullnameInput"
 							onChange={this.props.handleChange}
@@ -112,7 +117,7 @@ class AccountSettings extends Component {
 							type="file"
 						/>
 					</Form>
-					<SaveButton content="Save" onClick={this.props.handleSubmit} />
+					<SaveButton content="Save" onClick={this.props.updateUserInfo} />
 				</Options>
 			</Wrapper>
 		);
@@ -120,14 +125,15 @@ class AccountSettings extends Component {
 }
 
 AccountSettings.propTypes = {
-	handleSubmit: PropTypes.func.isRequired,
+	updateUserInfo: PropTypes.func.isRequired,
 	handleFileChange: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
 	keywords: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	username: PropTypes.string.isRequired,
-	fullname: PropTypes.string.isRequired
+	fullname: PropTypes.string.isRequired,
+	error: PropTypes.string.isRequired
 };
 
 export default AccountSettings;

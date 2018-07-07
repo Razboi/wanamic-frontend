@@ -80,7 +80,10 @@ class ContentSettings extends Component {
 
 					<SaveButton
 						primary
-						disabled={this.props.checkedCategories.length === 0}
+						disabled={
+							this.props.checkedCategories.length === 0
+							|| !this.props.categoriesChanged
+						}
 						content="Save"
 						onClick={this.props.updatePreferences}
 					/>

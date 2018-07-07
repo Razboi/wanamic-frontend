@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Icon, Button } from "semantic-ui-react";
+import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -69,7 +69,13 @@ class DeleteAccount extends Component {
 				</HeaderWrapper>
 				<Options>
 					<Form>
+						{this.props.error &&
+							<Message negative>
+								<Message.Header>{this.props.error}</Message.Header>
+							</Message>
+						}
 						<FormInput
+							type="password"
 							onChange={this.props.handleChange}
 							name="deletePassword"
 							label="To continue, enter your password"
@@ -97,7 +103,8 @@ DeleteAccount.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
 	deletePassword: PropTypes.string.isRequired,
-	deleteFeedback: PropTypes.string.isRequired
+	deleteFeedback: PropTypes.string.isRequired,
+	error: PropTypes.string.isRequired
 };
 
 export default DeleteAccount;

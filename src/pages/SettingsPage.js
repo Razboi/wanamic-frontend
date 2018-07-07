@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "../services/actions/auth";
 import refreshToken from "../utils/refreshToken";
+import validateEmail from "../utils/validateEmail";
 import setUserKw from "../utils/setUserKWs";
 import styled from "styled-components";
 import AccountSettings from "../components/AccountSettings";
@@ -73,7 +74,7 @@ class SettingsPage extends Component {
 			fullname: "", keywords: "", username: "", currentPassword: "",
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
-			checkedCategories: []
+			checkedCategories: [], error: "", categoriesChanged: false
 		};
 	}
 
@@ -101,7 +102,7 @@ class SettingsPage extends Component {
 		this.setState({ [ e.target.name ]: e.target.value })
 
 
-	handleSubmit = () => {
+	updateUserInfo = async() => {
 		var data = new FormData();
 		data.append( "userImage", this.state.userImage );
 		data.append( "headerImage", this.state.headerImage );
@@ -110,27 +111,22 @@ class SettingsPage extends Component {
 		data.append( "username", this.state.username );
 		data.append( "token", localStorage.getItem( "token" ));
 
-		this.setInfo( data );
-	}
-
-	setInfo = data => {
-		api.setUserInfo( data )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => {
-							data.set( "token", localStorage.getItem( "token" ));
-							this.setInfo( data );
-						})
-						.catch( err => console.log( err ));
-				} else if ( res ) {
-					setUserKw( this.state.keywords );
-				}
-			}).catch( err => console.log( err ));
+		try {
+			await api.setUserInfo( data );
+			setUserKw( this.state.keywords );
+			this.backToMain();
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.updateUserInfo();
+				return;
+			}
+			this.setState({ error: err.response.data });
+		}
 	}
 
 	backToMain = () => {
-		this.setState({ tab: 0 });
+		this.setState({ tab: 0, error: "" });
 	}
 
 	changeTab = tabNumber => {
@@ -141,78 +137,85 @@ class SettingsPage extends Component {
 		const
 			{ currentPassword, newPassword, confirmPassword } = this.state;
 		if ( !currentPassword || !newPassword || !confirmPassword ) {
-			console.log( "Empty data" );
 			return;
 		}
 		if ( newPassword !== confirmPassword ) {
-			console.log( "Passwords don't match" );
+			this.setState({ error: "Passwords don't match" });
 			return;
 		}
 		if ( newPassword === currentPassword ) {
-			console.log( "Current password and new password can't be the same" );
+			this.setState({
+				error: "Current password and new password can't be the same"
+			});
 			return;
 		}
-		const response = await api.updatePassword(
-			currentPassword, newPassword
-		);
-		if ( response === "jwt expired" ) {
-			try {
-				await refreshToken();
-			} catch ( err ) {
-				console.log( err );
-			}
-			this.updatePassword();
-		} else {
+		try {
+			await api.updatePassword(
+				currentPassword, newPassword );
 			this.setState({
 				currentPassword: "",
 				newPassword: "",
-				confirmPassword: ""
+				confirmPassword: "",
+				tab: 0,
+				error: ""
 			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.updatePassword();
+				return;
+			}
+			this.setState({ error: err.response.data });
 		}
 	}
 
 	updateEmail = async() => {
 		const { currentEmail, newEmail } = this.state;
 		if ( !currentEmail || !newEmail ) {
-			console.log( "Empty data" );
 			return;
 		}
 		if ( currentEmail === newEmail ) {
-			console.log( "Current email and new email can't be the same" );
+			this.setState({
+				error: "Current email and new email can't be the same"
+			});
 			return;
 		}
-		const response = await api.updateEmail(
-			currentEmail, newEmail
-		);
-		if ( response === "jwt expired" ) {
-			try {
+		if ( !validateEmail( newEmail )) {
+			this.setState({ error: "Invalid email format" });
+			return;
+		}
+		try {
+			await api.updateEmail(
+				currentEmail, newEmail );
+			this.setState({
+				currentEmail: "", newEmail: "", tab: 0, error: ""
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-			} catch ( err ) {
-				console.log( err );
+				this.updateEmail();
+				return;
 			}
-			this.updateEmail();
-		} else {
-			this.setState({ currentEmail: "", newEmail: "" });
+			this.setState({ error: err.response.data });
 		}
 	}
 
 	deleteAccount = async() => {
 		const { deletePassword, deleteFeedback } = this.state;
 		if ( !deletePassword ) {
-			console.log( "Empty data" );
 			return;
 		}
-		const response = await api.deleteAccount(
-			deletePassword, deleteFeedback );
-		if ( response === "jwt expired" ) {
-			try {
-				await refreshToken();
-			} catch ( err ) {
-				console.log( err );
-			}
-			this.deleteAccount();
-		} else {
+		try {
+			await api.deleteAccount(
+				deletePassword, deleteFeedback );
 			this.props.logout();
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.deleteAccount();
+				return;
+			}
+			this.setState({ error: err.response.data });
 		}
 	}
 
@@ -221,18 +224,21 @@ class SettingsPage extends Component {
 		if ( arrayOfChecked.includes( category )) {
 			const index = arrayOfChecked.indexOf( category );
 			arrayOfChecked.splice( index, 1 );
-			this.setState({ checkedCategories: arrayOfChecked });
+			this.setState({
+				checkedCategories: arrayOfChecked,
+				categoriesChanged: true
+			});
 		} else {
 			this.setState({
-				checkedCategories: [ ...arrayOfChecked, category ]
+				checkedCategories: [ ...arrayOfChecked, category ],
+				categoriesChanged: true
 			});
 		}
 	}
 
 	updatePreferences = async() => {
-		const { checkedCategories } = this.state;
-		if ( checkedCategories.length <= 0 ) {
-			console.log( "Empty data" );
+		const { checkedCategories, categoriesChanged } = this.state;
+		if ( checkedCategories.length <= 0 || !categoriesChanged ) {
 			return;
 		}
 		const response = await api.updateInterests( checkedCategories );
@@ -252,7 +258,7 @@ class SettingsPage extends Component {
 		if ( this.state.tab === 1 ) {
 			return (
 				<AccountSettings
-					handleSubmit={this.handleSubmit}
+					updateUserInfo={this.updateUserInfo}
 					handleFileChange={this.handleFileChange}
 					handleChange={this.handleChange}
 					backToMain={this.backToMain}
@@ -260,6 +266,7 @@ class SettingsPage extends Component {
 					description={this.state.description}
 					username={this.state.username}
 					fullname={this.state.fullname}
+					error={this.state.error}
 				/>
 			);
 		}
@@ -271,6 +278,7 @@ class SettingsPage extends Component {
 					backToMain={this.backToMain}
 					categories={categories}
 					handleCategoryClick={this.handleCategoryClick}
+					categoriesChanged={this.state.categoriesChanged}
 				/>
 			);
 		}
@@ -283,6 +291,7 @@ class SettingsPage extends Component {
 					currentPassword={this.state.currentPassword}
 					newPassword={this.state.newPassword}
 					confirmPassword={this.state.confirmPassword}
+					error={this.state.error}
 				/>
 			);
 		}
@@ -294,6 +303,7 @@ class SettingsPage extends Component {
 					backToMain={this.backToMain}
 					currentEmail={this.state.currentEmail}
 					newEmail={this.state.newEmail}
+					error={this.state.error}
 				/>
 			);
 		}
@@ -305,6 +315,7 @@ class SettingsPage extends Component {
 					backToMain={this.backToMain}
 					deletePassword={this.state.deletePassword}
 					deleteFeedback={this.state.deleteFeedback}
+					error={this.state.error}
 				/>
 			);
 		}

@@ -146,7 +146,9 @@ export default {
 			url: "/user/info"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	addFriend: username =>
 		axios({
@@ -478,7 +480,9 @@ export default {
 			url: "/user/updatePassword/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updateEmail: ( currentEmail, newEmail ) =>
 		axios({
@@ -491,7 +495,9 @@ export default {
 			url: "/user/updateEmail/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	deleteAccount: ( password, feedback ) =>
 		axios({
@@ -504,5 +510,7 @@ export default {
 			url: "/user/deleteAccount/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 };

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Icon, Button } from "semantic-ui-react";
+import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -63,6 +63,11 @@ class PasswordSettings extends Component {
 				</HeaderWrapper>
 				<Options>
 					<Form>
+						{this.props.error &&
+							<Message negative>
+								<Message.Header>{this.props.error}</Message.Header>
+							</Message>
+						}
 						<FormInput
 							type="password"
 							onChange={this.props.handleChange}
@@ -98,7 +103,8 @@ PasswordSettings.propTypes = {
 	backToMain: PropTypes.func.isRequired,
 	currentPassword: PropTypes.string.isRequired,
 	newPassword: PropTypes.string.isRequired,
-	confirmPassword: PropTypes.string.isRequired
+	confirmPassword: PropTypes.string.isRequired,
+	error: PropTypes.string.isRequired
 };
 
 export default PasswordSettings;
