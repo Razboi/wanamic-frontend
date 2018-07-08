@@ -69,6 +69,13 @@ const
 		align-self: flex-end;
 		justify-self: center;
 		margin-bottom: 1rem;
+	`,
+	ErrorMessage = styled( Message )`
+		position: absolute !important;
+		top: 0 !important;
+		width: 100% !important;
+		text-align: center !important;
+		border-radius: 0px !important;
 	`;
 
 
@@ -98,9 +105,9 @@ class SignupForm extends Component {
 
 					<FormContainer id="AuthFormContainer">
 						{this.props.error &&
-							<Message negative>
-								<Message.Header>{this.props.error.response.data}</Message.Header>
-							</Message>
+							<ErrorMessage negative>
+								<Message.Header>{this.props.error}</Message.Header>
+							</ErrorMessage>
 						}
 
 						<StyledForm id="AuthForm">

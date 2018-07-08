@@ -112,7 +112,13 @@ class SettingsPage extends Component {
 		data.append( "token", localStorage.getItem( "token" ));
 
 		try {
-			await api.setUserInfo( data );
+			const res = await api.setUserInfo( data );
+			if ( res.data.newImage ) {
+				localStorage.setItem( "uimg", res.data.newImage );
+			}
+			if ( res.data.newUsername ) {
+				localStorage.setItem( "username", res.data.newUsername );
+			}
 			setUserKw( this.state.keywords );
 			this.backToMain();
 		} catch ( err ) {

@@ -28,7 +28,7 @@ describe( "<WelcomeStep1/>", () => {
 	});
 
 	it( "Checks that <WelcomeStep1/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 
 	it( "Checks that changing fullname input calls handleChange", () => {

@@ -32,7 +32,7 @@ describe( "<WelcomeStep2/>", () => {
 	});
 
 	it( "Checks that <WelcomeStep1/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 5 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 
 	it( "Checks that changing descriptionArea calls handleChange", () => {

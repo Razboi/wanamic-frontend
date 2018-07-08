@@ -22,6 +22,7 @@ describe( "<WelcomeStep4/>", () => {
 				matchedUsers={matchedUsers}
 				finish={finishSpy}
 				handlePrev={prevSpy}
+				toFollow={[]}
 			/>
 		);
 	});
@@ -31,7 +32,7 @@ describe( "<WelcomeStep4/>", () => {
 	});
 
 	it( "Checks that <WelcomeStep4/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
+		expect( wrapper.children()).to.have.length( 3 );
 	});
 
 	it( "Checks that matchesWrapper renders all the matches", () => {

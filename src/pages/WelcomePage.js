@@ -11,7 +11,7 @@ import setUserKw from "../utils/setUserKWs";
 
 const
 	Wrapper = styled.div`
-		padding: 10px;
+		height: 100%;
 	`,
 	categories = [
 		"Art", "Technology", "Cooking", "Science", "Travel", "Films", "Health",
@@ -49,31 +49,29 @@ class WelcomePage extends Component {
 	handlePrev = () =>
 		this.setState({ step: this.state.step - 1 })
 
-	checked = ( category, checked ) => {
-		var arrayOfChecked;
-		if ( checked ) {
-			this.setState({
-				checkedCategories: [ ...this.state.checkedCategories, category ]
-			});
-		} else {
-			arrayOfChecked = this.state.checkedCategories;
+	handleCategoryClick = category => {
+		var arrayOfChecked = this.state.checkedCategories;
+		if ( arrayOfChecked.includes( category )) {
 			const index = arrayOfChecked.indexOf( category );
 			arrayOfChecked.splice( index, 1 );
 			this.setState({ checkedCategories: arrayOfChecked });
+		} else {
+			this.setState({
+				checkedCategories: [ ...arrayOfChecked, category ]
+			});
 		}
 	}
 
-	handleFollow = ( username, checked ) => {
-		var arrayOfToFollow;
-		if ( checked ) {
-			this.setState({
-				toFollow: [ ...this.state.toFollow, username ]
-			});
-		} else {
-			arrayOfToFollow = this.state.toFollow;
+	handleFollow = username => {
+		var arrayOfToFollow = this.state.toFollow;
+		if ( arrayOfToFollow.includes( username )) {
 			const index = arrayOfToFollow.indexOf( username );
 			arrayOfToFollow.splice( index, 1 );
 			this.setState({ toFollow: arrayOfToFollow });
+		} else {
+			this.setState({
+				toFollow: [ ...arrayOfToFollow, username ]
+			});
 		}
 	}
 
@@ -134,7 +132,7 @@ class WelcomePage extends Component {
 						handleChange={this.handleChange}
 						categories={categories}
 						toggle={this.toggle}
-						checked={this.checked}
+						handleCategoryClick={this.handleCategoryClick}
 						checkedCategories={this.state.checkedCategories}
 					/>
 				}
@@ -146,6 +144,7 @@ class WelcomePage extends Component {
 						matchedUsers={this.state.matchedUsers}
 						handleFollow={this.handleFollow}
 						finish={this.finish}
+						toFollow={this.state.toFollow}
 					/>
 				}
 

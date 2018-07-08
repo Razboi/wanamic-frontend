@@ -212,16 +212,17 @@ class MediaPost extends Component {
 	}
 
 	render() {
+		const { post } = this.props;
 		try {
-			if ( this.props.post.authorImg ) {
-				userPicture = require( "../images/" + this.props.post.authorImg );
+			if ( post.author.profileImage ) {
+				userPicture = require( "../images/" + post.author.profileImage );
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}
 
-			if ( this.props.post.picture ) {
+			if ( post.picture ) {
 				mediaPicture =
-					require( "../images/" + this.props.post.mediaContent.image );
+					require( "../images/" + post.mediaContent.image );
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -233,20 +234,20 @@ class MediaPost extends Component {
 					<AuthorImg circular src={userPicture} />
 					<HeaderInfo>
 						<AuthorFullname className="postAuthor">
-							{this.props.post.authorFullname}
+							{post.author.fullname}
 							<AuthorUsername>
-								@{this.props.post.author}
+								@{post.author.username}
 							</AuthorUsername>
 						</AuthorFullname>
 						<DateTime className="postDate">
-							{moment( this.props.post.createdAt ).fromNow()}
+							{moment( post.createdAt ).fromNow()}
 						</DateTime>
 					</HeaderInfo>
 
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={this.props.post.author}
+							author={post.author.username}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
@@ -262,20 +263,20 @@ class MediaPost extends Component {
 						spoiler={this.state.spoiler}
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
-						{this.props.post.link ?
-							<LinkPreview linkContent={this.props.post.linkContent} />
+						{post.link ?
+							<LinkPreview linkContent={post.linkContent} />
 							:
 							<PostMediaContent>
 								<PostMediaBackground background={
-									this.props.post.picture ?
-										mediaPicture : this.props.post.mediaContent.image
+									post.picture ?
+										mediaPicture : post.mediaContent.image
 								}
 								/>
-								<h4>{this.props.post.mediaContent.title}</h4>
-								{this.props.post.picture ?
+								<h4>{post.mediaContent.title}</h4>
+								{post.picture ?
 									<MediaImage src={mediaPicture} className="mediaPicture" />
 									:
-									<MediaImage src={this.props.post.mediaContent.image}
+									<MediaImage src={post.mediaContent.image}
 										className="mediaArtwork"
 									/>
 								}
@@ -288,9 +289,9 @@ class MediaPost extends Component {
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
 								numLiked={this.state.likedBy.length}
-								numComments={this.props.post.comments.length}
-								numShared={this.props.post.sharedBy.length}
-								id={this.props.post._id}
+								numComments={post.comments.length}
+								numShared={post.sharedBy.length}
+								id={post._id}
 								index={this.props.index}
 								liked={
 									this.state.likedBy.includes( localStorage.getItem( "username" ))
@@ -298,11 +299,11 @@ class MediaPost extends Component {
 							/>
 						}
 
-						{this.props.post.content &&
+						{post.content &&
 							<PostUserContent>
 								<p className="postContent">
-									<Description>@{this.props.post.author} </Description>
-									{this.props.post.content}
+									<Description>@{post.author.username} </Description>
+									{post.content}
 								</p>
 							</PostUserContent>
 						}

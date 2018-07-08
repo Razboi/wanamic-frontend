@@ -33,11 +33,12 @@ describe( "<WelcomeStep3/>", () => {
 	});
 
 	it( "Checks that <WelcomeStep3/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 5 );
+		expect( wrapper.children()).to.have.length( 3 );
 	});
 
-	it( "Checks that checksWrapper renders all the categories", () => {
-		expect( wrapper.find( ".checksWrapper" ).children()).to.have.length( categories.length );
+	it( "Checks that categoriesWrapper renders all the categories", () => {
+		expect( wrapper.find( ".categoriesWrapper" ).children()
+		).to.have.length( categories.length );
 	});
 
 	it( "Checks that next button is disabled if checkedCategories === 0", () => {

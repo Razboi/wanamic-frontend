@@ -177,9 +177,10 @@ class Post extends Component {
 	}
 
 	render() {
+		const { post } = this.props;
 		try {
-			if ( this.props.post.authorImg ) {
-				userPicture = require( "../images/" + this.props.post.authorImg );
+			if ( post.author.profileImage ) {
+				userPicture = require( "../images/" + post.author.profileImage );
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}
@@ -192,20 +193,20 @@ class Post extends Component {
 					<AuthorImg circular src={userPicture} />
 					<HeaderInfo>
 						<AuthorFullname className="postAuthor">
-							{this.props.post.authorFullname}
+							{post.author.fullname}
 							<AuthorUsername>
-								@{this.props.post.author}
+								@{post.author.username}
 							</AuthorUsername>
 						</AuthorFullname>
 						<DateTime className="postDate">
-							{moment( this.props.post.createdAt ).fromNow()}
+							{moment( post.createdAt ).fromNow()}
 						</DateTime>
 					</HeaderInfo>
 
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={this.props.post.author}
+							author={post.author.username}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
@@ -223,10 +224,10 @@ class Post extends Component {
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
 						<ContentWrapper>
 							<UserContent className="postContent">
-								{this.props.post.content}
+								{post.content}
 							</UserContent>
-							{this.props.post.sharedPost &&
-								<SharedPost post={this.props.post.sharedPost} />}
+							{post.sharedPost &&
+								<SharedPost post={post.sharedPost} />}
 						</ContentWrapper>
 
 						{ !this.props.fakeOptions &&
@@ -235,9 +236,9 @@ class Post extends Component {
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
 								numLiked={this.state.likedBy.length}
-								numComments={this.props.post.comments.length}
-								numShared={this.props.post.sharedBy.length}
-								id={this.props.post._id}
+								numComments={post.comments.length}
+								numShared={post.sharedBy.length}
+								id={post._id}
 								index={this.props.index}
 								liked={
 									this.state.likedBy.includes( localStorage.getItem( "username" ))

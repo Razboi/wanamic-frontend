@@ -4,44 +4,76 @@ import CategoryCheck from "./CategoryCheck";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const ChecksWrapper = styled.div`
-	display: grid;
-	grid-template-columns: auto auto auto;
-	margin: 40px 0px;
-`;
+const
+	Wrapper = styled.div`
+		padding: 1rem;
+	`,
+	Categories = styled.div`
+		flex-wrap: wrap;
+		display: flex;
+		margin-bottom: 3rem;
+	`,
+	HeaderWrapper = styled.header`
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 3rem;
+		align-items: center;
+	`,
+	Step = styled.h2`
+	`,
+	Subheader = styled.span`
+		font-size: 1rem;
+		color: rgba( 0,0,0,0.4);
+		text-align: center;
+	`,
+	CategoryButton = styled( Button )`
+		margin: 0.5rem !important;
+		flex: 1 0 0%;
+	`,
+	Buttons = styled.div`
+		display: flex;
+		justify-content: space-between;
+	`;
 
 class Step3 extends Component {
 	render() {
 		return (
-			<div>
-				<h2>Step 3</h2>
-				<h4>What are you interested in?</h4>
-				<ChecksWrapper className="checksWrapper">
+			<Wrapper>
+				<HeaderWrapper>
+					<Step>General interests</Step>
+					<Subheader>
+						This will allow us to show you relevant content and users
+					</Subheader>
+				</HeaderWrapper>
+				<Categories className="categoriesWrapper">
 					{this.props.categories.map(( category, index ) =>
-						<CategoryCheck
-							key={index}
-							category={category}
-							checked={this.props.checked}
+						<CategoryButton
+							onClick={() =>
+								this.props.handleCategoryClick( category )
+							}
+							content={category}
+							secondary={
+								this.props.checkedCategories.includes( category )
+							}
 						/>
 					)}
-				</ChecksWrapper>
-
-				<Button
-					className="nextButton"
-					primary
-					floated="right"
-					content="Next"
-					disabled={this.props.checkedCategories.length === 0}
-					onClick={this.props.categoriesNext}
-				/>
-				<Button
-					className="prevButton"
-					secondary
-					floated="left"
-					content="Prev"
-					onClick={this.props.handlePrev}
-				/>
-			</div>
+				</Categories>
+				<Buttons>
+					<Button
+						className="prevButton"
+						secondary
+						content="Prev"
+						onClick={this.props.handlePrev}
+					/>
+					<Button
+						className="nextButton"
+						primary
+						content="Next"
+						disabled={this.props.checkedCategories.length === 0}
+						onClick={this.props.categoriesNext}
+					/>
+				</Buttons>
+			</Wrapper>
 		);
 	}
 }
@@ -51,7 +83,7 @@ Step3.propTypes = {
 	categoriesNext: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
 	categories: PropTypes.array.isRequired,
-	checked: PropTypes.func.isRequired
+	handleCategoryClick: PropTypes.func.isRequired
 };
 
 export default Step3;
