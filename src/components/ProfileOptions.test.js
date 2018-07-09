@@ -43,12 +43,7 @@ describe( "<ProfileOptions/>", () => {
 	});
 
 	it( "Checks that <ProfileOptions/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 2 );
-		expect( wrapper.children().children()).to.have.length( 3 );
-	});
-
-	it( "Checks that dropdownReqButton renders when requested is true", () => {
-		expect( wrapper.find( ".dropdownReqButton" )).to.have.length( 0 );
-		expect( wrapper2.find( ".dropdownReqButton" )).to.have.length( 1 );
+		expect( wrapper.children()).to.have.length( 1 );
+		expect( wrapper.children().children()).to.have.length( 2 );
 	});
 });

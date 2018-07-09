@@ -1,94 +1,77 @@
 import React, { Component } from "react";
-import { Button, Dropdown, Icon } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+
 
 const
 	Options = styled.div`
 		@media (max-width: 420px) {
-			grid-area: o;
-			display: grid;
-			grid-template-columns: 100%;
-			grid-template-rows: 33% 66%;
-			grid-template-areas:
-				"buttons"
-				"kw"
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+			justify-content: space-evenly;
+			margin-top: 2rem;
 		}
 	`,
-	Buttons = styled.span`
-		grid-area: buttons;
-		align-self: center;
-		justify-self: center;
+	Option = styled.div`
+		@media (max-width: 420px) {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
 	`,
-	Keywords = styled.span`
-		grid-area: kw;
-		align-self: center;
+	OptionIcon = styled( Icon )`
+		@media (max-width: 420px) {
+			margin: 0 !important;
+		}
+	`,
+	OptionText = styled.div`
+		@media (max-width: 420px) {
+			font-size: 0.9rem;
+			margin-top: 0.2rem;
+		}
 	`;
-
 
 class ProfileOptions extends Component {
 	render() {
 		if ( this.props.user.friends.includes( localStorage.getItem( "id" ))) {
 			return (
 				<Options>
-					<Buttons>
-
-						<Icon.Group size="large" onClick={this.props.handleDeleteFriend}>
-							<Icon name="user" />
-							<Icon corner name="check" color="green" />
-						</Icon.Group>
-
-						<Button size="tiny" icon="mail outline" />
-
-					</Buttons>
-					<Keywords>
-						{this.props.user.keywords}
-					</Keywords>
+					<Option onClick={this.props.handleDeleteFriend}>
+						<OptionIcon name="remove user" size="large" />
+						<OptionText>Unfriend</OptionText>
+					</Option>
+					<Option>
+						<OptionIcon name="chat" size="large" />
+						<OptionText>Message</OptionText>
+					</Option>
 				</Options>
 			);
 		}
 		return (
 			<Options>
-				<Buttons>
-					{this.props.requested ?
-						<Button
-							className="dropdownReqButton"
-							primary
-							size="tiny"
-						>
-							<Dropdown text="Reply request">
-								<Dropdown.Menu>
-									<Dropdown.Item
-										text="Accept"
-										onClick={this.props.handleReqAccept}
-									/>
-									<Dropdown.Item
-										text="Delete Request"
-										onClick={this.props.handleReqDelete}
-									/>
-								</Dropdown.Menu>
-							</Dropdown>
-						</Button>
-						:
-						<Button
-							onClick={this.props.handleAddFriend}
-							primary
-							size="tiny"
-							content="Add Friend"
-						/>
-					}
-					<Button
-						onClick={this.props.handleFollow}
-						secondary
-						size="tiny"
-						content="Follow"
-					/>
-					<Button size="tiny" icon="mail outline" />
-				</Buttons>
-
-				<Keywords>
-					{this.props.user.keywords}
-				</Keywords>
+				{this.props.user.username === localStorage.getItem( "username" ) ?
+					<Option onClick={this.props.goToUserSettings}>
+						<OptionIcon name="clipboard list" size="large" />
+						<OptionText>Update profile</OptionText>
+					</Option>
+					:
+					<React.Fragment>
+						<Option onClick={this.props.handleAddFriend}>
+							<OptionIcon name="add user" size="large" />
+							<OptionText>Add Friend</OptionText>
+						</Option>
+						<Option onClick={this.props.handleFollow}>
+							<OptionIcon name="binoculars" size="large" />
+							<OptionText>Follow</OptionText>
+						</Option>
+						<Option>
+							<OptionIcon name="chat" size="large" />
+							<OptionText>Message</OptionText>
+						</Option>
+					</React.Fragment>
+				}
 			</Options>
 		);
 	}
@@ -98,8 +81,6 @@ ProfileOptions.propTypes = {
 	user: PropTypes.object.isRequired,
 	handleAddFriend: PropTypes.func.isRequired,
 	handleFollow: PropTypes.func.isRequired,
-	handleReqAccept: PropTypes.func.isRequired,
-	handleReqDelete: PropTypes.func.isRequired,
 	handleDeleteFriend: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };

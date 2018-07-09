@@ -4,6 +4,9 @@ import { Button, Icon } from "semantic-ui-react";
 import api from "../services/api";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import NewsFeed from "../components/NewsFeed";
+import InfiniteScroll from "react-infinite-scroller";
+import ProfileOptions from "../components/ProfileOptions";
 var
 	backgroundImg,
 	profileImg;
@@ -15,6 +18,14 @@ const
 		width: 100%;
 		display: flex;
 		flex-direction: column;
+		background: rgba( 0,0,0,0.1 );
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		height: 100%;
+		width: 100%;
+	`,
+	UserInfoWrapper = styled.div`
+		background: #fff;
 	`,
 	BackIcon = styled( Icon )`
 		font-size: 1.3rem !important;
@@ -29,7 +40,6 @@ const
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 0 1rem;
 		z-index: 2;
 	`,
 	UserInfoBackground = styled.div`
@@ -63,6 +73,7 @@ const
 			margin: 1rem 0;
 			text-align: left;
 			font-size: 1.025rem;
+			padding: 0 0.66rem;
 		}
 	`,
 	Hobbies = styled.div`
@@ -70,7 +81,27 @@ const
 			text-align: center;
 			font-size: 1.025rem;
 			color: rgba( 0,0,0,0.5 );
+			padding: 0 0.66rem;
 		}
+	`,
+	Tabs = styled.div`
+		@media (max-width: 420px) {
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+    	justify-content: space-around;
+			margin-top: 2rem;
+			padding: 1rem 0;
+    	border-top: 2px solid #D3D3D3;
+			border-bottom: 1px solid #bec2c9;;
+		}
+	`,
+	UserPostsWrapper = styled.div`
+		background: #fff;
+		margin-top: 1rem;
+	`,
+	StyledNewsFeed = styled( NewsFeed )`
+		height: 100%;
 	`,
 	BackButton = styled( Button )`
 		position: absolute;
@@ -171,24 +202,43 @@ class UserProfile extends Component {
 		}
 	}
 
-	getTimeline = () => {
+	getTimeline = async() => {
 		if ( this.state.hasMore ) {
-			api.getTimeline( this.state.skip, this.props.username )
-				.then( res => {
+			try {
+				const posts = await api.getTimeline(
+					this.state.skip, this.props.username
+				);
+				if ( posts === "jwt expired" ) {
+					await refreshToken();
+					this.getTimeline();
+				} else if ( posts.data ) {
 					this.setState({
-						posts: [ ...this.state.posts, ...res.data ],
-						hasMore: res.data.length > 10,
+						posts: [ ...this.state.posts, ...posts.data ],
+						hasMore: posts.data.length > 10,
 						skip: this.state.skip + 1
 					});
-				}).catch( err => console.log( err ));
+				}
+			} catch ( err ) {
+				console.log( err );
+			}
 		}
 	}
 
-	refreshTimeline = () => {
-		api.getTimeline( 0, this.props.username )
-			.then( res => {
-				this.setState({ posts: res.data });
-			}).catch( err => console.log( err ));
+	refreshTimeline = async() => {
+		try {
+			const posts = await api.getTimeline( 0, this.props.username );
+			if ( posts === "jwt expired" ) {
+				await refreshToken();
+				this.refreshTimeline();
+			} else if ( posts.data ) {
+				this.setState({
+					posts: posts.data,
+					hasMore: posts.data.length > 10,
+				});
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	handleAddFriend = () => {
@@ -263,37 +313,65 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
-				<BackIcon
-					name="chevron left"
-					onClick={this.props.backToMain}
-				/>
-
-				<UserInfoBackground backgroundImg={backgroundImg} />
-
-				<UserInfo>
-					<UserImage src={profileImg} />
-					<Fullname>{user.fullname}</Fullname>
-					<Username>@{user.username}</Username>
-					<Description>{user.description}</Description>
-					<Hobbies>{user.keywords}</Hobbies>
-				</UserInfo>
-
-				{this.props.explore && this.props.next &&
-					<NextButton
-						className="nextButton"
-						primary
-						content="Next"
-						onClick={this.props.next}
+				<StyledInfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getTimeline}
+					initialLoad={false}
+					useWindow={false}
+				>
+					<BackIcon
+						name="chevron left"
+						onClick={this.props.backToMain}
 					/>
-				}
-				{this.props.explore && this.props.backToMenu &&
-					<BackButton
-						className="backButton"
-						secondary
-						content="Back to menu"
-						onClick={this.props.backToMenu}
-					/>
-				}
+
+					<UserInfoBackground backgroundImg={backgroundImg} />
+					<UserInfoWrapper>
+						<UserInfo>
+							<UserImage src={profileImg} />
+							<Fullname>{user.fullname}</Fullname>
+							<Username>@{user.username}</Username>
+							<Description>{user.description}</Description>
+							<Hobbies>{user.keywords}</Hobbies>
+							<ProfileOptions
+								user={this.state.user}
+								handleFollow={this.handleFollow}
+								handleAddFriend={this.handleAddFriend}
+								handleDeleteFriend={this.handleDeleteFriend}
+								goToUserSettings={this.props.goToUserSettings}
+								requested={this.state.pendingRequest}
+							/>
+							<Tabs>
+								<span>Information</span>
+								<span>Album</span>
+								<span>Network</span>
+							</Tabs>
+						</UserInfo>
+					</UserInfoWrapper>
+					<UserPostsWrapper>
+						<StyledNewsFeed
+							posts={this.state.posts}
+							socket={this.props.socket}
+						/>
+					</UserPostsWrapper>
+
+					{this.props.explore && this.props.next &&
+						<NextButton
+							className="nextButton"
+							primary
+							content="Next"
+							onClick={this.props.next}
+						/>
+					}
+					{this.props.explore && this.props.backToMenu &&
+						<BackButton
+							className="backButton"
+							secondary
+							content="Back to menu"
+							onClick={this.props.backToMenu}
+						/>
+					}
+				</StyledInfiniteScroll>
 			</Wrapper>
 		);
 	}

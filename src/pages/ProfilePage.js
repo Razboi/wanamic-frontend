@@ -7,12 +7,16 @@ class ProfilePage extends Component {
 	backToMain = () => {
 		this.props.history.push( "/" );
 	}
+	goToUserSettings = () => {
+		this.props.history.push( "/settings" );
+	}
 	render() {
 		return (
 			<UserProfile
 				socket={this.props.socket}
 				username={this.props.match.params.username}
 				backToMain={this.backToMain}
+				goToUserSettings={this.goToUserSettings}
 			/>
 		);
 	}
