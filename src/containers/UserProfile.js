@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
-import NewsFeed from "../components/NewsFeed";
-import ProfileOptions from "../components/ProfileOptions";
+import { Button, Icon } from "semantic-ui-react";
 import api from "../services/api";
-import InfiniteScroll from "react-infinite-scroller";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
 var
@@ -13,91 +10,66 @@ var
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		min-height: 100vh;
+		height: 100%;
 		width: 100%;
-		overflow: auto;
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
-				display: none !important;
-			}
-		}
+		display: flex;
+		flex-direction: column;
 	`,
-	StyledInfiniteScroll = styled( InfiniteScroll )`
-		@media (max-width: 420px) {
-			height: 100%;
-			width: 100%;
-			display: grid;
-			grid-template-columns: 100%;
-			grid-template-rows: 25% 45% auto;
-			grid-template-areas:
-				"h"
-				"i"
-				"p"
-		}
+	BackIcon = styled( Icon )`
+		font-size: 1.3rem !important;
+		position: absolute;
+		top: 0.66rem;
+		left: 0.66rem;
+		color: #fff;
+		z-index: 2;
 	`,
-	Header = styled.div`
-		@media (max-width: 420px) {
-			grid-area: h;
-			border-bottom: 1px solid #000;
-			background-image: ${props => props.image};
-			background-repeat: no-repeat;
-			background-size: cover;
-		}
+	UserInfo = styled.div`
+		margin-top: -5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 0 1rem;
+		z-index: 2;
 	`,
-	Information = styled.div`
-		@media (max-width: 420px) {
-			grid-area: i;
-
-			display: grid;
-			grid-template-columns: 45% 55%;
-			grid-template-rows: 50% 50%;
-			grid-template-areas:
-				"i o"
-				"d d"
-		}
-	`,
-	BasicInfo = styled.div`
-		@media (max-width: 420px) {
-			grid-area: i;
-			position: relative;
-			display: grid;
-			padding: 10px;
-		}
+	UserInfoBackground = styled.div`
+		height: 180px;
+		background-image: url(${props => props.backgroundImg});
+		background-size: cover;
+		filter: brightness(85%);
 	`,
 	UserImage = styled.img`
 		@media (max-width: 420px) {
+			z-index: 2;
 			width: 116px;
 			height: 116px;
-			position: absolute;
-			top: -62px;
-			left: 10px;
 			border-radius: 4px;
+			border: 2px solid #fff;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 		}
 	`,
-	Names = styled.span`
-		align-self: center;
-	`,
-	UserName = styled.h2`
+	Fullname = styled.h2`
 		@media (max-width: 420px) {
 			margin: 0px;
 		}
 	`,
-	NickName = styled.span`
+	Username = styled.span`
 		@media (max-width: 420px) {
-			color: #D3D3D3;
+			color: rgba( 0,0,0,0.5 );
 		}
 	`,
-	Description = styled.div`
+	Description = styled.p`
 		@media (max-width: 420px) {
-			padding: 10px;
-			grid-area: d;
+			margin: 1rem 0;
 			text-align: left;
-			align-self: center;
+			font-size: 1.025rem;
 		}
 	`,
-	Timeline = styled.div`
+	Hobbies = styled.div`
 		@media (max-width: 420px) {
-			grid-area: p;
+			text-align: center;
+			font-size: 1.025rem;
+			color: rgba( 0,0,0,0.5 );
 		}
 	`,
 	BackButton = styled( Button )`
@@ -288,46 +260,23 @@ class UserProfile extends Component {
 		if ( !this.state.user ) {
 			return null;
 		}
-
+		const { user } = this.state;
 		return (
 			<Wrapper>
-				<StyledInfiniteScroll
-					pageStart={this.state.skip}
-					hasMore={this.state.hasMore}
-					loadMore={this.getTimeline}
-					initialLoad={false}
-					useWindow={false}
-				>
-					<Header image={`url(${backgroundImg})`} />
+				<BackIcon
+					name="chevron left"
+					onClick={this.props.backToMain}
+				/>
 
-					<Information>
-						<BasicInfo>
-							<UserImage src={profileImg} />
-							<Names>
-								<UserName>{this.state.user.fullname}</UserName>
-								<NickName>@{this.state.user.username}</NickName>
-							</Names>
-						</BasicInfo>
+				<UserInfoBackground backgroundImg={backgroundImg} />
 
-						<ProfileOptions
-							user={this.state.user}
-							handleAddFriend={this.handleAddFriend}
-							handleFollow={this.handleFollow}
-							handleReqAccept={this.handleReqAccept}
-							handleReqDelete={this.handleReqDelete}
-							pendingRequest={this.state.pendingRequest}
-							handleDeleteFriend={this.handleDeleteFriend}
-						/>
-
-						<Description>
-							<p>{this.state.user.description}</p>
-						</Description>
-					</Information>
-
-					<Timeline>
-						<NewsFeed posts={this.state.posts} socket={this.props.socket} />
-					</Timeline>
-				</StyledInfiniteScroll>
+				<UserInfo>
+					<UserImage src={profileImg} />
+					<Fullname>{user.fullname}</Fullname>
+					<Username>@{user.username}</Username>
+					<Description>{user.description}</Description>
+					<Hobbies>{user.keywords}</Hobbies>
+				</UserInfo>
 
 				{this.props.explore && this.props.next &&
 					<NextButton

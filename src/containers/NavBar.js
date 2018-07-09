@@ -35,7 +35,13 @@ const
 		height: 30px !important;
 	`,
 	NotificationsLength = styled( Label )`
-
+	`,
+	DropdownFullname = styled.h4`
+		margin: 0 !important;
+	`,
+	DropdownUsername = styled.span`
+		color: rgba( 0,0,0,0.5 );
+		font-size: 1rem;
 	`;
 
 
@@ -79,6 +85,9 @@ class NavBar extends Component {
 	}
 
 	render() {
+		const
+			username = localStorage.getItem( "username" ),
+			fullname = localStorage.getItem( "fullname" );
 		try {
 			if ( localStorage.getItem( "uimg" )) {
 				profileImage = require( "../images/" + localStorage.getItem( "uimg" ));
@@ -140,6 +149,20 @@ class NavBar extends Component {
 						trigger={<ProfileImg circular src={profileImage} />}
 						icon={null} direction="left">
 						<Dropdown.Menu>
+							<Dropdown.Item
+								onClick={() => this.props.history.push( "/" + username )}
+							>
+								<DropdownFullname>{fullname}</DropdownFullname>
+								<DropdownUsername>@{username}</DropdownUsername>
+							</Dropdown.Item>
+							<Dropdown.Divider />
+							<Dropdown.Item
+								text="Total likes"
+							/>
+							<Dropdown.Item
+								text="Total views"
+							/>
+							<Dropdown.Divider />
 							<Dropdown.Item
 								text="Logout"
 								onClick={this.props.logout}

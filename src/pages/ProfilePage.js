@@ -4,11 +4,15 @@ import PropTypes from "prop-types";
 
 
 class ProfilePage extends Component {
+	backToMain = () => {
+		this.props.history.push( "/" );
+	}
 	render() {
 		return (
 			<UserProfile
 				socket={this.props.socket}
 				username={this.props.match.params.username}
+				backToMain={this.backToMain}
 			/>
 		);
 	}

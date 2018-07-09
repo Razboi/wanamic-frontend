@@ -17,6 +17,7 @@ export const
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "fullname", data.fullname );
 				if ( data.profileImage ) {
 					localStorage.setItem( "uimg", data.profileImage );
 				}
