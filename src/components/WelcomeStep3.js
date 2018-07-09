@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
-import CategoryCheck from "./CategoryCheck";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 

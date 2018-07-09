@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Header } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 

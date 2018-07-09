@@ -12,7 +12,7 @@ describe( "<WelcomeStep4/>", () => {
 	var
 		wrapper,
 		prevSpy,
-		matchedUsers = [ "test", "test2", "test3" ],
+		matchedUsers = [],
 		finishSpy;
 	beforeEach(() => {
 		finishSpy = sinon.spy();
