@@ -38,16 +38,16 @@ const
 	HeaderWrapper = styled.div`
 		grid-area: hea;
 		display: flex;
-		justify-content: space-evenly;
+		justify-content: ${props => props.newconversation ?
+		"center" : "space-evenly"};
 		flex-direction: row;
 		align-items: center;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	BackArrow = styled( Icon )`
 		font-size: 1.3rem !important;
-		i {
-			font-size: 1.3rem !important;
-		};
+		margin: ${props => props.newconversation ?
+		"0 1rem 0 -1rem" : "0"} !important;
 	`,
 	UserInfo = styled.div`
 		display: flex;
@@ -73,7 +73,7 @@ const
 	StyledDropdown = styled( Dropdown )`
 		i {
 			color: rgba(0,0,0,0.45) !important;
-			font-size: 1.3rem !important;
+			font-size: 1.433rem !important;
 		};
 	`;
 
@@ -95,13 +95,14 @@ class Conversation extends Component {
 	render() {
 		const {
 			conversation, back, messageInput, handleChange,
-			handleKeyPress
+			handleKeyPress, newConversation
 		} = this.props;
 		this.setUserImage();
 		return (
 			<ConversationWrapper>
-				<HeaderWrapper>
+				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
 					<BackArrow
+						newconversation={newConversation ? 1 : 0}
 						className="arrowBack"
 						name="arrow left"
 						onClick={back}
@@ -118,18 +119,19 @@ class Conversation extends Component {
 						</TextInfo>
 					</UserInfo>
 
-					<StyledDropdown icon="setting" direction="left">
-						<Dropdown.Menu className="postDropdown">
-							<Dropdown.Item
-								className="postDeleteOption"
-								text="Delete Conversation"
-								onClick={() =>
-									this.props.handleDeleteChat(
-										conversation.target.username
-									)}
-							/>
-						</Dropdown.Menu>
-					</StyledDropdown>
+					{!newConversation &&
+						<StyledDropdown icon="setting" direction="left">
+							<Dropdown.Menu className="postDropdown">
+								<Dropdown.Item
+									className="postDeleteOption"
+									text="Delete Conversation"
+									onClick={() =>
+										this.props.handleDeleteChat(
+											conversation.target.username
+										)}
+								/>
+							</Dropdown.Menu>
+						</StyledDropdown>}
 				</HeaderWrapper>
 				<MessagesWrapper component="div" className="messagesWrapper">
 					{conversation.messages.map(( message, index ) =>
@@ -152,6 +154,7 @@ class Conversation extends Component {
 
 Conversation.propTypes = {
 	conversation: PropTypes.object.isRequired,
+	newConversation: PropTypes.bool.isRequired,
 	handleKeyPress: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	handleDeleteChat: PropTypes.func.isRequired,

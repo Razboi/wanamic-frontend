@@ -88,8 +88,11 @@ class ChatsList extends Component {
 		};
 	}
 
-	componentDidMount() {
-		this.getActiveChats();
+	async componentDidMount() {
+		await this.getActiveChats();
+		if ( this.props.messageTarget ) {
+			this.handleNewConversation( this.props.messageTarget );
+		}
 	}
 
 	getActiveChats = async() => {
@@ -224,6 +227,10 @@ class ChatsList extends Component {
 	}
 
 	backToOpenConversations = () => {
+		if ( this.props.toggleConversation ) {
+			this.props.toggleConversation();
+			return;
+		}
 		this.setState({
 			displayFriendsList: false,
 			displayConversation: false
@@ -232,7 +239,8 @@ class ChatsList extends Component {
 
 	render() {
 		const {
-			conversations, selectedConversation, newConversation
+			conversations, selectedConversation, newConversation,
+			messageTarget
 		} = this.props;
 		if ( this.state.displayConversation ) {
 			return (
@@ -242,6 +250,7 @@ class ChatsList extends Component {
 						:
 						conversations[ selectedConversation ]
 					}
+					newConversation={!!newConversation}
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
 					handleDeleteChat={this.handleDeleteChat}
@@ -259,57 +268,60 @@ class ChatsList extends Component {
 				/>
 			);
 		}
-		return (
-			<Wrapper>
-				<PageHeader>Conversations</PageHeader>
-				<div className="conversationsList">
-					{this.props.conversations.map(( chat, index ) =>
-						<OpenConversation
-							key={index}
-							onClick={() => this.handleSelectConversation( index ) }
-							newMessages={chat.newMessagesCount > 0}
-						>
-							<UserImg
-								circular
-								src={chat.target.profileImage ?
-									require( "../images/" + chat.target.profileImage )
-									:
-									require( "../images/defaultUser.png" )
+		if ( !messageTarget ) {
+			return (
+				<Wrapper>
+					<PageHeader>Conversations</PageHeader>
+					<div className="conversationsList">
+						{this.props.conversations.map(( chat, index ) =>
+							<OpenConversation
+								key={index}
+								onClick={() => this.handleSelectConversation( index ) }
+								newMessages={chat.newMessagesCount > 0}
+							>
+								<UserImg
+									circular
+									src={chat.target.profileImage ?
+										require( "../images/" + chat.target.profileImage )
+										:
+										require( "../images/defaultUser.png" )
+									}
+								/>
+								<TextInfo>
+									<UserFullname>
+										{chat.target.fullname}
+									</UserFullname>
+									<LastMessage>
+										@{chat.messages[ chat.messages.length - 1 ].author}: {
+											chat.messages[ chat.messages.length - 1 ].content}
+									</LastMessage>
+								</TextInfo>
+								<LastMessageTime>
+									{moment(
+										chat.messages[ chat.messages.length - 1 ].createdAt
+									).fromNow( true )}
+								</LastMessageTime>
+								{chat.newMessagesCount > 0 &&
+									<NewMessagesCount
+										size="tiny" circular color="red"
+									>
+										{chat.newMessagesCount}
+									</NewMessagesCount>
 								}
-							/>
-							<TextInfo>
-								<UserFullname>
-									{chat.target.fullname}
-								</UserFullname>
-								<LastMessage>
-									@{chat.messages[ chat.messages.length - 1 ].author}: {
-										chat.messages[ chat.messages.length - 1 ].content}
-								</LastMessage>
-							</TextInfo>
-							<LastMessageTime>
-								{moment(
-									chat.messages[ chat.messages.length - 1 ].createdAt
-								).fromNow( true )}
-							</LastMessageTime>
-							{chat.newMessagesCount > 0 &&
-								<NewMessagesCount
-									size="tiny" circular color="red"
-								>
-									{chat.newMessagesCount}
-								</NewMessagesCount>
-							}
-						</OpenConversation>
-					)}
-				</div>
-				<NewConversationButton
-					onClick={this.handleFriendsList}
-					primary
-					circular
-					icon="comment"
-					size="big"
-				/>
-			</Wrapper>
-		);
+							</OpenConversation>
+						)}
+					</div>
+					<NewConversationButton
+						onClick={this.handleFriendsList}
+						primary
+						circular
+						icon="comment"
+						size="big"
+					/>
+				</Wrapper>
+			);
+		}
+		return null;
 	}
 }
 
@@ -318,6 +330,8 @@ ChatsList.propTypes = {
 	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired,
 	chatNotifications: PropTypes.array.isRequired,
+	messageTarget: PropTypes.object,
+	socket: PropTypes.object.isRequired,
 };
 
 const

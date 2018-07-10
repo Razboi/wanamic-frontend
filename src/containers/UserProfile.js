@@ -301,6 +301,10 @@ class UserProfile extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	handleMessage = messageTarget => {
+		this.props.toggleConversation( messageTarget );
+	}
+
 	render() {
 		if ( this.state.inexistent ) {
 			return (
@@ -340,11 +344,18 @@ class UserProfile extends Component {
 								handleDeleteFriend={this.handleDeleteFriend}
 								goToUserSettings={this.props.goToUserSettings}
 								requested={this.state.pendingRequest}
+								handleMessage={() => this.handleMessage( user )}
 							/>
 							<Tabs>
-								<span>Information</span>
-								<span>Album</span>
-								<span>Network</span>
+								<span onClick={() => this.props.toggleTab( "Info" )}>
+									Information
+								</span>
+								<span onClick={() => this.props.toggleTab( "Album" )}>
+									Album
+								</span>
+								<span onClick={() => this.props.toggleTab( "Network" )}>
+									Network
+								</span>
 							</Tabs>
 						</UserInfo>
 					</UserInfoWrapper>
@@ -379,7 +390,9 @@ class UserProfile extends Component {
 
 UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
-	username: PropTypes.string.isRequired
+	username: PropTypes.string.isRequired,
+	toggleConversation: PropTypes.func.isRequired,
+	toggleTab: PropTypes.func.isRequired
 };
 
 export default UserProfile;

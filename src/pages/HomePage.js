@@ -200,8 +200,11 @@ class HomePage extends Component {
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledNewsFeed posts={this.props.newsfeed}
-							socket={this.props.socket} />
+						<StyledNewsFeed
+							posts={this.props.newsfeed}
+							socket={this.props.socket}
+							history={this.props.history}
+						/>
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>

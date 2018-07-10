@@ -513,4 +513,18 @@ export default {
 			.catch( err => {
 				throw err;
 			}),
+
+	getUserAlbum: username =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username
+			},
+			url: "/user/getUserAlbum/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 };

@@ -42,7 +42,7 @@ class ProfileOptions extends Component {
 						<OptionIcon name="remove user" size="large" />
 						<OptionText>Unfriend</OptionText>
 					</Option>
-					<Option>
+					<Option onClick={this.props.handleMessage}>
 						<OptionIcon name="chat" size="large" />
 						<OptionText>Message</OptionText>
 					</Option>
@@ -66,7 +66,7 @@ class ProfileOptions extends Component {
 							<OptionIcon name="binoculars" size="large" />
 							<OptionText>Follow</OptionText>
 						</Option>
-						<Option>
+						<Option onClick={this.props.handleMessage}>
 							<OptionIcon name="chat" size="large" />
 							<OptionText>Message</OptionText>
 						</Option>
@@ -82,6 +82,7 @@ ProfileOptions.propTypes = {
 	handleAddFriend: PropTypes.func.isRequired,
 	handleFollow: PropTypes.func.isRequired,
 	handleDeleteFriend: PropTypes.func.isRequired,
+	handleMessage: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };
 

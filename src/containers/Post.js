@@ -190,8 +190,12 @@ class Post extends Component {
 		return (
 			<Wrapper>
 				<PostHeader>
-					<AuthorImg circular src={userPicture} />
-					<HeaderInfo>
+					<AuthorImg
+						circular
+						src={userPicture}
+						onClick={this.props.goToProfile}
+					/>
+					<HeaderInfo onClick={this.props.goToProfile}>
 						<AuthorFullname className="postAuthor">
 							{post.author.fullname}
 							<AuthorUsername>
@@ -255,7 +259,8 @@ class Post extends Component {
 Post.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	goToProfile: PropTypes.func.isRequired
 };
 
 const
