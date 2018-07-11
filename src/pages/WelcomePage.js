@@ -63,16 +63,16 @@ class WelcomePage extends Component {
 	}
 
 	handleFollow = username => {
-		var arrayOfToFollow = this.state.toFollow;
-		if ( arrayOfToFollow.includes( username )) {
-			const index = arrayOfToFollow.indexOf( username );
-			arrayOfToFollow.splice( index, 1 );
-			this.setState({ toFollow: arrayOfToFollow });
-		} else {
-			this.setState({
-				toFollow: [ ...arrayOfToFollow, username ]
-			});
-		}
+		this.setState({
+			toFollow: [ ...this.state.toFollow, username ]
+		});
+	}
+
+	handleUnfollow = username => {
+		var usersToFollow = this.state.toFollow;
+		const index = usersToFollow.indexOf( username );
+		usersToFollow.splice( index, 1 );
+		this.setState({ toFollow: usersToFollow });
 	}
 
 	categoriesNext = () => {
@@ -143,6 +143,7 @@ class WelcomePage extends Component {
 						handleChange={this.handleChange}
 						matchedUsers={this.state.matchedUsers}
 						handleFollow={this.handleFollow}
+						handleUnfollow={this.handleUnfollow}
 						finish={this.finish}
 						toFollow={this.state.toFollow}
 					/>

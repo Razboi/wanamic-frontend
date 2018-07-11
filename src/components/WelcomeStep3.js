@@ -47,6 +47,7 @@ class Step3 extends Component {
 				<Categories className="categoriesWrapper">
 					{this.props.categories.map(( category, index ) =>
 						<CategoryButton
+							key={index}
 							onClick={() =>
 								this.props.handleCategoryClick( category )
 							}

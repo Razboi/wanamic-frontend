@@ -15,7 +15,6 @@ const
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	BackArrow = styled( Icon )`
 		font-size: 1.3rem !important;
@@ -29,17 +28,24 @@ const
 	Album = styled.div`
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-evenly;
+		justify-content: space-between;
     align-content: start;
-		padding: 0.1rem;
 	`,
 	PictureWrapper = styled.div`
-		flex-basis: calc(calc(100% / 3) - 0.2rem);;
-		margin: 0.1rem;
+		position: relative;
+		width: calc(calc(100% / 3) - 2px);
+		height: 0;
+		padding-bottom: calc(calc(100% / 3) - 2px);
+		margin: ${props => props.rightImg ?
+		"3px 0" : "3px 3px 3px 0"};
+		overflow: hidden;
 	`,
 	UserPicture = styled( Image )`
-  	width: 100%;
-		height: 100%;
+		position: absolute !important;
+  	width: 100% !important;
+		height: 100% !important;
+		top: 0 !important;
+		left: 0 !important;
 	`;
 
 class UserAlbum extends Component {
@@ -77,7 +83,10 @@ class UserAlbum extends Component {
 				</HeaderWrapper>
 				<Album>
 					{this.state.album.map(( pic, index ) =>
-						<PictureWrapper key={index}>
+						<PictureWrapper
+							key={index}
+							rightImg={( index + 1 ) % 3 === 0}
+						>
 							<UserPicture src={require( "../images/" + pic )} />
 						</PictureWrapper>
 					)}

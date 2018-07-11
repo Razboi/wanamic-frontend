@@ -17,7 +17,7 @@ describe( "<ProfileOptions/>", () => {
 		deleteFriendSpy = sinon.spy(),
 		wrapper = shallow(
 			<ProfileOptions
-				user={{ friends: [] }}
+				user={{ friends: [], followers: [] }}
 				handleAddFriend={addFriendSpy}
 				handleFollow={followSpy}
 				handleReqAccept={acceptReqSpy}
@@ -28,7 +28,7 @@ describe( "<ProfileOptions/>", () => {
 		),
 		wrapper2 = shallow(
 			<ProfileOptions
-				user={{ friends: [] }}
+				user={{ friends: [], followers: [] }}
 				handleAddFriend={addFriendSpy}
 				handleFollow={followSpy}
 				handleReqAccept={acceptReqSpy}

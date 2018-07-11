@@ -35,7 +35,8 @@ const
 
 class ProfileOptions extends Component {
 	render() {
-		if ( this.props.user.friends.includes( localStorage.getItem( "id" ))) {
+		const { user } = this.props;
+		if ( user.friends.includes( localStorage.getItem( "id" ))) {
 			return (
 				<Options>
 					<Option onClick={this.props.handleDeleteFriend}>
@@ -49,11 +50,25 @@ class ProfileOptions extends Component {
 				</Options>
 			);
 		}
+		if ( user.followers.includes( localStorage.getItem( "id" ))) {
+			return (
+				<Options>
+					<Option onClick={this.props.unFollow}>
+						<OptionIcon name="remove user" size="large" />
+						<OptionText>Unfollow</OptionText>
+					</Option>
+					<Option onClick={this.props.handleMessage}>
+						<OptionIcon name="chat" size="large" />
+						<OptionText>Message</OptionText>
+					</Option>
+				</Options>
+			);
+		}
 		return (
 			<Options>
 				{this.props.user.username === localStorage.getItem( "username" ) ?
 					<Option onClick={this.props.goToUserSettings}>
-						<OptionIcon name="clipboard list" size="large" />
+						<OptionIcon className="clipboard list" size="large" />
 						<OptionText>Update profile</OptionText>
 					</Option>
 					:
@@ -82,6 +97,7 @@ ProfileOptions.propTypes = {
 	handleAddFriend: PropTypes.func.isRequired,
 	handleFollow: PropTypes.func.isRequired,
 	handleDeleteFriend: PropTypes.func.isRequired,
+	unFollow: PropTypes.func.isRequired,
 	handleMessage: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };

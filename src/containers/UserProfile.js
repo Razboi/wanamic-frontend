@@ -301,6 +301,23 @@ class UserProfile extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	unFollow = async username => {
+		var user = this.state.user;
+		try {
+			const response = await api.unfollowUser( this.props.username );
+			if ( response === "jwt expired" ) {
+				await refreshToken();
+				this.unFollow();
+			} else {
+				const index = user.followers.indexOf( this.props.username );
+				user.followers.splice( index, 1 );
+				this.setState({ user: user });
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
 	handleMessage = messageTarget => {
 		this.props.toggleConversation( messageTarget );
 	}
@@ -342,6 +359,7 @@ class UserProfile extends Component {
 								handleFollow={this.handleFollow}
 								handleAddFriend={this.handleAddFriend}
 								handleDeleteFriend={this.handleDeleteFriend}
+								unFollow={this.unFollow}
 								goToUserSettings={this.props.goToUserSettings}
 								requested={this.state.pendingRequest}
 								handleMessage={() => this.handleMessage( user )}

@@ -67,6 +67,7 @@ class ContentSettings extends Component {
 					<Categories>
 						{this.props.categories.map(( category, index ) =>
 							<CategoryButton
+								key={index}
 								onClick={() =>
 									this.props.handleCategoryClick( category )
 								}

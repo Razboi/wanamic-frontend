@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Button, Image } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import UserPreview from "./UserPreview";
 
 const
 	Wrapper = styled.div`
@@ -25,49 +26,18 @@ const
 	`,
 	MatchesWrapper = styled.div`
 	`,
-	Match = styled.div`
-		display: flex;
-		position: relative;
-		flex-direction: column;
-		margin-bottom: 2.5rem;
-	`,
-	MatchFullname = styled.h3`
-		margin: 0px;
-	`,
-	MatchUsername = styled.span`
-		color: #808080;
-	`,
-	MatchDescription = styled.p`
-		margin: 0.5rem 0 0 0 !important;
-		font-size: 1.02rem !important;
-	`,
 	ButtonsFooter = styled.footer`
 		display: flex;
 		justify-content: space-between;
 		margin-top: auto;
-	`,
-	FollowButton = styled( Button )`
-		position: absolute !important;
-		top: 0 !important;
-		right: 0 !important;
-		margin: 0 !important;
-	`,
-	UserImg = styled( Image )`
-		width: 40px !important;
-		height: 40px !important;
-		margin-right: 0.5rem !important;
-	`,
-	UserInfo = styled.div`
-		display: flex;
-		flex-direction: row;
-	`,
-	TextInfo = styled.div`
-		display: flex;
-		flex-direction: column;
 	`;
 
 class Step4 extends Component {
 	render() {
+		const {
+			toFollow, matchedUsers, handleFollow, handlePrev, finish,
+			handleUnfollow
+		} = this.props;
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -77,31 +47,14 @@ class Step4 extends Component {
 					</Subheader>
 				</HeaderWrapper>
 				<MatchesWrapper className="matchesWrapper">
-					{this.props.matchedUsers.map(( user, index ) =>
-						<Match key={index}>
-							<UserInfo>
-								<UserImg
-									circular
-									src={user.profileImage ?
-										require( "../images/" + user.profileImage )
-										:
-										require( "../images/defaultUser.png" )
-									}
-								/>
-								<TextInfo>
-									<MatchFullname>{user.fullname}</MatchFullname>
-									<MatchUsername>@{user.username}</MatchUsername>
-								</TextInfo>
-							</UserInfo>
-							<MatchDescription>{user.description}</MatchDescription>
-							<FollowButton
-								size="tiny"
-								onClick={() =>
-									this.props.handleFollow( user.username )}
-								content="Follow"
-								primary={this.props.toFollow.includes( user.username )}
-							/>
-						</Match>
+					{matchedUsers.map(( user, index ) =>
+						<UserPreview
+							key={index}
+							user={user}
+							handleFollow={handleFollow}
+							handleUnfollow={handleUnfollow}
+							alreadyFollowing={toFollow.includes( user.username )}
+						/>
 					)}
 				</MatchesWrapper>
 				<ButtonsFooter>
@@ -110,15 +63,15 @@ class Step4 extends Component {
 						secondary
 						floated="left"
 						content="Prev"
-						onClick={this.props.handlePrev}
+						onClick={handlePrev}
 					/>
 					<Button
 						className="nextButton"
-						disabled={this.props.toFollow.length === 0}
+						disabled={toFollow.length === 0}
 						primary
 						floated="right"
-						content="Next"
-						onClick={this.props.finish}
+						content="Finish"
+						onClick={finish}
 					/>
 				</ButtonsFooter>
 			</Wrapper>
@@ -130,6 +83,7 @@ Step4.propTypes = {
 	handlePrev: PropTypes.func.isRequired,
 	finish: PropTypes.func.isRequired,
 	handleFollow: PropTypes.func.isRequired,
+	handleUnfollow: PropTypes.func.isRequired,
 	matchedUsers: PropTypes.array.isRequired,
 	toFollow: PropTypes.array.isRequired
 };

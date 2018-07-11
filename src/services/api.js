@@ -153,7 +153,10 @@ export default {
 	addFriend: username =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), friendUsername: username },
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: username
+			},
 			url: "/friends/add"
 		})
 			.then( res => res )
@@ -162,7 +165,10 @@ export default {
 	deleteFriend: username =>
 		axios({
 			method: "delete",
-			data: { token: localStorage.getItem( "token" ), friendUsername: username },
+			data: {
+				token: localStorage.getItem( "token" ),
+				friendUsername: username
+			},
 			url: "/friends/delete"
 		})
 			.then( res => res )
@@ -171,8 +177,23 @@ export default {
 	followUser: username =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), targetUsername: username },
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: username
+			},
 			url: "/followers/follow"
+		})
+			.then( res => res )
+			.catch( err => err.response.data ),
+
+	unfollowUser: username =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetUsername: username
+			},
+			url: "/followers/unfollow"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -522,6 +543,20 @@ export default {
 				username: username
 			},
 			url: "/user/getUserAlbum/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getUserNetwork: username =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username
+			},
+			url: "/user/getUserNetwork/"
 		})
 			.then( res => res )
 			.catch( err => {

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import UserProfile from "../containers/UserProfile";
 import ChatsList from "../containers/ChatsList";
 import UserAlbum from "../containers/UserAlbum";
+import UserNetwork from "../containers/UserNetwork";
 import PropTypes from "prop-types";
 
 
@@ -46,6 +47,15 @@ class ProfilePage extends Component {
 				<UserAlbum
 					username={this.props.match.params.username}
 					toggleTab={this.toggleTab}
+				/>
+			);
+		}
+		if ( this.state.tab === "Network" ) {
+			return (
+				<UserNetwork
+					username={this.props.match.params.username}
+					toggleTab={this.toggleTab}
+					socket={this.props.socket}
 				/>
 			);
 		}
