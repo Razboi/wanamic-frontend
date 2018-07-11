@@ -21,7 +21,7 @@ class FollowButtonComponent extends Component {
 			return (
 				<FollowButton
 					size="tiny"
-					onClick={() => handleUnfollow( user.username )}
+					onClick={() => handleUnfollow( user.username, user._id )}
 					content="Following"
 					primary={true}
 				/>
@@ -31,7 +31,7 @@ class FollowButtonComponent extends Component {
 			return (
 				<FollowButton
 					size="tiny"
-					onClick={() => handleUnfriend( user.username )}
+					onClick={() => handleUnfriend( user.username, user._id )}
 					content="Friends"
 					primary={true}
 				/>
@@ -40,7 +40,7 @@ class FollowButtonComponent extends Component {
 		return (
 			<FollowButton
 				size="tiny"
-				onClick={() => handleFollow( user.username )}
+				onClick={() => handleFollow( user.username, user._id )}
 				content="Follow"
 			/>
 		);

@@ -37,8 +37,11 @@ const
 			border-bottom: 1px solid #bec2c9;
 		}
 	`,
-	TabOption = styled.span`
+	TabOption = styled.div`
 		@media (max-width: 420px) {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 			font-size: 1rem;
 			font-weight: ${props => props.selected ? "bold" : "normal"};
 		}
@@ -86,7 +89,7 @@ class UserNetwork extends Component {
 		}
 	}
 
-	handleFollow = async username => {
+	handleFollow = async( username, id ) => {
 		var requesterNetwork = this.state.requesterNetwork;
 		try {
 			const notification = await api.followUser( username );
@@ -95,7 +98,7 @@ class UserNetwork extends Component {
 				this.handleFollow();
 			} else if ( notification.data ) {
 				this.props.socket.emit( "sendNotification", notification.data );
-				requesterNetwork.following.push( username );
+				requesterNetwork.following.push( id );
 				this.setState({ requesterNetwork: requesterNetwork });
 			}
 		} catch ( err ) {
@@ -103,7 +106,7 @@ class UserNetwork extends Component {
 		}
 	}
 
-	handleUnfollow = async username => {
+	handleUnfollow = async( username, id ) => {
 		var requesterNetwork = this.state.requesterNetwork;
 		try {
 			const response = await api.unfollowUser( username );
@@ -112,7 +115,7 @@ class UserNetwork extends Component {
 				this.handleUnfollow();
 			} else {
 				const indexOfUnfollow = requesterNetwork.following.indexOf(
-					username );
+					id );
 				requesterNetwork.following.splice( indexOfUnfollow, 1 );
 				this.setState({ requesterNetwork: requesterNetwork });
 			}
@@ -121,7 +124,7 @@ class UserNetwork extends Component {
 		}
 	}
 
-	handleUnfriend = async username => {
+	handleUnfriend = async( username, id ) => {
 		var requesterNetwork = this.state.requesterNetwork;
 		try {
 			const response = await api.deleteFriend( username );
@@ -130,7 +133,7 @@ class UserNetwork extends Component {
 				this.handleUnfriend();
 			} else {
 				const indexOfUnfriend = requesterNetwork.friends.indexOf(
-					username );
+					id );
 				requesterNetwork.friends.splice( indexOfUnfriend, 1 );
 				this.setState({ requesterNetwork: requesterNetwork });
 			}
@@ -155,19 +158,22 @@ class UserNetwork extends Component {
 						onClick={() => this.setTab( 0 )}
 						selected={tab === 0}
 					>
-						Friends
+						<span>Friends</span>
+						<span>{network.friends.length}</span>
 					</TabOption>
 					<TabOption
 						onClick={() => this.setTab( 1 )}
 						selected={tab === 1}
 					>
-						Followers
+						<span>Followers</span>
+						<span>{network.followers.length}</span>
 					</TabOption>
 					<TabOption
 						onClick={() => this.setTab( 2 )}
 						selected={tab === 2}
 					>
-						Following
+						<span>Following</span>
+						<span>{network.following.length}</span>
 					</TabOption>
 				</Tabs>
 
@@ -203,7 +209,7 @@ class UserNetwork extends Component {
 						/>
 					)}
 				</UsersWrapper>}
-				{tab === 3 &&
+				{tab === 2 &&
 				<UsersWrapper>
 					{network.following.map(( user, index ) =>
 						<UserPreview

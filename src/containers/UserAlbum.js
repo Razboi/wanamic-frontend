@@ -46,6 +46,14 @@ const
 		height: 100% !important;
 		top: 0 !important;
 		left: 0 !important;
+	`,
+	EmptyPostsAlert = styled.div`
+		display: flex;
+		background: #fff;
+		margin-top: 1rem;
+		min-height: 100px;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class UserAlbum extends Component {
@@ -81,16 +89,22 @@ class UserAlbum extends Component {
 					/>
 					<HeaderTxt>@{this.props.username} album</HeaderTxt>
 				</HeaderWrapper>
-				<Album>
-					{this.state.album.map(( pic, index ) =>
-						<PictureWrapper
-							key={index}
-							rightImg={( index + 1 ) % 3 === 0}
-						>
-							<UserPicture src={require( "../images/" + pic )} />
-						</PictureWrapper>
-					)}
-				</Album>
+				{this.state.album.length > 0 ?
+					<Album>
+						{this.state.album.map(( pic, index ) =>
+							<PictureWrapper
+								key={index}
+								rightImg={( index + 1 ) % 3 === 0}
+							>
+								<UserPicture src={require( "../images/" + pic )} />
+							</PictureWrapper>
+						)}
+					</Album>
+					:
+					<EmptyPostsAlert>
+						@{this.props.username} hasn't posted pictures yet.
+					</EmptyPostsAlert>
+				}
 			</Wrapper>
 		);
 	}

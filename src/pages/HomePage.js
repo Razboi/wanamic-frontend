@@ -189,7 +189,8 @@ class HomePage extends Component {
 					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments
 						socket={this.props.socket} />}
-					{this.props.displayNotifications && <Notifications />}
+					{this.props.displayNotifications && <Notifications
+						socket={this.props.socket} />}
 					{this.props.displayMessages && <ChatsList
 						socket={this.props.socket} />}
 

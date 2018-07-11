@@ -103,6 +103,14 @@ const
 	StyledNewsFeed = styled( NewsFeed )`
 		height: 100%;
 	`,
+	EmptyPostsAlert = styled.div`
+		display: flex;
+		background: #fff;
+		margin-top: 1rem;
+		min-height: 100px;
+		align-items: center;
+		justify-content: center;
+	`,
 	BackButton = styled( Button )`
 		position: absolute;
 		bottom: 10px;
@@ -124,7 +132,8 @@ class UserProfile extends Component {
 			hasMore: true,
 			skip: 1,
 			inexistent: false,
-			pendingRequest: false
+			userRequested: false,
+			targetRequested: false
 		};
 	}
 
@@ -165,17 +174,21 @@ class UserProfile extends Component {
 		}
 	}
 
-	checkPendingRequest = () => {
-		api.isRequested( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.checkPendingRequest())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({ pendingRequest: res.data });
-				}
-			}).catch( err => console.log( err ));
+	checkPendingRequest = async() => {
+		try {
+			const res = await api.isRequested( this.props.username );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.checkPendingRequest();
+			} else {
+				this.setState({
+					userRequested: res.data.user,
+					targetRequested: res.data.target
+				});
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	setImages() {
@@ -187,11 +200,6 @@ class UserProfile extends Component {
 			} else {
 				backgroundImg = require( "../images/defaultbg.png" );
 			}
-		} catch ( err ) {
-			console.log( err );
-		}
-
-		try {
 			if ( user.profileImage ) {
 				profileImg = require( "../images/" + user.profileImage );
 			} else {
@@ -241,67 +249,59 @@ class UserProfile extends Component {
 		}
 	}
 
-	handleAddFriend = () => {
-		api.addFriend( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleAddFriend())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.socket.emit( "sendNotification", res.data );
-				}
-			}).catch( err => console.log( err ));
+	addFriend = async() => {
+		try {
+			const response = await api.addFriend( this.props.username );
+			if ( response === "jwt expired" ) {
+				await refreshToken();
+				this.addFriend();
+			} else if ( response.data ) {
+				this.setState({ userRequested: true });
+				this.props.socket.emit( "sendNotification", response.data );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
-	handleFollow = () => {
-		api.followUser( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleFollow())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.socket.emit( "sendNotification", res.data );
-					this.refreshTimeline();
-				}
-			}).catch( err => console.log( err ));
+	follow = async() => {
+		var user = this.state.user;
+		try {
+			const notification = await api.followUser( this.props.username );
+			if ( notification === "jwt expired" ) {
+				await refreshToken();
+				this.follow();
+			} else if ( notification.data ) {
+				user.followers.push( localStorage.getItem( "id" ));
+				this.setState({ user: user });
+				this.props.socket.emit( "sendNotification", notification.data );
+				this.refreshTimeline();
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
-	handleReqAccept = () => {
-		api.acceptRequest( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleReqAccept())
-						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
+	unFriend = async() => {
+		var user = this.state.user;
+		try {
+			const response = await api.deleteFriend( this.props.username );
+			if ( response === "jwt expired" ) {
+				await refreshToken();
+				this.unFriend();
+			} else {
+				const index = user.friends.indexOf(
+					localStorage.getItem( "id" ));
+				user.friends.splice( index, 1 );
+				this.setState({ user: user });
+				this.refreshTimeline();
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
-	handleReqDelete = () => {
-		api.acceptRequest( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleReqDelete())
-						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
-	}
-
-	handleDeleteFriend = () => {
-		api.deleteFriend( this.props.username )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleDeleteFriend())
-						.catch( err => console.log( err ));
-				}
-			}).catch( err => console.log( err ));
-	}
-
-	unFollow = async username => {
+	unFollow = async() => {
 		var user = this.state.user;
 		try {
 			const response = await api.unfollowUser( this.props.username );
@@ -309,16 +309,38 @@ class UserProfile extends Component {
 				await refreshToken();
 				this.unFollow();
 			} else {
-				const index = user.followers.indexOf( this.props.username );
+				const index = user.followers.indexOf(
+					localStorage.getItem( "id" ));
 				user.followers.splice( index, 1 );
 				this.setState({ user: user });
+				this.refreshTimeline();
 			}
 		} catch ( err ) {
 			console.log( err );
 		}
 	}
 
-	handleMessage = messageTarget => {
+	acceptRequest = async() => {
+		var user = this.state.user;
+		try {
+			const response = await api.acceptRequest( this.props.username );
+			if ( response === "jwt expired" ) {
+				await refreshToken();
+				this.acceptRequest();
+			} else {
+				user.friends.push( localStorage.getItem( "id" ));
+				const index = user.followers.indexOf(
+					localStorage.getItem( "id" ));
+				user.followers.splice( index, 1 );
+				this.setState({ user: user, targetRequested: false });
+				this.refreshTimeline();
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
+	startChat = messageTarget => {
 		this.props.toggleConversation( messageTarget );
 	}
 
@@ -356,13 +378,15 @@ class UserProfile extends Component {
 							<Hobbies>{user.keywords}</Hobbies>
 							<ProfileOptions
 								user={this.state.user}
-								handleFollow={this.handleFollow}
-								handleAddFriend={this.handleAddFriend}
-								handleDeleteFriend={this.handleDeleteFriend}
+								follow={this.follow}
+								addFriend={this.addFriend}
+								unFriend={this.unFriend}
 								unFollow={this.unFollow}
+								acceptRequest={this.acceptRequest}
 								goToUserSettings={this.props.goToUserSettings}
-								requested={this.state.pendingRequest}
-								handleMessage={() => this.handleMessage( user )}
+								userRequested={this.state.userRequested}
+								targetRequested={this.state.targetRequested}
+								startChat={() => this.startChat( user )}
 							/>
 							<Tabs>
 								<span onClick={() => this.props.toggleTab( "Info" )}>
@@ -377,12 +401,17 @@ class UserProfile extends Component {
 							</Tabs>
 						</UserInfo>
 					</UserInfoWrapper>
-					<UserPostsWrapper>
-						<StyledNewsFeed
-							posts={this.state.posts}
-							socket={this.props.socket}
-						/>
-					</UserPostsWrapper>
+					{this.state.posts.length > 0 ?
+						<UserPostsWrapper>
+							<StyledNewsFeed
+								posts={this.state.posts}
+								socket={this.props.socket}
+							/>
+						</UserPostsWrapper>
+						:
+						<EmptyPostsAlert>
+							@{user.username} hasn't posted yet.
+						</EmptyPostsAlert>}
 
 					{this.props.explore && this.props.next &&
 						<NextButton

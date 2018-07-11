@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -39,11 +39,11 @@ class ProfileOptions extends Component {
 		if ( user.friends.includes( localStorage.getItem( "id" ))) {
 			return (
 				<Options>
-					<Option onClick={this.props.handleDeleteFriend}>
+					<Option onClick={this.props.unFriend}>
 						<OptionIcon name="remove user" size="large" />
 						<OptionText>Unfriend</OptionText>
 					</Option>
-					<Option onClick={this.props.handleMessage}>
+					<Option onClick={this.props.startChat}>
 						<OptionIcon name="chat" size="large" />
 						<OptionText>Message</OptionText>
 					</Option>
@@ -57,7 +57,26 @@ class ProfileOptions extends Component {
 						<OptionIcon name="remove user" size="large" />
 						<OptionText>Unfollow</OptionText>
 					</Option>
-					<Option onClick={this.props.handleMessage}>
+					{this.props.userRequested ?
+						<Option>
+							<OptionIcon name="wait" size="large" />
+							<OptionText>Request Sent</OptionText>
+						</Option>
+						:
+						this.props.targetRequested ?
+							<Button
+								onClick={this.props.acceptRequest}
+								content="Accept request"
+								size="tiny"
+								primary
+							/>
+							:
+							<Option onClick={this.props.addFriend}>
+								<OptionIcon name="add user" size="large" />
+								<OptionText>Add Friend</OptionText>
+							</Option>
+					}
+					<Option onClick={this.props.startChat}>
 						<OptionIcon name="chat" size="large" />
 						<OptionText>Message</OptionText>
 					</Option>
@@ -66,22 +85,37 @@ class ProfileOptions extends Component {
 		}
 		return (
 			<Options>
-				{this.props.user.username === localStorage.getItem( "username" ) ?
+				{user.username === localStorage.getItem( "username" ) ?
 					<Option onClick={this.props.goToUserSettings}>
 						<OptionIcon className="clipboard list" size="large" />
 						<OptionText>Update profile</OptionText>
 					</Option>
 					:
 					<React.Fragment>
-						<Option onClick={this.props.handleAddFriend}>
-							<OptionIcon name="add user" size="large" />
-							<OptionText>Add Friend</OptionText>
-						</Option>
-						<Option onClick={this.props.handleFollow}>
+						{this.props.userRequested ?
+							<Option>
+								<OptionIcon name="wait" size="large" />
+								<OptionText>Request Sent</OptionText>
+							</Option>
+							:
+							this.props.targetRequested ?
+								<Button
+									onClick={this.props.acceptRequest}
+									content="Accept request"
+									size="tiny"
+									primary
+								/>
+								:
+								<Option onClick={this.props.addFriend}>
+									<OptionIcon name="add user" size="large" />
+									<OptionText>Add Friend</OptionText>
+								</Option>
+						}
+						<Option onClick={this.props.follow}>
 							<OptionIcon name="binoculars" size="large" />
 							<OptionText>Follow</OptionText>
 						</Option>
-						<Option onClick={this.props.handleMessage}>
+						<Option onClick={this.props.startChat}>
 							<OptionIcon name="chat" size="large" />
 							<OptionText>Message</OptionText>
 						</Option>
@@ -94,11 +128,12 @@ class ProfileOptions extends Component {
 
 ProfileOptions.propTypes = {
 	user: PropTypes.object.isRequired,
-	handleAddFriend: PropTypes.func.isRequired,
-	handleFollow: PropTypes.func.isRequired,
-	handleDeleteFriend: PropTypes.func.isRequired,
+	addFriend: PropTypes.func.isRequired,
+	acceptRequest: PropTypes.func.isRequired,
+	follow: PropTypes.func.isRequired,
+	unFriend: PropTypes.func.isRequired,
 	unFollow: PropTypes.func.isRequired,
-	handleMessage: PropTypes.func.isRequired,
+	startChat: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };
 
