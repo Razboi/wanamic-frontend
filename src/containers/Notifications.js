@@ -151,7 +151,7 @@ class Notifications extends Component {
 				this.unFollow();
 			} else {
 				const index = network.following.indexOf( user._id );
-				network.following.splice( network, 1 );
+				network.following.splice( index, 1 );
 				this.setState({ network: network });
 			}
 		} catch ( err ) {

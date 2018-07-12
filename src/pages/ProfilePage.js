@@ -3,6 +3,7 @@ import UserProfile from "../containers/UserProfile";
 import ChatsList from "../containers/ChatsList";
 import UserAlbum from "../containers/UserAlbum";
 import UserNetwork from "../containers/UserNetwork";
+import UserInformation from "../containers/UserInformation";
 import PropTypes from "prop-types";
 
 
@@ -56,6 +57,14 @@ class ProfilePage extends Component {
 					username={this.props.match.params.username}
 					toggleTab={this.toggleTab}
 					socket={this.props.socket}
+				/>
+			);
+		}
+		if ( this.state.tab === "Information" ) {
+			return (
+				<UserInformation
+					username={this.props.match.params.username}
+					toggleTab={this.toggleTab}
 				/>
 			);
 		}

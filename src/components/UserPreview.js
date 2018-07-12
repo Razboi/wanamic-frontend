@@ -19,7 +19,15 @@ const
 	`,
 	MatchDescription = styled.p`
 		margin: 0.5rem 0 0 0 !important;
-		font-size: 1.02rem !important;
+		font-size: 1.025rem !important;
+	`,
+	Hobbies = styled.div`
+		@media (max-width: 420px) {
+			text-align: center;
+			font-size: 1.025rem;
+			color: rgba( 0,0,0,0.5 );
+			padding: 0.66rem;
+		}
 	`,
 	UserImg = styled( Image )`
 		width: 40px !important;
@@ -58,6 +66,9 @@ class UserPreview extends Component {
 					</TextInfo>
 				</UserInfo>
 				<MatchDescription>{user.description}</MatchDescription>
+				<Hobbies>
+					{"#" + user.keywords.toString().replace( /,/g, " #" )}
+				</Hobbies>
 				{localStorage.getItem( "username" ) !== user.username &&
 				<FollowButtonComponent
 					user={user}

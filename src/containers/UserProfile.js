@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Icon, Label } from "semantic-ui-react";
 import api from "../services/api";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
@@ -68,9 +68,14 @@ const
 			color: rgba( 0,0,0,0.5 );
 		}
 	`,
+	LikesCount = styled( Label )`
+		@media (max-width: 420px) {
+			margin-top: 0.5rem !important;
+		}
+	`,
 	Description = styled.p`
 		@media (max-width: 420px) {
-			margin: 1rem 0;
+			margin: 2rem 0 0.5rem 0;
 			text-align: left;
 			font-size: 1.025rem;
 			padding: 0 0.66rem;
@@ -374,6 +379,10 @@ class UserProfile extends Component {
 							<UserImage src={profileImg} />
 							<Fullname>{user.fullname}</Fullname>
 							<Username>@{user.username}</Username>
+							<LikesCount basic>
+								<Icon name="like" color="red" />
+								{user.totalLikes}
+							</LikesCount>
 							<Description>{user.description}</Description>
 							<Hobbies>{user.keywords}</Hobbies>
 							<ProfileOptions
@@ -389,7 +398,8 @@ class UserProfile extends Component {
 								startChat={() => this.startChat( user )}
 							/>
 							<Tabs>
-								<span onClick={() => this.props.toggleTab( "Info" )}>
+								<span onClick={() =>
+									this.props.toggleTab( "Information" )}>
 									Information
 								</span>
 								<span onClick={() => this.props.toggleTab( "Album" )}>
