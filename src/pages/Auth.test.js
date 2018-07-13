@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import AuthPage from "./AuthPage";
+import Auth from "./Auth";
 import configureStore from "redux-mock-store";
 import createBrowserHistory from "history/createBrowserHistory";
 import sinon from "sinon";
@@ -11,7 +11,7 @@ import sinon from "sinon";
 const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "< AuthPage />", () => {
+describe( "< Auth />", () => {
 	var
 		wrapper,
 		history,
@@ -23,7 +23,7 @@ describe( "< AuthPage />", () => {
 		store = mockStore();
 		history = createBrowserHistory();
 		wrapper = shallow(
-			<AuthPage
+			<Auth
 				store={store}
 				history={history}
 			/>
@@ -33,7 +33,7 @@ describe( "< AuthPage />", () => {
 	});
 
 	// elements render
-	it( "checks that AuthPage renders", () => {
+	it( "checks that Auth renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 

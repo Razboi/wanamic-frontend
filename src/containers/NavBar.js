@@ -4,8 +4,6 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
-import { switchNotifications } from "../services/actions/notifications";
-import { switchMessages } from "../services/actions/conversations";
 import { logout } from "../services/actions/auth";
 
 var profileImage;
@@ -120,7 +118,9 @@ class NavBar extends Component {
 						onClick={this.handleHome}
 					/>
 				</NavOption>
-				<NavOption onClick={this.handleNotifications}>
+				<NavOption
+					onClick={() => this.props.history.push( "/notifications" )}
+				>
 					<Icon
 						name="bell outline"
 						color={this.props.displayNotifications ? "black" : null}
@@ -140,7 +140,7 @@ class NavBar extends Component {
 						onClick={this.handleExplore}
 					/>
 				</NavOption>
-				<NavOption onClick={this.handleMessages}>
+				<NavOption onClick={() => this.props.history.push( "/messages" )}>
 					<Icon
 						name="conversation"
 						color={this.props.displayMessages ? "black" : null}
@@ -188,24 +188,18 @@ class NavBar extends Component {
 
 NavBar.propTypes = {
 	mediaOptions: PropTypes.bool,
-	switchNotifications: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
-	chatNotifications: PropTypes.array.isRequired,
-	displayNotifications: PropTypes.bool.isRequired
+	chatNotifications: PropTypes.array.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		chatNotifications: state.conversations.notifications,
-		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages
+		chatNotifications: state.conversations.notifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: ( id ) => dispatch( switchMessages( id )),
 		logout: () => dispatch( logout())
 	});
 

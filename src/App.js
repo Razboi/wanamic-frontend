@@ -1,36 +1,136 @@
 import React, { Component } from "react";
-import AuthPage from "./pages/AuthPage";
-import HomePage from "./pages/HomePage";
-import ProfilePage from "./pages/ProfilePage";
-import SettingsPage from "./pages/SettingsPage";
+import Auth from "./pages/Auth";
+import Newsfeed from "./pages/Newsfeed";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
-import WelcomePage from "./pages/WelcomePage";
-import ExplorePage from "./pages/ExplorePage";
+import Welcome from "./pages/Welcome";
+import Notifications from "./pages/Notifications";
+import Messages from "./pages/Messages";
+import Explore from "./pages/Explore";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 import io from "socket.io-client";
+import {
+	setNotifications, addNotification
+} from "./services/actions/notifications";
+import {
+	setChatNotifications, addConversation, updateConversation,
+	addChatNotification, incrementChatNewMessages
+} from "./services/actions/conversations";
+import { connect } from "react-redux";
+import api from "./services/api";
+import refreshToken from "./utils/refreshToken";
+import { withRouter } from "react-router-dom";
 
 const
 	socket = io( "http://localhost:8000" );
 
-// Switch will render the first match. /:username must be last
+
 class App extends Component {
+	componentDidMount() {
+		if ( this.props.authenticated ) {
+			this.setupNotifications();
+			this.setupSockets();
+		}
+	}
+
+	async setupNotifications() {
+		const notifications = await api.getNotifications();
+		if ( notifications === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.setupNotifications();
+		} else if ( notifications.data ) {
+			this.props.setNotifications(
+				notifications.data.notifications,
+				notifications.data.newNotifications
+			);
+			this.props.setChatNotifications(
+				notifications.data.chatNotifications );
+		}
+	}
+
+	setupSockets = () => {
+		const userData = {
+			token: localStorage.getItem( "token" ),
+			username: localStorage.getItem( "username" )
+		};
+		socket.emit( "register", userData );
+		socket.on( "notifications", notification => {
+			this.props.addNotification( notification );
+		});
+		socket.on( "message", async message => {
+			const {
+				displayMessages, conversations, addConversation,
+				addChatNotification, updateConversation, chatNotifications,
+				incrementChatNewMessages
+			} = this.props;
+			if ( !chatNotifications.includes( message.author )) {
+				addChatNotification( message.author );
+			}
+			if ( displayMessages ) {
+				for ( const [ i, conversation ] of conversations.entries()) {
+					if ( conversation.target.username === message.author ) {
+						updateConversation( message, i );
+						incrementChatNewMessages( i );
+						return;
+					}
+				}
+				const newConversation = await api.getConversation(
+					message.author );
+				addConversation( newConversation.data );
+			}
+		});
+	}
 	render() {
+		// Switch will render the first match. /:username must be last
 		return (
 			<div>
 				<Switch>
-					<UserRoute exact path="/" component={HomePage} socket={socket}/>
-					<GuestRoute path="/login" component={AuthPage} />
-					<UserRoute path="/settings" component={SettingsPage}/>
-					<NewUserRoute path="/welcome" component={WelcomePage} />
-					<UserRoute path="/explore" component={ExplorePage} socket={socket} />
+					<UserRoute exact path="/" component={Newsfeed} socket={socket}/>
+					<GuestRoute path="/login" component={Auth} />
+					<UserRoute
+						path="/notifications" component={Notifications} socket={socket}
+					/>
+					<UserRoute
+						path="/messages" component={Messages} socket={socket}
+					/>
+					<UserRoute path="/settings" component={Settings}/>
+					<NewUserRoute path="/welcome" component={Welcome} />
+					<UserRoute
+						path="/explore" component={Explore} socket={socket}
+					/>
 
-					<UserRoute path="/:username" component={ProfilePage} socket={socket} />
+					<UserRoute path="/:username" component={Profile} socket={socket} />
 				</Switch>
 			</div>
 		);
 	}
 }
 
-export default App;
+const
+	mapStateToProps = state => ({
+		conversations: state.conversations.allConversations,
+		chatNotifications: state.conversations.notifications,
+		authenticated: state.authenticated
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setChatNotifications: authors => dispatch( setChatNotifications( authors )),
+		addConversation: conver => dispatch( addConversation( conver )),
+		updateConversation: ( message, index ) =>
+			dispatch( updateConversation( message, index )),
+		incrementChatNewMessages: index => dispatch( incrementChatNewMessages( index )),
+		addNotification: notif => dispatch( addNotification( notif )),
+		addChatNotification: notif => dispatch( addChatNotification( notif )),
+		setNotifications: ( allNotifications, newNotifications ) => {
+			dispatch( setNotifications( allNotifications, newNotifications ));
+		}
+	});
+
+export default withRouter( connect( mapStateToProps, mapDispatchToProps )( App ));

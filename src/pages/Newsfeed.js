@@ -5,13 +5,6 @@ import { logout } from "../services/actions/auth";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
-import {
-	setNotifications, addNotification
-} from "../services/actions/notifications";
-import {
-	setChatNotifications, addConversation, updateConversation,
-	addChatNotification, incrementChatNewMessages
-} from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
@@ -21,8 +14,6 @@ import Comments from "../containers/Comments";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
-import Notifications from "../containers/Notifications";
-import ChatsList from "../containers/ChatsList";
 import refreshToken from "../utils/refreshToken";
 
 const
@@ -75,60 +66,6 @@ class HomePage extends Component {
 
 	componentDidMount() {
 		this.refreshNewsFeed();
-		this.setupNotifications();
-		this.setupSockets();
-	}
-
-	async setupNotifications() {
-		const notifications = await api.getNotifications();
-		if ( notifications === "jwt expired" ) {
-			try {
-				await refreshToken();
-			} catch ( err ) {
-				console.log( err );
-			}
-			this.setupNotifications();
-		} else {
-			this.props.setNotifications(
-				notifications.data.notifications,
-				notifications.data.newNotifications
-			);
-			this.props.setChatNotifications(
-				notifications.data.chatNotifications );
-		}
-	}
-
-	setupSockets = () => {
-		const userData = {
-			token: localStorage.getItem( "token" ),
-			username: localStorage.getItem( "username" )
-		};
-		this.props.socket.emit( "register", userData );
-		this.props.socket.on( "notifications", notification => {
-			this.props.addNotification( notification );
-		});
-		this.props.socket.on( "message", async message => {
-			const {
-				displayMessages, conversations, addConversation,
-				addChatNotification, updateConversation, chatNotifications,
-				incrementChatNewMessages
-			} = this.props;
-			if ( !chatNotifications.includes( message.author )) {
-				addChatNotification( message.author );
-			}
-			if ( displayMessages ) {
-				for ( const [ i, conversation ] of conversations.entries()) {
-					if ( conversation.target.username === message.author ) {
-						updateConversation( message, i );
-						incrementChatNewMessages( i );
-						return;
-					}
-				}
-				const newConversation = await api.getConversation(
-					message.author );
-				addConversation( newConversation.data );
-			}
-		});
 	}
 
 	getNewsFeed = () => {
@@ -191,10 +128,6 @@ class HomePage extends Component {
 					{this.props.displayShare && <Share />}
 					{this.props.displayComments && <Comments
 						socket={this.props.socket} />}
-					{this.props.displayNotifications && <Notifications
-						socket={this.props.socket} />}
-					{this.props.displayMessages && <ChatsList
-						socket={this.props.socket} />}
 
 					{this.props.mediaOptions &&
 						<MediaOptions
@@ -217,12 +150,8 @@ class HomePage extends Component {
 }
 
 HomePage.propTypes = {
-	logout: PropTypes.func.isRequired,
-	setNewsfeed: PropTypes.func.isRequired,
-	switchMediaOptions: PropTypes.func.isRequired,
-	history: PropTypes.shape({
-		push: PropTypes.func.isRequired
-	}).isRequired,
+	history: PropTypes.object.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 const
@@ -230,11 +159,7 @@ const
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
 		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare,
-		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages,
-		conversations: state.conversations.allConversations,
-		chatNotifications: state.conversations.notifications
+		displayShare: state.posts.displayShare
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -242,16 +167,6 @@ const
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		setChatNotifications: authors => dispatch( setChatNotifications( authors )),
-		addConversation: conver => dispatch( addConversation( conver )),
-		updateConversation: ( message, index ) =>
-			dispatch( updateConversation( message, index )),
-		incrementChatNewMessages: index => dispatch( incrementChatNewMessages( index )),
-		addNotification: notif => dispatch( addNotification( notif )),
-		addChatNotification: notif => dispatch( addChatNotification( notif )),
-		setNotifications: ( allNotifications, newNotifications ) => {
-			dispatch( setNotifications( allNotifications, newNotifications ));
-		},
 		logout: () => dispatch( logout())
 	});
 

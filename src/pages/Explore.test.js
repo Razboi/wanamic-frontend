@@ -4,13 +4,13 @@ import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
 import configureStore from "redux-mock-store";
-import ExplorePage from "./ExplorePage";
+import Explore from "./Explore";
 import sinon from "sinon";
 
 const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<ExplorePage/>", () => {
+describe( "<Explore/>", () => {
 	var
 		wrapper,
 		socketSpy = sinon.spy(),
@@ -23,18 +23,18 @@ describe( "<ExplorePage/>", () => {
 			conversations: { displayMessages: false }
 		});
 		wrapper = shallow(
-			<ExplorePage
+			<Explore
 				socket={{ emit: socketSpy, on: socketSpy }}
 				store={store}
 			/>
 		).dive();
 	});
 
-	it( "Checks that <ExplorePage/> renders", () => {
+	it( "Checks that <Explore/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
-	it( "Checks that every <ExplorePage/> children renders", () => {
+	it( "Checks that every <Explore/> children renders", () => {
 		expect( wrapper.children().children()).to.have.length( 3 );
 	});
 

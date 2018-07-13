@@ -8,15 +8,12 @@ import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
-import Notifications from "../containers/Notifications";
-import ChatsList from "../containers/ChatsList";
 import {
 	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
 } from "../services/actions/posts";
 import { logout } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { setNotifications, addNotification } from "../services/actions/notifications";
 
 const
 	Wrapper = styled.div`
@@ -240,9 +237,6 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					{displayNotifications && <Notifications />}
-					{displayMessages && <ChatsList
-						socket={this.props.socket} />}
 					<NavBar />
 					{!displayNotifications && !displayMessages &&
 						<Header>
@@ -311,10 +305,6 @@ const
 		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		addNotification: notification => dispatch( addNotification( notification )),
-		setNotifications: ( allNotifications, newNotifications ) => {
-			dispatch( setNotifications( allNotifications, newNotifications ));
-		},
 		logout: () => dispatch( logout())
 	});
 

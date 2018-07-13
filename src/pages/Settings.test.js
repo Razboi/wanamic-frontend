@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import SettingsPage from "./SettingsPage";
+import Settings from "./Settings";
 import configureStore from "redux-mock-store";
 import sinon from "sinon";
 
@@ -11,14 +11,14 @@ const mockStore = configureStore();
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<SettingsPage/>", () => {
+describe( "<Settings/>", () => {
 	const
 		store = mockStore({}),
 		wrapper = shallow(
-			<SettingsPage store={store} />
+			<Settings store={store} />
 		).dive();
 
-	it( "Checks that <SettingsPage/> renders", () => {
+	it( "Checks that <Settings/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import UserProfile from "../containers/UserProfile";
-import ChatsList from "../containers/ChatsList";
+import Messages from "../pages/Messages";
 import UserAlbum from "../containers/UserAlbum";
 import UserNetwork from "../containers/UserNetwork";
 import UserInformation from "../containers/UserInformation";
@@ -35,7 +35,7 @@ class ProfilePage extends Component {
 	render() {
 		if ( this.state.displayConversation ) {
 			return (
-				<ChatsList
+				<Messages
 					messageTarget={this.state.messageTarget}
 					toggleConversation={this.toggleConversation}
 					toggleTab={this.toggleTab}

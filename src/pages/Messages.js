@@ -13,6 +13,7 @@ import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
 import refreshToken from "../utils/refreshToken";
 import moment from "moment";
+import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
@@ -272,6 +273,7 @@ class ChatsList extends Component {
 		if ( !messageTarget ) {
 			return (
 				<Wrapper>
+					<NavBar />
 					<PageHeader>Conversations</PageHeader>
 					<div className="conversationsList">
 						{this.props.conversations.map(( chat, index ) =>

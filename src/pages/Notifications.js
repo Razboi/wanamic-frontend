@@ -4,14 +4,15 @@ import { Image } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
-import PostDetails from "./PostDetails";
-import Comments from "./Comments";
+import PostDetails from "../containers/PostDetails";
+import Comments from "../containers/Comments";
 import api from "../services/api";
 import { switchComments } from "../services/actions/posts";
 import { checkNotification } from "../services/actions/notifications";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
 import NotificationButton from "../components/NotificationButton";
+import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
@@ -209,6 +210,7 @@ class Notifications extends Component {
 		}
 		return (
 			<Wrapper>
+				<NavBar />
 				<Header>Notifications</Header>
 				{this.state.network &&
 					<div>
