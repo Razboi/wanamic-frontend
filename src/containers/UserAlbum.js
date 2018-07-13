@@ -28,7 +28,7 @@ const
 	Album = styled.div`
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-between;
+		justify-content: start;
     align-content: start;
 	`,
 	PictureWrapper = styled.div`

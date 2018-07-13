@@ -21,13 +21,23 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
-		background: rgba(0,0,0,0.166);
+		background: #fff;
+		&:after {
+			background: rgba(0,0,0,.0975);
+	    content: '';
+	    height: 1px;
+	    left: 0;
+	    position: absolute;
+	    right: 0;
+	    bottom: -1px;
+		}
 	`,
 	NavOption = styled.span`
-		color: #fff !important;
+		color: rgba( 0, 0, 0, .5 ) !important;
 		position: relative;
 		i {
-			font-size: 1.5rem !important;
+			font-size: 1.45rem !important;
+			margin: 0 !important;
 		}
 	`,
 	ProfileImg = styled( Image )`
@@ -103,17 +113,16 @@ class NavBar extends Component {
 					<Icon
 						color={this.props.location.pathname === "/" &&
 									!this.props.displayMessages &&
-									!this.props.displayNotifications ? "black" : null}
+									!this.props.displayNotifications ?
+							"black" : null}
 						className="test"
 						name="home"
-						size="large"
 						onClick={this.handleHome}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleNotifications}>
 					<Icon
 						name="bell outline"
-						size="large"
 						color={this.props.displayNotifications ? "black" : null}
 					/>
 					{this.props.newNotifications > 0 &&
@@ -125,7 +134,6 @@ class NavBar extends Component {
 				<NavOption>
 					<Icon
 						name="search"
-						size="large"
 						color={this.props.location.pathname === "/explore" &&
 									!this.props.displayMessages &&
 									!this.props.displayNotifications ? "black" : null}
@@ -135,7 +143,6 @@ class NavBar extends Component {
 				<NavOption onClick={this.handleMessages}>
 					<Icon
 						name="conversation"
-						size="large"
 						color={this.props.displayMessages ? "black" : null}
 					/>
 					{this.props.chatNotifications.length > 0 &&

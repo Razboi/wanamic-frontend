@@ -22,6 +22,14 @@ const
 		background: #fff;
 		padding-top: 49.33px;
 	`,
+	Header = styled.div`
+		border-bottom: 1px solid #000;
+		padding: 15px 10px;
+		font-size: 17px;
+		font-weight: bold;
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		text-align: center;
+	`,
 	Notification = styled.div`
 		display: flex;
 		flex-direction: row;
@@ -29,7 +37,6 @@ const
 		justify-content: space-between;
 		padding: 1rem;
 		background: #fff;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
 	`,
 	NotificationImg = styled( Image )`
 		width: 35px !important;
@@ -37,7 +44,7 @@ const
 		align-self: flex-start;
 	`,
 	MediaImg = styled( Image )`
-		width: 40px !important;
+		max-width: 40px !important;
 		height: 40px !important;
 	`,
 	NotificationData = styled.div`
@@ -52,12 +59,6 @@ const
 	Content = styled.p`
 		margin-bottom: 0px;
 		font-size: 15px;
-	`,
-	Header = styled.div`
-		border-bottom: 1px solid #000;
-		padding: 15px 10px;
-		font-size: 17px;
-		font-weight: bold;
 	`;
 
 class Notifications extends Component {
@@ -206,58 +207,58 @@ class Notifications extends Component {
 				/>
 			);
 		}
-		if ( !this.state.network ) {
-			return null;
-		}
 		return (
 			<Wrapper>
 				<Header>Notifications</Header>
-				{this.props.notifications.map(( notification, index ) =>
-					<React.Fragment key={index}>
-						<Notification checked={notification.checked}>
-							<NotificationImg
-								onClick={() => this.handleDetails( notification, index )}
-								circular
-								src={notification.author.profileImage ?
-									require( "../images/" + notification.author.profileImage )
-									:
-									require( "../images/defaultUser.png" )
-								}
-							/>
-							<NotificationData
-								onClick={() => this.handleDetails( notification, index )}
-							>
-								<Content>
-									<b>{notification.author.fullname}</b> {notification.content}
-								</Content>
-								<TimeAgo>
-									{moment( notification.createdAt ).fromNow()}
-								</TimeAgo>
-							</NotificationData>
-							{notification.mediaImg &&
-								<MediaImg
-									src={notification.externalImg ?
-										notification.mediaImg
-										:
-										require( "../images/" + notification.mediaImg )
+				{this.state.network &&
+					<div>
+						{this.props.notifications.map(( notification, index ) =>
+							<React.Fragment key={index}>
+								<Notification checked={notification.checked}>
+									<NotificationImg
+										onClick={() => this.handleDetails( notification, index )}
+										circular
+										src={notification.author.profileImage ?
+											require( "../images/" + notification.author.profileImage )
+											:
+											require( "../images/defaultUser.png" )
+										}
+									/>
+									<NotificationData
+										onClick={() => this.handleDetails( notification, index )}
+									>
+										<Content>
+											<b>{notification.author.fullname}</b> {notification.content}
+										</Content>
+										<TimeAgo>
+											{moment( notification.createdAt ).fromNow()}
+										</TimeAgo>
+									</NotificationData>
+									{notification.mediaImg &&
+										<MediaImg
+											src={notification.externalImg ?
+												notification.mediaImg
+												:
+												require( "../images/" + notification.mediaImg )
+											}
+										/>
 									}
-								/>
-							}
-							<NotificationButton
-								network={this.state.network}
-								notification={notification}
-								acceptRequest={() =>
-									this.acceptRequest( notification.author )}
-								handleFollow={() =>
-									this.handleFollow( notification.author )}
-								unFollow={() =>
-									this.unFollow( notification.author )}
-								unFriend={() =>
-									this.unFriend( notification.author )}
-							/>
-						</Notification>
-					</React.Fragment>
-				)}
+									<NotificationButton
+										network={this.state.network}
+										notification={notification}
+										acceptRequest={() =>
+											this.acceptRequest( notification.author )}
+										handleFollow={() =>
+											this.handleFollow( notification.author )}
+										unFollow={() =>
+											this.unFollow( notification.author )}
+										unFriend={() =>
+											this.unFriend( notification.author )}
+									/>
+								</Notification>
+							</React.Fragment>
+						)}
+					</div>}
 			</Wrapper>
 		);
 	}

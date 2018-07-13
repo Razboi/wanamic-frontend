@@ -227,7 +227,6 @@ class MediaPost extends Component {
 		} catch ( err ) {
 			console.log( err );
 		}
-
 		return (
 			<Wrapper>
 				<PostHeader className="mediaPostHeader">
@@ -276,13 +275,15 @@ class MediaPost extends Component {
 										mediaPicture : post.mediaContent.image
 								}
 								/>
-								<h4>{post.mediaContent.title}</h4>
 								{post.picture ?
 									<MediaImage src={mediaPicture} className="mediaPicture" />
 									:
-									<MediaImage src={post.mediaContent.image}
-										className="mediaArtwork"
-									/>
+									<React.Fragment>
+										<h4>{post.mediaContent.title}</h4>
+										<MediaImage src={post.mediaContent.image}
+											className="mediaArtwork"
+										/>
+									</React.Fragment>
 								}
 							</PostMediaContent>
 						}

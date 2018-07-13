@@ -36,7 +36,7 @@ const
 			display: grid;
 			margin-top: 49.33px;
 			grid-template-columns: 100%;
-			grid-template-rows: 10% auto;
+			grid-template-rows: 49.33px auto;
 			grid-template-areas:
 				"h"
 				"c"
@@ -46,7 +46,6 @@ const
 		@media (max-width: 420px) {
 			grid-area: h;
 			height: 100%;
-			border-bottom: 1px solid #D8D8D8;
 			display: grid;
 			grid-template-columns: 50% 50%;
 			grid-template-rows: 100%;
@@ -218,6 +217,7 @@ class ExplorePage extends Component {
 
 
 	render() {
+		const { displayNotifications, displayMessages } = this.props;
 		if ( this.state.renderProfile ) {
 			return (
 				<UserProfile
@@ -240,28 +240,30 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					{this.props.displayNotifications && <Notifications />}
-					{this.props.displayMessages && <ChatsList
+					{displayNotifications && <Notifications />}
+					{displayMessages && <ChatsList
 						socket={this.props.socket} />}
 					<NavBar />
-					<Header>
-						<UserSubheader>
-							<Icon
-								className="userIcon"
-								name="user"
-								size="large"
-								onClick={() => this.setState({ content: false })}
-							/>
-						</UserSubheader>
-						<ContentSubheader>
-							<Icon
-								className="contentIcon"
-								name="content"
-								size="large"
-								onClick={() => this.setState({ content: true })}
-							/>
-						</ContentSubheader>
-					</Header>
+					{!displayNotifications && !displayMessages &&
+						<Header>
+							<UserSubheader>
+								<Icon
+									className="userIcon"
+									name="user"
+									size="large"
+									onClick={() => this.setState({ content: false })}
+								/>
+							</UserSubheader>
+							<ContentSubheader>
+								<Icon
+									className="contentIcon"
+									name="content"
+									size="large"
+									onClick={() => this.setState({ content: true })}
+								/>
+							</ContentSubheader>
+						</Header>
+					}
 					<MainComponent>
 						{this.state.content ?
 							<ExploreContent

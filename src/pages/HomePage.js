@@ -50,6 +50,8 @@ const
 		transform: translateX(-50%);
 		bottom: 5px;
 		z-index: 3;
+		background: rgb(51,51,51, 0.85) !important;
+		color: #fff !important;
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};

@@ -25,7 +25,8 @@ const
 		padding-top: 49.33px;
 	`,
 	PageHeader = styled.div`
-		border-bottom: 1px solid #000;
+		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		text-align: center;
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;

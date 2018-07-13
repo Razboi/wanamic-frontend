@@ -8,7 +8,7 @@ const
 		@media (max-width: 420px) {
 			display: grid;
 			grid-template-columns: 100%;
-			grid-row-gap: 7px;
+			grid-row-gap: ${props => props.hideText ? "0" : "7px"};
 			grid-template-rows: 50% 50%;
 			grid-template-areas:
 				"img"
@@ -16,7 +16,7 @@ const
 		}
 		display: grid;
 		grid-template-columns: 40% 60%;
-		grid-column-gap: 7px;
+		grid-column-gap: ${props => props.hideText ? "0" : "7px"};
 		grid-template-rows: 100%;
 		grid-template-areas:
 			"img txt"
@@ -24,10 +24,12 @@ const
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
 		width: 100%;
+		border-radius: ${props => props.hideText ? "8px" : "0"};
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
 		width: 100%;
+		border-radius: ${props => props.hideText ? "8px" : "0"};
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
@@ -59,9 +61,13 @@ class LinkPreview extends Component {
 	render() {
 		return (
 			<a href={this.props.linkContent.url}>
-				<LinkPreviewWrapper className="linkPreviewWrapper">
+				<LinkPreviewWrapper
+					hideText={this.props.hideText}
+					className="linkPreviewWrapper"
+				>
 					{this.props.linkContent.embeddedUrl ?
 						<LinkPreviewIframe
+							hideText={this.props.hideText}
 							className="linkPreviewIframe"
 							src={this.props.linkContent.embeddedUrl}
 							frameborder="0"
@@ -70,22 +76,24 @@ class LinkPreview extends Component {
 						/>
 						:
 						<LinkPreviewImage
+							hideText={this.props.hideText}
 							className="linkPreviewImage"
 							src={this.props.linkContent.image}
 						/>
 					}
-
-					<LinkPreviewText className="linkPreviewText">
-						<LinkPreviewHeader>
-							{this.props.linkContent.title}
-						</LinkPreviewHeader>
-						<LinkPreviewDescription>
-							{this.props.linkContent.description}
-						</LinkPreviewDescription>
-						<LinkPreviewHostname>
-							{this.props.linkContent.hostname}
-						</LinkPreviewHostname>
-					</LinkPreviewText>
+					{!this.props.hideText &&
+						<LinkPreviewText className="linkPreviewText">
+							<LinkPreviewHeader>
+								{this.props.linkContent.title}
+							</LinkPreviewHeader>
+							<LinkPreviewDescription>
+								{this.props.linkContent.description}
+							</LinkPreviewDescription>
+							<LinkPreviewHostname>
+								{this.props.linkContent.hostname}
+							</LinkPreviewHostname>
+						</LinkPreviewText>
+					}
 				</LinkPreviewWrapper>
 			</a>
 		);
@@ -93,7 +101,8 @@ class LinkPreview extends Component {
 }
 
 LinkPreview.propTypes = {
-	linkContent: PropTypes.object.isRequired
+	linkContent: PropTypes.object.isRequired,
+	hideText: PropTypes.bool
 };
 
 export default LinkPreview;
