@@ -6,11 +6,12 @@ import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		border: 1px solid #808080;
+		border: 1px solid rgba(0,0,0,0.266);
 	`;
 
 class SharedPost extends Component {
 	render() {
+		console.log( this.props.post );
 		return (
 			<Wrapper>
 				{this.props.post.media ?

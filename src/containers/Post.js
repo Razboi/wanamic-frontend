@@ -15,7 +15,8 @@ import AlertsFilter from "../components/AlertsFilter";
 const
 	Wrapper = styled.div`
 		position: relative;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		border-bottom: ${props => props.shared ?
+		"0" : "1px solid rgba(0, 0, 0, .1)"};
 	`,
 	PostHeader = styled( Header )`
 		height: 60px;
@@ -55,11 +56,11 @@ const
 	`,
 	ContentWrapper = styled.div`
 		display: flex;
+		flex-direction: column;
 		padding: 0px 1rem;
 		min-height: 25px;
 	`,
 	UserContent = styled.p`
-		align-self: center;
 		word-break: break-all;
 	`,
 	PostBody = styled.div`
@@ -188,7 +189,7 @@ class Post extends Component {
 			console.log( err );
 		}
 		return (
-			<Wrapper>
+			<Wrapper shared={this.props.fakeOptions ? 1 : 0}>
 				<PostHeader>
 					<AuthorImg
 						circular
@@ -259,8 +260,8 @@ class Post extends Component {
 Post.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
-	socket: PropTypes.object.isRequired,
-	goToProfile: PropTypes.func.isRequired
+	socket: PropTypes.object,
+	goToProfile: PropTypes.func
 };
 
 const

@@ -133,8 +133,12 @@ export default {
 
 	getUserInfo: username =>
 		axios({
-			method: "get",
-			url: "/user/" + username
+			method: "post",
+			data: {
+				username: username,
+				token: localStorage.getItem( "token" )
+			},
+			url: "/user/userInfo"
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
@@ -557,6 +561,17 @@ export default {
 				username: username
 			},
 			url: "/user/getUserNetwork/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getLikesAndViews: () =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: "/user/getLikesAndViews/"
 		})
 			.then( res => res )
 			.catch( err => {

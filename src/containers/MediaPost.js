@@ -17,7 +17,8 @@ const
 		overflow: hidden;
 		display: grid;
 		position: relative;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		border-bottom: ${props => props.shared ?
+		"0" : "1px solid rgba(0, 0, 0, .1)"};
 	`,
 	PostHeader = styled( Header )`
 		height: 60px;
@@ -228,7 +229,7 @@ class MediaPost extends Component {
 			console.log( err );
 		}
 		return (
-			<Wrapper>
+			<Wrapper shared={this.props.fakeOptions ? 1 : 0}>
 				<PostHeader className="mediaPostHeader">
 					<AuthorImg
 						circular
@@ -322,7 +323,8 @@ class MediaPost extends Component {
 MediaPost.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
-	goToProfile: PropTypes.func.isRequired
+	socket: PropTypes.object,
+	goToProfile: PropTypes.func
 };
 
 const

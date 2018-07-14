@@ -50,6 +50,29 @@ const
 	DropdownUsername = styled.span`
 		color: rgba( 0,0,0,0.5 );
 		font-size: 1rem;
+	`,
+	StyledDropdownItem = styled( Dropdown.Item )`
+		display: flex !important;
+		align-content: center !important;
+		justify-content: center !important;
+	`,
+	Scores = styled( Dropdown.Item )`
+		display: flex !important;
+		align-content: center !important;
+		justify-content: center !important;
+		font-size: 1rem !important;
+	`,
+	UserInfo = styled( Dropdown.Item )`
+		display: flex !important;
+		flex-direction: column !important;
+		align-content: center !important;
+		justify-content: center !important;
+	`,
+	Count = styled.span`
+		font-weight: bold;
+		margin-top: -7px;
+		z-index: 2;
+		font-size: 1.1rem;
 	`;
 
 
@@ -156,25 +179,27 @@ class NavBar extends Component {
 						trigger={<ProfileImg circular src={profileImage} />}
 						icon={null} direction="left">
 						<Dropdown.Menu>
-							<Dropdown.Item
+							<UserInfo
 								onClick={() => this.props.history.push( "/" + username )}
 							>
 								<DropdownFullname>{fullname}</DropdownFullname>
 								<DropdownUsername>@{username}</DropdownUsername>
-							</Dropdown.Item>
+							</UserInfo>
 							<Dropdown.Divider />
-							<Dropdown.Item
-								text="Total likes"
-							/>
-							<Dropdown.Item
-								text="Total views"
-							/>
+							<Scores>
+								<Icon name="like" color="red" />
+								<Count>{this.props.totalLikes}</Count>
+							</Scores>
+							<Scores>
+								<Icon name="eye" color="blue" />
+								<Count>{this.props.totalViews}</Count>
+							</Scores>
 							<Dropdown.Divider />
-							<Dropdown.Item
+							<StyledDropdownItem
 								text="Logout"
 								onClick={this.props.logout}
 							/>
-							<Dropdown.Item
+							<StyledDropdownItem
 								text="Settings"
 								onClick={() => this.props.history.push( "/settings" )}
 							/>
@@ -190,13 +215,17 @@ NavBar.propTypes = {
 	mediaOptions: PropTypes.bool,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
-	chatNotifications: PropTypes.array.isRequired
+	chatNotifications: PropTypes.array.isRequired,
+	totalLikes: PropTypes.number.isRequired,
+	totalViews: PropTypes.number.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		chatNotifications: state.conversations.notifications
+		chatNotifications: state.conversations.notifications,
+		totalLikes: state.user.totalLikes,
+		totalViews: state.user.totalViews
 	}),
 
 	mapDispatchToProps = dispatch => ({

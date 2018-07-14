@@ -3,14 +3,10 @@ import Post from "../containers/Post";
 import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import SharedPost from "../containers/SharedPost";
 
 const
 	Wrapper = styled.div`
 		height: 100%;
-	`,
-	PostWrapper = styled.article`
-		/* margin-bottom: 1rem; */
 	`;
 
 class NewsFeed extends Component {
@@ -23,27 +19,22 @@ class NewsFeed extends Component {
 		return (
 			<Wrapper>
 				{this.props.posts.map(( post, index ) =>
-					post.sharedPost ?
-						<SharedPost post={post.sharedPost} />
+					post.media ?
+						<MediaPost
+							key={index}
+							index={index}
+							post={post}
+							socket={this.props.socket}
+							goToProfile={() => this.goToProfile( post.author )}
+						/>
 						:
-						post.media ?
-							<PostWrapper key={index}>
-								<MediaPost
-									index={index}
-									post={post}
-									socket={this.props.socket}
-									goToProfile={() => this.goToProfile( post.author )}
-								/>
-							</PostWrapper>
-							:
-							<PostWrapper key={index}>
-								<Post
-									index={index}
-									post={post}
-									socket={this.props.socket}
-									goToProfile={() => this.goToProfile( post.author )}
-								/>
-							</PostWrapper>
+						<Post
+							key={index}
+							index={index}
+							post={post}
+							socket={this.props.socket}
+							goToProfile={() => this.goToProfile( post.author )}
+						/>
 				)}
 			</Wrapper>
 		);

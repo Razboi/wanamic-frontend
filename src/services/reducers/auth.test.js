@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import authenticated from "./user";
+import authenticated from "./auth";
 import { userLoggedIn, userLoggedOut } from "../actions/auth";
 
 

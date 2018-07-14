@@ -19,6 +19,7 @@ import {
 	setChatNotifications, addConversation, updateConversation,
 	addChatNotification, incrementChatNewMessages
 } from "./services/actions/conversations";
+import { setupLikesViews } from "./services/actions/user";
 import { connect } from "react-redux";
 import api from "./services/api";
 import refreshToken from "./utils/refreshToken";
@@ -33,6 +34,7 @@ class App extends Component {
 		if ( this.props.authenticated ) {
 			this.setupNotifications();
 			this.setupSockets();
+			this.getLikesAndViews();
 		}
 	}
 
@@ -87,6 +89,21 @@ class App extends Component {
 			}
 		});
 	}
+
+	getLikesAndViews = async() => {
+		const likesAndViews = await api.getLikesAndViews();
+		if ( likesAndViews === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.getLikesAndViews();
+		} else if ( likesAndViews.data ) {
+			const { totalLikes, totalViews } = likesAndViews.data;
+			this.props.setupLikesViews( totalLikes, totalViews );
+		}
+	}
 	render() {
 		// Switch will render the first match. /:username must be last
 		return (
@@ -121,11 +138,15 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		setChatNotifications: authors => dispatch( setChatNotifications( authors )),
+		setupLikesViews: ( likes, views ) =>
+			dispatch( setupLikesViews( likes, views )),
+		setChatNotifications: authors =>
+			dispatch( setChatNotifications( authors )),
 		addConversation: conver => dispatch( addConversation( conver )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
-		incrementChatNewMessages: index => dispatch( incrementChatNewMessages( index )),
+		incrementChatNewMessages: index =>
+			dispatch( incrementChatNewMessages( index )),
 		addNotification: notif => dispatch( addNotification( notif )),
 		addChatNotification: notif => dispatch( addChatNotification( notif )),
 		setNotifications: ( allNotifications, newNotifications ) => {

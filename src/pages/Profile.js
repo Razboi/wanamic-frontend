@@ -33,6 +33,10 @@ class ProfilePage extends Component {
 		this.setState({ tab: tab });
 	}
 	render() {
+		const username = this.props.user ?
+			this.props.user.username
+			:
+			this.props.match.params.username;
 		if ( this.state.displayConversation ) {
 			return (
 				<Messages
@@ -46,7 +50,7 @@ class ProfilePage extends Component {
 		if ( this.state.tab === "Album" ) {
 			return (
 				<UserAlbum
-					username={this.props.match.params.username}
+					username={username}
 					toggleTab={this.toggleTab}
 				/>
 			);
@@ -54,7 +58,7 @@ class ProfilePage extends Component {
 		if ( this.state.tab === "Network" ) {
 			return (
 				<UserNetwork
-					username={this.props.match.params.username}
+					username={username}
 					toggleTab={this.toggleTab}
 					socket={this.props.socket}
 				/>
@@ -63,7 +67,7 @@ class ProfilePage extends Component {
 		if ( this.state.tab === "Information" ) {
 			return (
 				<UserInformation
-					username={this.props.match.params.username}
+					username={username}
 					toggleTab={this.toggleTab}
 				/>
 			);
@@ -71,11 +75,17 @@ class ProfilePage extends Component {
 		return (
 			<UserProfile
 				socket={this.props.socket}
-				username={this.props.match.params.username}
-				backToMain={this.backToMain}
+				username={username}
+				backToMain={ this.props.explore ?
+					this.props.backToMenu
+					:
+					this.backToMain}
 				goToUserSettings={this.goToUserSettings}
 				toggleConversation={this.toggleConversation}
 				toggleTab={this.toggleTab}
+				next={this.props.next}
+				explore={this.props.explore}
+				user={this.props.user}
 			/>
 		);
 	}

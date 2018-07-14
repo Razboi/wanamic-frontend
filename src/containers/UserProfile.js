@@ -116,15 +116,12 @@ const
 		align-items: center;
 		justify-content: center;
 	`,
-	BackButton = styled( Button )`
-		position: absolute;
-		bottom: 10px;
-		left: 10px;
-	`,
 	NextButton = styled( Button )`
-		position: absolute;
+		position: fixed;
 		bottom: 10px;
 		right: 10px;
+		background: rgba( 0,0,0,0.5 ) !important;
+		color: #fff !important;
 	`;
 
 
@@ -423,20 +420,13 @@ class UserProfile extends Component {
 							@{user.username} hasn't posted yet.
 						</EmptyPostsAlert>}
 
-					{this.props.explore && this.props.next &&
+					{this.props.explore &&
 						<NextButton
 							className="nextButton"
-							primary
-							content="Next"
+							circular
+							icon="angle double right"
+							size="large"
 							onClick={this.props.next}
-						/>
-					}
-					{this.props.explore && this.props.backToMenu &&
-						<BackButton
-							className="backButton"
-							secondary
-							content="Back to menu"
-							onClick={this.props.backToMenu}
 						/>
 					}
 				</StyledInfiniteScroll>

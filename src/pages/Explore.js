@@ -3,17 +3,11 @@ import styled from "styled-components";
 import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import ExploreUsers from "../components/ExploreUsers";
-import UserProfile from "../containers/UserProfile";
+import Profile from "./Profile";
 import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
-import {
-	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
-} from "../services/actions/posts";
-import { logout } from "../services/actions/auth";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
@@ -67,6 +61,12 @@ const
 	MainComponent = styled.div`
 		@media (max-width: 420px) {
 			grid-area: c;
+		}
+	`,
+	HeaderIcon = styled( Icon )`
+		@media (max-width: 420px) {
+			color: ${props => props.active ?
+		"#000" : "rgba( 0,0,0,.5 )"} !important;
 		}
 	`;
 
@@ -214,17 +214,15 @@ class ExplorePage extends Component {
 
 
 	render() {
-		const { displayNotifications, displayMessages } = this.props;
 		if ( this.state.renderProfile ) {
 			return (
-				<UserProfile
+				<Profile
 					className="exploreProfile"
 					user={this.state.user}
-					username={this.state.user.username}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}
-					socket={this.props.socket}
 					explore={true}
+					socket={this.props.socket}
 				/>
 			);
 		}
@@ -238,26 +236,26 @@ class ExplorePage extends Component {
 					useWindow={false}
 				>
 					<NavBar />
-					{!displayNotifications && !displayMessages &&
-						<Header>
-							<UserSubheader>
-								<Icon
-									className="userIcon"
-									name="user"
-									size="large"
-									onClick={() => this.setState({ content: false })}
-								/>
-							</UserSubheader>
-							<ContentSubheader>
-								<Icon
-									className="contentIcon"
-									name="content"
-									size="large"
-									onClick={() => this.setState({ content: true })}
-								/>
-							</ContentSubheader>
-						</Header>
-					}
+					<Header>
+						<UserSubheader>
+							<HeaderIcon
+								active={!this.state.content ? 1 : 0}
+								className="userIcon"
+								name="user"
+								size="large"
+								onClick={() => this.setState({ content: false })}
+							/>
+						</UserSubheader>
+						<ContentSubheader>
+							<HeaderIcon
+								active={this.state.content ? 1 : 0}
+								className="contentIcon"
+								name="content"
+								size="large"
+								onClick={() => this.setState({ content: true })}
+							/>
+						</ContentSubheader>
+					</Header>
 					<MainComponent>
 						{this.state.content ?
 							<ExploreContent
@@ -281,31 +279,5 @@ class ExplorePage extends Component {
 	}
 }
 
-ExplorePage.propTypes = {
-	logout: PropTypes.func.isRequired,
-	setNewsfeed: PropTypes.func.isRequired,
-	switchMediaOptions: PropTypes.func.isRequired,
-	history: PropTypes.shape({
-		push: PropTypes.func.isRequired
-	}).isRequired,
-};
 
-const
-	mapStateToProps = state => ({
-		newsfeed: state.posts.newsfeed,
-		mediaOptions: state.posts.mediaOptions,
-		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare,
-		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages
-	}),
-
-	mapDispatchToProps = dispatch => ({
-		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
-		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
-		addPost: post => dispatch( addPost( post )),
-		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		logout: () => dispatch( logout())
-	});
-
-export default connect( mapStateToProps, mapDispatchToProps )( ExplorePage );
+export default ExplorePage;

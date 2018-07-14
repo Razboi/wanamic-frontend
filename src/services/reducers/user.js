@@ -1,11 +1,18 @@
+const initialState = {
+	totalLikes: 0,
+	totalViews: 0
+};
 
-// gets current state and the action, returns the next state
-export default function authenticated( state = false, action = {}) {
+export default function user( state = initialState, action = {}) {
 	switch ( action.type ) {
-	case "USER_LOGGED_IN":
-		return true;
-	case "USER_LOGGED_OUT":
-		return false;
+
+	case "SET_LIKES_AND_VIEWS":
+		return {
+			...state,
+			totalLikes: action.totalLikes,
+			totalViews: action.totalViews
+		};
+
 	default:
 		return state;
 	}
