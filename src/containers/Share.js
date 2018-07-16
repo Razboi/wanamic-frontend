@@ -80,7 +80,7 @@ class Share extends Component {
 						.catch( err => console.log( err ));
 				} else {
 					this.props.addPost( res.data.newPost );
-					this.props.updatePost( res.data.clickedPost );
+					this.props.updatePost( res.data.postToShare );
 					this.props.switchShare( undefined );
 				}
 			}).catch( err => console.log( err ));

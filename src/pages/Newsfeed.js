@@ -115,7 +115,10 @@ class HomePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<NavBar mediaOptions={this.props.mediaOptions} />
+					<NavBar
+						socket={this.props.socket}
+						mediaOptions={this.props.mediaOptions}
+					/>
 					{this.state.mediaButton &&
 						<ShareMediaButton
 							circular

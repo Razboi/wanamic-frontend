@@ -51,7 +51,7 @@ class PostDetails extends Component {
 							name="arrow left"
 							onClick={this.props.switchDetails}
 						/>
-						<HeaderTxt>Post</HeaderTxt>
+						<HeaderTxt>Post details</HeaderTxt>
 					</HeaderWrapper>
 					{this.state.post.media ?
 						<MediaPost

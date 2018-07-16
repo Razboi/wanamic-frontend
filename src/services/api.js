@@ -349,7 +349,7 @@ export default {
 			data: {
 				token: localStorage.getItem( "token" ),
 				postId: postId,
-				shareComment: shareComment
+				description: shareComment
 			},
 			url: "/posts/share/"
 		})

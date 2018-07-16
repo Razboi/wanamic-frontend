@@ -235,7 +235,7 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<NavBar />
+					<NavBar socket={this.props.socket} />
 					<Header>
 						<UserSubheader>
 							<HeaderIcon

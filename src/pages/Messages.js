@@ -79,7 +79,7 @@ const
 	`;
 
 
-class ChatsList extends Component {
+class Messages extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -273,7 +273,7 @@ class ChatsList extends Component {
 		if ( !messageTarget ) {
 			return (
 				<Wrapper>
-					<NavBar />
+					<NavBar socket={this.props.socket} />
 					<PageHeader>Conversations</PageHeader>
 					<div className="conversationsList">
 						{this.props.conversations.map(( chat, index ) =>
@@ -295,7 +295,7 @@ class ChatsList extends Component {
 										{chat.target.fullname}
 									</UserFullname>
 									<LastMessage>
-										@{chat.messages[ chat.messages.length - 1 ].author}: {
+										@{chat.messages[ chat.messages.length - 1 ].author.username}: {
 											chat.messages[ chat.messages.length - 1 ].content}
 									</LastMessage>
 								</TextInfo>
@@ -328,7 +328,7 @@ class ChatsList extends Component {
 	}
 }
 
-ChatsList.propTypes = {
+Messages.propTypes = {
 	conversations: PropTypes.array.isRequired,
 	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired,
@@ -356,4 +356,4 @@ const
 			dispatch( updateConversation( message, index )),
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( ChatsList );
+export default connect( mapStateToProps, mapDispatchToProps )( Messages );

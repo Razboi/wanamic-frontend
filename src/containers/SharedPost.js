@@ -11,7 +11,6 @@ const
 
 class SharedPost extends Component {
 	render() {
-		console.log( this.props.post );
 		return (
 			<Wrapper>
 				{this.props.post.media ?

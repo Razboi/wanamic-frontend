@@ -25,13 +25,22 @@ import api from "./services/api";
 import refreshToken from "./utils/refreshToken";
 import { withRouter } from "react-router-dom";
 
-const
-	socket = io( "http://localhost:8000" );
+var socket = {};
 
 
 class App extends Component {
 	componentDidMount() {
 		if ( this.props.authenticated ) {
+			socket = io( "http://localhost:8000" );
+			this.setupNotifications();
+			this.setupSockets();
+			this.getLikesAndViews();
+		}
+	}
+
+	componentDidUpdate( prevProps ) {
+		if ( !prevProps.authenticated && this.props.authenticated ) {
+			socket = io( "http://localhost:8000" );
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
@@ -63,19 +72,19 @@ class App extends Component {
 			username: localStorage.getItem( "username" )
 		};
 		socket.emit( "register", userData );
-		socket.on( "notifications", notification => {
+		socket.on( "notifications", async notification => {
 			this.props.addNotification( notification );
 		});
 		socket.on( "message", async message => {
 			const {
-				displayMessages, conversations, addConversation,
+				conversations, addConversation,
 				addChatNotification, updateConversation, chatNotifications,
 				incrementChatNewMessages
 			} = this.props;
 			if ( !chatNotifications.includes( message.author )) {
 				addChatNotification( message.author );
 			}
-			if ( displayMessages ) {
+			if ( this.props.location.pathname === "/messages" ) {
 				for ( const [ i, conversation ] of conversations.entries()) {
 					if ( conversation.target.username === message.author ) {
 						updateConversation( message, i );

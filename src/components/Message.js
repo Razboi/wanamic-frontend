@@ -37,7 +37,7 @@ class Message extends Component {
 		return (
 			<MessageWrapper
 				fromUser={
-					this.props.message.author === localStorage.getItem( "username" )
+					this.props.message.author.username === localStorage.getItem( "username" )
 				}
 			>
 				<MessageContent>{this.props.message.content}</MessageContent>

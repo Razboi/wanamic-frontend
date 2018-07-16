@@ -6,8 +6,6 @@ import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
 
-var profileImage;
-
 const
 	Wrapper = styled.div`
 		z-index: 4;
@@ -81,11 +79,11 @@ class NavBar extends Component {
 		if ( this.props.location.pathname !== "/" ) {
 			this.props.history.push( "/" );
 		}
-		if ( this.props.displayNotifications ) {
-			this.props.switchNotifications();
-		}
-		if ( this.props.displayMessages ) {
-			this.props.switchMessages();
+	}
+
+	handleNotifications = () => {
+		if ( this.props.location.pathname !== "/notifications" ) {
+			this.props.history.push( "/notifications" );
 		}
 	}
 
@@ -93,35 +91,40 @@ class NavBar extends Component {
 		if ( this.props.location.pathname !== "/explore" ) {
 			this.props.history.push( "/explore" );
 		}
-		if ( this.props.displayNotifications ) {
-			this.props.switchNotifications();
-		}
-		if ( this.props.displayMessages ) {
-			this.props.switchMessages();
-		}
-	}
-
-	handleNotifications = () => {
-		this.props.switchNotifications();
-		if ( this.props.displayMessages ) {
-			this.props.switchMessages();
-		}
 	}
 
 	handleMessages = () => {
-		this.props.switchMessages();
-		if ( this.props.displayNotifications ) {
-			this.props.switchNotifications();
+		if ( this.props.location.pathname !== "/messages" ) {
+			this.props.history.push( "/messages" );
 		}
 	}
 
+	goToProfile = username => {
+		if ( this.props.location.pathname !== "/" + username ) {
+			this.props.history.push( "/" + username );
+		}
+	}
+
+	goToSettings = username => {
+		if ( this.props.location.pathname !== "/settings" ) {
+			this.props.history.push( "/settings" );
+		}
+	}
+
+	handleLogout = () => {
+		this.props.socket.disconnect();
+		this.props.logout();
+	}
+
 	render() {
+		var profileImage;
 		const
 			username = localStorage.getItem( "username" ),
 			fullname = localStorage.getItem( "fullname" );
 		try {
 			if ( localStorage.getItem( "uimg" )) {
-				profileImage = require( "../images/" + localStorage.getItem( "uimg" ));
+				profileImage = require( "../images/" +
+				localStorage.getItem( "uimg" ));
 			} else {
 				profileImage = require( "../images/defaultUser.png" );
 			}
@@ -130,23 +133,18 @@ class NavBar extends Component {
 		}
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
-				<NavOption>
+				<NavOption onClick={this.handleHome}>
 					<Icon
-						color={this.props.location.pathname === "/" &&
-									!this.props.displayMessages &&
-									!this.props.displayNotifications ?
+						color={this.props.location.pathname === "/" ?
 							"black" : null}
-						className="test"
 						name="home"
-						onClick={this.handleHome}
 					/>
 				</NavOption>
-				<NavOption
-					onClick={() => this.props.history.push( "/notifications" )}
-				>
+				<NavOption onClick={this.handleNotifications}>
 					<Icon
 						name="bell outline"
-						color={this.props.displayNotifications ? "black" : null}
+						color={this.props.location.pathname === "/notifications" ?
+							"black" : null}
 					/>
 					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
@@ -154,19 +152,18 @@ class NavBar extends Component {
 						</NotificationsLength>
 					}
 				</NavOption>
-				<NavOption>
+				<NavOption onClick={this.handleExplore}>
 					<Icon
 						name="search"
-						color={this.props.location.pathname === "/explore" &&
-									!this.props.displayMessages &&
-									!this.props.displayNotifications ? "black" : null}
-						onClick={this.handleExplore}
+						color={this.props.location.pathname === "/explore" ?
+							"black" : null}
 					/>
 				</NavOption>
-				<NavOption onClick={() => this.props.history.push( "/messages" )}>
+				<NavOption onClick={this.handleMessages}>
 					<Icon
 						name="conversation"
-						color={this.props.displayMessages ? "black" : null}
+						color={this.props.location.pathname === "/messages" ?
+							"black" : null}
 					/>
 					{this.props.chatNotifications.length > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
@@ -180,7 +177,7 @@ class NavBar extends Component {
 						icon={null} direction="left">
 						<Dropdown.Menu>
 							<UserInfo
-								onClick={() => this.props.history.push( "/" + username )}
+								onClick={() => this.goToProfile( username )}
 							>
 								<DropdownFullname>{fullname}</DropdownFullname>
 								<DropdownUsername>@{username}</DropdownUsername>
@@ -197,11 +194,11 @@ class NavBar extends Component {
 							<Dropdown.Divider />
 							<StyledDropdownItem
 								text="Logout"
-								onClick={this.props.logout}
+								onClick={this.handleLogout}
 							/>
 							<StyledDropdownItem
 								text="Settings"
-								onClick={() => this.props.history.push( "/settings" )}
+								onClick={this.goToSettings}
 							/>
 						</Dropdown.Menu>
 					</Dropdown>

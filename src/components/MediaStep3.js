@@ -114,7 +114,7 @@ class MediaStep3 extends Component {
 							{this.props.privacyRange === 1 && "Friends"}
 							{this.props.privacyRange === 2 && "Friends and Followers"}
 							{this.props.privacyRange === 3 &&
-								"Everybody (will be included in the explore page)"}
+								"Everybody (will be included in the explore page unless it has alerts)"}
 						</SliderHeader>
 						<PrivacySlider range={this.props.privacyRange}>
 							<PrivacyButton

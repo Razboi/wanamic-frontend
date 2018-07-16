@@ -210,7 +210,7 @@ class Notifications extends Component {
 		}
 		return (
 			<Wrapper>
-				<NavBar />
+				<NavBar socket={this.props.socket} />
 				<Header>Notifications</Header>
 				{this.state.network &&
 					<div>

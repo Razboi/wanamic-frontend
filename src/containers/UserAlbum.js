@@ -91,12 +91,14 @@ class UserAlbum extends Component {
 				</HeaderWrapper>
 				{this.state.album.length > 0 ?
 					<Album>
-						{this.state.album.map(( pic, index ) =>
+						{this.state.album.map(( post, index ) =>
 							<PictureWrapper
 								key={index}
 								rightImg={( index + 1 ) % 3 === 0}
 							>
-								<UserPicture src={require( "../images/" + pic )} />
+								<UserPicture
+									src={require( "../images/" + post.mediaContent.image )}
+								/>
 							</PictureWrapper>
 						)}
 					</Album>
