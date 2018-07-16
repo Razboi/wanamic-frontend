@@ -24,7 +24,10 @@ class ExploreContent extends Component {
 		return (
 			<Wrapper options={ { transitionDuration: "0.95s" } }>
 				{this.props.posts.map(( post, index ) =>
-					<PostWrapper key={index}>
+					<PostWrapper
+						key={index}
+						onClick={() => this.props.displayPostDetails( post )}
+					>
 						<ExplorePost
 							post={post}
 						/>
@@ -36,7 +39,8 @@ class ExploreContent extends Component {
 }
 
 ExploreContent.propTypes = {
-	posts: PropTypes.array.isRequired
+	posts: PropTypes.array.isRequired,
+	displayPostDetails: PropTypes.func.isRequired
 };
 
 export default ExploreContent;

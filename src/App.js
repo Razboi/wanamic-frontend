@@ -131,7 +131,6 @@ class App extends Component {
 					<UserRoute
 						path="/explore" component={Explore} socket={socket}
 					/>
-
 					<UserRoute path="/:username" component={Profile} socket={socket} />
 				</Switch>
 			</div>

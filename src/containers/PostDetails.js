@@ -35,9 +35,21 @@ class PostDetails extends Component {
 		};
 	}
 	componentDidMount() {
-		api.getPost( this.props.postId )
-			.then( res => this.setState({ post: res.data }))
-			.catch( err => console.log( err ));
+		if ( !this.props.post ) {
+			this.getPost();
+		} else {
+			this.setState({ post: this.props.post });
+		}
+	}
+
+	getPost = async() => {
+		var posts;
+		try {
+			posts = await api.getPost( this.props.postId );
+		} catch ( err ) {
+			console.log( err );
+		}
+		this.setState({ post: posts.data });
 	}
 	render() {
 		if ( !this.state.post ) {
@@ -69,7 +81,8 @@ class PostDetails extends Component {
 }
 
 PostDetails.propTypes = {
-	postId: PropTypes.string.isRequired
+	postId: PropTypes.string,
+	post: PropTypes.object
 };
 
 export default PostDetails;

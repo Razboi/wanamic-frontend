@@ -8,6 +8,7 @@ import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
+import PostDetails from "../containers/PostDetails";
 
 const
 	Wrapper = styled.div`
@@ -82,7 +83,9 @@ class ExplorePage extends Component {
 			hasMore: true,
 			content: true,
 			posts: [],
-			user: {}
+			user: {},
+			postDetails: false,
+			selectedPost: {}
 		};
 	}
 
@@ -212,6 +215,20 @@ class ExplorePage extends Component {
 		}
 	}
 
+	displayPostDetails = post => {
+		this.setState({
+			postDetails: true,
+			selectedPost: post
+		});
+	}
+
+	hidePostDetails = () => {
+		this.setState({
+			postDetails: false,
+			selectedPost: {}
+		});
+	}
+
 
 	render() {
 		if ( this.state.renderProfile ) {
@@ -223,6 +240,14 @@ class ExplorePage extends Component {
 					next={this.nextUser}
 					explore={true}
 					socket={this.props.socket}
+				/>
+			);
+		}
+		if ( this.state.postDetails ) {
+			return (
+				<PostDetails
+					post={this.state.selectedPost}
+					switchDetails={this.hidePostDetails}
 				/>
 			);
 		}
@@ -261,6 +286,7 @@ class ExplorePage extends Component {
 							<ExploreContent
 								className="exploreContent"
 								posts={this.state.posts}
+								displayPostDetails={this.displayPostDetails}
 							/>
 							:
 							<ExploreUsers

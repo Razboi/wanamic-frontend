@@ -4,6 +4,7 @@ import { Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
+import PostDetails from "../containers/PostDetails";
 
 const
 	Wrapper = styled.div`
@@ -60,12 +61,16 @@ class UserAlbum extends Component {
 	constructor() {
 		super();
 		this.state = {
-			album: []
+			album: [],
+			selectedPost: {},
+			postDetails: false
 		};
 	}
+
 	componentDidMount() {
 		this.getAlbum();
 	}
+
 	getAlbum = async() => {
 		try {
 			const album = await api.getUserAlbum( this.props.username );
@@ -79,7 +84,30 @@ class UserAlbum extends Component {
 			console.log( err );
 		}
 	}
+
+	displayPostDetails = post => {
+		this.setState({
+			postDetails: true,
+			selectedPost: post
+		});
+	}
+
+	hidePostDetails = () => {
+		this.setState({
+			postDetails: false,
+			selectedPost: {}
+		});
+	}
+
 	render() {
+		if ( this.state.postDetails ) {
+			return (
+				<PostDetails
+					post={this.state.selectedPost}
+					switchDetails={this.hidePostDetails}
+				/>
+			);
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -94,6 +122,7 @@ class UserAlbum extends Component {
 						{this.state.album.map(( post, index ) =>
 							<PictureWrapper
 								key={index}
+								onClick={() => this.displayPostDetails( post )}
 								rightImg={( index + 1 ) % 3 === 0}
 							>
 								<UserPicture
