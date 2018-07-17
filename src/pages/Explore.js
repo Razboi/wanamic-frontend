@@ -9,6 +9,10 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
+import {
+	setPosts, addToPosts, switchPostDetails
+} from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -82,10 +86,8 @@ class ExplorePage extends Component {
 			skip: 1,
 			hasMore: true,
 			content: true,
-			posts: [],
 			user: {},
-			postDetails: false,
-			selectedPost: {}
+			selectedPost: 0
 		};
 	}
 
@@ -93,17 +95,14 @@ class ExplorePage extends Component {
 		this.refreshPosts();
 	}
 
-	refreshPosts = () => {
-		api.exploreContent( 0 )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.refreshPosts())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.setState({ posts: res.data });
-				}
-			}).catch( err => console.log( err ));
+	refreshPosts = async() => {
+		const posts = await api.exploreContent( 0 );
+		if ( posts === "jwt expired" ) {
+			await refreshToken();
+			this.refreshPosts();
+		} else if ( posts.data ) {
+			this.props.setPosts( posts.data, true );
+		}
 	}
 
 	getSugestedUser = () => {
@@ -205,8 +204,8 @@ class ExplorePage extends Component {
 							.then(() => this.getPosts())
 							.catch( err => console.log( err ));
 					} else if ( res.data ) {
+						this.props.addToPosts( res.data, true );
 						this.setState({
-							posts: [ ...this.state.posts, ...res.data ],
 							hasMore: res.data.length > 10,
 							skip: this.state.skip + 1
 						});
@@ -217,16 +216,16 @@ class ExplorePage extends Component {
 
 	displayPostDetails = post => {
 		this.setState({
-			postDetails: true,
 			selectedPost: post
 		});
+		this.props.switchPostDetails();
 	}
 
 	hidePostDetails = () => {
 		this.setState({
-			postDetails: false,
 			selectedPost: {}
 		});
+		this.props.switchPostDetails();
 	}
 
 
@@ -243,11 +242,12 @@ class ExplorePage extends Component {
 				/>
 			);
 		}
-		if ( this.state.postDetails ) {
+		if ( this.props.displayPostDetails ) {
 			return (
 				<PostDetails
-					post={this.state.selectedPost}
+					post={this.props.posts[ this.state.selectedPost ]}
 					switchDetails={this.hidePostDetails}
+					socket={this.props.socket}
 				/>
 			);
 		}
@@ -285,7 +285,7 @@ class ExplorePage extends Component {
 						{this.state.content ?
 							<ExploreContent
 								className="exploreContent"
-								posts={this.state.posts}
+								posts={this.props.posts}
 								displayPostDetails={this.displayPostDetails}
 							/>
 							:
@@ -305,5 +305,19 @@ class ExplorePage extends Component {
 	}
 }
 
+const
+	mapStateToProps = state => ({
+		posts: state.posts.explore,
+		displayPostDetails: state.posts.displayPostDetails
+	}),
 
-export default ExplorePage;
+	mapDispatchToProps = dispatch => ({
+		setPosts: ( posts, onExplore ) =>
+			dispatch( setPosts( posts, onExplore )),
+		addToPosts: ( posts, onExplore ) =>
+			dispatch( addToPosts( posts, onExplore )),
+		switchPostDetails: () => dispatch( switchPostDetails())
+	});
+
+
+export default connect( mapStateToProps, mapDispatchToProps )( ExplorePage );

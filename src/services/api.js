@@ -119,14 +119,15 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	updatePost: ( postId, content ) =>
+	updatePost: ( postId, newContent ) =>
 		axios({
 			method: "patch",
 			url: "/posts/update",
-			data: { data: {
+			data: {
 				token: localStorage.getItem( "token" ),
-				post: { id: postId, content: content }
-			} }
+				postId: postId,
+				newContent: newContent
+			}
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -141,7 +142,9 @@ export default {
 			url: "/user/userInfo"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	setUserInfo: data =>
 		axios({

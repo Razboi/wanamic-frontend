@@ -28,13 +28,25 @@ const
 	    bottom: -1px;
 		}
 	`,
-	NavOption = styled.span`
+	NavOption = styled.div`
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: rgba( 0, 0, 0, .5 ) !important;
-		position: relative;
 		i {
 			font-size: 1.45rem !important;
 			margin: 0 !important;
 		}
+	`,
+	NavImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
 	`,
 	ProfileImg = styled( Image )`
 		width: 30px !important;
@@ -133,18 +145,22 @@ class NavBar extends Component {
 		}
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
-				<NavOption onClick={this.handleHome}>
-					<Icon
-						color={this.props.location.pathname === "/" ?
-							"black" : null}
-						name="home"
+				<NavOption onClick={this.handleHome} >
+					<NavImage
+						image={this.props.location.pathname === "/" ?
+							require( "../images/home.png" )
+							:
+							require( "../images/home_white.png" )
+						}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleNotifications}>
-					<Icon
-						name="bell outline"
-						color={this.props.location.pathname === "/notifications" ?
-							"black" : null}
+					<NavImage
+						image={this.props.location.pathname === "/notifications" ?
+							require( "../images/notification.png" )
+							:
+							require( "../images/notification_white.png" )
+						}
 					/>
 					{this.props.newNotifications > 0 &&
 						<NotificationsLength size="small" floating circular color="red">
@@ -153,17 +169,21 @@ class NavBar extends Component {
 					}
 				</NavOption>
 				<NavOption onClick={this.handleExplore}>
-					<Icon
-						name="search"
-						color={this.props.location.pathname === "/explore" ?
-							"black" : null}
+					<NavImage
+						image={this.props.location.pathname === "/explore" ?
+							require( "../images/earth.png" )
+							:
+							require( "../images/earth_white.png" )
+						}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleMessages}>
-					<Icon
-						name="conversation"
-						color={this.props.location.pathname === "/messages" ?
-							"black" : null}
+					<NavImage
+						image={this.props.location.pathname === "/messages" ?
+							require( "../images/conversation.png" )
+							:
+							require( "../images/conversation_white.png" )
+						}
 					/>
 					{this.props.chatNotifications.length > 0 &&
 						<NotificationsLength size="small" floating circular color="red">

@@ -49,6 +49,7 @@ class Step4 extends Component {
 				<MatchesWrapper className="matchesWrapper">
 					{matchedUsers.map(( user, index ) =>
 						<UserPreview
+							welcome
 							key={index}
 							user={user}
 							handleFollow={handleFollow}

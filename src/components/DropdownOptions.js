@@ -17,7 +17,7 @@ class DropdownOptions extends Component {
 	render() {
 		return (
 			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
-				{ localStorage.getItem( "username" ) === this.props.author ?
+				{ localStorage.getItem( "id" ) === this.props.author._id ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal trigger={<Dropdown.Item text="Update" />} >
 							<Modal.Content>
@@ -57,7 +57,7 @@ class DropdownOptions extends Component {
 }
 
 DropdownOptions.propTypes = {
-	author: PropTypes.string.isRequired,
+	author: PropTypes.object.isRequired,
 	handleDelete: PropTypes.func.isRequired,
 	handleUpdate: PropTypes.func.isRequired
 };

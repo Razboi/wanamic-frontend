@@ -47,11 +47,12 @@ class UserPreview extends Component {
 	render() {
 		const {
 			user, handleFollow, handleUnfollow, handleUnfriend,
-			alreadyFollowing, alreadyFriends
+			alreadyFollowing, alreadyFriends, handleClick
 		} = this.props;
 		return (
 			<Wrapper>
-				<UserInfo>
+				<UserInfo onClick={() =>
+					handleClick && handleClick( user.username )}>
 					<UserImg
 						circular
 						src={user.profileImage ?
@@ -91,6 +92,7 @@ UserPreview.propTypes = {
 	handleUnfriend: PropTypes.func,
 	alreadyFollowing: PropTypes.bool,
 	alreadyFriends: PropTypes.bool,
+	handleClick: PropTypes.func
 };
 
 export default UserPreview;

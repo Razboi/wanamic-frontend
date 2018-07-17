@@ -1,7 +1,7 @@
 export const
 	// action types
-	SET_NEWSFEED = "SET_NEWSFEED",
-	ADD_TO_NEWSFEED = "ADD_TO_NEWSFEED",
+	SET_POSTS = "SET_POSTS",
+	ADD_TO_POSTS = "ADD_TO_POSTS",
 	SWITCH_MEDIA_OPTIONS = "SWITCH_MEDIA_OPTIONS",
 	SWITCH_COMMENTS = "SWITCH_COMMENTS",
 	SWITCH_SHARE = "SWITCH_SHARE",
@@ -11,16 +11,20 @@ export const
 	UPDATE_POST = "UPDATE_POST",
 	ADD_POST = "ADD_POST",
 	DELETE_POST = "DELETE_POST",
+	SWITCH_POST_DETAILS = "SWITCH_POST_DETAILS",
 
-	// action creators
-	setNewsfeed = posts => ({
-		type: SET_NEWSFEED,
-		posts: posts
+
+	setPosts = ( posts, onExplore, onAlbum ) => ({
+		type: SET_POSTS,
+		posts: posts,
+		onExplore: onExplore,
+		onAlbum: onAlbum
 	}),
 
-	addToNewsfeed = posts => ({
-		type: ADD_TO_NEWSFEED,
-		posts: posts
+	addToPosts = ( posts, onExplore ) => ({
+		type: ADD_TO_POSTS,
+		posts: posts,
+		onExplore: onExplore
 	}),
 
 	addPost = post => ({
@@ -28,9 +32,9 @@ export const
 		post: post
 	}),
 
-	deletePost = postIndex => ({
+	deletePost = postId => ({
 		type: DELETE_POST,
-		postIndex: postIndex
+		postId: postId
 	}),
 
 	updatePost = post => ({
@@ -65,4 +69,8 @@ export const
 	switchComments = ( id ) => ({
 		type: SWITCH_COMMENTS,
 		postDetailsId: id
+	}),
+
+	switchPostDetails = () => ({
+		type: SWITCH_POST_DETAILS
 	});

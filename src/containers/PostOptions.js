@@ -48,7 +48,7 @@ class PostOptions extends Component {
 
 				<Option className="commentOption"
 					onClick={() =>
-						this.props.switchComments( this.props.id, this.props.index )
+						this.props.switchComments( this.props.id )
 					}
 				>
 					<Icon
@@ -89,7 +89,7 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id, index ) => dispatch( switchComments( id, index )),
+		switchComments: id => dispatch( switchComments( id )),
 		switchShare: postIndex => dispatch( switchShare( postIndex ))
 	});
 

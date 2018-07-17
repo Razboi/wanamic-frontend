@@ -11,21 +11,19 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<PostDetails/>", () => {
 	var
-		store = mockStore({}),
+		store = mockStore({ posts: { displayComments: false } }),
 		wrapper = shallow(
 			<PostDetails
 				store={store}
 				postId={""}
 			/>
-		);
+		).dive();
 
 	it( "Checks that <PostDetails/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
 	it( "Checks that <PostDetails/> children render", () => {
-		wrapper.setState({ post: {} });
-		expect( wrapper.children()).to.have.length( 1 );
 		expect( wrapper.children().children()).to.have.length( 2 );
 	});
 });

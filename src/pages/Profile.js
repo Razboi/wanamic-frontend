@@ -52,6 +52,7 @@ class ProfilePage extends Component {
 				<UserAlbum
 					username={username}
 					toggleTab={this.toggleTab}
+					socket={this.props.socket}
 				/>
 			);
 		}
@@ -61,6 +62,7 @@ class ProfilePage extends Component {
 					username={username}
 					toggleTab={this.toggleTab}
 					socket={this.props.socket}
+					history={this.props.history}
 				/>
 			);
 		}

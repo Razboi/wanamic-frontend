@@ -118,9 +118,10 @@ class Comment extends Component {
 	};
 
 	render() {
+		const { comment } = this.props;
 		try {
-			if ( this.props.comment.authorImg ) {
-				userPicture = require( "../images/" + this.props.comment.authorImg );
+			if ( comment.author.profileImage ) {
+				userPicture = require( "../images/" + comment.author.profileImage );
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}
@@ -133,20 +134,20 @@ class Comment extends Component {
 					<AuthorImg circular src={userPicture} />
 					<HeaderInfo>
 						<AuthorFullname className="postAuthor">
-							{this.props.comment.authorFullname}
+							{comment.author.fullname}
 							<AuthorUsername>
-								@{this.props.comment.author}
+								@{comment.author.username}
 							</AuthorUsername>
 						</AuthorFullname>
 						<DateTime className="postDate">
-							{moment( this.props.comment.createdAt ).fromNow()}
+							{moment( comment.createdAt ).fromNow()}
 						</DateTime>
 					</HeaderInfo>
 
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={this.props.comment.author}
+							author={comment.author}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}

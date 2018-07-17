@@ -6,7 +6,7 @@ import Comment from "./Comment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
-	switchComments, setComments, setNewsfeed, addComment, deleteComment, updatePost
+	switchComments, setComments, addComment, deleteComment, updatePost
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
@@ -179,14 +179,18 @@ class Comments extends Component {
 					}
 
 					this.props.addComment( res.data.newComment );
-					this.props.updatePost( res.data.updatedPost );
+					this.props.updatePost( res.data.updatedPost,
+						this.props.onExplore );
 				}
 			}).catch( err => console.log( err ));
 	}
 
 	handleDelete = ( commentIndex, updatedPost ) => {
 		this.props.deleteComment( commentIndex );
-		this.props.updatePost( updatedPost );
+		this.props.updatePost(
+			updatedPost,
+			this.props.onExplore
+		);
 	};
 
 	handleReply = targetUser => {
@@ -296,10 +300,10 @@ class Comments extends Component {
 Comments.propTypes = {
 	switchComments: PropTypes.func.isRequired,
 	setComments: PropTypes.func.isRequired,
-	setNewsfeed: PropTypes.func.isRequired,
 	postId: PropTypes.string.isRequired,
 	newsfeed: PropTypes.array.isRequired,
-	comments: PropTypes.array
+	comments: PropTypes.array,
+	onExplore: PropTypes.bool
 };
 
 const
@@ -312,10 +316,10 @@ const
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id ) => dispatch( switchComments( id )),
 		setComments: comments => dispatch( setComments( comments )),
-		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
 		addComment: comment => dispatch( addComment( comment )),
 		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
-		updatePost: post => dispatch( updatePost( post ))
+		updatePost: ( post, onExplore ) =>
+			dispatch( updatePost( post, onExplore ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Comments );

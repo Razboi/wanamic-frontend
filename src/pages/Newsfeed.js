@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import { logout } from "../services/actions/auth";
 import {
-	setNewsfeed, addToNewsfeed, switchMediaOptions, addPost
+	setPosts, addToPosts, switchMediaOptions, addPost
 } from "../services/actions/posts";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -77,7 +76,7 @@ class HomePage extends Component {
 							.then(() => this.getNewsFeed())
 							.catch( err => console.log( err ));
 					} else {
-						this.props.addToNewsfeed( res.data );
+						this.props.addToPosts( res.data );
 						this.setState({
 							hasMore: res.data.length > 10,
 							skip: this.state.skip + 1
@@ -95,7 +94,7 @@ class HomePage extends Component {
 						.then(() => this.refreshNewsFeed())
 						.catch( err => console.log( err ));
 				} else if ( res.data ) {
-					this.props.setNewsfeed( res.data );
+					this.props.setPosts( res.data );
 				}
 			})
 			.catch( err => console.log( err ));
@@ -166,11 +165,10 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		setNewsfeed: posts => dispatch( setNewsfeed( posts )),
-		addToNewsfeed: posts => dispatch( addToNewsfeed( posts )),
+		setPosts: posts => dispatch( setPosts( posts )),
+		addToPosts: posts => dispatch( addToPosts( posts )),
 		addPost: post => dispatch( addPost( post )),
-		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		logout: () => dispatch( logout())
+		switchMediaOptions: () => dispatch( switchMediaOptions())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( HomePage );

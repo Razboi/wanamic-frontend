@@ -116,29 +116,48 @@ class Post extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleDelete = () => {
-		api.deletePost( this.props.post._id )
-			.then( res => {
+	handleDelete = async() => {
+		try {
+			const res = await api.deletePost( this.props.post._id );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.handleDelete();
+			} else if ( res.data ) {
 				if ( res.data.updatedOriginalPost ) {
 					this.props.updatePost( res.data.updatedOriginalPost );
 				}
-				this.props.deletePost( this.props.index );
-			}).catch( err => console.log( err ));
+				this.props.deletePost( this.props.post._id );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 	};
 
-	handleUpdate = () => {
+	handleUpdate = async() => {
 		if ( this.state.content !== this.state.updatedContent
 			&& this.state.updatedContent !== "" ) {
-			api.updatePost( this.props.post._id, this.state.updatedContent )
-				.then( res => this.props.updatePost( res.data ))
-				.catch( err => console.log( err ));
+			try {
+				const res = await api.updatePost(
+					this.props.post._id, this.state.updatedContent );
+				if ( res === "jwt expired" ) {
+					await refreshToken();
+					this.handleUpdate();
+				} else if ( res.data ) {
+					this.props.updatePost( res.data );
+				}
+			} catch ( err ) {
+				console.log( err );
+			}
 		}
 	};
 
 	handleLike = retry => {
 		if ( !retry ) {
 			this.setState({
-				likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
+				likedBy: [
+					...this.state.likedBy,
+					localStorage.getItem( "username" )
+				]
 			});
 		}
 
@@ -269,8 +288,10 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		deletePost: postIndex => dispatch( deletePost( postIndex )),
-		updatePost: post => dispatch( updatePost( post ))
+		deletePost: postId =>
+			dispatch( deletePost( postId )),
+		updatePost: post =>
+			dispatch( updatePost( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Post );

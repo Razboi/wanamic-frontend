@@ -171,7 +171,9 @@ class UserProfile extends Component {
 				})
 				.catch( err => {
 					console.log( err );
-					this.setState({ inexistent: true });
+					if ( err.response.status === 404 ) {
+						this.setState({ inexistent: true });
+					}
 				});
 		}
 	}

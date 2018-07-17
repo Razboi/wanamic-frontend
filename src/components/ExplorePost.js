@@ -52,7 +52,7 @@ class ExplorePost extends Component {
 		return (
 			<Wrapper>
 				{post.link ?
-					<LinkPreview linkContent={post.linkContent} hideText />
+					<LinkPreview linkContent={post.linkContent} explore />
 					:
 					<PostMediaContent>
 						<PostMediaBackground background={

@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
+import { setPosts, switchPostDetails } from "../services/actions/posts";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -61,9 +63,7 @@ class UserAlbum extends Component {
 	constructor() {
 		super();
 		this.state = {
-			album: [],
-			selectedPost: {},
-			postDetails: false
+			selectedPost: 0
 		};
 	}
 
@@ -78,33 +78,34 @@ class UserAlbum extends Component {
 				await refreshToken();
 				this.getAlbum();
 			} else if ( album.data ) {
-				this.setState({ album: album.data });
+				this.props.setPosts( album.data, false, true );
 			}
 		} catch ( err ) {
 			console.log( err );
 		}
 	}
 
-	displayPostDetails = post => {
+	displayPostDetails = index => {
 		this.setState({
-			postDetails: true,
-			selectedPost: post
+			selectedPost: index
 		});
+		this.props.switchPostDetails();
 	}
 
 	hidePostDetails = () => {
 		this.setState({
-			postDetails: false,
-			selectedPost: {}
+			selectedPost: 0
 		});
+		this.props.switchPostDetails();
 	}
 
 	render() {
-		if ( this.state.postDetails ) {
+		if ( this.props.displayPostDetails ) {
 			return (
 				<PostDetails
-					post={this.state.selectedPost}
+					post={this.props.posts[ this.state.selectedPost ]}
 					switchDetails={this.hidePostDetails}
+					socket={this.props.socket}
 				/>
 			);
 		}
@@ -117,12 +118,12 @@ class UserAlbum extends Component {
 					/>
 					<HeaderTxt>@{this.props.username} album</HeaderTxt>
 				</HeaderWrapper>
-				{this.state.album.length > 0 ?
+				{this.props.posts.length > 0 ?
 					<Album>
-						{this.state.album.map(( post, index ) =>
+						{this.props.posts.map(( post, index ) =>
 							<PictureWrapper
 								key={index}
-								onClick={() => this.displayPostDetails( post )}
+								onClick={() => this.displayPostDetails( index )}
 								rightImg={( index + 1 ) % 3 === 0}
 							>
 								<UserPicture
@@ -143,7 +144,21 @@ class UserAlbum extends Component {
 
 UserAlbum.propTypes = {
 	username: PropTypes.string.isRequired,
-	toggleTab: PropTypes.func.isRequired
+	toggleTab: PropTypes.func.isRequired,
+	posts: PropTypes.array.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
-export default UserAlbum;
+const
+	mapStateToProps = state => ({
+		posts: state.posts.album,
+		displayPostDetails: state.posts.displayPostDetails
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setPosts: ( posts, onExplore, onAlbum ) =>
+			dispatch( setPosts( posts, onExplore, onAlbum )),
+		switchPostDetails: () => dispatch( switchPostDetails())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( UserAlbum );

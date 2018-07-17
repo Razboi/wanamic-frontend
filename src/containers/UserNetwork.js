@@ -142,6 +142,11 @@ class UserNetwork extends Component {
 		}
 	}
 
+	handleUserPreviewClick = username => {
+		this.props.toggleTab();
+		this.props.history.push( "/" + username );
+	}
+
 	render() {
 		const { requesterNetwork, network, tab } = this.state;
 		return (
@@ -181,6 +186,7 @@ class UserNetwork extends Component {
 				<UsersWrapper>
 					{network.friends.map(( user, index ) =>
 						<UserPreview
+							handleClick={this.handleUserPreviewClick}
 							key={index}
 							user={user}
 							handleFollow={this.handleFollow}
@@ -233,7 +239,8 @@ class UserNetwork extends Component {
 UserNetwork.propTypes = {
 	username: PropTypes.string.isRequired,
 	toggleTab: PropTypes.func.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 export default UserNetwork;

@@ -148,7 +148,7 @@ class MediaPost extends Component {
 						.then(() => this.handleDelete())
 						.catch( err => console.log( err ));
 				} else {
-					this.props.deletePost( this.props.index );
+					this.props.deletePost( this.props.post._id );
 				}
 			}).catch( err => console.log( err ));
 	};
@@ -251,7 +251,7 @@ class MediaPost extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={post.author.username}
+							author={post.author}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
@@ -332,8 +332,10 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		deletePost: postIndex => dispatch( deletePost( postIndex )),
-		updatePost: post => dispatch( updatePost( post ))
+		deletePost: postId =>
+			dispatch( deletePost( postId )),
+		updatePost: post =>
+			dispatch( updatePost( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );

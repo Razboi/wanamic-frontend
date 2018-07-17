@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image } from "semantic-ui-react";
+import { Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -8,7 +8,7 @@ const
 		@media (max-width: 420px) {
 			display: grid;
 			grid-template-columns: 100%;
-			grid-row-gap: ${props => props.hideText ? "0" : "7px"};
+			grid-row-gap: ${props => props.explore ? "0" : "7px"};
 			grid-template-rows: 50% 50%;
 			grid-template-areas:
 				"img"
@@ -16,7 +16,7 @@ const
 		}
 		display: grid;
 		grid-template-columns: 40% 60%;
-		grid-column-gap: ${props => props.hideText ? "0" : "7px"};
+		grid-column-gap: ${props => props.explore ? "0" : "7px"};
 		grid-template-rows: 100%;
 		grid-template-areas:
 			"img txt"
@@ -24,12 +24,13 @@ const
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
 		width: 100%;
-		border-radius: ${props => props.hideText ? "8px" : "0"};
+		border-radius: ${props => props.explore ? "8px" : "0"};
+		filter: brightness( 70% );
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
 		width: 100%;
-		border-radius: ${props => props.hideText ? "8px" : "0"};
+		border-radius: ${props => props.explore ? "8px" : "0"};
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
@@ -54,20 +55,43 @@ const
 		grid-area: host;
 		color: #808080;
 		font-size: 13px;
+	`,
+	PlayIcon = styled( Icon )`
+		position: absolute !important;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto !important;
+		font-size: 2.5rem !important;
+		color: rgba( 255, 255, 255, 0.75 );
 	`;
 
 
 class LinkPreview extends Component {
 	render() {
+		if ( this.props.explore ) {
+			return (
+				<LinkPreviewWrapper
+					explore={this.props.explore ? 1 : 0}
+					className="linkPreviewWrapper"
+				>
+					<LinkPreviewImage
+						explore={this.props.explore ? 1 : 0}
+						className="linkPreviewImage"
+						src={this.props.linkContent.image}
+					/>
+					<PlayIcon name="video play" />
+				</LinkPreviewWrapper>
+			);
+		}
 		return (
 			<a href={this.props.linkContent.url}>
 				<LinkPreviewWrapper
-					hideText={this.props.hideText}
 					className="linkPreviewWrapper"
 				>
 					{this.props.linkContent.embeddedUrl ?
 						<LinkPreviewIframe
-							hideText={this.props.hideText}
 							className="linkPreviewIframe"
 							src={this.props.linkContent.embeddedUrl}
 							frameborder="0"
@@ -76,24 +100,23 @@ class LinkPreview extends Component {
 						/>
 						:
 						<LinkPreviewImage
-							hideText={this.props.hideText}
 							className="linkPreviewImage"
 							src={this.props.linkContent.image}
 						/>
 					}
-					{!this.props.hideText &&
-						<LinkPreviewText className="linkPreviewText">
-							<LinkPreviewHeader>
-								{this.props.linkContent.title}
-							</LinkPreviewHeader>
-							<LinkPreviewDescription>
-								{this.props.linkContent.description}
-							</LinkPreviewDescription>
-							<LinkPreviewHostname>
-								{this.props.linkContent.hostname}
-							</LinkPreviewHostname>
-						</LinkPreviewText>
-					}
+
+					<LinkPreviewText className="linkPreviewText">
+						<LinkPreviewHeader>
+							{this.props.linkContent.title}
+						</LinkPreviewHeader>
+						<LinkPreviewDescription>
+							{this.props.linkContent.description}
+						</LinkPreviewDescription>
+						<LinkPreviewHostname>
+							{this.props.linkContent.hostname}
+						</LinkPreviewHostname>
+					</LinkPreviewText>
+
 				</LinkPreviewWrapper>
 			</a>
 		);
@@ -102,7 +125,7 @@ class LinkPreview extends Component {
 
 LinkPreview.propTypes = {
 	linkContent: PropTypes.object.isRequired,
-	hideText: PropTypes.bool
+	explore: PropTypes.bool
 };
 
 export default LinkPreview;

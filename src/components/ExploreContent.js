@@ -26,7 +26,7 @@ class ExploreContent extends Component {
 				{this.props.posts.map(( post, index ) =>
 					<PostWrapper
 						key={index}
-						onClick={() => this.props.displayPostDetails( post )}
+						onClick={() => this.props.displayPostDetails( index )}
 					>
 						<ExplorePost
 							post={post}
