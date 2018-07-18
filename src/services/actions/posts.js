@@ -71,6 +71,7 @@ export const
 		postDetailsId: id
 	}),
 
-	switchPostDetails = () => ({
-		type: SWITCH_POST_DETAILS
+	switchPostDetails = index => ({
+		type: SWITCH_POST_DETAILS,
+		index: index
 	});

@@ -47,6 +47,7 @@ const
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
 		margin: 0;
+		position: relative;
 	`,
 	ProfileImg = styled( Image )`
 		width: 30px !important;
@@ -68,8 +69,8 @@ const
 	`,
 	Scores = styled( Dropdown.Item )`
 		display: flex !important;
-		align-content: center !important;
-		justify-content: center !important;
+		align-content: center;
+		justify-content: space-between;
 		font-size: 1rem !important;
 	`,
 	UserInfo = styled( Dropdown.Item )`
@@ -79,10 +80,10 @@ const
 		justify-content: center !important;
 	`,
 	Count = styled.span`
-		font-weight: bold;
-		margin-top: -7px;
 		z-index: 2;
-		font-size: 1.1rem;
+		font-size: 1rem;
+		color: rgb(168, 170, 171);
+		line-height: 2rem;
 	`;
 
 
@@ -161,12 +162,13 @@ class NavBar extends Component {
 							:
 							require( "../images/bell.png" )
 						}
-					/>
-					{this.props.newNotifications > 0 &&
-						<NotificationsLength size="small" floating circular color="red">
-							{this.props.newNotifications}
-						</NotificationsLength>
-					}
+					>
+						{this.props.newNotifications > 0 &&
+							<NotificationsLength size="small" floating circular color="red">
+								{this.props.newNotifications}
+							</NotificationsLength>
+						}
+					</NavImage>
 				</NavOption>
 				<NavOption onClick={this.handleExplore}>
 					<NavImage
@@ -184,12 +186,13 @@ class NavBar extends Component {
 							:
 							require( "../images/chat.png" )
 						}
-					/>
-					{this.props.chatNotifications.length > 0 &&
-						<NotificationsLength size="small" floating circular color="red">
-							{this.props.chatNotifications.length}
-						</NotificationsLength>
-					}
+					>
+						{this.props.chatNotifications.length > 0 &&
+							<NotificationsLength size="small" floating circular color="red">
+								{this.props.chatNotifications.length}
+							</NotificationsLength>
+						}
+					</NavImage>
 				</NavOption>
 				<NavOption>
 					<Dropdown
@@ -204,12 +207,16 @@ class NavBar extends Component {
 							</UserInfo>
 							<Dropdown.Divider />
 							<Scores>
-								<Icon name="like" color="red" />
-								<Count>{this.props.totalLikes}</Count>
+								<NavImage
+									image={require( "../images/heart.png" )}
+								/>
+								<Count>{this.props.totalLikes} likes</Count>
 							</Scores>
 							<Scores>
-								<Icon name="eye" color="blue" />
-								<Count>{this.props.totalViews}</Count>
+								<NavImage
+									image={require( "../images/visibility.png" )}
+								/>
+								<Count>{this.props.totalViews} views</Count>
 							</Scores>
 							<Dropdown.Divider />
 							<StyledDropdownItem

@@ -68,9 +68,18 @@ const
 			color: rgba( 0,0,0,0.5 );
 		}
 	`,
-	LikesCount = styled( Label )`
+	LikesCount = styled.div`
 		@media (max-width: 420px) {
+			display: flex;
 			margin-top: 0.5rem !important;
+			border: 1px solid rgba(34,36,38,.15);
+			min-width: 60px;
+			padding: 0.4rem;
+			border-radius: 5px;
+			justify-content: space-evenly;
+			align-items: center;
+			font-size: 1rem;
+			color: rgb(140, 140, 140);
 		}
 	`,
 	Description = styled.p`
@@ -122,6 +131,14 @@ const
 		right: 10px;
 		background: rgba( 0,0,0,0.5 ) !important;
 		color: #fff !important;
+	`,
+	HeartImage = styled.span`
+		height: 16px;
+		width: 16px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0 0.5rem 0 0;
 	`;
 
 
@@ -161,20 +178,22 @@ class UserProfile extends Component {
 		}
 	}
 
-	getUserInfo = () => {
+	getUserInfo = async() => {
 		if ( this.props.user && this.props.explore ) {
 			this.setImages();
 		} else {
-			api.getUserInfo( this.props.username )
-				.then( res => {
-					this.setState({ user: res.data });
-				})
-				.catch( err => {
-					console.log( err );
-					if ( err.response.status === 404 ) {
-						this.setState({ inexistent: true });
-					}
-				});
+			try {
+				const res = await api.getUserInfo( this.props.username );
+				this.setState({ user: res.data });
+			} catch ( err ) {
+				console.log( err );
+				if ( err.response.status === 404 ) {
+					this.setState({ inexistent: true });
+				} else if ( err.response.status === 401 ) {
+					await refreshToken();
+					this.getUserInfo();
+				}
+			}
 		}
 	}
 
@@ -378,8 +397,10 @@ class UserProfile extends Component {
 							<UserImage src={profileImg} />
 							<Fullname>{user.fullname}</Fullname>
 							<Username>@{user.username}</Username>
-							<LikesCount basic>
-								<Icon name="like" color="red" />
+							<LikesCount>
+								<HeartImage
+									image={require( "../images/small_heart.png" )}
+								/>
 								{user.totalLikes}
 							</LikesCount>
 							<Description>{user.description}</Description>

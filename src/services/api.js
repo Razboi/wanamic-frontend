@@ -383,12 +383,11 @@ export default {
 			.then( res => res )
 			.catch( err => console.log( err )),
 
-	checkNotification: notificationId =>
+	checkNotifications: () =>
 		axios({
 			method: "post",
 			data: {
-				token: localStorage.getItem( "token" ),
-				notificationId: notificationId
+				token: localStorage.getItem( "token" )
 			},
 			url: "/notifications/check/"
 		})

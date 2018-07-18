@@ -8,7 +8,7 @@ import PostDetails from "../containers/PostDetails";
 import Comments from "../containers/Comments";
 import api from "../services/api";
 import { switchComments } from "../services/actions/posts";
-import { checkNotification } from "../services/actions/notifications";
+import { checkNotifications } from "../services/actions/notifications";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
 import NotificationButton from "../components/NotificationButton";
@@ -76,6 +76,7 @@ class Notifications extends Component {
 
 	componentDidMount() {
 		this.getNetwork();
+		this.checkNotifications();
 	}
 
 	getNetwork = async() => {
@@ -104,21 +105,17 @@ class Notifications extends Component {
 		default:
 			this.setState({ postId: notification.object, displayDetails: true });
 		}
-
-		if ( !notification.checked ) {
-			this.checkNotification( notification, notificationIndex );
-		}
 	}
 
-	checkNotification = ( notification, notificationIndex ) => {
-		api.checkNotification( notification._id )
+	checkNotifications = () => {
+		api.checkNotifications()
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
-						.then(() => this.checkNotification( notification ))
+						.then(() => this.checkNotification())
 						.catch( err => console.log( err ));
 				} else {
-					this.props.checkNotification( notificationIndex );
+					this.props.checkNotifications();
 				}
 			}).catch( err => console.log( err ));
 	}
@@ -205,6 +202,7 @@ class Notifications extends Component {
 				<PostDetails
 					postId={this.state.postId}
 					switchDetails={this.switchDetails}
+					socket={this.props.socket}
 				/>
 			);
 		}
@@ -269,7 +267,7 @@ class Notifications extends Component {
 Notifications.propTypes = {
 	notifications: PropTypes.array.isRequired,
 	switchComments: PropTypes.func.isRequired,
-	checkNotification: PropTypes.func.isRequired,
+	checkNotifications: PropTypes.func.isRequired,
 };
 
 const
@@ -279,7 +277,7 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id ) => dispatch( switchComments( id )),
-		checkNotification: index => dispatch( checkNotification( index ))
+		checkNotifications: () => dispatch( checkNotifications())
 	});
 
 export default withRouter(

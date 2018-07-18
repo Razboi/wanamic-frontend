@@ -6,7 +6,9 @@ import PostOptions from "./PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
-import { deletePost, updatePost } from "../services/actions/posts";
+import {
+	deletePost, updatePost, switchPostDetails
+} from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
@@ -204,6 +206,19 @@ class MediaPost extends Component {
 		this.setState({ [ type ]: false });
 	}
 
+	displayPostDetails = () => {
+		if ( this.props.newsFeed && !this.props.post.picture ) {
+			this.props.switchPostDetails( this.props.index );
+		}
+	}
+
+	hidePostDetails = () => {
+		this.setState({
+			selectedPost: 0
+		});
+		this.props.switchPostDetails();
+	}
+
 	render() {
 		const { post } = this.props;
 		try {
@@ -220,6 +235,7 @@ class MediaPost extends Component {
 		} catch ( err ) {
 			console.log( err );
 		}
+
 		return (
 			<Wrapper shared={this.props.fakeOptions ? 1 : 0}>
 				<PostHeader className="mediaPostHeader">
@@ -262,7 +278,7 @@ class MediaPost extends Component {
 						{post.link ?
 							<LinkPreview linkContent={post.linkContent} />
 							:
-							<PostMediaContent>
+							<PostMediaContent onClick={this.displayPostDetails}>
 								<PostMediaBackground background={
 									post.picture ?
 										mediaPicture : post.mediaContent.image
@@ -273,7 +289,8 @@ class MediaPost extends Component {
 									:
 									<React.Fragment>
 										<h4>{post.mediaContent.title}</h4>
-										<MediaImage src={post.mediaContent.image}
+										<MediaImage
+											src={post.mediaContent.image}
 											className="mediaArtwork"
 										/>
 									</React.Fragment>
@@ -316,7 +333,8 @@ MediaPost.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
-	goToProfile: PropTypes.func
+	goToProfile: PropTypes.func,
+	newsFeed: PropTypes.bool
 };
 
 const
@@ -324,10 +342,9 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		deletePost: postId =>
-			dispatch( deletePost( postId )),
-		updatePost: post =>
-			dispatch( updatePost( post ))
+		deletePost: postId => dispatch( deletePost( postId )),
+		updatePost: post => dispatch( updatePost( post )),
+		switchPostDetails: index => dispatch( switchPostDetails( index ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );

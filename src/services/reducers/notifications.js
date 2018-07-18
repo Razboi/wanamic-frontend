@@ -35,19 +35,10 @@ export default function notifications( state = initialState, action = {}) {
 			})
 		};
 
-	case "CHECK_NOTIFICATION":
+	case "CHECK_NOTIFICATIONS":
 		return {
 			...state,
-			allNotifications: state.allNotifications.map(( notification, index ) => {
-				if ( index === action.notificationIndex ) {
-					return {
-						...notification,
-						...state.allNotifications[ action.notificationIndex ].checked = true
-					};
-				}
-				return notification;
-			}),
-			newNotifications: state.newNotifications - 1
+			newNotifications: 0
 		};
 
 	default:

@@ -8,6 +8,7 @@ const initialState = {
 	displayShare: false,
 	displayPostDetails: false,
 	postDetailsId: undefined,
+	postDetailsIndex: undefined,
 	postToShare: {}
 };
 
@@ -105,7 +106,8 @@ export default function posts( state = initialState, action = {}) {
 	case "SWITCH_POST_DETAILS":
 		return {
 			...state,
-			displayPostDetails: !state.displayPostDetails
+			displayPostDetails: !state.displayPostDetails,
+			postDetailsIndex: action.index
 		};
 
 	default:

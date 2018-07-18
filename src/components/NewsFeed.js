@@ -21,6 +21,7 @@ class NewsFeed extends Component {
 				{this.props.posts.map(( post, index ) =>
 					post.media ?
 						<MediaPost
+							newsFeed
 							key={index}
 							index={index}
 							post={post}

@@ -13,6 +13,7 @@ const
 		position: absolute;
 		height: 100vh;
 		width: 100%;
+		z-index: 3;
 		display: grid;
 		grid-template-columns: 100%;
 		grid-template-rows: 7% 33% 60%;

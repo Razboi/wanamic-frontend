@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import {
-	setPosts, addToPosts, switchMediaOptions, addPost
+	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails
 } from "../services/actions/posts";
+import PostDetails from "../containers/PostDetails";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
@@ -104,7 +105,21 @@ class HomePage extends Component {
 		this.setState({ mediaButton: !this.state.mediaButton });
 	}
 
+	hidePostDetails = () => {
+		this.props.switchPostDetails();
+	}
+
 	render() {
+		const { newsfeed, postDetailsIndex } = this.props;
+		if ( this.props.displayPostDetails ) {
+			return (
+				<PostDetails
+					post={newsfeed[ postDetailsIndex ]}
+					switchDetails={this.hidePostDetails}
+					socket={this.props.socket}
+				/>
+			);
+		}
 		return (
 			<Wrapper>
 				<StyledInfiniteScroll
@@ -139,7 +154,7 @@ class HomePage extends Component {
 
 					<MediaDimmer blur={this.props.mediaOptions}>
 						<StyledNewsFeed
-							posts={this.props.newsfeed}
+							posts={newsfeed}
 							socket={this.props.socket}
 							history={this.props.history}
 						/>
@@ -161,14 +176,17 @@ const
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
 		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare
+		displayShare: state.posts.displayShare,
+		displayPostDetails: state.posts.displayPostDetails,
+		postDetailsIndex: state.posts.postDetailsIndex
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		setPosts: posts => dispatch( setPosts( posts )),
 		addToPosts: posts => dispatch( addToPosts( posts )),
 		addPost: post => dispatch( addPost( post )),
-		switchMediaOptions: () => dispatch( switchMediaOptions())
+		switchMediaOptions: () => dispatch( switchMediaOptions()),
+		switchPostDetails: () => dispatch( switchPostDetails())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( HomePage );

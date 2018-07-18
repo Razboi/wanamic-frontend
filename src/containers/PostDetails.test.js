@@ -16,7 +16,7 @@ describe( "<PostDetails/>", () => {
 			<PostDetails
 				store={store}
 				postId={""}
-				post={{}}
+				post={{ mediaContent: {} }}
 			/>
 		).dive();
 
@@ -25,6 +25,6 @@ describe( "<PostDetails/>", () => {
 	});
 
 	it( "Checks that <PostDetails/> children render", () => {
-		expect( wrapper.children().children()).to.have.length( 2 );
+		expect( wrapper.children().children()).to.have.length( 1 );
 	});
 });

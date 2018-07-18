@@ -4,7 +4,7 @@ export const
 	ADD_NOTIFICATION = "ADD_NOTIFICATION",
 	DELETE_NOTIFICATION = "DELETE_NOTIFICATION",
 	SWITCH_NOTIFICATIONS = "SWITCH_NOTIFICATIONS",
-	CHECK_NOTIFICATION = "CHECK_NOTIFICATION",
+	CHECK_NOTIFICATIONS = "CHECK_NOTIFICATIONS",
 
 
 	setNotifications = ( allNotifications, newNotifications ) => ({
@@ -27,7 +27,6 @@ export const
 		notificationIndex: notificationIndex
 	}),
 
-	checkNotification = notificationIndex => ({
-		type: CHECK_NOTIFICATION,
-		notificationIndex: notificationIndex
+	checkNotifications = () => ({
+		type: CHECK_NOTIFICATIONS
 	});

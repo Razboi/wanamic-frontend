@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import Post from "../containers/Post";
-import { Icon } from "semantic-ui-react";
+import { Icon, Image } from "semantic-ui-react";
 import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
-import Comments from "./Comments";
+import Comments from "../containers/Comments";
 
 const
 	Wrapper = styled.div`
@@ -17,16 +17,17 @@ const
 		background: #fff;
 	`,
 	HeaderWrapper = styled.div`
-		height: 49.33px;
+		height: 59.33px;
 		display: flex;
 		align-items: center;
-		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		padding: 0 10px;
+		justify-content: space-between;
 	`,
-	HeaderTxt = styled.span`
-		margin-left: 15px;
-		font-weight: bold;
-		font-size: 16px;
+	StyledIcon = styled( Icon )`
+		font-size: 1.4rem !important;
+	`,
+	ItunesImage = styled( Image )`
+		height: 30px;
 	`;
 
 class PostDetails extends Component {
@@ -72,26 +73,28 @@ class PostDetails extends Component {
 		}
 		return (
 			<Wrapper>
-				<div>
-					<HeaderWrapper>
-						<Icon
-							name="arrow left"
-							onClick={this.props.switchDetails}
-						/>
-						<HeaderTxt>Post details</HeaderTxt>
-					</HeaderWrapper>
-					{this.state.post.media ?
-						<MediaPost
-							socket={this.props.socket}
-							post={this.state.post}
-						/>
-						:
-						<Post
-							socket={this.props.socket}
-							post={this.state.post}
-						/>
+				<HeaderWrapper>
+					<StyledIcon
+						name="arrow left"
+						onClick={this.props.switchDetails}
+					/>
+					{this.state.post.mediaContent.url &&
+						<a href={this.state.post.mediaContent.url} target="_blank">
+							<ItunesImage src={require( "../images/itunes.svg" )} />
+						</a>
 					}
-				</div>
+				</HeaderWrapper>
+				{this.state.post.media ?
+					<MediaPost
+						socket={this.props.socket}
+						post={this.state.post}
+					/>
+					:
+					<Post
+						socket={this.props.socket}
+						post={this.state.post}
+					/>
+				}
 			</Wrapper>
 		);
 	}

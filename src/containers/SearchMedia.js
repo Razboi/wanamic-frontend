@@ -152,7 +152,8 @@ class SearchMedia extends Component {
 		const mediaData = {
 			title: media.trackName,
 			artist: media.artistName,
-			image: media.artworkUrl100.replace( "100x100bb", "200x200bb" )
+			image: media.artworkUrl100.replace( "100x100bb", "200x200bb" ),
+			url: media.trackViewUrl
 		};
 		this.setState({ mediaData: mediaData, step: this.state.step + 1 });
 	}

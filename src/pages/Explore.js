@@ -87,7 +87,7 @@ class ExplorePage extends Component {
 			hasMore: true,
 			content: true,
 			user: {},
-			selectedPost: 0
+			selectedPost: {}
 		};
 	}
 
