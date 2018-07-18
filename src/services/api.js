@@ -346,13 +346,15 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	sharePost: ( postId, shareComment ) =>
+	sharePost: ( postId, shareComment, privacyRange, alerts ) =>
 		axios({
 			method: "post",
 			data: {
 				token: localStorage.getItem( "token" ),
 				postId: postId,
-				description: shareComment
+				description: shareComment,
+				privacyRange: privacyRange,
+				alerts: alerts
 			},
 			url: "/posts/share/"
 		})

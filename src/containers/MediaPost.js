@@ -89,8 +89,10 @@ const
 	PostBody = styled.div`
 		position: relative;
 		overflow: hidden;
+		min-height: ${props => props.alerts && "250px"};
 	`,
 	Dimmer = styled.div`
+		min-height: ${props => props.blurFilter && "250px"};
 		filter: ${props => props.blurFilter ?
 		"blur(25px) brightness(50%)" : "blur(0px)"};
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
@@ -117,23 +119,13 @@ class MediaPost extends Component {
 		if ( post._id === state.id ) {
 			return null;
 		}
-		if ( post.sharedPost ) {
-			return {
-				likedBy: post.likedBy,
-				nsfw: post.sharedPost.alerts.nsfw,
-				spoiler: post.sharedPost.alerts.spoiler,
-				updatedContent: post.content,
-				id: post._id
-			};
-		} else {
-			return {
-				likedBy: post.likedBy,
-				nsfw: post.alerts.nsfw,
-				spoiler: post.alerts.spoiler,
-				updatedContent: post.content,
-				id: post._id
-			};
-		}
+		return {
+			likedBy: post.likedBy,
+			nsfw: post.alerts.nsfw,
+			spoiler: post.alerts.spoiler,
+			updatedContent: post.content,
+			id: post._id
+		};
 	}
 
 	handleChange = e => {
@@ -260,7 +252,7 @@ class MediaPost extends Component {
 					}
 				</PostHeader>
 
-				<PostBody>
+				<PostBody alerts={this.state.nsfw || this.state.spoiler}>
 					<AlertsFilter
 						handleFilter={this.handleFilter}
 						nsfw={this.state.nsfw}

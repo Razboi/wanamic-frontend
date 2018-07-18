@@ -148,18 +148,18 @@ class NavBar extends Component {
 				<NavOption onClick={this.handleHome} >
 					<NavImage
 						image={this.props.location.pathname === "/" ?
-							require( "../images/home.png" )
+							require( "../images/home_color.png" )
 							:
-							require( "../images/home_white.png" )
+							require( "../images/home.png" )
 						}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleNotifications}>
 					<NavImage
 						image={this.props.location.pathname === "/notifications" ?
-							require( "../images/notification.png" )
+							require( "../images/bell_color.png" )
 							:
-							require( "../images/notification_white.png" )
+							require( "../images/bell.png" )
 						}
 					/>
 					{this.props.newNotifications > 0 &&
@@ -171,18 +171,18 @@ class NavBar extends Component {
 				<NavOption onClick={this.handleExplore}>
 					<NavImage
 						image={this.props.location.pathname === "/explore" ?
-							require( "../images/earth.png" )
+							require( "../images/explore_color.png" )
 							:
-							require( "../images/earth_white.png" )
+							require( "../images/explore.png" )
 						}
 					/>
 				</NavOption>
 				<NavOption onClick={this.handleMessages}>
 					<NavImage
 						image={this.props.location.pathname === "/messages" ?
-							require( "../images/conversation.png" )
+							require( "../images/chat_color.png" )
 							:
-							require( "../images/conversation_white.png" )
+							require( "../images/chat.png" )
 						}
 					/>
 					{this.props.chatNotifications.length > 0 &&

@@ -7,6 +7,7 @@ import SharedPost from "./SharedPost";
 import { addPost, switchShare, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
+import MediaStep3 from "../components/MediaStep3";
 
 const
 	Wrapper = styled.div`
@@ -14,7 +15,8 @@ const
 		height: 100vh;
 		width: 100%;
 		z-index: 4;
-		background: #fff;
+		background: rgb( 70,70,70 );
+		color: #fff !important;
 		display: grid;
 		grid-template-columns: 100%;
 		grid-template-rows: 7% 93%;
@@ -26,11 +28,10 @@ const
 		grid-area: hea;
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		padding: 0px 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	HeaderTxt = styled.span`
-		margin-left: 15px;
 		font-weight: bold;
 		font-size: 16px;
 	`,
@@ -54,16 +55,18 @@ const
 	`,
 	PostToShare = styled.div`
 		transform: scale( 0.75 );
-	`,
-	CheckIcon = styled( Icon )`
-		margin-left: auto !important;
+		background: #fff;
 	`;
 
 class Share extends Component {
 	constructor() {
 		super();
 		this.state = {
-			shareComment: ""
+			shareComment: "",
+			step: 1,
+			privacyRange: 1,
+			checkNsfw: false,
+			checkSpoiler: false,
 		};
 	}
 
@@ -71,22 +74,64 @@ class Share extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleShare = () => {
-		api.sharePost( this.props.postToShare._id, this.state.shareComment )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleShare())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.addPost( res.data.newPost );
-					this.props.updatePost( res.data.postToShare );
-					this.props.switchShare( undefined );
-				}
-			}).catch( err => console.log( err ));
+	handleShare = async() => {
+		var response;
+		const {
+				shareComment, privacyRange, checkNsfw, checkSpoiler
+			} = this.state,
+			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+
+		try {
+			response = await api.sharePost(
+				this.props.postToShare._id, shareComment, privacyRange, alerts
+			);
+		} catch ( err ) {
+			console.log( err );
+		}
+
+		if ( response === "jwt expired" ) {
+			await refreshToken();
+			this.handleShare();
+		} else if ( response.data ) {
+			this.props.addPost( response.data.newPost );
+			this.props.updatePost( response.data.postToShare );
+			this.props.switchShare( undefined );
+		}
+	}
+
+	nextStep = () => {
+		this.setState({ step: this.state.step + 1 });
+	}
+
+	prevStep = () => {
+		if ( this.state.step !== 1 ) {
+			this.setState({ step: this.state.step - 1 });
+		}
+	}
+
+	setPrivacyRange = range => {
+		this.setState({ privacyRange: range });
+	}
+
+	handleCheck = ( e, semanticUiProps ) => {
+		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
 	render() {
+		if ( this.state.step === 2 ) {
+			return (
+				<Wrapper>
+					<MediaStep3
+						handleCheck={this.handleCheck}
+						setPrivacyRange={this.setPrivacyRange}
+						prevStep={this.prevStep}
+						handleSubmit={this.handleShare}
+						mediaData={{}}
+						privacyRange={this.state.privacyRange}
+					/>
+				</Wrapper>
+			);
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -96,10 +141,10 @@ class Share extends Component {
 						onClick={() => this.props.switchShare( undefined )}
 					/>
 					<HeaderTxt>Share</HeaderTxt>
-					<CheckIcon
+					<Icon
 						className="nextIcon"
 						name="check"
-						onClick={this.handleShare}
+						onClick={this.nextStep}
 					/>
 				</HeaderWrapper>
 				<ShareWrapper>

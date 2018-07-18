@@ -10,8 +10,10 @@ const
 	Options = styled.div`
 		height: 100%;
 		width: 100%;
+		color: ${props => props.whiteTheme ? "#000" : "#fff" } !important;
+		background: ${props => props.whiteTheme ? "#fff" : "none" };
 		position: absolute;
-		z-index: 2;
+		z-index: 4;
 		display: grid;
 		grid-template-columns: 100%;
 		grid-template-rows: 7% 33% 60%;
@@ -27,8 +29,6 @@ const
 		align-items: center;
 		justify-content: space-between;
 		padding: 0px 10px;
-		color: #fff;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -42,13 +42,11 @@ const
 		grid-area: so;
 		align-self: center;
 		padding: 10px;
-		color: #fff !important;
 		display: flex;
 		flex-direction: column;
 	`,
 	AlertsWrapper = styled.div`
 		grid-area: al;
-		color: #fff !important;
 		justify-self: center;
 	`,
 	Alerts = styled.div`
@@ -95,7 +93,7 @@ class MediaStep3 extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<Options>
+				<Options whiteTheme={this.props.whiteTheme}>
 					<HeaderWrapper>
 						<Icon
 							className="backIcon"
@@ -170,7 +168,8 @@ MediaStep3.propTypes = {
 	privacyRange: PropTypes.number.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
-	mediaData: PropTypes.object.isRequired
+	mediaData: PropTypes.object.isRequired,
+	whiteTheme: PropTypes.bool
 };
 
 export default MediaStep3;

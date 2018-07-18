@@ -57,7 +57,7 @@ const
 	ContentWrapper = styled.div`
 		display: flex;
 		flex-direction: column;
-		padding: 0px 1rem;
+		padding: 1.33rem 1rem;
 		min-height: 25px;
 	`,
 	UserContent = styled.p`
@@ -66,9 +66,11 @@ const
 	PostBody = styled.div`
 		position: relative;
 		overflow: hidden;
+		min-height: ${props => props.alerts && "215px"};
 	`,
 	Dimmer = styled.div`
 		background: ${props => props.blurFilter && "rgba( 0, 0, 0, 0.8 )"};
+		min-height: ${props => props.blurFilter && "215px"};
 		filter: ${props => props.blurFilter ?
 		"blur(25px)" : "blur(0px)"};
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
@@ -93,23 +95,13 @@ class Post extends Component {
 		if ( post._id === state.id ) {
 			return null;
 		}
-		if ( post.sharedPost ) {
-			return {
-				likedBy: post.likedBy,
-				nsfw: post.sharedPost.alerts.nsfw,
-				spoiler: post.sharedPost.alerts.spoiler,
-				updatedContent: post.content,
-				id: post._id
-			};
-		} else {
-			return {
-				likedBy: post.likedBy,
-				nsfw: post.alerts.nsfw,
-				spoiler: post.alerts.spoiler,
-				updatedContent: post.content,
-				id: post._id
-			};
-		}
+		return {
+			likedBy: post.likedBy,
+			nsfw: post.alerts.nsfw,
+			spoiler: post.alerts.spoiler,
+			updatedContent: post.content,
+			id: post._id
+		};
 	}
 
 	handleChange = e => {
@@ -230,7 +222,7 @@ class Post extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={post.author.username}
+							author={post.author}
 							updatedContent={this.state.updatedContent}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
@@ -239,7 +231,7 @@ class Post extends Component {
 					}
 				</PostHeader>
 
-				<PostBody>
+				<PostBody alerts={this.state.nsfw || this.state.spoiler}>
 					<AlertsFilter
 						handleFilter={this.handleFilter}
 						nsfw={this.state.nsfw}

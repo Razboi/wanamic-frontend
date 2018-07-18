@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
+import { Button, Header } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 const
@@ -18,12 +18,25 @@ const
 		flex-direction: column;
 		width: 100%;
 		text-align: center;
+		align-items: center;
+		justify-content: center;
 	`,
 	StyledButton = styled( Button )`
 		align-self: center;
 	`,
-	Header = styled.h2`
-		color: #fff;
+	StyledHeader = styled( Header )`
+		color: #fff !important;
+	`,
+	StyledSubHeader = styled( Header.Subheader )`
+		color: #fff !important;
+	`,
+	AlertImage = styled.span`
+		height: 64px;
+		width: 64px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
 	`;
 
 class AlertsFilter extends Component {
@@ -32,7 +45,15 @@ class AlertsFilter extends Component {
 			return (
 				<Wrapper>
 					<Warning>
-						<Header>This content is NSFW</Header>
+						<AlertImage
+							image={require( "../images/plus_18.png" )}
+						/>
+						<StyledHeader>
+							Mature content
+							<StyledSubHeader>
+								This post contains sensitive media.
+							</StyledSubHeader>
+						</StyledHeader>
 						<StyledButton
 							secondary
 							content="View content"
@@ -46,7 +67,15 @@ class AlertsFilter extends Component {
 			return (
 				<Wrapper>
 					<Warning>
-						<Header>This post contains SPOILERS</Header>
+						<AlertImage
+							image={require( "../images/warning.png" )}
+						/>
+						<StyledHeader>
+							Spoilers
+							<StyledSubHeader>
+								This post contains spoilers.
+							</StyledSubHeader>
+						</StyledHeader>
 						<StyledButton
 							secondary
 							content="View content"
