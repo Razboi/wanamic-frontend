@@ -16,6 +16,7 @@ describe( "<PostDetails/>", () => {
 			<PostDetails
 				store={store}
 				postId={""}
+				post={{}}
 			/>
 		).dive();
 
