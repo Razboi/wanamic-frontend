@@ -12,9 +12,6 @@ describe( "<AlertsFilter/>", () => {
 	const
 		wrapper = shallow(
 			<AlertsFilter nsfw={false} spoiler={false} handleFilter={() => {}} />
-		),
-		wrapper2 = shallow(
-			<AlertsFilter nsfw={false} spoiler={true} handleFilter={() => {}} />
 		);
 
 	it( "Checks that <AlertsFilter/> renders", () => {
@@ -23,9 +20,5 @@ describe( "<AlertsFilter/>", () => {
 
 	it( "Checks that <AlertsFilter/> children not render", () => {
 		expect( wrapper.children()).to.have.length( 0 );
-	});
-
-	it( "Checks that <AlertsFilter/> children render when props are true", () => {
-		expect( wrapper2.children()).to.have.length( 1 );
 	});
 });
