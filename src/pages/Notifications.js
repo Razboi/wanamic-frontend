@@ -19,11 +19,15 @@ import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
-		height: 100%;
+		height: 100vh;
 		width: 100%;
-		z-index: 3;
-		background: #fff;
+		overflow: auto;
 		padding-top: 49.33px;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
@@ -207,7 +211,7 @@ class Notifications extends Component {
 					await refreshToken();
 					this.getNotifications();
 				} else if ( res.data ) {
-					this.props.addToNotifications( res.data );
+					this.props.addToNotifications( res.data.notifications );
 					this.setState({
 						hasMore: res.data.length > 10,
 						skip: this.state.skip + 1

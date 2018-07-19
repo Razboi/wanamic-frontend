@@ -53,13 +53,6 @@ describe( "<AccountSettings/>", () => {
 		expect( handleChangeSpy.called ).to.equal( true );
 	});
 
-	it( "Checks that changing keywords input calls handleChange", () => {
-		const event = { target: { name: "keywords", value: "test" } };
-		expect( handleChangeSpy.called ).to.equal( false );
-		wrapper.find( ".keywordsInput" ).simulate( "change", event );
-		expect( handleChangeSpy.called ).to.equal( true );
-	});
-
 	it( "Checks that changing userImage input changes the state", () => {
 		const event = { target: { name: "userImage", files: [ 123 ] } };
 		expect( handleFileChangeSpy.called ).to.equal( false );

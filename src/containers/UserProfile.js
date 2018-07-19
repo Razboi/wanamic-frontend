@@ -7,6 +7,8 @@ import refreshToken from "../utils/refreshToken";
 import NewsFeed from "../components/NewsFeed";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
+import { WithContext as ReactTags } from "react-tag-input";
+
 var
 	backgroundImg,
 	profileImg;
@@ -92,10 +94,24 @@ const
 	`,
 	Hobbies = styled.div`
 		@media (max-width: 420px) {
-			text-align: center;
-			font-size: 1.025rem;
-			color: rgba( 0,0,0,0.5 );
-			padding: 0 0.66rem;
+			display: flex;
+			flex-wrap: wrap;
+	    width: 90%;
+	    align-items: center;
+	    justify-content: center;
+			margin: 1rem 0;
+		}
+	`,
+	Hobbie = styled.div`
+		@media (max-width: 420px) {
+			border: 1px solid rgba( 0,0,0,0.4);
+			color: rgb( 90,90,90);
+			border-radius: 2px;
+	    padding: 0.5rem;
+	    font-size: 1rem;
+	    font-weight: bold;
+			margin: 0.5rem 0 0 0.5rem;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 		}
 	`,
 	Tabs = styled.div`
@@ -404,7 +420,11 @@ class UserProfile extends Component {
 								{user.totalLikes}
 							</LikesCount>
 							<Description>{user.description}</Description>
-							<Hobbies>{user.keywords}</Hobbies>
+							<Hobbies>
+								{user.hobbies.map( hobbie =>
+									<Hobbie>{hobbie}</Hobbie>
+								)}
+							</Hobbies>
 							<ProfileOptions
 								user={this.state.user}
 								follow={this.follow}

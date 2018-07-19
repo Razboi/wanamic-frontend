@@ -52,6 +52,12 @@ export default function posts( state = initialState, action = {}) {
 	case "SET_COMMENTS":
 		return { ...state, comments: action.comments };
 
+	case "ADD_TO_COMMENTS":
+		return {
+			...state,
+			comments: [ ...state.comments, ...action.comments ]
+		};
+
 	case "UPDATE_POST":
 		return {
 			...state,

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { WithContext as ReactTags } from "react-tag-input";
 
 const
 	Wrapper = styled.div`
@@ -14,6 +15,10 @@ const
 		grid-template-areas:
 			"hea"
 			"opt"
+	`,
+	StyledMessage = styled( Message )`
+		position: fixed !important;
+		z-index: 2;
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
@@ -54,7 +59,32 @@ const
 	SaveButton = styled( Button )`
 		display: flex !important;
 		margin: 1rem 0 0 auto !important;
-	`;
+	`,
+	Hobbies = styled.div`
+		margin-bottom: 2rem;
+		.ReactTags__tag {
+			padding: 0.25rem;
+			border: 1px solid rgba( 0,0,0,0.4);
+			border-radius: 5px;
+			display: inline-block;
+			margin: 0 0 0.5rem 0.5rem;
+			font-size: 1rem;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		}
+		.ReactTags__remove {
+			font-size: 1.7rem;
+			margin-left: 0.5rem;
+		}
+	`,
+	HobbiesLabel = styled.label`
+		display: block;
+		margin: 0 0 .28571429rem 0;
+		color: rgba(0,0,0,0.45);
+		font-size: .92857143em;
+		font-weight: 700;
+		text-transform: none;
+	`,
+	KeyCodes = { comma: 188, enter: 13 };
 
 class AccountSettings extends Component {
 	render() {
@@ -70,9 +100,9 @@ class AccountSettings extends Component {
 				<Options>
 					<Form>
 						{this.props.error &&
-							<Message negative>
+							<StyledMessage negative>
 								<Message.Header>{this.props.error}</Message.Header>
-							</Message>
+							</StyledMessage>
 						}
 						<FormInput
 							className="fullnameInput"
@@ -95,13 +125,18 @@ class AccountSettings extends Component {
 							label="Description"
 							value={this.props.description}
 						/>
-						<FormInput
-							className="keywordsInput"
-							onChange={this.props.handleChange}
-							name="keywords"
-							label="Keywords"
-							value={this.props.keywords}
-						/>
+						<Hobbies>
+							<HobbiesLabel>Hobbies and interests</HobbiesLabel>
+							<ReactTags
+								tags={this.props.hobbies}
+								handleDelete={this.props.handleDelete}
+								handleAddition={this.props.handleAddition}
+								delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
+								placeholder="Add a new interest (with enter or comma)"
+								autofocus={false}
+								maxLength={"35"}
+							/>
+						</Hobbies>
 						<FormInput
 							className="profileImageInput"
 							name="userImage"
@@ -129,11 +164,13 @@ AccountSettings.propTypes = {
 	handleFileChange: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
-	keywords: PropTypes.string.isRequired,
+	hobbies: PropTypes.array.isRequired,
 	description: PropTypes.string.isRequired,
 	username: PropTypes.string.isRequired,
 	fullname: PropTypes.string.isRequired,
-	error: PropTypes.string.isRequired
+	error: PropTypes.string.isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	handleAddition: PropTypes.func.isRequired,
 };
 
 export default AccountSettings;

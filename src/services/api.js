@@ -269,7 +269,9 @@ export default {
 			url: "/user/setUserKw"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	exploreContent: skip =>
 		axios({
@@ -341,7 +343,7 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ), postId: postId },
-			url: "/comments/postComments/" + skip
+			url: "/comments/retrieve/" + skip
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),

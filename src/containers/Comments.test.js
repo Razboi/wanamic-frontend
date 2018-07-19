@@ -28,7 +28,7 @@ describe( "<Comments/>", () => {
 	it( "Checks that every comment renders", () => {
 		const
 			stateCommentsLength = comments.length,
-			childComments = wrapper.find( ".commentsWrapper" ).children();
+			childComments = wrapper.find( ".commentsWrapper" ).children().children();
 		expect( childComments ).to.have.length( stateCommentsLength );
 	});
 });

@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import { logout } from "../services/actions/auth";
 import refreshToken from "../utils/refreshToken";
 import validateEmail from "../utils/validateEmail";
-import setUserKw from "../utils/setUserKWs";
 import styled from "styled-components";
 import AccountSettings from "../components/AccountSettings";
 import PasswordSettings from "../components/PasswordSettings";
@@ -71,25 +70,22 @@ class SettingsPage extends Component {
 		super();
 		this.state = {
 			tab: 0, userImage: null, headerImage: null, description: "",
-			fullname: "", keywords: "", username: "", currentPassword: "",
+			fullname: "", hobbies: [], username: "", currentPassword: "",
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
 			checkedCategories: [], error: "", categoriesChanged: false
 		};
 	}
 
-	componentDidMount() {
-		api.getUserInfo( localStorage.getItem( "username" ))
-			.then( res => {
-				var keywordsString = res.data.keywords.toString().replace( /,/g, " #" );
-				this.setState({
-					description: res.data.description,
-					fullname: res.data.fullname,
-					username: res.data.username,
-					keywords: keywordsString,
-					checkedCategories: res.data.interests
-				});
-			}).catch( err => console.log( err ));
+	async componentDidMount() {
+		const res = await api.getUserInfo( localStorage.getItem( "username" ));
+		this.setState({
+			description: res.data.description,
+			fullname: res.data.fullname,
+			username: res.data.username,
+			hobbies: res.data.hobbies,
+			checkedCategories: res.data.interests
+		});
 	}
 
 	handleFileChange = e => {
@@ -112,6 +108,7 @@ class SettingsPage extends Component {
 		data.append( "token", localStorage.getItem( "token" ));
 
 		try {
+			await api.setUserKw( this.state.hobbies );
 			const res = await api.setUserInfo( data );
 			if ( res.data.newImage ) {
 				localStorage.setItem( "uimg", res.data.newImage );
@@ -119,9 +116,9 @@ class SettingsPage extends Component {
 			if ( res.data.newUsername ) {
 				localStorage.setItem( "username", res.data.newUsername );
 			}
-			setUserKw( this.state.keywords );
 			this.backToMain();
 		} catch ( err ) {
+			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.updateUserInfo();
@@ -260,6 +257,18 @@ class SettingsPage extends Component {
 		}
 	}
 
+	handleDelete = i => {
+		const filteredHobbies = this.state.hobbies.filter(
+			( hobbie, index ) => index !== i );
+		this.setState({ hobbies: filteredHobbies });
+	}
+
+	handleAddition = hobbie => {
+		this.setState( state => ({
+			hobbies: [ ...state.hobbies, hobbie ]
+		}));
+	}
+
 	render() {
 		if ( this.state.tab === 1 ) {
 			return (
@@ -268,7 +277,9 @@ class SettingsPage extends Component {
 					handleFileChange={this.handleFileChange}
 					handleChange={this.handleChange}
 					backToMain={this.backToMain}
-					keywords={this.state.keywords}
+					hobbies={this.state.hobbies}
+					handleDelete={this.handleDelete}
+					handleAddition={this.handleAddition}
 					description={this.state.description}
 					username={this.state.username}
 					fullname={this.state.fullname}

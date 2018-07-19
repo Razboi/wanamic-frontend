@@ -6,19 +6,21 @@ import Comment from "./Comment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
-	switchComments, setComments, addComment, deleteComment, updatePost
+	switchComments, setComments, addComment, deleteComment, updatePost,
+	addToComments
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
 import InputTrigger from "react-input-trigger";
 import Suggestions from "../components/Suggestions";
+import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
 		position: absolute;
 		height: 100vh;
 		width: 100%;
-		overflow: hidden;
+		overflow: auto;
 		z-index: 4;
 		background: #fff;
 		display: grid;
@@ -27,7 +29,17 @@ const
 		grid-template-areas:
 			"hea"
 			"com"
-			"inp"
+			"inp";
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		height: 100%;
+		width: 100%;
+
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
@@ -37,9 +49,14 @@ const
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	CommentsWrapper = styled.div`
-		z-index: 3;
 		grid-area: com;
+		z-index: 3;
 		overflow-y: scroll;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	StyledTextArea = {
 		width: "100%",
@@ -68,7 +85,9 @@ class Comments extends Component {
 			suggestionsLeft: undefined,
 			mentionInput: "",
 			currentSelection: 0,
-			startPosition: undefined
+			startPosition: undefined,
+			skip: 1,
+			hasMore: true
 		};
 	}
 
@@ -88,6 +107,27 @@ class Comments extends Component {
 					this.props.setComments( res.data );
 				}
 			}).catch( err => console.log( err ));
+	}
+
+	getComments = async() => {
+		if ( this.state.hasMore ) {
+			try {
+				const res = await api.getPostComments(
+					this.props.postId, this.state.skip );
+				if ( res === "jwt expired" ) {
+					await refreshToken();
+					this.getComments();
+				} else if ( res.data ) {
+					this.props.addToComments( res.data );
+					this.setState({
+						hasMore: res.data.length > 10,
+						skip: this.state.skip + 1
+					});
+				}
+			} catch ( err ) {
+				console.log( err );
+			}
+		}
 	}
 
 	getSocialCircle = () => {
@@ -255,15 +295,23 @@ class Comments extends Component {
 				</HeaderWrapper>
 
 				<CommentsWrapper className="commentsWrapper">
-					{this.props.comments.map(( comment, index ) =>
-						<Comment
-							key={index}
-							index={index}
-							comment={comment}
-							handleDelete={this.handleDelete}
-							handleReply={() => this.handleReply( comment.author )}
-						/>
-					)}
+					<StyledInfiniteScroll
+						pageStart={this.state.skip}
+						hasMore={this.state.hasMore}
+						loadMore={this.getComments}
+						initialLoad={false}
+						useWindow={false}
+					>
+						{this.props.comments.map(( comment, index ) =>
+							<Comment
+								key={index}
+								index={index}
+								comment={comment}
+								handleDelete={this.handleDelete}
+								handleReply={() => this.handleReply( comment.author )}
+							/>
+						)}
+					</StyledInfiniteScroll>
 				</CommentsWrapper>
 
 				<InputTrigger
@@ -316,6 +364,7 @@ const
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id ) => dispatch( switchComments( id )),
 		setComments: comments => dispatch( setComments( comments )),
+		addToComments: comments => dispatch( addToComments( comments )),
 		addComment: comment => dispatch( addComment( comment )),
 		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
 		updatePost: ( post, onExplore ) =>

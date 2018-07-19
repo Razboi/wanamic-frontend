@@ -12,6 +12,7 @@ export const
 	ADD_POST = "ADD_POST",
 	DELETE_POST = "DELETE_POST",
 	SWITCH_POST_DETAILS = "SWITCH_POST_DETAILS",
+	ADD_TO_COMMENTS = "ADD_TO_COMMENTS",
 
 
 	setPosts = ( posts, onExplore, onAlbum ) => ({
@@ -44,6 +45,11 @@ export const
 
 	setComments = comments => ({
 		type: SET_COMMENTS,
+		comments: comments
+	}),
+
+	addToComments = comments => ({
+		type: ADD_TO_COMMENTS,
 		comments: comments
 	}),
 

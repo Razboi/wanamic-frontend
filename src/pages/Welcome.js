@@ -7,7 +7,6 @@ import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import setUserKw from "../utils/setUserKWs";
 
 const
 	Wrapper = styled.div`
@@ -24,7 +23,7 @@ class WelcomePage extends Component {
 		super();
 		this.state = {
 			description: "",
-			keywords: "",
+			hobbies: [],
 			userImage: null,
 			step: 1,
 			checkedCategories: [],
@@ -41,6 +40,18 @@ class WelcomePage extends Component {
 		this.setState({
 			[ e.target.name ]: e.target.files[ 0 ]
 		});
+	}
+
+	handleDelete = i => {
+		const filteredHobbies = this.state.hobbies.filter(
+			( hobbie, index ) => index !== i );
+		this.setState({ hobbies: filteredHobbies });
+	}
+
+	handleAddition = hobbie => {
+		this.setState( state => ({
+			hobbies: [ ...state.hobbies, hobbie ]
+		}));
 	}
 
 	handleNext = () =>
@@ -89,27 +100,27 @@ class WelcomePage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
-	finish = () => {
+	finish = async() => {
 		var data = new FormData();
 		data.append( "userImage", this.state.userImage );
 		data.append( "description", this.state.description );
 		data.append( "token", localStorage.getItem( "token" ));
-		Promise.all([
-			api.setUserInfo( data ),
-			api.updateInterests( this.state.checkedCategories ),
-			api.setupFollow( this.state.toFollow )
-		])
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.finish())
-						.catch( err => console.log( err ));
-				} else {
-					setUserKw( this.state.keywords );
-					localStorage.removeItem( "NU" );
-					this.props.history.push( "/" );
-				}
-			}).catch( err => console.log( err ));
+		try {
+			await Promise.all([
+				api.setUserInfo( data ),
+				api.updateInterests( this.state.checkedCategories ),
+				api.setupFollow( this.state.toFollow ),
+				api.setUserKw( this.state.hobbies )
+			]);
+			localStorage.removeItem( "NU" );
+			this.props.history.push( "/" );
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.finish();
+			}
+		}
 	}
 
 	render() {
@@ -121,7 +132,9 @@ class WelcomePage extends Component {
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
 						description={this.state.description}
-						keywords={this.state.keywords}
+						hobbies={this.state.hobbies}
+						handleDelete={this.handleDelete}
+						handleAddition={this.handleAddition}
 					/>
 				}
 
