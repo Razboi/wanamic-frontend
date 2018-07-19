@@ -14,6 +14,14 @@ export default function notifications( state = initialState, action = {}) {
 			newNotifications: action.newNotifications
 		};
 
+	case "ADD_TO_NOTIFICATIONS":
+		return {
+			...state,
+			allNotifications: [
+				...state.allNotifications, ...action.notifications
+			]
+		};
+
 	case "SWITCH_NOTIFICATIONS":
 		return {
 			...state,

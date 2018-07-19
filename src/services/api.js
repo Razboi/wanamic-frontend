@@ -361,13 +361,13 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	getNotifications: () =>
+	getNotifications: skip =>
 		axios({
 			method: "post",
 			data: {
 				token: localStorage.getItem( "token" ),
 			},
-			url: "/notifications/retrieve/"
+			url: "/notifications/retrieve/" + skip
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),

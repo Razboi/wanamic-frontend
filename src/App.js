@@ -48,7 +48,7 @@ class App extends Component {
 	}
 
 	async setupNotifications() {
-		const notifications = await api.getNotifications();
+		const notifications = await api.getNotifications( 0 );
 		if ( notifications === "jwt expired" ) {
 			try {
 				await refreshToken();

@@ -1,6 +1,7 @@
 export const
 	// action types
 	SET_NOTIFICATIONS = "SET_NOTIFICATIONS",
+	ADD_TO_NOTIFICATIONS = "ADD_TO_NOTIFICATIONS",
 	ADD_NOTIFICATION = "ADD_NOTIFICATION",
 	DELETE_NOTIFICATION = "DELETE_NOTIFICATION",
 	SWITCH_NOTIFICATIONS = "SWITCH_NOTIFICATIONS",
@@ -11,6 +12,11 @@ export const
 		type: SET_NOTIFICATIONS,
 		allNotifications: allNotifications,
 		newNotifications: newNotifications
+	}),
+
+	addToNotifications = notifications => ({
+		type: ADD_TO_NOTIFICATIONS,
+		notifications: notifications
 	}),
 
 	switchNotifications = () => ({

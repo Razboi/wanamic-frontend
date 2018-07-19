@@ -8,20 +8,26 @@ import PostDetails from "../containers/PostDetails";
 import Comments from "../containers/Comments";
 import api from "../services/api";
 import { switchComments } from "../services/actions/posts";
-import { checkNotifications } from "../services/actions/notifications";
+import {
+	checkNotifications, addToNotifications
+} from "../services/actions/notifications";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
 import NotificationButton from "../components/NotificationButton";
 import NavBar from "../containers/NavBar";
+import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		height: 100%;
 		width: 100%;
-		position: absolute;
 		z-index: 3;
 		background: #fff;
 		padding-top: 49.33px;
+	`,
+	StyledInfiniteScroll = styled( InfiniteScroll )`
+		height: 100%;
+		width: 100%;
 	`,
 	Header = styled.div`
 		border-bottom: 1px solid #000;
@@ -71,6 +77,8 @@ class Notifications extends Component {
 			postId: "",
 			alreadyFollowing: [],
 			network: undefined,
+			skip: 1,
+			hasMore: true
 		};
 	}
 
@@ -191,6 +199,26 @@ class Notifications extends Component {
 		}
 	}
 
+	getNotifications = async() => {
+		if ( this.state.hasMore ) {
+			try {
+				const res = await api.getNotifications( this.state.skip );
+				if ( res === "jwt expired" ) {
+					await refreshToken();
+					this.getNotifications();
+				} else if ( res.data ) {
+					this.props.addToNotifications( res.data );
+					this.setState({
+						hasMore: res.data.length > 10,
+						skip: this.state.skip + 1
+					});
+				}
+			} catch ( err ) {
+				console.log( err );
+			}
+		}
+	}
+
 	render() {
 		if ( this.state.displayComments ) {
 			return (
@@ -208,9 +236,16 @@ class Notifications extends Component {
 		}
 		return (
 			<Wrapper>
-				<NavBar socket={this.props.socket} />
-				<Header>Notifications</Header>
-				{this.state.network &&
+				<StyledInfiniteScroll
+					pageStart={this.state.skip}
+					hasMore={this.state.hasMore}
+					loadMore={this.getNotifications}
+					initialLoad={false}
+					useWindow={false}
+				>
+					<NavBar socket={this.props.socket} />
+					<Header>Notifications</Header>
+					{this.state.network &&
 					<div>
 						{this.props.notifications.map(( notification, index ) =>
 							<React.Fragment key={index}>
@@ -259,6 +294,7 @@ class Notifications extends Component {
 							</React.Fragment>
 						)}
 					</div>}
+				</StyledInfiniteScroll>
 			</Wrapper>
 		);
 	}
@@ -277,7 +313,8 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id ) => dispatch( switchComments( id )),
-		checkNotifications: () => dispatch( checkNotifications())
+		checkNotifications: () => dispatch( checkNotifications()),
+		addToNotifications: notif => dispatch( addToNotifications( notif ))
 	});
 
 export default withRouter(
