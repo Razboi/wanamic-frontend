@@ -17,6 +17,12 @@ class ProfilePage extends Component {
 		};
 	}
 
+	componentDidMount() {
+		if ( this.props.match.params.username === "post" ) {
+			window.history.back();
+		}
+	}
+
 	backToMain = () => {
 		this.props.history.push( "/" );
 	}
@@ -37,6 +43,11 @@ class ProfilePage extends Component {
 			this.props.user.username
 			:
 			this.props.match.params.username;
+
+		if ( this.props.match.params.username === "post" ) {
+			return null;
+		}
+
 		if ( this.state.displayConversation ) {
 			return (
 				<Messages

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Label, Dropdown, Image } from "semantic-ui-react";
+import { Label, Dropdown, Image } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";

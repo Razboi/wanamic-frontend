@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Icon, Label } from "semantic-ui-react";
+import { Button, Icon } from "semantic-ui-react";
 import api from "../services/api";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";

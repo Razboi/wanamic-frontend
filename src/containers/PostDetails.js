@@ -30,6 +30,8 @@ const
 		height: 30px;
 	`;
 
+var previousHref;
+
 class PostDetails extends Component {
 	constructor() {
 		super();
@@ -38,7 +40,11 @@ class PostDetails extends Component {
 			displayComments: false
 		};
 	}
+
 	componentDidMount() {
+		previousHref = window.location.href;
+		window.history.pushState( null, null, "/post" );
+		window.onpopstate = () => this.props.switchDetails();
 		if ( !this.props.post ) {
 			this.getPost();
 		} else {
@@ -61,8 +67,15 @@ class PostDetails extends Component {
 		}
 		this.setState({ post: posts.data });
 	}
+
+	handleBack = () => {
+		window.history.pushState( null, null, previousHref );
+		this.props.switchDetails();
+	}
+
 	render() {
-		if ( !this.state.post ) {
+		const { post } = this.state;
+		if ( !post ) {
 			return null;
 		}
 		if ( this.props.displayComments ) {
@@ -76,23 +89,23 @@ class PostDetails extends Component {
 				<HeaderWrapper>
 					<StyledIcon
 						name="arrow left"
-						onClick={this.props.switchDetails}
+						onClick={this.handleBack}
 					/>
-					{this.state.post.mediaContent.url &&
-						<a href={this.state.post.mediaContent.url} target="_blank">
+					{post.mediaContent && post.mediaContent.url &&
+						<a href={post.mediaContent.url} target="_blank">
 							<ItunesImage src={require( "../images/itunes.svg" )} />
 						</a>
 					}
 				</HeaderWrapper>
-				{this.state.post.media ?
+				{post.media ?
 					<MediaPost
 						socket={this.props.socket}
-						post={this.state.post}
+						post={post}
 					/>
 					:
 					<Post
 						socket={this.props.socket}
-						post={this.state.post}
+						post={post}
 					/>
 				}
 			</Wrapper>
