@@ -73,21 +73,47 @@ const
 			color: ${props => props.active ?
 		"#000" : "rgba( 0,0,0,.5 )"} !important;
 		}
+	`,
+	SearchBar = styled.input`
+		@media (max-width: 420px) {
+			width: 90%;
+			height: 34px;
+			color: #303030 !important;
+			text-align: center !important;
+			border: 1px solid rgba( 0,0,0,.4 ) !important;
+			border-radius: 2px !important;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		}
+	`,
+	SearchWrapper = styled.div`
+		@media (max-width: 420px) {
+			z-index: 3;
+			height: 44px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			position: fixed !important;
+			bottom: 0;
+		}
 	`;
 
 class ExplorePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			keywords: "",
+			hobbies: "",
 			usernameSearch: "",
 			renderProfile: false,
 			typeOfSearch: "",
 			skip: 1,
+			userSkip: 0,
 			hasMore: true,
 			content: true,
 			user: {},
-			selectedPost: {}
+			selectedPost: {},
+			search: "",
+			searching: false
 		};
 	}
 
@@ -140,30 +166,28 @@ class ExplorePage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
-	getKeywordUser = () => {
-		var keywordsArray = ( this.state.keywords ).split( /\s*#/ );
-		keywordsArray.shift();
-		api.matchKwUsers( keywordsArray, this.state.skip )
+	matchHobbies = () => {
+		api.matchHobbies( this.state.hobbies, this.state.userSkip )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
-						.then(() => this.getKeywordUser())
+						.then(() => this.matchHobbies())
 						.catch( err => console.log( err ));
 				} else if ( res.data ) {
 					this.setState({
-						user: res.data, renderProfile: true, typeOfSearch: "keyword",
-						skip: this.state.skip + 1
+						user: res.data, renderProfile: true, typeOfSearch: "hobbie",
+						skip: this.state.userSkip + 1
 					});
 				}
 			}).catch( err => console.log( err ));
 	}
 
-	getUsername = () => {
+	matchUsername = () => {
 		api.getUserInfo( this.state.usernameSearch )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
-						.then(() => this.getUsername())
+						.then(() => this.matchUsername())
 						.catch( err => console.log( err ));
 				} else if ( res.data ) {
 					this.setState({ user: res.data, renderProfile: true });
@@ -187,8 +211,8 @@ class ExplorePage extends Component {
 		case "random":
 			this.getRandomUser();
 			break;
-		case "keyword":
-			this.getKeywordUser();
+		case "hobbie":
+			this.matchHobbies();
 			break;
 		default:
 			this.getSugestedUser();
@@ -228,6 +252,43 @@ class ExplorePage extends Component {
 		this.props.switchPostDetails();
 	}
 
+	handleKeyPress = e => {
+		if ( e.key === "Enter" ) {
+			if ( this.state.search ) {
+				this.setState({ searching: true, skip: 1 });
+				this.searchContent();
+			} else if ( this.state.searching ) {
+				this.setState({ searching: false, skip: 1 });
+				this.refreshPosts();
+			}
+		}
+	}
+
+	searchContent = async() => {
+		try {
+			const posts = await api.searchContent( 0, this.state.search );
+			this.props.setPosts( posts.data, true );
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
+	loadSearch = async() => {
+		if ( this.state.hasMore ) {
+			try {
+				const posts = await api.searchContent(
+					this.state.skip, this.state.search );
+				this.props.addToPosts( posts.data, true );
+				this.setState({
+					hasMore: posts.data.length > 10,
+					skip: this.state.skip + 1
+				});
+			} catch ( err ) {
+				console.log( err );
+			}
+		}
+	}
+
 
 	render() {
 		if ( this.state.renderProfile ) {
@@ -256,7 +317,8 @@ class ExplorePage extends Component {
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
-					loadMore={this.getPosts}
+					loadMore={this.state.searching ?
+						this.loadSearch : this.getPosts}
 					initialLoad={false}
 					useWindow={false}
 				>
@@ -283,18 +345,29 @@ class ExplorePage extends Component {
 					</Header>
 					<MainComponent>
 						{this.state.content ?
-							<ExploreContent
-								className="exploreContent"
-								posts={this.props.posts}
-								displayPostDetails={this.displayPostDetails}
-							/>
+							<React.Fragment>
+								<ExploreContent
+									className="exploreContent"
+									posts={this.props.posts}
+									displayPostDetails={this.displayPostDetails}
+								/>
+								<SearchWrapper>
+									<SearchBar
+										placeholder="What are you interested in?"
+										name="search"
+										onChange={this.handleChange}
+										value={this.state.search}
+										onKeyPress={this.handleKeyPress}
+									/>
+								</SearchWrapper>
+							</React.Fragment>
 							:
 							<ExploreUsers
 								className="exploreUsers"
 								getSugested={this.getSugestedUser}
 								getRandom={this.getRandomUser}
-								getKeywordUser={this.getKeywordUser}
-								getUsername={this.getUsername}
+								matchHobbies={this.matchHobbies}
+								matchUsername={this.matchUsername}
 								handleChange={this.handleChange}
 							/>
 						}

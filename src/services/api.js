@@ -253,11 +253,15 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	matchKwUsers: ( data, skip ) =>
+	matchHobbies: ( data, skip ) =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), data: data, skip: skip },
-			url: "/user/matchKwUsers"
+			data: {
+				token: localStorage.getItem( "token" ),
+				data: data,
+				skip: skip
+			},
+			url: "/user/matchHobbies"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -280,6 +284,17 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
+
+	searchContent: ( skip, search ) =>
+		axios({
+			method: "post",
+			data: { search: search },
+			url: "posts/search/:skip" + skip
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 
 	likePost: postId =>
 		axios({

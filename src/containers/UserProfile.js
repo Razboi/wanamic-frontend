@@ -7,7 +7,6 @@ import refreshToken from "../utils/refreshToken";
 import NewsFeed from "../components/NewsFeed";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
-import { WithContext as ReactTags } from "react-tag-input";
 
 var
 	backgroundImg,
@@ -421,8 +420,10 @@ class UserProfile extends Component {
 							</LikesCount>
 							<Description>{user.description}</Description>
 							<Hobbies>
-								{user.hobbies.map( hobbie =>
-									<Hobbie>{hobbie}</Hobbie>
+								{user.hobbies.map(( hobbie, index ) =>
+									<Hobbie key={index}>
+										{hobbie}
+									</Hobbie>
 								)}
 							</Hobbies>
 							<ProfileOptions

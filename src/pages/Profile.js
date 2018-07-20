@@ -18,7 +18,8 @@ class ProfilePage extends Component {
 	}
 
 	componentDidMount() {
-		if ( this.props.match.params.username === "post" ) {
+		const { match } = this.props;
+		if ( match && match.params.username === "post" ) {
 			window.history.back();
 		}
 	}
@@ -39,12 +40,15 @@ class ProfilePage extends Component {
 		this.setState({ tab: tab });
 	}
 	render() {
-		const username = this.props.user ?
-			this.props.user.username
-			:
-			this.props.match.params.username;
+		const
+			{ match, user } = this.props,
 
-		if ( this.props.match.params.username === "post" ) {
+			username = user ?
+				user.username
+				:
+				match.params.username;
+
+		if ( match && match.params.username === "post" ) {
 			return null;
 		}
 

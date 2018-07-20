@@ -85,7 +85,11 @@ const
 			justify-self: center;
 			align-self: flex-start;
 			margin-top: 10px;
-			width: 70%;
+			width: 90%;
+
+			input {
+				text-align: center !important;
+			}
 		}
 	`,
 	UsernameWrapper = styled.div`
@@ -113,17 +117,21 @@ const
 			justify-self: center;
 			align-self: flex-start;
 			margin-top: 10px;
+			width: 90%;
 
+			input {
+				text-align: center !important;
+			}
 		}
 	`;
 
 class ExploreUsers extends Component {
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
-			e.target.name === "keywords" ?
-				this.props.getKeywordUser()
+			e.target.name === "hobbies" ?
+				this.props.matchHobbies()
 				:
-				this.props.getUsername();
+				this.props.matchUsername();
 		}
 	}
 
@@ -149,12 +157,12 @@ class ExploreUsers extends Component {
 				</ButtonsWrapper>
 				<SeparatorWrapper horizontal content="Or" />
 				<InterestsWrapper>
-					<InterestsHeader>Search by interests</InterestsHeader>
+					<InterestsHeader>Search by interests and hobbies</InterestsHeader>
 					<InterestsSearch
 						className="interestsSearch"
 						icon="search"
-						name="keywords"
-						placeholder="#Rock music  #Golf  #anime  #fishing"
+						name="hobbies"
+						placeholder="Try 'music' or 'fishing'"
 						onKeyPress={this.handleKeyPress}
 						onChange={this.props.handleChange}
 					/>
@@ -165,7 +173,7 @@ class ExploreUsers extends Component {
 						className="usernameSearch"
 						icon="search"
 						name="usernameSearch"
-						placeholder="username"
+						placeholder="skankhunt42"
 						onKeyPress={this.handleKeyPress}
 						onChange={this.props.handleChange}
 					/>
@@ -179,8 +187,8 @@ ExploreUsers.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	getRandom: PropTypes.func.isRequired,
 	getSugested: PropTypes.func.isRequired,
-	getKeywordUser: PropTypes.func.isRequired,
-	getUsername: PropTypes.func.isRequired
+	matchHobbies: PropTypes.func.isRequired,
+	matchUsername: PropTypes.func.isRequired
 };
 
 export default ExploreUsers;
