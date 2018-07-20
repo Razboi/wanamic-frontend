@@ -10,7 +10,12 @@ export default function notifications( state = initialState, action = {}) {
 	case "SET_NOTIFICATIONS":
 		return {
 			...state,
-			allNotifications: action.allNotifications,
+			allNotifications: action.allNotifications
+		};
+
+	case "SET_NEW_NOTIFICATIONS":
+		return {
+			...state,
 			newNotifications: action.newNotifications
 		};
 

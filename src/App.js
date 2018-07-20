@@ -13,7 +13,7 @@ import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 import io from "socket.io-client";
 import {
-	setNotifications, addNotification
+	setNewNotifications, addNotification
 } from "./services/actions/notifications";
 import {
 	setChatNotifications, addConversation, updateConversation,
@@ -57,8 +57,7 @@ class App extends Component {
 			}
 			this.setupNotifications();
 		} else if ( notifications.data ) {
-			this.props.setNotifications(
-				notifications.data.notifications,
+			this.props.setNewNotifications(
 				notifications.data.newNotifications
 			);
 			this.props.setChatNotifications(
@@ -157,9 +156,8 @@ const
 			dispatch( incrementChatNewMessages( index )),
 		addNotification: notif => dispatch( addNotification( notif )),
 		addChatNotification: notif => dispatch( addChatNotification( notif )),
-		setNotifications: ( allNotifications, newNotifications ) => {
-			dispatch( setNotifications( allNotifications, newNotifications ));
-		}
+		setNewNotifications: newNotifications =>
+			dispatch( setNewNotifications( newNotifications ))
 	});
 
 export default withRouter( connect( mapStateToProps, mapDispatchToProps )( App ));

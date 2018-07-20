@@ -81,12 +81,13 @@ class Notifications extends Component {
 			postId: "",
 			alreadyFollowing: [],
 			network: undefined,
-			skip: 1,
+			skip: 0,
 			hasMore: true
 		};
 	}
 
 	componentDidMount() {
+		this.getNotifications();
 		this.getNetwork();
 		this.checkNotifications();
 	}
@@ -213,7 +214,7 @@ class Notifications extends Component {
 				} else if ( res.data ) {
 					this.props.addToNotifications( res.data.notifications );
 					this.setState({
-						hasMore: res.data.length > 10,
+						hasMore: res.data.notifications.length === 10,
 						skip: this.state.skip + 1
 					});
 				}

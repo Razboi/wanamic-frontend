@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Icon, Input, Header, Image, Dropdown } from "semantic-ui-react";
+import {
+	Icon, Input, Header, Image, Dropdown, Message as MessageInfo
+} from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Message from "./Message";
@@ -75,6 +77,13 @@ const
 			color: rgba(0,0,0,0.45) !important;
 			font-size: 1.433rem !important;
 		};
+	`,
+	SpamWarning = styled( MessageInfo )`
+		position: fixed !important;
+		left: 5px;
+		right: 5px;
+		z-index: 2;
+		word-break: break-word;
 	`;
 
 
@@ -95,7 +104,7 @@ class Conversation extends Component {
 	render() {
 		const {
 			conversation, back, messageInput, handleChange,
-			handleKeyPress, newConversation
+			handleKeyPress, newConversation, spam
 		} = this.props;
 		this.setUserImage();
 		return (
@@ -133,7 +142,17 @@ class Conversation extends Component {
 							</Dropdown.Menu>
 						</StyledDropdown>}
 				</HeaderWrapper>
+
 				<MessagesWrapper component="div" className="messagesWrapper">
+					{spam &&
+						<SpamWarning warning>
+							<MessageInfo.Header>
+									You are sending messages too fast.
+							</MessageInfo.Header>
+							<p>To prevent spam you must wait a couple seconds.</p>
+						</SpamWarning>
+					}
+
 					{conversation.messages.map(( message, index ) =>
 						<Message message={message} key={index} />
 					)}
@@ -159,7 +178,8 @@ Conversation.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	handleDeleteChat: PropTypes.func.isRequired,
 	back: PropTypes.func.isRequired,
-	messageInput: PropTypes.string.isRequired
+	messageInput: PropTypes.string.isRequired,
+	spam: PropTypes.bool.isRequired,
 };
 
 

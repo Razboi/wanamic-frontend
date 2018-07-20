@@ -78,7 +78,7 @@ const
 		bottom: 0.5rem;
 	`;
 
-
+var interval;
 class Messages extends Component {
 	constructor() {
 		super();
@@ -86,15 +86,27 @@ class Messages extends Component {
 			friends: [],
 			displayFriendsList: false,
 			displayConversation: false,
-			messageInput: ""
+			messageInput: "",
+			sentMessages: 0,
+			spam: false
 		};
 	}
 
 	async componentDidMount() {
+		interval = setInterval( this.resetMessagesLimit, 10000 );
 		await this.getActiveChats();
 		if ( this.props.messageTarget ) {
 			this.handleNewConversation( this.props.messageTarget );
 		}
+	}
+
+	componentWillUnmount() {
+		clearInterval( interval );
+	}
+
+	resetMessagesLimit = () => {
+		console.log( "here" );
+		this.setState({ sentMessages: 0 });
 	}
 
 	getActiveChats = async() => {
@@ -198,13 +210,17 @@ class Messages extends Component {
 		const
 			{ conversations, selectedConversation, newConversation
 			} = this.props,
-			{ messageInput } = this.state,
+			{ messageInput, sentMessages } = this.state,
 			conversation = newConversation ?
 				newConversation
 				:
 				conversations[ selectedConversation ];
-
-		if ( messageInput ) {
+		if ( !messageInput ) {
+			return;
+		}
+		if ( sentMessages >= 7 ) {
+			this.handleSpam();
+		} else {
 			const res = await api.sendMessage(
 				conversation.target.username, messageInput
 			);
@@ -216,7 +232,9 @@ class Messages extends Component {
 				}
 				this.handleSendMessage();
 			} else {
-				this.setState({ messageInput: "" });
+				this.setState( state => ({
+					messageInput: "", sentMessages: state.sentMessages + 1
+				}));
 				this.props.socket.emit( "sendMessage", res.data.newMessage );
 				if ( newConversation ) {
 					this.props.addConversation( res.data.newConversation );
@@ -239,6 +257,13 @@ class Messages extends Component {
 		});
 	}
 
+	handleSpam = () => {
+		this.setState({ spam: true });
+		setTimeout(() => {
+			this.setState({ spam: false });
+		}, 10000 );
+	}
+
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
@@ -258,6 +283,7 @@ class Messages extends Component {
 					handleDeleteChat={this.handleDeleteChat}
 					back={this.backToOpenConversations}
 					messageInput={this.state.messageInput}
+					spam={this.state.spam}
 				/>
 			);
 		}

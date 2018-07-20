@@ -79,7 +79,7 @@ class HomePage extends Component {
 					} else {
 						this.props.addToPosts( res.data );
 						this.setState({
-							hasMore: res.data.length > 10,
+							hasMore: res.data.length === 10,
 							skip: this.state.skip + 1
 						});
 					}
