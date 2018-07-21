@@ -25,6 +25,7 @@ const
 		padding: 0 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
+		font-family: inherit !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
@@ -59,6 +60,7 @@ const
 		flex-direction: column;
 		padding: 1.33rem 1rem;
 		min-height: 25px;
+		font-family: inherit !important;
 	`,
 	UserContent = styled.p`
 		word-break: break-all;

@@ -25,7 +25,7 @@ const
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 7% 79% 14%;
+		grid-template-rows: 10% 80% 10%;
 		grid-template-areas:
 			"hea"
 			"com"

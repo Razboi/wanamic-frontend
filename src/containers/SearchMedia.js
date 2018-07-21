@@ -19,20 +19,13 @@ const
 		height: 100vh;
 		width: 100%;
 		position: fixed;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 7% 10% 83%;
-		grid-template-areas:
-			"h"
-			"s"
-			"r"
+		color: #fff !important;
 	`,
 	HeaderWrapper = styled.div`
-		grid-area: h;
+		height: 40px;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
 	`,
 	HeaderTxt = styled.span`
 		margin: auto;
@@ -43,35 +36,44 @@ const
 		position: absolute;
 	`,
 	SearchWrapper = styled.div`
-		grid-area: s;
-		display: grid;
+		height: 44px;
+		display: flex;
+		width: 100%;
+		margin-top: 1rem;
+		align-items: center;
+		justify-content: center;
 		border-bottom: 1px solid #D3D3D3;
 	`,
 	SearchInput = styled( Input )`
+		height: 34px;
 		width: 90%;
 		justify-self: center;
 		align-self: center;
 	`,
 	ResultsWrapper = styled.div`
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 		overflow-y: scroll;
-		grid-area: r;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	ResultMediaWrapper = styled.div`
 		margin: 25px 0px;
-		display: grid;
-		grid-template-columns: 40% 50%;
-		grid-template-rows: 100%;
-		grid-template-areas:
-			"img inf"
+		display: flex;
+		align-items: start;
+		padding: 0 1rem;
 	`,
 	ResultMediaImage = styled( Image )`
-		grid-area: img;
-		justify-self: center;
 		width: 128px;
 		height: 194px;
 	`,
 	ResultMediaInfo = styled.div`
-		grid-area: inf;
+		align-self: start;
+		margin-left: 1rem;
 	`;
 
 
@@ -267,14 +269,14 @@ class SearchMedia extends Component {
 					{this.state.results.map(( media, index ) =>
 						<div key={index}>
 							<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
+								<ResultMediaImage
+									src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
+								/>
+
 								<ResultMediaInfo>
 									<h3>{media.trackName}</h3>
 									<span>{media.artistName}</span>
 								</ResultMediaInfo>
-
-								<ResultMediaImage
-									src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
-								/>
 							</ResultMediaWrapper>
 							<Divider />
 						</div>

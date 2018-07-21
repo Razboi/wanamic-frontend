@@ -25,7 +25,7 @@ const
 		position: absolute;
 		height: 100%;
 		width: 100%;
-		background: rgba(0,0,0,0.35);
+		background: rgba(0,0,0,0.85);
 	`,
 	MediaButtons = styled.div`
 		display: flex;
@@ -44,7 +44,10 @@ const
 		}
 	`,
 	MediaButton = styled( Button )`
-		background: #000 !important;
+		background: none !important;
+		color: #fff !important;
+		border: 1px solid #fff !important;
+		z-index: 2;
 	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;

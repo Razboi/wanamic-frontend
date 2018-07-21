@@ -52,15 +52,21 @@ const
 	UserSubheader = styled.div`
 		@media (max-width: 420px) {
 			grid-area: shu;
-			justify-self: center;
-			align-self: center;
+			height: 100%;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	`,
 	ContentSubheader = styled.div`
 		@media (max-width: 420px) {
 			grid-area: shc;
-			justify-self: center;
-			align-self: center;
+			height: 100%;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 	`,
 	MainComponent = styled.div`
@@ -68,11 +74,14 @@ const
 			grid-area: c;
 		}
 	`,
-	HeaderIcon = styled( Icon )`
-		@media (max-width: 420px) {
-			color: ${props => props.active ?
-		"#000" : "rgba( 0,0,0,.5 )"} !important;
-		}
+	HeaderImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
 	`,
 	SearchBar = styled.input`
 		@media (max-width: 420px) {
@@ -300,6 +309,7 @@ class ExplorePage extends Component {
 					next={this.nextUser}
 					explore={true}
 					socket={this.props.socket}
+					history={this.props.history}
 				/>
 			);
 		}
@@ -325,20 +335,24 @@ class ExplorePage extends Component {
 					<NavBar socket={this.props.socket} />
 					<Header>
 						<UserSubheader>
-							<HeaderIcon
-								active={!this.state.content ? 1 : 0}
+							<HeaderImage
+								image={!this.state.content ?
+									require( "../images/connect_color.png" )
+									:
+									require( "../images/connect.png" )
+								}
 								className="userIcon"
-								name="user"
-								size="large"
 								onClick={() => this.setState({ content: false })}
 							/>
 						</UserSubheader>
 						<ContentSubheader>
-							<HeaderIcon
-								active={this.state.content ? 1 : 0}
+							<HeaderImage
+								image={this.state.content ?
+									require( "../images/content_color.png" )
+									:
+									require( "../images/content.png" )
+								}
 								className="contentIcon"
-								name="content"
-								size="large"
 								onClick={() => this.setState({ content: true })}
 							/>
 						</ContentSubheader>

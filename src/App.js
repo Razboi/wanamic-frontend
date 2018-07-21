@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "./App.css";
 import Auth from "./pages/Auth";
 import Newsfeed from "./pages/Newsfeed";
 import Profile from "./pages/Profile";

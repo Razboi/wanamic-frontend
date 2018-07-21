@@ -29,6 +29,7 @@ const
 		padding: 0 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
+		font-family: inherit !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
@@ -46,7 +47,7 @@ const
 	},
 	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
-		color: hsl(0,0%,13%) !important;
+		color: #14171a !important;
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
@@ -57,6 +58,9 @@ const
 	DateTime = styled( Header.Subheader )`
 		font-size: 1rem !important;
 		color: rgba(0,0,0,0.45) !important;
+	`,
+	MediaTitle = styled.h4`
+		font-family: inherit !important;
 	`,
 	MediaImage = styled( Image )`
 		justify-self: center;
@@ -92,6 +96,7 @@ const
 		position: relative;
 		overflow: hidden;
 		min-height: ${props => props.alerts && "250px"};
+		font-family: inherit !important;
 	`,
 	Dimmer = styled.div`
 		min-height: ${props => props.blurFilter && "250px"};
@@ -288,7 +293,7 @@ class MediaPost extends Component {
 									<MediaImage src={mediaPicture} className="mediaPicture" />
 									:
 									<React.Fragment>
-										<h4>{post.mediaContent.title}</h4>
+										<MediaTitle>{post.mediaContent.title}</MediaTitle>
 										<MediaImage
 											src={post.mediaContent.image}
 											className="mediaArtwork"

@@ -58,6 +58,7 @@ const
 		flex-direction: column;
 		margin: 0 0 0 0.5rem !important;
 		overflow: hidden !important;
+		font-family: inherit !important;
 	`,
 	UserFullname = styled.span`
 		font-size: 1.1rem !important;

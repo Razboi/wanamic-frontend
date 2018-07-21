@@ -23,10 +23,24 @@ const
 	`,
 	Hobbies = styled.div`
 		@media (max-width: 420px) {
-			text-align: center;
-			font-size: 1.025rem;
-			color: rgba( 0,0,0,0.5 );
-			padding: 0.66rem;
+			display: flex;
+			flex-wrap: wrap;
+	    width: 90%;
+	    align-items: center;
+	    justify-content: center;
+			margin: 1rem 0;
+		}
+	`,
+	Hobbie = styled.div`
+		@media (max-width: 420px) {
+			border: 1px solid rgba( 0,0,0,0.4);
+			color: rgb( 90,90,90);
+			border-radius: 2px;
+	    padding: 0.5rem;
+	    font-size: 1rem;
+	    font-weight: bold;
+			margin: 0.5rem 0 0 0.5rem;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 		}
 	`,
 	UserImg = styled( Image )`
@@ -68,7 +82,11 @@ class UserPreview extends Component {
 				</UserInfo>
 				<MatchDescription>{user.description}</MatchDescription>
 				<Hobbies>
-					{"#" + user.keywords.toString().replace( /,/g, " #" )}
+					{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+						<Hobbie key={index}>
+							{hobbie}
+						</Hobbie>
+					)}
 				</Hobbies>
 				{localStorage.getItem( "username" ) !== user.username &&
 				<FollowButtonComponent

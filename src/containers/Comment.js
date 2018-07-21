@@ -22,6 +22,7 @@ const
 		padding: 0 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
+		font-family: inherit !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;

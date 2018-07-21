@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
 import {
 	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails
 } from "../services/actions/posts";
@@ -35,14 +34,29 @@ const
 		grid-template-areas:
 			"nf"
 	`,
-	ShareMediaButton = styled( Button )`
+	ShareMediaButton = styled.div`
 		position: fixed;
 		left: 50%;
 		transform: translateX(-50%);
 		bottom: 5px;
 		z-index: 3;
-		background: rgb(51,51,51, 0.85) !important;
-		color: #fff !important;
+		border-radius: 100%;
+		padding: 1rem;
+		background: rgb(0,124,124, 0.9) !important;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	PlusImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
+		transform: ${props => props.active ? "rotate(45deg)" : "none"};
+		transition: transform 0.5s;
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
@@ -135,11 +149,13 @@ class HomePage extends Component {
 					/>
 					{this.state.mediaButton &&
 						<ShareMediaButton
-							circular
-							icon="plus"
-							size="big"
 							onClick={() => this.props.switchMediaOptions()}
-						/>
+						>
+							<PlusImage
+								image={require( "../images/plus.png" )}
+								active={this.props.mediaOptions}
+							/>
+						</ShareMediaButton>
 					}
 
 					{this.props.displayShare && <Share />}

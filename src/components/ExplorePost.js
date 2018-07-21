@@ -22,6 +22,10 @@ const
 		height: 100%;
 		color: #fff;
 		border-radius: 8px;
+		font-family: inherit !important;
+	`,
+	MediaTitle = styled.h4`
+		font-family: inherit !important;
 	`,
 	PostMediaBackground = styled.div`
 		z-index: -1;
@@ -64,7 +68,7 @@ class ExplorePost extends Component {
 							<MediaImage src={mediaPicture} className="mediaPicture" />
 							:
 							<React.Fragment>
-								<h4>{post.mediaContent.title}</h4>
+								<MediaTitle>{post.mediaContent.title}</MediaTitle>
 								<MediaImage src={post.mediaContent.image}
 									className="mediaArtwork"
 								/>

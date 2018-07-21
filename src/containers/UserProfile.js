@@ -420,7 +420,7 @@ class UserProfile extends Component {
 							</LikesCount>
 							<Description>{user.description}</Description>
 							<Hobbies>
-								{user.hobbies.map(( hobbie, index ) =>
+								{user.hobbies && user.hobbies.map(( hobbie, index ) =>
 									<Hobbie key={index}>
 										{hobbie}
 									</Hobbie>

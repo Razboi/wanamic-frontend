@@ -9,7 +9,7 @@ import Comments from "../containers/Comments";
 import api from "../services/api";
 import { switchComments } from "../services/actions/posts";
 import {
-	checkNotifications, addToNotifications
+	checkNotifications, addToNotifications, setNotifications
 } from "../services/actions/notifications";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
@@ -212,7 +212,10 @@ class Notifications extends Component {
 					await refreshToken();
 					this.getNotifications();
 				} else if ( res.data ) {
-					this.props.addToNotifications( res.data.notifications );
+					this.state.skip === 0 ?
+						this.props.setNotifications( res.data.notifications )
+						:
+						this.props.addToNotifications( res.data.notifications );
 					this.setState({
 						hasMore: res.data.notifications.length === 10,
 						skip: this.state.skip + 1
@@ -319,6 +322,7 @@ const
 	mapDispatchToProps = dispatch => ({
 		switchComments: ( id ) => dispatch( switchComments( id )),
 		checkNotifications: () => dispatch( checkNotifications()),
+		setNotifications: notif => dispatch( setNotifications( notif )),
 		addToNotifications: notif => dispatch( addToNotifications( notif ))
 	});
 
