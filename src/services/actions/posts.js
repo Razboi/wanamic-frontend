@@ -67,9 +67,9 @@ export const
 		type: SWITCH_MEDIA_OPTIONS
 	}),
 
-	switchShare = postIndex => ({
+	switchShare = post => ({
 		type: SWITCH_SHARE,
-		postIndex: postIndex
+		post: post
 	}),
 
 	switchComments = ( id ) => ({

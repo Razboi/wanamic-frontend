@@ -39,6 +39,7 @@ const
 	AuthorImg = styled( Image )`
 		width: 30px !important;
 		height: 30px !important;
+		margin: 0 !important;
 	`,
 	StyledOptions = {
 		position: "absolute",
@@ -47,7 +48,7 @@ const
 	},
 	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
-		color: #14171a !important;
+		color: #111 !important;
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
@@ -85,6 +86,7 @@ const
 		transform: scale(1.2);
 	`,
 	PostUserContent = styled.div`
+		color: #222;
 		padding: 1rem 1rem 2rem 1rem;
 	`,
 	Description = styled.span`
@@ -305,6 +307,7 @@ class MediaPost extends Component {
 
 						{ !this.props.fakeOptions &&
 							<PostOptions
+								post={this.props.post}
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
@@ -312,7 +315,6 @@ class MediaPost extends Component {
 								numComments={post.comments.length}
 								numShared={post.sharedBy.length}
 								id={post._id}
-								index={this.props.index}
 								liked={
 									this.state.likedBy.includes( localStorage.getItem( "username" ))
 								}

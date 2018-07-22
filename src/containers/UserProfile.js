@@ -60,6 +60,8 @@ const
 		}
 	`,
 	Fullname = styled.h2`
+		font-family: inherit;
+		color: #111;
 		@media (max-width: 420px) {
 			margin: 0px;
 		}
@@ -70,6 +72,7 @@ const
 		}
 	`,
 	LikesCount = styled.div`
+		color: #555 !important;
 		@media (max-width: 420px) {
 			display: flex;
 			margin-top: 0.5rem !important;
@@ -81,9 +84,11 @@ const
 			align-items: center;
 			font-size: 1rem;
 			color: rgb(140, 140, 140);
+			box-shadow: 0px 1px rgba(0,0,0,.125);
 		}
 	`,
 	Description = styled.p`
+		color: #222;
 		@media (max-width: 420px) {
 			margin: 2rem 0 0.5rem 0;
 			text-align: left;
@@ -103,17 +108,18 @@ const
 	`,
 	Hobbie = styled.div`
 		@media (max-width: 420px) {
-			border: 1px solid rgba( 0,0,0,0.4);
-			color: rgb( 90,90,90);
+			border: 1px solid #EFEEEE;
+			color: #333;
 			border-radius: 2px;
 	    padding: 0.5rem;
 	    font-size: 1rem;
 	    font-weight: bold;
 			margin: 0.5rem 0 0 0.5rem;
-			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+			box-shadow: 0 2px 2px rgba(0, 0, 0, .125);
 		}
 	`,
 	Tabs = styled.div`
+		color: #222;
 		@media (max-width: 420px) {
 			display: flex;
 			flex-direction: row;

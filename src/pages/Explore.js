@@ -86,14 +86,14 @@ const
 		@media (max-width: 420px) {
 			width: 90%;
 			height: 34px;
-			color: #211922 !important;
+			color: #222 !important;
 			text-align: center !important;
 			border: 1px solid rgba( 0,0,0,.4 ) !important;
 			border-radius: 2px !important;
 			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 			font-family: inherit;
 			:: placeholder {
-				color: #303030;
+				color: #333;
 			}
 		}
 	`,
@@ -338,6 +338,7 @@ class ExplorePage extends Component {
 					post={this.props.posts[ this.state.selectedPost ]}
 					switchDetails={this.hidePostDetails}
 					socket={this.props.socket}
+					index={this.state.selectedPost}
 				/>
 			);
 		}

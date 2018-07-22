@@ -34,7 +34,7 @@ const
 		width: 100%;
 	`,
 	Header = styled.div`
-		border-bottom: 1px solid #000;
+		color: #111;
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;
@@ -65,9 +65,10 @@ const
 		margin: 0 0.5rem;
 	`,
 	TimeAgo = styled.span`
-		color: #808080;
+		color: rgba(0,0,0,0.45) !important;
 	`,
 	Content = styled.p`
+		color: #222;
 		margin-bottom: 0px;
 		font-size: 15px;
 	`;

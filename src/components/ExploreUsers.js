@@ -35,7 +35,7 @@ const
 			grid-area: h;
 			margin: 0px;
 			text-align: center;
-			color: rgba(0,0,0,0.75);
+			color: #222;
 			align-self: center;
 			font-family: inherit;
 		}
@@ -46,7 +46,7 @@ const
 			justify-self: center;
 			align-self: center;
 			font-family: inherit !important;
-			background: rgb(0,124,124) !important;
+			background: rgb(133, 217, 191) !important;
 			border-radius: 2px !important;
 		}
 	`,
@@ -55,8 +55,8 @@ const
 			grid-area: rb;
 			justify-self: center;
 			align-self: center;
-			color: rgb(0,124,124) !important;
-			border: 1px solid rgb(0,124,124) !important;
+			color: rgb(133, 217, 191) !important;
+			border: 1px solid rgb(133, 217, 191) !important;
 			background: #fff !important;
 			font-family: inherit !important;
 			border-radius: 2px !important;
@@ -89,7 +89,7 @@ const
 			justify-self: center;
 			align-self: flex-end;
 			font-family: inherit;
-			color: rgba(0,0,0,0.75);
+			color: #333;
 		}
 	`,
 	InterestsSearch = styled( Input )`
@@ -103,12 +103,13 @@ const
 			input {
 				text-align: center !important;
 				font-family: inherit !important;
+				color: #444 !important;
 				::placeholder {
-					color: rgba(0,0,0,0.40) !important;
+					color: #666 !important;
 				};
 			};
 			i {
-				color: rgb(0,124,124) !important;
+				color: rgb(133, 217, 191) !important;
 			};
 		}
 	`,
@@ -130,7 +131,7 @@ const
 			justify-self: center;
 			align-self: flex-end;
 			font-family: inherit;
-			color: rgba(0,0,0,0.75);
+			color: #333;
 		}
 	`,
 	UsernameSearch = styled( Input )`
@@ -145,11 +146,11 @@ const
 				text-align: center !important;
 				font-family: inherit !important;
 				::placeholder {
-					color: rgba(0,0,0,0.40) !important;
+					color: #666 !important;
 				};
 			};
 			i {
-				color: rgb(0,124,124) !important;
+				color: rgb(133, 217, 191) !important;
 			};
 		}
 	`;

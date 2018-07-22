@@ -99,7 +99,7 @@ export default function posts( state = initialState, action = {}) {
 		return {
 			...state,
 			displayShare: !state.displayShare,
-			postToShare: state.newsfeed[ action.postIndex ]
+			postToShare: action.post
 		};
 
 	case "SWITCH_COMMENTS":

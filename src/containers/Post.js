@@ -35,6 +35,7 @@ const
 	AuthorImg = styled( Image )`
 		width: 30px !important;
 		height: 30px !important;
+		margin: 0 !important;
 	`,
 	StyledOptions = {
 		position: "absolute",
@@ -63,6 +64,7 @@ const
 		font-family: inherit !important;
 	`,
 	UserContent = styled.p`
+		color: #222;
 		word-break: break-all;
 	`,
 	PostBody = styled.div`
@@ -250,6 +252,7 @@ class Post extends Component {
 
 						{ !this.props.fakeOptions &&
 							<PostOptions
+								post={this.props.post}
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
@@ -257,7 +260,6 @@ class Post extends Component {
 								numComments={post.comments.length}
 								numShared={post.sharedBy.length}
 								id={post._id}
-								index={this.props.index}
 								liked={
 									this.state.likedBy.includes( localStorage.getItem( "username" ))
 								}

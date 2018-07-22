@@ -37,7 +37,7 @@ const
 		right: 10px;
 		bottom: 10px;
 		z-index: 3;
-		background: rgba(0,124,124, 0.9) !important;
+		background: rgb(133, 217, 191) !important;
 	`,
 	OpenConversation = styled.div`
 		display: flex;

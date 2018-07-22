@@ -42,7 +42,7 @@ const
 		z-index: 3;
 		border-radius: 100%;
 		padding: 1rem;
-		background: rgba(0,124,124, 0.9) !important;
+		background: rgba(133, 217, 191, 0.9) !important;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -139,6 +139,7 @@ class HomePage extends Component {
 					post={newsfeed[ postDetailsIndex ]}
 					switchDetails={this.hidePostDetails}
 					socket={this.props.socket}
+					index={postDetailsIndex}
 				/>
 			);
 		}

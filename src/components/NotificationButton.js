@@ -5,9 +5,13 @@ import PropTypes from "prop-types";
 
 const StyledButton = styled( Button )`
 	font-family: inherit !important;
-	background: ${props => props.primary &&
-	"rgb(0,124,124)"} !important;
+	background: ${props => props.primary ?
+		"rgb(133, 217, 191)" : "#fff"} !important;
+	color: ${props => props.primary ?
+		"#fff" : "rgb(133, 217, 191)"} !important;
 	border-radius: 2px !important;
+	border: ${props => props.primary ?
+		"none" : "1px solid rgb(133, 217, 191)"} !important;
 `;
 
 class NotificationButton extends Component {

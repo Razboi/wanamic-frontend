@@ -7,13 +7,14 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import api from "../services/api";
 import Comments from "../containers/Comments";
+import Share from "../containers/Share";
 
 const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
 		position: absolute;
-		z-index: 4;
+		z-index: 3;
 		background: #fff;
 	`,
 	HeaderWrapper = styled.div`
@@ -84,6 +85,9 @@ class PostDetails extends Component {
 				socket={this.props.socket}
 			/>;
 		}
+		if ( this.props.displayShare ) {
+			return <Share />;
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -101,11 +105,13 @@ class PostDetails extends Component {
 					<MediaPost
 						socket={this.props.socket}
 						post={post}
+						index={this.props.index}
 					/>
 					:
 					<Post
 						socket={this.props.socket}
 						post={post}
+						index={this.props.index}
 					/>
 				}
 			</Wrapper>
@@ -117,12 +123,14 @@ PostDetails.propTypes = {
 	postId: PropTypes.string,
 	post: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	displayComments: PropTypes.bool.isRequired
+	displayComments: PropTypes.bool.isRequired,
+	index: PropTypes.number.isRequired
 };
 
 const
 	mapStateToProps = state => ({
-		displayComments: state.posts.displayComments
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare
 	});
 
 export default connect( mapStateToProps )( PostDetails );

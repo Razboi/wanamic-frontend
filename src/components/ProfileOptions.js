@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Icon, Button } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -16,17 +16,25 @@ const
 	`,
 	Option = styled.div`
 		@media (max-width: 420px) {
+			height: 100%;
+			width: 100%;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 		}
 	`,
-	OptionIcon = styled( Icon )`
-		@media (max-width: 420px) {
-			margin: 0 !important;
-		}
+	OptionImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
 	`,
 	OptionText = styled.div`
+		color: #444;
 		@media (max-width: 420px) {
 			font-size: 0.9rem;
 			margin-top: 0.2rem;
@@ -40,11 +48,11 @@ class ProfileOptions extends Component {
 			return (
 				<Options>
 					<Option onClick={this.props.unFriend}>
-						<OptionIcon name="remove user" size="large" />
+						<OptionImage image={require( "../images/minus.png" )} />
 						<OptionText>Unfriend</OptionText>
 					</Option>
 					<Option onClick={this.props.startChat}>
-						<OptionIcon name="chat" size="large" />
+						<OptionImage image={require( "../images/send.png" )} />
 						<OptionText>Message</OptionText>
 					</Option>
 				</Options>
@@ -54,12 +62,12 @@ class ProfileOptions extends Component {
 			return (
 				<Options>
 					<Option onClick={this.props.unFollow}>
-						<OptionIcon name="remove user" size="large" />
+						<OptionImage image={require( "../images/minus.png" )} />
 						<OptionText>Unfollow</OptionText>
 					</Option>
 					{this.props.userRequested ?
 						<Option>
-							<OptionIcon name="wait" size="large" />
+							<OptionImage image={require( "../images/sandclock.png" )} />
 							<OptionText>Request Sent</OptionText>
 						</Option>
 						:
@@ -72,12 +80,12 @@ class ProfileOptions extends Component {
 							/>
 							:
 							<Option onClick={this.props.addFriend}>
-								<OptionIcon name="add user" size="large" />
+								<OptionImage image={require( "../images/diamond.png" )} />
 								<OptionText>Add Friend</OptionText>
 							</Option>
 					}
 					<Option onClick={this.props.startChat}>
-						<OptionIcon name="chat" size="large" />
+						<OptionImage image={require( "../images/send.png" )} />
 						<OptionText>Message</OptionText>
 					</Option>
 				</Options>
@@ -87,14 +95,14 @@ class ProfileOptions extends Component {
 			<Options>
 				{user.username === localStorage.getItem( "username" ) ?
 					<Option onClick={this.props.goToUserSettings}>
-						<OptionIcon className="clipboard list" size="large" />
+						<OptionImage image={require( "../images/pen.png" )} />
 						<OptionText>Update profile</OptionText>
 					</Option>
 					:
 					<React.Fragment>
 						{this.props.userRequested ?
 							<Option>
-								<OptionIcon name="wait" size="large" />
+								<OptionImage image={require( "../images/sandclock.png" )} />
 								<OptionText>Request Sent</OptionText>
 							</Option>
 							:
@@ -107,16 +115,16 @@ class ProfileOptions extends Component {
 								/>
 								:
 								<Option onClick={this.props.addFriend}>
-									<OptionIcon name="add user" size="large" />
+									<OptionImage image={require( "../images/diamond.png" )} />
 									<OptionText>Add Friend</OptionText>
 								</Option>
 						}
 						<Option onClick={this.props.follow}>
-							<OptionIcon name="binoculars" size="large" />
+							<OptionImage image={require( "../images/binoculars.png" )} />
 							<OptionText>Follow</OptionText>
 						</Option>
 						<Option onClick={this.props.startChat}>
-							<OptionIcon name="chat" size="large" />
+							<OptionImage image={require( "../images/send.png" )} />
 							<OptionText>Message</OptionText>
 						</Option>
 					</React.Fragment>

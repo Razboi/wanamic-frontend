@@ -59,7 +59,7 @@ class PostOptions extends Component {
 				</Option>
 
 				<Option className="shareOption"
-					onClick={() => this.props.switchShare( this.props.index )}
+					onClick={() => this.props.switchShare( this.props.post )}
 				>
 					<Icon
 						name="share"
@@ -90,7 +90,7 @@ const
 
 	mapDispatchToProps = dispatch => ({
 		switchComments: id => dispatch( switchComments( id )),
-		switchShare: postIndex => dispatch( switchShare( postIndex ))
+		switchShare: post => dispatch( switchShare( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( PostOptions );

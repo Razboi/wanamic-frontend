@@ -16,7 +16,7 @@ const
 		align-self: ${props => props.fromUser ?
 		"flex-end" : "flex-start"};
 		background-color: ${props => props.fromUser ?
-		"rgb(0,179,179)" : "rgb(230,230,230)"};
+		"rgb(133, 217, 191)" : "rgb(230,230,230)"};
 		color: ${props => props.fromUser ?
 		"#fff" : "#000"};
 	`,
@@ -29,7 +29,7 @@ const
 		right: 5px;
 		bottom: 0;
 		color: ${props => props.fromUser ?
-		"#DDDDDD" : "#808080"};
+		"#EEEDDD" : "#808080"};
 		font-size: 0.75rem;
 	`;
 
