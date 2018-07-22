@@ -1,6 +1,14 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import PropTypes from "prop-types";
+
+const StyledButton = styled( Button )`
+	font-family: inherit !important;
+	background: ${props => props.primary &&
+	"rgb(0,124,124)"} !important;
+	border-radius: 2px !important;
+`;
 
 class NotificationButton extends Component {
 	render() {
@@ -9,13 +17,13 @@ class NotificationButton extends Component {
 			return (
 				<React.Fragment>
 					{network.friends.includes( notification.author._id ) ?
-						<Button
+						<StyledButton
 							onClick={this.props.unFriend}
 							size="tiny"
 							content="Friend"
 						/>
 						:
-						<Button
+						<StyledButton
 							onClick={this.props.acceptRequest}
 							primary
 							size="tiny"
@@ -29,20 +37,20 @@ class NotificationButton extends Component {
 			return (
 				<React.Fragment>
 					{network.friends.includes( notification.author._id ) ?
-						<Button
+						<StyledButton
 							onClick={this.props.unFriend}
 							size="tiny"
 							content="Friend"
 						/>
 						:
 						network.following.includes( notification.author._id ) ?
-							<Button
+							<StyledButton
 								onClick={this.props.unFollow}
 								size="tiny"
 								content="Following"
 							/>
 							:
-							<Button
+							<StyledButton
 								onClick={this.props.handleFollow}
 								primary
 								size="tiny"

@@ -37,6 +37,7 @@ const
 		right: 10px;
 		bottom: 10px;
 		z-index: 3;
+		background: rgba(0,124,124, 0.9) !important;
 	`,
 	OpenConversation = styled.div`
 		display: flex;
@@ -93,9 +94,9 @@ class Messages extends Component {
 		};
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		interval = setInterval( this.resetMessagesLimit, 10000 );
-		await this.getActiveChats();
+		this.getActiveChats();
 		if ( this.props.messageTarget ) {
 			this.handleNewConversation( this.props.messageTarget );
 		}
@@ -106,7 +107,6 @@ class Messages extends Component {
 	}
 
 	resetMessagesLimit = () => {
-		console.log( "here" );
 		this.setState({ sentMessages: 0 });
 	}
 
@@ -135,8 +135,8 @@ class Messages extends Component {
 		}
 	}
 
-	handleDeleteChat = async targetUsername => {
-		const response = await api.deleteChat( targetUsername );
+	handleDeleteChat = async target => {
+		const response = await api.deleteChat( target._id );
 		if ( response === "jwt expired" ) {
 			try {
 				await refreshToken();
@@ -146,7 +146,7 @@ class Messages extends Component {
 			this.handleDeleteChat();
 		} else {
 			this.backToOpenConversations();
-			this.props.deleteChat( targetUsername );
+			this.props.deleteChat( target );
 		}
 	}
 
@@ -223,7 +223,7 @@ class Messages extends Component {
 			this.handleSpam();
 		} else {
 			const res = await api.sendMessage(
-				conversation.target.username, messageInput
+				conversation.target._id, messageInput
 			);
 			if ( res === "jwt expired" ) {
 				try {

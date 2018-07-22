@@ -27,15 +27,17 @@ const
 			grid-template-rows: 40% 60%;
 			grid-template-areas:
 				"h h"
-				"sb rb"
+				"rb sb"
 		}
 	`,
 	SugestedHeader = styled.h4`
 		@media (max-width: 420px) {
 			grid-area: h;
 			margin: 0px;
-			justify-self: center;
-			align-self: flex-end;
+			text-align: center;
+			color: rgba(0,0,0,0.75);
+			align-self: center;
+			font-family: inherit;
 		}
 	`,
 	SugestedButton = styled( Button )`
@@ -43,6 +45,9 @@ const
 			grid-area: sb;
 			justify-self: center;
 			align-self: center;
+			font-family: inherit !important;
+			background: rgb(0,124,124) !important;
+			border-radius: 2px !important;
 		}
 	`,
 	RandomButton = styled( Button )`
@@ -50,11 +55,17 @@ const
 			grid-area: rb;
 			justify-self: center;
 			align-self: center;
+			color: rgb(0,124,124) !important;
+			border: 1px solid rgb(0,124,124) !important;
+			background: #fff !important;
+			font-family: inherit !important;
+			border-radius: 2px !important;
 		}
 	`,
 	SeparatorWrapper = styled( Divider )`
 		@media (max-width: 420px) {
 			grid-area: s;
+			color: rgba(0,0,0,0.40) !important;
 			:before, :after {
 				position: static !important;
 			}
@@ -77,6 +88,8 @@ const
 			margin: 0px;
 			justify-self: center;
 			align-self: flex-end;
+			font-family: inherit;
+			color: rgba(0,0,0,0.75);
 		}
 	`,
 	InterestsSearch = styled( Input )`
@@ -86,10 +99,17 @@ const
 			align-self: flex-start;
 			margin-top: 10px;
 			width: 90%;
-
+			font-family: inherit !important;
 			input {
 				text-align: center !important;
-			}
+				font-family: inherit !important;
+				::placeholder {
+					color: rgba(0,0,0,0.40) !important;
+				};
+			};
+			i {
+				color: rgb(0,124,124) !important;
+			};
 		}
 	`,
 	UsernameWrapper = styled.div`
@@ -109,6 +129,8 @@ const
 			margin: 0px;
 			justify-self: center;
 			align-self: flex-end;
+			font-family: inherit;
+			color: rgba(0,0,0,0.75);
 		}
 	`,
 	UsernameSearch = styled( Input )`
@@ -118,10 +140,17 @@ const
 			align-self: flex-start;
 			margin-top: 10px;
 			width: 90%;
-
+			font-family: inherit !important;
 			input {
 				text-align: center !important;
-			}
+				font-family: inherit !important;
+				::placeholder {
+					color: rgba(0,0,0,0.40) !important;
+				};
+			};
+			i {
+				color: rgb(0,124,124) !important;
+			};
 		}
 	`;
 
@@ -150,7 +179,6 @@ class ExploreUsers extends Component {
 					/>
 					<RandomButton
 						className="randomButton"
-						secondary
 						content="Random"
 						onClick={this.props.getRandom}
 					/>

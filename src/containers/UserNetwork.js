@@ -203,6 +203,7 @@ class UserNetwork extends Component {
 				<UsersWrapper>
 					{network.followers.map(( user, index ) =>
 						<UserPreview
+							handleClick={this.handleUserPreviewClick}
 							key={index}
 							user={user}
 							handleFollow={this.handleFollow}
@@ -219,6 +220,7 @@ class UserNetwork extends Component {
 				<UsersWrapper>
 					{network.following.map(( user, index ) =>
 						<UserPreview
+							handleClick={this.handleUserPreviewClick}
 							key={index}
 							user={user}
 							handleFollow={this.handleFollow}

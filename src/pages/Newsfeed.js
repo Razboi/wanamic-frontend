@@ -42,7 +42,7 @@ const
 		z-index: 3;
 		border-radius: 100%;
 		padding: 1rem;
-		background: rgb(0,124,124, 0.9) !important;
+		background: rgba(0,124,124, 0.9) !important;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -124,7 +124,15 @@ class HomePage extends Component {
 	}
 
 	render() {
+		var plusImage;
 		const { newsfeed, postDetailsIndex } = this.props;
+
+		try {
+			plusImage = require( "../images/plus.png" );
+		} catch ( err ) {
+			console.log( err );
+		}
+
 		if ( this.props.displayPostDetails ) {
 			return (
 				<PostDetails
@@ -152,7 +160,7 @@ class HomePage extends Component {
 							onClick={() => this.props.switchMediaOptions()}
 						>
 							<PlusImage
-								image={require( "../images/plus.png" )}
+								image={plusImage}
 								active={this.props.mediaOptions}
 							/>
 						</ShareMediaButton>

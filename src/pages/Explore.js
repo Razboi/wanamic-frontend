@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon } from "semantic-ui-react";
 import api from "../services/api";
 import ExploreUsers from "../components/ExploreUsers";
 import Profile from "./Profile";
@@ -87,11 +86,15 @@ const
 		@media (max-width: 420px) {
 			width: 90%;
 			height: 34px;
-			color: #303030 !important;
+			color: #211922 !important;
 			text-align: center !important;
 			border: 1px solid rgba( 0,0,0,.4 ) !important;
 			border-radius: 2px !important;
 			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+			font-family: inherit;
+			:: placeholder {
+				color: #303030;
+			}
 		}
 	`,
 	SearchWrapper = styled.div`
@@ -300,6 +303,22 @@ class ExplorePage extends Component {
 
 
 	render() {
+		var
+			connectImage,
+			contentImage;
+		try {
+			connectImage = !this.state.content ?
+				require( "../images/connect_color.png" )
+				:
+				require( "../images/connect.png" );
+			contentImage = this.state.content ?
+				require( "../images/content_color.png" )
+				:
+				require( "../images/content.png" );
+		} catch ( err ) {
+			console.log( err );
+		}
+
 		if ( this.state.renderProfile ) {
 			return (
 				<Profile
@@ -336,22 +355,14 @@ class ExplorePage extends Component {
 					<Header>
 						<UserSubheader>
 							<HeaderImage
-								image={!this.state.content ?
-									require( "../images/connect_color.png" )
-									:
-									require( "../images/connect.png" )
-								}
+								image={connectImage}
 								className="userIcon"
 								onClick={() => this.setState({ content: false })}
 							/>
 						</UserSubheader>
 						<ContentSubheader>
 							<HeaderImage
-								image={this.state.content ?
-									require( "../images/content_color.png" )
-									:
-									require( "../images/content.png" )
-								}
+								image={contentImage}
 								className="contentIcon"
 								onClick={() => this.setState({ content: true })}
 							/>

@@ -30,6 +30,8 @@ const
 		::-webkit-scrollbar {
 			display: none !important;
 		}
+		display: flex;
+		flex-direction: column;
 		position: relative;
 		padding: 10px;
 		overflow-y: scroll;
@@ -136,7 +138,7 @@ class Conversation extends Component {
 									text="Delete Conversation"
 									onClick={() =>
 										this.props.handleDeleteChat(
-											conversation.target.username
+											conversation.target
 										)}
 								/>
 							</Dropdown.Menu>

@@ -114,7 +114,7 @@ export default {
 		axios({
 			method: "delete",
 			url: "/posts/delete",
-			data: { post: { id: postId, token: localStorage.getItem( "token" ) } }
+			data: { postId: postId, token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -469,12 +469,12 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	sendMessage: ( friendUsername, content ) =>
+	sendMessage: ( friendId, content ) =>
 		axios({
 			method: "post",
 			data: {
 				token: localStorage.getItem( "token" ),
-				friendUsername: friendUsername,
+				friendId: friendId,
 				content: content
 			},
 			url: "/conversations/add/"
@@ -503,12 +503,12 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	deleteChat: targetUsername =>
+	deleteChat: targetId =>
 		axios({
 			method: "delete",
 			data: {
 				token: localStorage.getItem( "token" ),
-				targetUsername: targetUsername
+				targetId: targetId
 			},
 			url: "/conversations/delete/"
 		})

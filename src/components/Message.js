@@ -6,16 +6,19 @@ import { scrolled } from "react-stay-scrolled";
 
 const
 	MessageWrapper = styled.div`
-		overflow: hidden;
+		display: inline-block;
 		position: relative;
-		width: 60%
+		max-width: 60%
+		min-width: 60px;
 		margin-bottom: 1rem;
     border-radius: 6px;
     padding: 10px;
-		margin-left: ${props => props.fromUser ?
-		"auto" : "none"};
+		align-self: ${props => props.fromUser ?
+		"flex-end" : "flex-start"};
 		background-color: ${props => props.fromUser ?
-		"lightblue" : "lightgrey"};
+		"rgb(0,179,179)" : "rgb(230,230,230)"};
+		color: ${props => props.fromUser ?
+		"#fff" : "#000"};
 	`,
 	MessageContent = styled.p`
 		font-size: 1.1rem;
@@ -25,7 +28,8 @@ const
 		position: absolute;
 		right: 5px;
 		bottom: 0;
-		color: #808080;
+		color: ${props => props.fromUser ?
+		"#DDDDDD" : "#808080"};
 		font-size: 0.75rem;
 	`;
 
@@ -42,7 +46,11 @@ class Message extends Component {
 			>
 				<MessageContent>{this.props.message.content}</MessageContent>
 
-				<MessageDateTime>
+				<MessageDateTime
+					fromUser={
+						this.props.message.author.username === localStorage.getItem( "username" )
+					}
+				>
 					{moment( this.props.message.createdAt ).format( "HH:mm" )}
 				</MessageDateTime>
 			</MessageWrapper>

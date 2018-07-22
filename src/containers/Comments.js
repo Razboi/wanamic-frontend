@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon } from "semantic-ui-react";
+import { Icon, Message } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
@@ -72,8 +72,17 @@ const
 		grid-area: com;
 		z-index: 3;
 		visibility: ${props => props.showSuggestions ? "visible" : "hidden"};
+	`,
+	SpamWarning = styled( Message )`
+		position: fixed !important;
+		left: 5px;
+		right: 5px;
+		z-index: 2;
+		word-break: break-word;
 	`;
 
+
+var interval;
 class Comments extends Component {
 	constructor() {
 		super();
@@ -87,13 +96,24 @@ class Comments extends Component {
 			currentSelection: 0,
 			startPosition: undefined,
 			skip: 1,
-			hasMore: true
+			hasMore: true,
+			sentComments: 0,
+			spam: false
 		};
 	}
 
 	componentDidMount() {
+		interval = setInterval( this.resetCommentsLimit, 30000 );
 		this.getInitialComments();
 		this.getSocialCircle();
+	}
+
+	componentWillUnmount() {
+		clearInterval( interval );
+	}
+
+	resetCommentsLimit = () => {
+		this.setState({ sentComments: 0 });
 	}
 
 	getInitialComments = () => {
@@ -195,34 +215,46 @@ class Comments extends Component {
 
 	handleComment = () => {
 		var i;
-		const mentions = extract( this.state.comment, { symbol: false });
+		const { sentComments, comment } = this.state;
 
-		api.createComment( this.state.comment, this.props.postId, mentions )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleComment())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({ comment: "" });
-					res.data.commentNotification && this.props.socket.emit(
-						"sendNotification", res.data.commentNotification
-					);
+		if ( sentComments >= 5 ) {
+			this.handleSpam();
+		} else {
+			const mentions = extract( comment, { symbol: false });
+			api.createComment( comment, this.props.postId, mentions )
+				.then( res => {
+					if ( res === "jwt expired" ) {
+						refreshToken()
+							.then(() => this.handleComment())
+							.catch( err => console.log( err ));
+					} else {
+						this.setState({ comment: "", sentComments: sentComments + 1 });
+						res.data.commentNotification && this.props.socket.emit(
+							"sendNotification", res.data.commentNotification
+						);
 
-					if ( res.data.mentionsNotifications ) {
-						const notifLength = res.data.mentionsNotifications.length;
-						for ( i = 0; i < notifLength; i++ ) {
-							this.props.socket.emit(
-								"sendNotification", res.data.mentionsNotifications[ i ]
-							);
+						if ( res.data.mentionsNotifications ) {
+							const notifLength = res.data.mentionsNotifications.length;
+							for ( i = 0; i < notifLength; i++ ) {
+								this.props.socket.emit(
+									"sendNotification", res.data.mentionsNotifications[ i ]
+								);
+							}
 						}
-					}
 
-					this.props.addComment( res.data.newComment );
-					this.props.updatePost( res.data.updatedPost,
-						this.props.onExplore );
-				}
-			}).catch( err => console.log( err ));
+						this.props.addComment( res.data.newComment );
+						this.props.updatePost( res.data.updatedPost,
+							this.props.onExplore );
+					}
+				}).catch( err => console.log( err ));
+		}
+	}
+
+	handleSpam = () => {
+		this.setState({ spam: true });
+		setTimeout(() => {
+			this.setState({ spam: false });
+		}, 10000 );
 	}
 
 	handleDelete = ( commentIndex, updatedPost ) => {
@@ -302,6 +334,15 @@ class Comments extends Component {
 						initialLoad={false}
 						useWindow={false}
 					>
+						{this.state.spam &&
+							<SpamWarning warning>
+								<Message.Header>
+										You are sending comments too fast.
+								</Message.Header>
+								<p>To prevent spam you must wait a few seconds.</p>
+							</SpamWarning>
+						}
+
 						{this.props.comments.map(( comment, index ) =>
 							<Comment
 								key={index}
