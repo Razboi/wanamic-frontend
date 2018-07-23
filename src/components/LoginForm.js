@@ -8,6 +8,9 @@ const
 		display: grid;
 		height: 100%;
 		width: 100%;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		background-size: cover;
 		grid-template-columns: 100%;
 		grid-template-rows: 40% 60%;
 		grid-template-areas:
@@ -16,12 +19,20 @@ const
 	`,
 	HeaderContainer = styled.div`
 		grid-area: header;
-		display: grid;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`,
 	HeaderLogo = styled.span`
-	align-self: center;
-	justify-self: center;
-	font-size: 2rem;
+		font-size: 3rem;
+		color: #fff;
+	`,
+	Subheader = styled.span`
+		font-size: 1rem;
+		margin-top: 1.7rem;
+		color: #eee;
+		text-align: center;
 	`,
 	FormContainer = styled.div`
 		@media (max-width: 420px) {
@@ -38,20 +49,38 @@ const
 	EmailInput = styled( Form.Input )`
 		input {
 			border-width: 0px 0px 1px 0px !important;
+			border-color: #fff !important;
 			border-radius: 0px !important;
+			background: none !important;
+			font-family: inherit !important;
+			color: #fff !important;
 		}
 		i {
 			left: -10px !important;
+			color: #fff !important;
+			opacity: 1 !important;
+		}
+		input::placeholder {
+			color: #eee !important;
 		}
 		margin: 0 !important;
 	`,
 	PasswordInput = styled( Form.Input )`
 		input {
 			border-width: 0px 0px 1px 0px !important;
+			border-color: #fff !important;
 			border-radius: 0px !important;
+			background: none !important;
+			font-family: inherit !important;
+			color: #eee !important;
 		}
 		i {
 			left: -10px !important;
+			color: #fff !important;
+			opacity: 1 !important;
+		}
+		input::placeholder {
+			color: #eee !important;
 		}
 		margin: 2rem 0 0 0 !important;
 	`,
@@ -59,15 +88,23 @@ const
 		width: 100% !important;
 		margin: 3rem 0 0 0 !important;
 		font-size: 1.2rem !important;
+		font-family: inherit !important;
+		border-radius: 1px !important;
+		color: #fff !important;
+		background: rgb(133, 217, 191) !important;
 	`,
 	ForgotPw = styled.div`
 		margin-top: 1rem;
 		text-align: center;
+		color: #eee;
 	`,
 	NewAccount = styled.span`
-		align-self: flex-end;
-		justify-self: center;
-		margin-bottom: 1rem;
+		display: flex;
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		color: #eee;
 	`,
 	ErrorMessage = styled( Message )`
 		position: absolute !important;
@@ -75,6 +112,11 @@ const
 		width: 100% !important;
 		text-align: center !important;
 		border-radius: 0px !important;
+	`,
+	Signup = styled.span`
+		color: #fff;
+		margin-left: 0.3rem;
+		font-weight: bold;
 	`;
 
 
@@ -92,6 +134,9 @@ class LoginForm extends Component {
 
 				<HeaderContainer className="formHeader">
 					<HeaderLogo>Wanamic</HeaderLogo>
+					<Subheader>
+						Find people with your same interests and hobbies.
+					</Subheader>
 				</HeaderContainer>
 
 				<FormContainer id="AuthFormContainer">
@@ -104,7 +149,7 @@ class LoginForm extends Component {
 					<StyledForm id="AuthForm">
 						<EmailInput
 							className="emailInput"
-							placeholder="Email"
+							placeholder="Email address"
 							name="email"
 							onChange={this.props.handleChange}
 							onKeyPress={this.handleKeyPress}
@@ -135,7 +180,7 @@ class LoginForm extends Component {
 
 					</StyledForm>
 					<NewAccount className="swapLink" onClick={this.props.swapForm}>
-						Don't have an account? <b>Sign Up</b>
+						Don't have an account? <Signup>Sign Up</Signup>
 					</NewAccount>
 				</FormContainer>
 			</Wrapper>

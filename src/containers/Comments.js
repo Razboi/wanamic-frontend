@@ -21,7 +21,7 @@ const
 		height: 100vh;
 		width: 100%;
 		overflow: auto;
-		z-index: 4;
+		z-index: 20;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;

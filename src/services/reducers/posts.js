@@ -2,6 +2,7 @@ const initialState = {
 	newsfeed: [],
 	explore: [],
 	album: [],
+	profilePosts: [],
 	comments: [],
 	mediaOptions: false,
 	displayComments: false,
@@ -19,15 +20,19 @@ export default function posts( state = initialState, action = {}) {
 			return { ...state, explore: action.posts };
 		} else if ( action.onAlbum ) {
 			return { ...state, album: action.posts };
+		} else if ( action.onProfile ) {
+			return { ...state, profilePosts: action.posts };
 		} else {
 			return { ...state, newsfeed: action.posts };
 		}
 
 	case "ADD_TO_POSTS":
-		if ( !action.onExplore ) {
-			return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
-		} else {
+		if ( action.onExplore ) {
 			return { ...state, explore: [ ...state.explore, ...action.posts ] };
+		} else if ( action.onProfile ) {
+			return { ...state, profilePosts: [ ...state.profilePosts, ...action.posts ] };
+		} else {
+			return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
 		}
 
 	case "ADD_POST":
@@ -43,6 +48,9 @@ export default function posts( state = initialState, action = {}) {
 				return post._id !== action.postId;
 			}),
 			explore: state.explore.filter( post => {
+				return post._id !== action.postId;
+			}),
+			profilePosts: state.profilePosts.filter( post => {
 				return post._id !== action.postId;
 			}),
 			displayPostDetails: false
@@ -61,6 +69,12 @@ export default function posts( state = initialState, action = {}) {
 	case "UPDATE_POST":
 		return {
 			...state,
+			profilePosts: state.profilePosts.map( post => {
+				if ( post._id === action.post._id ) {
+					return { ...post, ...action.post };
+				}
+				return post;
+			}),
 			explore: state.explore.map( post => {
 				if ( post._id === action.post._id ) {
 					return { ...post, ...action.post };

@@ -95,9 +95,11 @@ class Messages extends Component {
 		};
 	}
 
-	componentDidMount() {
+	// Must await to get chats for checking if the conversation
+	// already exists
+	async componentDidMount() {
 		interval = setInterval( this.resetMessagesLimit, 10000 );
-		this.getActiveChats();
+		await this.getActiveChats();
 		if ( this.props.messageTarget ) {
 			this.handleNewConversation( this.props.messageTarget );
 		}

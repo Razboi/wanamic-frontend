@@ -15,14 +15,15 @@ export const
 	ADD_TO_COMMENTS = "ADD_TO_COMMENTS",
 
 
-	setPosts = ( posts, onExplore, onAlbum ) => ({
+	setPosts = ( posts, onExplore, onAlbum, onProfile ) => ({
 		type: SET_POSTS,
 		posts: posts,
 		onExplore: onExplore,
-		onAlbum: onAlbum
+		onAlbum: onAlbum,
+		onProfile: onProfile
 	}),
 
-	addToPosts = ( posts, onExplore ) => ({
+	addToPosts = ( posts, onExplore, onProfile ) => ({
 		type: ADD_TO_POSTS,
 		posts: posts,
 		onExplore: onExplore

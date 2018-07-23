@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Icon } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
+import { switchPostDetails, setPosts } from "../services/actions/posts";
 import api from "../services/api";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import Comments from "../containers/Comments";
+import Share from "../containers/Share";
+import PostDetails from "../containers/PostDetails";
 import NewsFeed from "../components/NewsFeed";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
@@ -14,12 +19,17 @@ var
 
 const
 	Wrapper = styled.div`
-		min-height: 100vh;
-		height: 100%;
+		height: 100vh;
 		width: 100%;
+		overflow: auto;
 		display: flex;
 		flex-direction: column;
 		background: rgba( 0,0,0,0.1 );
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
@@ -28,13 +38,26 @@ const
 	UserInfoWrapper = styled.div`
 		background: #fff;
 	`,
-	BackIcon = styled( Icon )`
-		font-size: 1.3rem !important;
-		position: absolute;
+	BackOption = styled.div`
+		position: fixed;
 		top: 0.66rem;
 		left: 0.66rem;
-		color: #fff;
-		z-index: 99;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+		background: rgba(0,0,0,0.25) !important;
+		border-radius: 100%;
+		padding: 0.8rem;
+	`,
+	BackImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
 	`,
 	UserInfo = styled.div`
 		margin-top: -5rem;
@@ -264,8 +287,8 @@ class UserProfile extends Component {
 					await refreshToken();
 					this.getTimeline();
 				} else if ( posts.data ) {
+					this.props.setPosts( posts.data, false, false, true );
 					this.setState({
-						posts: [ ...this.state.posts, ...posts.data ],
 						hasMore: posts.data.length > 10,
 						skip: this.state.skip + 1
 					});
@@ -283,10 +306,8 @@ class UserProfile extends Component {
 				await refreshToken();
 				this.refreshTimeline();
 			} else if ( posts.data ) {
-				this.setState({
-					posts: posts.data,
-					hasMore: posts.data.length > 10,
-				});
+				this.props.setPosts( posts.data, false, false, true );
+				this.setState({ hasMore: posts.data.length > 10 });
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -389,6 +410,7 @@ class UserProfile extends Component {
 	}
 
 	render() {
+		const { postDetailsIndex, displayPostDetails } = this.props;
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
@@ -396,6 +418,16 @@ class UserProfile extends Component {
 		}
 		if ( !this.state.user ) {
 			return null;
+		}
+		if ( displayPostDetails ) {
+			return (
+				<PostDetails
+					post={this.state.posts[ postDetailsIndex ]}
+					switchDetails={this.props.switchPostDetails}
+					socket={this.props.socket}
+					index={postDetailsIndex}
+				/>
+			);
 		}
 		const { user } = this.state;
 		return (
@@ -407,10 +439,13 @@ class UserProfile extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<BackIcon
-						name="chevron left"
-						onClick={this.props.backToMain}
-					/>
+					{this.props.displayShare && <Share />}
+					{this.props.displayComments && <Comments
+						socket={this.props.socket} />}
+
+					<BackOption onClick={this.props.backToMain} >
+						<BackImage image={require( "../images/left-arrow.png" )} />
+					</BackOption>
 
 					<UserInfoBackground backgroundImg={backgroundImg} />
 					<UserInfoWrapper>
@@ -458,10 +493,10 @@ class UserProfile extends Component {
 							</Tabs>
 						</UserInfo>
 					</UserInfoWrapper>
-					{this.state.posts.length > 0 ?
+					{this.props.profilePosts.length > 0 ?
 						<UserPostsWrapper>
 							<StyledNewsFeed
-								posts={this.state.posts}
+								posts={this.props.profilePosts}
 								socket={this.props.socket}
 							/>
 						</UserPostsWrapper>
@@ -489,7 +524,23 @@ UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
 	username: PropTypes.string.isRequired,
 	toggleConversation: PropTypes.func.isRequired,
-	toggleTab: PropTypes.func.isRequired
+	toggleTab: PropTypes.func.isRequired,
+	profilePosts: PropTypes.array.isRequired
 };
 
-export default UserProfile;
+const
+	mapStateToProps = state => ({
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare,
+		displayPostDetails: state.posts.displayPostDetails,
+		postDetailsIndex: state.posts.postDetailsIndex,
+		profilePosts: state.posts.profilePosts
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		setPosts: ( posts, onExplore, onAlbum, onProfile ) =>
+			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
+		switchPostDetails: () => dispatch( switchPostDetails())
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

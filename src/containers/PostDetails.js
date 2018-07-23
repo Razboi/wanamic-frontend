@@ -14,7 +14,7 @@ const
 		height: 100vh;
 		width: 100%;
 		position: absolute;
-		z-index: 3;
+		z-index: 20;
 		background: #fff;
 	`,
 	HeaderWrapper = styled.div`

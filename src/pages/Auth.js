@@ -11,6 +11,11 @@ const
 	Wrapper = styled.div`
 		height: 100vh;
 		display: grid;
+		background-image: url(${props => props.image});
+		background-position: ${props => props.signup && "center bottom"};
+		background-repeat: no-repeat;
+		background-size: cover;
+		transition: background-position 1s;
 	`;
 
 
@@ -85,7 +90,10 @@ class AuthPage extends Component {
 
 	render() {
 		return (
-			<Wrapper>
+			<Wrapper
+				signup={this.state.signup}
+				image={require( "../images/stars.jpg" )}
+			>
 				{this.state.signup ?
 					<SignupForm
 						error={this.state.error}

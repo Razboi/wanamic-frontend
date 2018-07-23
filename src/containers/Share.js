@@ -14,7 +14,7 @@ const
 		position: absolute;
 		height: 100vh;
 		width: 100%;
-		z-index: 4;
+		z-index: 20;
 		background: #222;
 		color: #fff !important;
 		display: grid;
