@@ -30,7 +30,7 @@ const
 		justify-content: space-between;
 		padding: 0px 10px;
 		color: #fff;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		box-shadow: 0 1px 2px #111;
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -46,9 +46,14 @@ const
 		padding-bottom: 40px;
 	`,
 	UserContentInput = {
-		width: "80%",
+		width: "90%",
+		minHeight: "45px",
 		alignSelf: "flex-end",
-		zIndex: 2
+		zIndex: 2,
+		fontFamily: "inherit",
+		background: "none",
+		border: "none",
+		resize: "none"
 	},
 	InputTriggerStyles = {
 		display: "flex",
@@ -67,8 +72,6 @@ const
 		transform: scale(1.2);
 	`,
 	SelectedMediaImg = styled( Image )`
-		width: 128px;
-		height: 194px;
 		justify-self: center;
 		align-self: start;
 		z-index: 2;
@@ -226,9 +229,9 @@ class MediaStep2 extends Component {
 							endTrigger={endHandler => this.endHandler = endHandler }
 						>
 							<textarea
-								autoFocus
 								style={UserContentInput}
-								className="description"
+								autoFocus
+								className="mediaPostDescription"
 								name="description"
 								value={this.state.description}
 								placeholder="Share your opinion, tag @users and add #hashtags..."

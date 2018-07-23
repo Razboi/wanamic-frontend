@@ -15,7 +15,7 @@ const
 		height: 100vh;
 		width: 100%;
 		z-index: 4;
-		background: rgb( 70,70,70 );
+		background: #222;
 		color: #fff !important;
 		display: grid;
 		grid-template-columns: 100%;
@@ -150,7 +150,7 @@ class Share extends Component {
 				<ShareWrapper>
 					<ShareInput
 						name="shareComment"
-						placeholder="Add a comment..."
+						placeholder="Add a description..."
 						onChange={this.handleChange}
 					/>
 					<ShareMain>

@@ -8,7 +8,7 @@ const
 		@media (max-width: 420px) {
 			height: 100%;
 			width: 100%;
-			padding: 1rem;
+			margin-top: 1rem;
 			display: grid;
 			grid-template-columns: 100%;
 			grid-template-rows: 30% 15% 20% 20%;

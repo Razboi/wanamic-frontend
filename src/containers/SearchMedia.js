@@ -20,12 +20,16 @@ const
 		width: 100%;
 		position: fixed;
 		color: #fff !important;
+		font-family: inherit !important;
 	`,
-	HeaderWrapper = styled.div`
-		height: 40px;
+	Header = styled.div`
+		height: 50px;
+		width: 100%;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
+		color: #fff;
+		box-shadow: 0 1px 2px #111;
 	`,
 	HeaderTxt = styled.span`
 		margin: auto;
@@ -39,18 +43,28 @@ const
 		height: 44px;
 		display: flex;
 		width: 100%;
-		margin-top: 1rem;
 		align-items: center;
 		justify-content: center;
-		border-bottom: 1px solid #D3D3D3;
+		position: fixed;
+		bottom: 10px;
+		z-index: 3;
 	`,
 	SearchInput = styled( Input )`
 		height: 34px;
 		width: 90%;
 		justify-self: center;
 		align-self: center;
+		input {
+			text-align: center !important;
+			color: #333 !important;
+			font-family: inherit !important;
+			::placeholder {
+				color: #555 !important;
+				font-family: inherit !important;
+			}
+		};
 	`,
-	ResultsWrapper = styled.div`
+	Results = styled.div`
 		height: 100%;
 		display: flex;
 		flex-direction: column;
@@ -67,9 +81,9 @@ const
 		align-items: start;
 		padding: 0 1rem;
 	`,
-	ResultMediaImage = styled( Image )`
-		width: 128px;
-		height: 194px;
+	MediaTitle = styled.h3`
+		font-family: inherit;
+		font-size: 1rem;
 	`,
 	ResultMediaInfo = styled.div`
 		align-self: start;
@@ -247,41 +261,43 @@ class SearchMedia extends Component {
 		}
 		return (
 			<Wrapper>
-				<HeaderWrapper>
+				<Header>
 					<BackIcon
 						name="arrow left"
 						onClick={() => this.props.switchSearchMedia()}
 					/>
 					<HeaderTxt>Share {this.state.mediaType}</HeaderTxt>
-				</HeaderWrapper>
-				<SearchWrapper>
-					<SearchInput
-						autoFocus
-						value={this.state.search}
-						icon="search"
-						name="search"
-						placeholder="Search..."
-						onChange={this.handleChange}
-						onKeyPress={this.handleKeyPress}
-					/>
-				</SearchWrapper>
-				<ResultsWrapper className="mediaResults">
+				</Header>
+				<Results className="mediaResults">
 					{this.state.results.map(( media, index ) =>
 						<div key={index}>
 							<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
-								<ResultMediaImage
+								<Image
 									src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
 								/>
 
 								<ResultMediaInfo>
-									<h3>{media.trackName}</h3>
+									<MediaTitle>
+										{media.trackName}
+									</MediaTitle>
 									<span>{media.artistName}</span>
 								</ResultMediaInfo>
 							</ResultMediaWrapper>
 							<Divider />
 						</div>
 					)}
-				</ResultsWrapper>
+				</Results>
+				<SearchWrapper>
+					<SearchInput
+						autoFocus
+						value={this.state.search}
+						icon="search"
+						name="search"
+						placeholder="Search by artist, album or track."
+						onChange={this.handleChange}
+						onKeyPress={this.handleKeyPress}
+					/>
+				</SearchWrapper>
 			</Wrapper>
 		);
 	}

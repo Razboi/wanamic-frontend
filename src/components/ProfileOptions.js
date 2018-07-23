@@ -39,6 +39,28 @@ const
 			font-size: 0.9rem;
 			margin-top: 0.2rem;
 		}
+	`,
+	RequestMessage = styled.div`
+		position: absolute;
+		top: 0px;
+		background: rgba(0,0,0,0.60);
+		width: 100%;
+		padding: 2.1rem 1rem 0.33rem 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		font-family: inherit !important;
+	`,
+	RequestButton = styled( Button )`
+		font-family: inherit !important;
+		background: rgb(133, 217, 191) !important;
+		border-radius: 2px !important;
+	`,
+	RequestHeader = styled.h4`
+		font-family: inherit;
+		margin-bottom: 0.5rem;
 	`;
 
 class ProfileOptions extends Component {
@@ -72,12 +94,15 @@ class ProfileOptions extends Component {
 						</Option>
 						:
 						this.props.targetRequested ?
-							<Button
-								onClick={this.props.acceptRequest}
-								content="Accept request"
-								size="tiny"
-								primary
-							/>
+							<RequestMessage>
+								<RequestHeader>{user.fullname} sent you a friend request.</RequestHeader>
+								<RequestButton
+									onClick={this.props.acceptRequest}
+									content="Accept request"
+									size="tiny"
+									primary
+								/>
+							</RequestMessage>
 							:
 							<Option onClick={this.props.addFriend}>
 								<OptionImage image={require( "../images/diamond.png" )} />
@@ -107,12 +132,17 @@ class ProfileOptions extends Component {
 							</Option>
 							:
 							this.props.targetRequested ?
-								<Button
-									onClick={this.props.acceptRequest}
-									content="Accept request"
-									size="tiny"
-									primary
-								/>
+								<RequestMessage>
+									<RequestHeader>
+										{user.fullname} sent you a friend request.
+									</RequestHeader>
+									<RequestButton
+										onClick={this.props.acceptRequest}
+										content="Accept request"
+										size="tiny"
+										primary
+									/>
+								</RequestMessage>
 								:
 								<Option onClick={this.props.addFriend}>
 									<OptionImage image={require( "../images/diamond.png" )} />

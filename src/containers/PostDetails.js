@@ -106,12 +106,14 @@ class PostDetails extends Component {
 						socket={this.props.socket}
 						post={post}
 						index={this.props.index}
+						details
 					/>
 					:
 					<Post
 						socket={this.props.socket}
 						post={post}
 						index={this.props.index}
+						details
 					/>
 				}
 			</Wrapper>

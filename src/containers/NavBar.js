@@ -57,6 +57,7 @@ const
 	`,
 	DropdownFullname = styled.h4`
 		margin: 0 !important;
+		font-family: inherit;
 	`,
 	DropdownUsername = styled.span`
 		color: rgba( 0,0,0,0.5 );

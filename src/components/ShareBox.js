@@ -26,6 +26,7 @@ const
 		justify-content: space-between;
 		padding: 0px 10px;
 		color: #fff;
+		box-shadow: 0 1px 2px #111;
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -37,7 +38,7 @@ const
 	`,
 	Box = styled( Form )`
 		display: flex;
-		margin: 1rem 0;
+		margin: 2rem 0;
 		width: 90%;
 		@media (max-width: 500px)  {
 			width: 95%;
@@ -236,7 +237,7 @@ class ShareBox extends Component {
 							autoFocus
 							rows="2"
 							id="ShareBoxInput"
-							placeholder="Share something cool"
+							placeholder="Express yourself."
 							name="userInput"
 							value={this.state.userInput}
 							onChange={this.handleChange}

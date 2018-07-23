@@ -34,7 +34,7 @@ const
 		top: 0.66rem;
 		left: 0.66rem;
 		color: #fff;
-		z-index: 2;
+		z-index: 99;
 	`,
 	UserInfo = styled.div`
 		margin-top: -5rem;
@@ -127,8 +127,8 @@ const
     	justify-content: space-around;
 			margin-top: 2rem;
 			padding: 1rem 0;
-    	border-top: 2px solid #D3D3D3;
-			border-bottom: 1px solid #bec2c9;;
+    	border-top: 2px solid rgba(0,0,0,.1);
+			box-shadow: 0 1px 2px rgba(0,0,0,.125);
 		}
 	`,
 	UserPostsWrapper = styled.div`

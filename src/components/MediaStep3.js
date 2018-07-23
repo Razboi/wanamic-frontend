@@ -29,6 +29,7 @@ const
 		align-items: center;
 		justify-content: space-between;
 		padding: 0px 10px;
+		box-shadow: 0 1px 2px #111;
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;

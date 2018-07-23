@@ -258,9 +258,11 @@ class Notifications extends Component {
 					<div>
 						{this.props.notifications.map(( notification, index ) =>
 							<React.Fragment key={index}>
-								<Notification checked={notification.checked}>
+								<Notification
+									onClick={() => this.handleDetails( notification, index )}
+									checked={notification.checked}
+								>
 									<NotificationImg
-										onClick={() => this.handleDetails( notification, index )}
 										circular
 										src={notification.author.profileImage ?
 											require( "../images/" + notification.author.profileImage )
@@ -268,9 +270,7 @@ class Notifications extends Component {
 											require( "../images/defaultUser.png" )
 										}
 									/>
-									<NotificationData
-										onClick={() => this.handleDetails( notification, index )}
-									>
+									<NotificationData>
 										<Content>
 											<b>{notification.author.fullname}</b> {notification.content}
 										</Content>

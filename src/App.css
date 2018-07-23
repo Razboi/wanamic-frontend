@@ -1,3 +1,27 @@
 body {
 	font-family: 'Lora', serif !important;
 }
+
+.mediaPostDescription {
+	color: #FFF !important;
+}
+
+.mediaPostDescription::placeholder {
+	color: #EEE !important;
+}
+
+.mediaPostDescription:focus {
+	outline: none !important;
+}
+
+#ShareBoxInput {
+	color: #111;
+	font-family: inherit;
+	resize: none;
+	font-size: 1rem;
+	min-height: 65px;
+}
+
+#ShareBoxInput::placeholder {
+	color: #333;
+}

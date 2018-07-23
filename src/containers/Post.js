@@ -15,7 +15,7 @@ import AlertsFilter from "../components/AlertsFilter";
 const
 	Wrapper = styled.div`
 		position: relative;
-		border-bottom: ${props => props.shared ?
+		border-bottom: ${props => props.noBorder ?
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
 	`,
 	PostHeader = styled( Header )`
@@ -204,7 +204,10 @@ class Post extends Component {
 			console.log( err );
 		}
 		return (
-			<Wrapper shared={this.props.fakeOptions ? 1 : 0}>
+			<Wrapper
+				noBorder={this.props.fakeOptions || this.props.details
+					? 1 : 0}
+			>
 				<PostHeader>
 					<AuthorImg
 						circular

@@ -47,7 +47,8 @@ const
 		justify-content: space-between;
 		padding: 0.66rem 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
-		background: ${props => props.newMessages ? "rgba(0, 0, 0, .07)" : "none"};
+		background: ${props => props.newMessages ?
+		"rgba(133, 217, 191, 0.22)" : "none"};
 	`,
 	UserImg = styled( Image )`
 		width: 35px !important;
