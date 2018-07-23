@@ -18,7 +18,7 @@ const
 		transition: background-position 1s;
 	`;
 
-
+var background;
 class AuthPage extends Component {
 	constructor() {
 		super();
@@ -89,10 +89,15 @@ class AuthPage extends Component {
 	}
 
 	render() {
+		try {
+			background = require( "../images/stars.jpg" );
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
 			<Wrapper
 				signup={this.state.signup}
-				image={require( "../images/stars.jpg" )}
+				image={background}
 			>
 				{this.state.signup ?
 					<SignupForm
