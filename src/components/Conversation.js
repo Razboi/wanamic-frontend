@@ -161,6 +161,7 @@ class Conversation extends Component {
 				</MessagesWrapper>
 
 				<StyledInput
+					maxLength="2200"
 					autoFocus
 					name="messageInput"
 					value={messageInput}

@@ -105,6 +105,7 @@ class AccountSettings extends Component {
 							</StyledMessage>
 						}
 						<FormInput
+							maxLength="30"
 							className="fullnameInput"
 							onChange={this.props.handleChange}
 							name="fullname"
@@ -112,6 +113,7 @@ class AccountSettings extends Component {
 							value={this.props.fullname}
 						/>
 						<FormInput
+							maxLength="30"
 							className="usernameInput"
 							onChange={this.props.handleChange}
 							name="username"
@@ -119,6 +121,7 @@ class AccountSettings extends Component {
 							value={this.props.username}
 						/>
 						<FormTextarea
+							maxLength="250"
 							className="descriptionArea"
 							onChange={this.props.handleChange}
 							name="description"
@@ -131,10 +134,13 @@ class AccountSettings extends Component {
 								tags={this.props.hobbies}
 								handleDelete={this.props.handleDelete}
 								handleAddition={this.props.handleAddition}
-								delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
+								delimiters={this.props.hobbies.length < 10 ?
+									[ KeyCodes.comma, KeyCodes.enter ]
+									:
+									[]}
 								placeholder="Add a new interest (with enter or comma)"
 								autofocus={false}
-								maxLength={"35"}
+								maxLength={"17"}
 							/>
 						</Hobbies>
 						<FormInput

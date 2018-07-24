@@ -77,13 +77,22 @@ class SettingsPage extends Component {
 		};
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
+		this.getUserInfo();
+	}
+
+	getUserInfo = async() => {
 		const res = await api.getUserInfo( localStorage.getItem( "username" ));
+		var tagCompatibleHobbies = [];
+		for ( const hobbie of res.data.hobbies ) {
+			tagCompatibleHobbies.push({ text: hobbie, id: hobbie });
+		}
+
 		this.setState({
 			description: res.data.description,
 			fullname: res.data.fullname,
 			username: res.data.username,
-			hobbies: res.data.hobbies,
+			hobbies: tagCompatibleHobbies,
 			checkedCategories: res.data.interests
 		});
 	}

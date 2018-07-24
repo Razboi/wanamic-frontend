@@ -71,31 +71,27 @@ class ShareBox extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" ) {
+		if ( e.key === "Enter" && this.state.showSuggestions ) {
 			e.preventDefault();
-			if ( this.state.showSuggestions ) {
-				const
-					{ userInput, startPosition, currentSelection } = this.state,
-					user = this.props.socialCircle[ currentSelection ],
-					updatedUserInput =
-						userInput.slice( 0, startPosition - 1 )
-						+ "@" + user.username + " " +
-						userInput.slice( startPosition + user.username.length, userInput.length );
+			const
+				{ userInput, startPosition, currentSelection } = this.state,
+				user = this.props.socialCircle[ currentSelection ],
+				updatedUserInput =
+					userInput.slice( 0, startPosition - 1 )
+					+ "@" + user.username + " " +
+					userInput.slice( startPosition + user.username.length, userInput.length );
 
-				this.setState({
-					userInput: updatedUserInput,
-					startPosition: undefined,
-					showSuggestions: false,
-					suggestionsLeft: undefined,
-					suggestionsTop: undefined,
-					mentionInput: "",
-					currentSelection: 0
-				});
+			this.setState({
+				userInput: updatedUserInput,
+				startPosition: undefined,
+				showSuggestions: false,
+				suggestionsLeft: undefined,
+				suggestionsTop: undefined,
+				mentionInput: "",
+				currentSelection: 0
+			});
 
-				this.endHandler();
-			} else if ( this.state.userInput ) {
-				this.nextStep();
-			}
+			this.endHandler();
 		}
 
 		if ( this.state.showSuggestions ) {
@@ -138,7 +134,8 @@ class ShareBox extends Component {
 	}
 
 	toggleSuggestions = metaData => {
-		if ( metaData.hookType === "start" ) {
+		if ( metaData.hookType === "start" &&
+			( this.state.userInput.length + 31 ) <= 2200 ) {
 			this.setState({
 				startPosition: metaData.cursor.selectionStart,
 				showSuggestions: true,
@@ -170,7 +167,9 @@ class ShareBox extends Component {
 	}
 
 	nextStep = () => {
-		this.setState({ step: this.state.step + 1 });
+		if ( this.state.userInput ) {
+			this.setState({ step: this.state.step + 1 });
+		}
 	}
 
 	prevStep = () => {
@@ -234,8 +233,9 @@ class ShareBox extends Component {
 						endTrigger={endHandler => this.endHandler = endHandler }
 					>
 						<textarea
+							maxLength="2200"
 							autoFocus
-							rows="2"
+							rows="3"
 							id="ShareBoxInput"
 							placeholder="Express yourself."
 							name="userInput"

@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 const
 	StyledDropdown = styled( Dropdown )`
 		i {
-			color: rgba(0,0,0,0.45) !important;
+			color: #555 !important;
 		}
 	`,
 	UpdateModal = styled( Modal )`

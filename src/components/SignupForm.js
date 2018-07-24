@@ -9,9 +9,6 @@ const
 		display: grid;
 		height: 100%;
 		width: 100%;
-		background-image: url(${props => props.image});
-		background-repeat: no-repeat;
-		background-size: cover;
 		grid-template-columns: 100%;
 		grid-template-rows: 40% 60%;
 		grid-template-areas:

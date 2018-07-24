@@ -12,7 +12,14 @@ const
 		height: 100vh;
 		display: grid;
 		background-image: url(${props => props.image});
-		background-position: ${props => props.signup && "center bottom"};
+		background-position: ${props => !props.signup ?
+		"left bottom"
+		:
+		props.signupStep === 1 ?
+			"center bottom"
+			:
+			"right bottom"
+};
 		background-repeat: no-repeat;
 		background-size: cover;
 		transition: background-position 1s;
@@ -97,6 +104,7 @@ class AuthPage extends Component {
 		return (
 			<Wrapper
 				signup={this.state.signup}
+				signupStep={this.state.signupStep}
 				image={background}
 			>
 				{this.state.signup ?

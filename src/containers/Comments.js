@@ -20,8 +20,8 @@ const
 		position: absolute;
 		height: 100vh;
 		width: 100%;
-		overflow: auto;
 		z-index: 20;
+		overflow-y: scroll;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
@@ -39,14 +39,14 @@ const
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
 		width: 100%;
-
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		box-shadow: 0 1px 2px #555;
+		z-index: 4;
 	`,
 	CommentsWrapper = styled.div`
 		grid-area: com;
@@ -58,10 +58,15 @@ const
 			}
 		}
 	`,
-	StyledTextArea = {
+	InputTriggerStyles = {
 		width: "100%",
 		height: "100%",
-		gridArea: "inp"
+		gridArea: "inp",
+	},
+	StyledTextArea = {
+		width: "100%",
+		fontFamily: "inherit",
+		resize: "none"
 	},
 	HeaderTxt = styled.span`
 		margin-left: 15px;
@@ -170,14 +175,14 @@ class Comments extends Component {
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
 			e.preventDefault();
+			const
+				{ socialCircle, comment, startPosition, currentSelection } = this.state,
+				user = socialCircle[ currentSelection ];
 			if ( this.state.showSuggestions ) {
-				const
-					{ socialCircle, comment, startPosition, currentSelection } = this.state,
-					user = socialCircle[ currentSelection ],
-					updatedComment =
-						comment.slice( 0, startPosition - 1 )
-						+ "@" + user.username + " " +
-						comment.slice( startPosition + user.username.length, comment.length );
+				const updatedComment =
+					comment.slice( 0, startPosition - 1 )
+					+ "@" + user.username + " " +
+					comment.slice( startPosition + user.username.length, comment.length );
 
 				this.setState({
 					comment: updatedComment,
@@ -265,12 +270,13 @@ class Comments extends Component {
 		);
 	};
 
-	handleReply = targetUser => {
-		this.setState({ comment: "@" + targetUser + " " });
+	handleReply = target => {
+		this.setState({ comment: "@" + target.username + " " });
 	}
 
 	toggleSuggestions = metaData => {
-		if ( metaData.hookType === "start" ) {
+		if ( metaData.hookType === "start" &&
+			( this.state.comment.length + 31 ) <= 2200 ) {
 			this.setState({
 				startPosition: metaData.cursor.selectionStart,
 				showSuggestions: true,
@@ -319,6 +325,7 @@ class Comments extends Component {
 	}
 
 	render() {
+		const placeholder = "Comment as @" + localStorage.getItem( "username" );
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -356,6 +363,7 @@ class Comments extends Component {
 				</CommentsWrapper>
 
 				<InputTrigger
+					style={InputTriggerStyles}
 					trigger={{ keyCode: 50 }}
 					onStart={metaData => this.toggleSuggestions( metaData ) }
 					onCancel={metaData => this.toggleSuggestions( metaData ) }
@@ -364,10 +372,12 @@ class Comments extends Component {
 				>
 					<textarea
 						autoFocus
+						maxLength="2200"
+						className="commentsTextarea"
 						style={StyledTextArea}
 						name="comment"
 						value={this.state.comment}
-						placeholder="Comment..."
+						placeholder={placeholder}
 						onChange={this.handleChange}
 						onKeyDown={this.handleKeyPress}
 					/>

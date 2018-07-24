@@ -8,9 +8,6 @@ const
 		display: grid;
 		height: 100%;
 		width: 100%;
-		background-image: url(${props => props.image});
-		background-repeat: no-repeat;
-		background-size: cover;
 		grid-template-columns: 100%;
 		grid-template-rows: 40% 60%;
 		grid-template-areas:
@@ -29,10 +26,10 @@ const
 		color: #fff;
 	`,
 	Subheader = styled.span`
+		text-align: center;
 		font-size: 1rem;
 		margin-top: 1.7rem;
 		color: #eee;
-		text-align: center;
 	`,
 	FormContainer = styled.div`
 		@media (max-width: 420px) {

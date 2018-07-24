@@ -12,8 +12,7 @@ var userPicture;
 const
 	Wrapper = styled.div`
 		position: relative;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
-		padding-bottom: 1rem;
+		margin-bottom: 2rem;
 	`,
 	CommentHeader = styled( Header )`
 		height: 60px;
@@ -23,6 +22,7 @@ const
 		margin: 0 !important;
 		align-items: center !important;
 		font-family: inherit !important;
+		color: #111 !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
@@ -35,7 +35,7 @@ const
 	`,
 	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
-		color: hsl(0,0%,13%) !important;
+		color: #111 !important;
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
@@ -49,19 +49,24 @@ const
 	`,
 	Content = styled.p`
 		align-self: center;
-		word-break: break-all;
+		word-break: break-word;
 		display: flex;
 		padding: 0px 1rem;
 		min-height: 25px;
+		color: #111 !important;
+		margin-bottom: 0.5rem;
 	`,
 	StyledOptions = {
 		position: "absolute",
 		right: "1rem",
 		top: "1rem",
+		i: {
+			color: "#555"
+		}
 	},
 	ReplyOption = styled.span`
 		font-size: 1rem;
-		color: rgba(0,0,0,0.65);
+		color: #333;
 		font-weight: bold;
 	`,
 	CommentOptions = styled.div`

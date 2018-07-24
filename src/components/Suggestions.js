@@ -14,6 +14,11 @@ const
 		background: #fff;
 		padding: 10px;
 		overflow-y: scroll;
+		::-webkit-scrollbar {
+			@media (max-width: 420px) {
+				display: none !important;
+			}
+		}
 	`,
 	Suggestion = styled( Header )`
 		display: flex;

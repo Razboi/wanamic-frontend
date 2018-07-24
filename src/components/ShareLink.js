@@ -122,7 +122,8 @@ class ShareLink extends Component {
 	}
 
 	toggleSuggestions = metaData => {
-		if ( metaData.hookType === "start" ) {
+		if ( metaData.hookType === "start" &&
+			( this.state.description.length + 31 ) <= 2200 ) {
 			this.setState({
 				startPosition: metaData.cursor.selectionStart,
 				showSuggestions: true,
@@ -231,6 +232,7 @@ class ShareLink extends Component {
 				</HeaderWrapper>
 				<BoxContainer>
 					<ShareLinkInput
+						maxLength="300"
 						autoFocus
 						style={TextAreaStyle}
 						name="link"
@@ -247,6 +249,7 @@ class ShareLink extends Component {
 						endTrigger={endHandler => this.endHandler = endHandler }
 					>
 						<textarea
+							maxLength="2200"
 							rows="4"
 							style={TextAreaStyle}
 							placeholder="Anything to say?"

@@ -64,6 +64,7 @@ class Step2 extends Component {
 				</HeaderWrapper>
 				<Form>
 					<FormTextarea
+						maxLength="250"
 						className="descriptionArea"
 						onChange={this.props.handleChange}
 						name="description"
@@ -77,10 +78,13 @@ class Step2 extends Component {
 							tags={this.props.hobbies}
 							handleDelete={this.props.handleDelete}
 							handleAddition={this.props.handleAddition}
-							delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
+							delimiters={this.props.hobbies.length < 10 ?
+								[ KeyCodes.comma, KeyCodes.enter ]
+								:
+								[]}
 							placeholder="Add a new interest (with enter or comma)"
 							autofocus={false}
-							maxLength={"35"}
+							maxLength={"17"}
 						/>
 					</Hobbies>
 					<FormInput

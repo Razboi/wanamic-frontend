@@ -145,7 +145,8 @@ class MediaStep2 extends Component {
 	}
 
 	toggleSuggestions = metaData => {
-		if ( metaData.hookType === "start" ) {
+		if ( metaData.hookType === "start" &&
+			( this.state.description.length + 31 ) <= 2200 ) {
 			this.setState({
 				startPosition: metaData.cursor.selectionStart,
 				showSuggestions: true,
@@ -229,6 +230,7 @@ class MediaStep2 extends Component {
 							endTrigger={endHandler => this.endHandler = endHandler }
 						>
 							<textarea
+								maxLength="2200"
 								style={UserContentInput}
 								autoFocus
 								className="mediaPostDescription"
