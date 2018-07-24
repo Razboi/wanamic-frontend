@@ -20,6 +20,7 @@ describe( "<AccountSettings/>", () => {
 			<AccountSettings
 				handleChange={handleChangeSpy}
 				handleFileChange={handleFileChangeSpy}
+				hobbies={[]}
 			/>
 		);
 	});

@@ -23,6 +23,7 @@ describe( "<WelcomeStep2/>", () => {
 				handleChange={changeSpy}
 				handleNext={nextSpy}
 				handleFileChange={fileChangeSpy}
+				hobbies={[]}
 			/>
 		);
 	});
