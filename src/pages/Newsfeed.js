@@ -17,22 +17,27 @@ import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
+		overflow: auto;
 		height: 100vh;
 		width: 100%;
-		overflow: auto;
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
+		@media (max-width: 420px) {
+			::-webkit-scrollbar {
 				display: none !important;
 			}
 		}
+		@media (min-width: 420px) {
+			background: #eee;
+		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
-		height: 100%;
-		width: 100%;
-		display: grid;
-		grid-template-rows: auto;
-		grid-template-areas:
-			"nf"
+		@media (max-width: 420px) {
+			height: 100%;
+			width: 100%;
+			display: grid;
+			grid-template-rows: auto;
+			grid-template-areas:
+				"nf"
+		}
 	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
@@ -61,10 +66,11 @@ const
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		margin-top: ${props => props.blur ? "0px" : "49.33px"};
+		display: flex;
+		justify-content: center;
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
-		height: 100%;
 	`;
 
 

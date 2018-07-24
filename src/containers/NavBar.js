@@ -14,9 +14,6 @@ const
 		visibility: ${props => props.hide ? "hidden" : "visible"};
 		position: fixed;
 		top: 0px
-		display: flex;
-		align-items: center;
-		justify-content: space-around;
 		background: #fff;
 		&:after {
 			background: rgba(0,0,0,.0975);
@@ -28,9 +25,30 @@ const
 	    bottom: -1px;
 		}
 	`,
+	Options = styled.div`
+		height: 100%;
+		display: flex;
+		align-items: center;
+		@media (max-width: 420px) {
+			width: 100%;
+			justify-content: space-around;
+		}
+		@media (min-width: 420px) {
+			width: 70%;
+			margin: 0 auto;
+			justify-content: flex-start;
+			position: relative;
+		}
+	`,
 	NavOption = styled.div`
 		height: 100%;
-		width: 100%;
+		@media (max-width: 420px) {
+			width: 100%;
+		}
+		@media (min-width: 420px) {
+			width: 49.33px;
+			margin-left: 2rem;
+		}
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -73,6 +91,9 @@ const
 		align-content: center;
 		justify-content: space-between;
 		font-size: 1rem !important;
+		@media (min-width: 420px) {
+			margin-right: 2rem;
+		}
 	`,
 	UserInfo = styled( Dropdown.Item )`
 		display: flex !important;
@@ -85,6 +106,27 @@ const
 		font-size: 1rem;
 		color: rgb(168, 170, 171);
 		line-height: 2rem;
+		@media (min-width: 420px) {
+			margin-left: 0.5rem;
+		}
+	`,
+	RightOptions = styled.div`
+		display: flex;
+		margin-left: auto;
+		@media (max-width: 420px) {
+			display: none;
+		}
+	`,
+	Logo = styled.a`
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 1.9rem;
+    font-family: inherit;
+    color: #111 !important;
+		@media (max-width: 420px) {
+			display: none;
+		}
 	`;
 
 
@@ -147,90 +189,134 @@ class NavBar extends Component {
 		}
 		return (
 			<Wrapper hide={this.props.mediaOptions}>
-				<NavOption onClick={this.handleHome} >
-					<NavImage
-						image={this.props.location.pathname === "/" ?
-							require( "../images/home_color.png" )
-							:
-							require( "../images/home.png" )
-						}
-					/>
-				</NavOption>
-				<NavOption onClick={this.handleNotifications}>
-					<NavImage
-						image={this.props.location.pathname === "/notifications" ?
-							require( "../images/bell_color.png" )
-							:
-							require( "../images/bell.png" )
-						}
-					>
-						{this.props.newNotifications > 0 &&
-							<NotificationsLength size="small" floating circular color="red">
-								{this.props.newNotifications}
-							</NotificationsLength>
-						}
-					</NavImage>
-				</NavOption>
-				<NavOption onClick={this.handleExplore}>
-					<NavImage
-						image={this.props.location.pathname === "/explore" ?
-							require( "../images/explore_color.png" )
-							:
-							require( "../images/explore.png" )
-						}
-					/>
-				</NavOption>
-				<NavOption onClick={this.handleMessages}>
-					<NavImage
-						image={this.props.location.pathname === "/messages" ?
-							require( "../images/chat_color.png" )
-							:
-							require( "../images/chat.png" )
-						}
-					>
-						{this.props.chatNotifications.length > 0 &&
-							<NotificationsLength size="small" floating circular color="red">
-								{this.props.chatNotifications.length}
-							</NotificationsLength>
-						}
-					</NavImage>
-				</NavOption>
-				<NavOption>
-					<Dropdown
-						trigger={<ProfileImg circular src={profileImage} />}
-						icon={null} direction="left">
-						<Dropdown.Menu>
-							<UserInfo
-								onClick={() => this.goToProfile( username )}
-							>
-								<DropdownFullname>{fullname}</DropdownFullname>
-								<DropdownUsername>@{username}</DropdownUsername>
-							</UserInfo>
-							<Dropdown.Divider />
-							<Scores>
-								<NavImage
-									image={require( "../images/heart.png" )}
-								/>
-								<Count>{this.props.totalLikes} likes</Count>
-							</Scores>
-							<Scores>
-								<NavImage
-									image={require( "../images/visibility.png" )}
-								/>
-								<Count>{this.props.totalViews} views</Count>
-							</Scores>
-							<Dropdown.Divider />
-							<StyledDropdownItem
-								text="Logout"
-								onClick={this.handleLogout}
+				<Options>
+					<NavOption onClick={this.handleHome} >
+						<NavImage
+							image={this.props.location.pathname === "/" ?
+								require( "../images/home_color.png" )
+								:
+								require( "../images/home.png" )
+							}
+						/>
+					</NavOption>
+					<NavOption onClick={this.handleNotifications}>
+						<NavImage
+							image={this.props.location.pathname === "/notifications" ?
+								require( "../images/bell_color.png" )
+								:
+								require( "../images/bell.png" )
+							}
+						>
+							{this.props.newNotifications > 0 &&
+								<NotificationsLength size="small" floating circular color="red">
+									{this.props.newNotifications}
+								</NotificationsLength>
+							}
+						</NavImage>
+					</NavOption>
+					<NavOption onClick={this.handleExplore}>
+						<NavImage
+							image={this.props.location.pathname === "/explore" ?
+								require( "../images/explore_color.png" )
+								:
+								require( "../images/explore.png" )
+							}
+						/>
+					</NavOption>
+					<NavOption onClick={this.handleMessages}>
+						<NavImage
+							image={this.props.location.pathname === "/messages" ?
+								require( "../images/chat_color.png" )
+								:
+								require( "../images/chat.png" )
+							}
+						>
+							{this.props.chatNotifications.length > 0 &&
+								<NotificationsLength size="small" floating circular color="red">
+									{this.props.chatNotifications.length}
+								</NotificationsLength>
+							}
+						</NavImage>
+					</NavOption>
+
+					<Logo href="localhost:3000">
+						Wanamic
+					</Logo>
+
+					<RightOptions>
+						<Scores>
+							<NavImage
+								image={require( "../images/heart.png" )}
 							/>
-							<StyledDropdownItem
-								text="Settings"
-								onClick={this.goToSettings}
+							<Count>{this.props.totalLikes} likes</Count>
+						</Scores>
+						<Scores>
+							<NavImage
+								image={require( "../images/visibility.png" )}
 							/>
-						</Dropdown.Menu>
-					</Dropdown>
-				</NavOption>
+							<Count>{this.props.totalViews} views</Count>
+						</Scores>
+
+						<Dropdown
+							trigger={<ProfileImg circular src={profileImage} />}
+							icon={null} direction="left">
+							<Dropdown.Menu>
+								<UserInfo
+									onClick={() => this.goToProfile( username )}
+								>
+									<DropdownFullname>{fullname}</DropdownFullname>
+									<DropdownUsername>@{username}</DropdownUsername>
+								</UserInfo>
+								<Dropdown.Divider />
+								<StyledDropdownItem
+									text="Logout"
+									onClick={this.handleLogout}
+								/>
+								<StyledDropdownItem
+									text="Settings"
+									onClick={this.goToSettings}
+								/>
+							</Dropdown.Menu>
+						</Dropdown>
+					</RightOptions>
+
+					<NavOption id="NavbarUser">
+						<Dropdown
+							trigger={<ProfileImg circular src={profileImage} />}
+							icon={null} direction="left">
+							<Dropdown.Menu>
+								<UserInfo
+									onClick={() => this.goToProfile( username )}
+								>
+									<DropdownFullname>{fullname}</DropdownFullname>
+									<DropdownUsername>@{username}</DropdownUsername>
+								</UserInfo>
+								<Dropdown.Divider />
+								<Scores>
+									<NavImage
+										image={require( "../images/heart.png" )}
+									/>
+									<Count>{this.props.totalLikes} likes</Count>
+								</Scores>
+								<Scores>
+									<NavImage
+										image={require( "../images/visibility.png" )}
+									/>
+									<Count>{this.props.totalViews} views</Count>
+								</Scores>
+								<Dropdown.Divider />
+								<StyledDropdownItem
+									text="Logout"
+									onClick={this.handleLogout}
+								/>
+								<StyledDropdownItem
+									text="Settings"
+									onClick={this.goToSettings}
+								/>
+							</Dropdown.Menu>
+						</Dropdown>
+					</NavOption>
+				</Options>
 			</Wrapper>
 		);
 	}

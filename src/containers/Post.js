@@ -15,8 +15,17 @@ import AlertsFilter from "../components/AlertsFilter";
 const
 	Wrapper = styled.div`
 		position: relative;
-		border-bottom: ${props => props.noBorder ?
+
+		@media (min-width: 420px) {
+			border: 1px solid rgba(0, 0, 0, .1);
+			margin-bottom: 1rem;
+			background: #fff;
+		}
+
+		@media (max-width: 420px) {
+			border-bottom: ${props => props.noBorder ?
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
+		}
 	`,
 	PostHeader = styled( Header )`
 		height: 60px;
@@ -65,7 +74,8 @@ const
 	`,
 	UserContent = styled.p`
 		color: #222;
-		word-break: break-all;
+		word-break: break-word;
+		font-size: 1rem;
 	`,
 	PostBody = styled.div`
 		position: relative;

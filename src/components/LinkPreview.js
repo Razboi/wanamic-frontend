@@ -5,32 +5,38 @@ import styled from "styled-components";
 
 const
 	LinkPreviewWrapper = styled.div`
-		@media (max-width: 420px) {
-			display: grid;
-			grid-template-columns: 100%;
-			grid-row-gap: ${props => props.explore ? "0" : "7px"};
-			grid-template-rows: 50% 50%;
-			grid-template-areas:
-				"img"
-				"txt"
-		}
 		display: grid;
-		grid-template-columns: 40% 60%;
-		grid-column-gap: ${props => props.explore ? "0" : "7px"};
-		grid-template-rows: 100%;
+		height: auto;
+		grid-template-columns: 100%;
+		grid-row-gap: ${props => props.explore ? "0" : "7px"};
+		grid-template-rows: 50% 50%;
 		grid-template-areas:
-			"img txt"
+			"img"
+			"txt"
 	`,
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
+		position: absolute;
 		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 		border-radius: ${props => props.explore ? "8px" : "0"};
 		filter: brightness( 70% );
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
+		position: absolute;
 		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 		border-radius: ${props => props.explore ? "8px" : "0"};
+	`,
+	LinkMedia = styled.div`
+		position: relative;
+		height: 0;
+		padding-bottom: 100%;
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
@@ -90,20 +96,22 @@ class LinkPreview extends Component {
 				<LinkPreviewWrapper
 					className="linkPreviewWrapper"
 				>
-					{this.props.linkContent.embeddedUrl ?
-						<LinkPreviewIframe
-							className="linkPreviewIframe"
-							src={this.props.linkContent.embeddedUrl}
-							frameborder="0"
-							allow="autoplay; encrypted-media"
-							allowfullscreen="allowfullscreen"
-						/>
-						:
-						<LinkPreviewImage
-							className="linkPreviewImage"
-							src={this.props.linkContent.image}
-						/>
-					}
+					<LinkMedia>
+						{this.props.linkContent.embeddedUrl ?
+							<LinkPreviewIframe
+								className="linkPreviewIframe"
+								src={this.props.linkContent.embeddedUrl}
+								frameborder="0"
+								allow="autoplay; encrypted-media"
+								allowfullscreen="allowfullscreen"
+							/>
+							:
+							<LinkPreviewImage
+								className="linkPreviewImage"
+								src={this.props.linkContent.image}
+							/>
+						}
+					</LinkMedia>
 
 					<LinkPreviewText className="linkPreviewText">
 						<LinkPreviewHeader>

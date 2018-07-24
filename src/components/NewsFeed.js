@@ -7,6 +7,13 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		height: 100%;
+		@media (max-width: 420px) {
+			width: 100%;
+		}
+		@media (min-width: 420px) {
+			width: 35%;
+			padding-top: 1rem;
+		}
 	`;
 
 class NewsFeed extends Component {

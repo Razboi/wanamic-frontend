@@ -19,7 +19,7 @@ const
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 10% 83% 7%;
+		grid-template-rows: 57px auto 52px;
 		grid-template-areas:
 			"hea"
 			"mes"
@@ -38,6 +38,21 @@ const
 	`,
 	StyledInput = styled( Input )`
 		grid-area: inp;
+		padding: 2px 5px 5px 5px;
+		background: none !important;
+		input {
+			height: 44px !important;
+			border-radius: 25px !important;
+			font-family: inherit !important;
+			color: #222 !important;
+			border: 1px solid rgba(0,0,0,0.3) !important;
+		}
+		input::placeholder {
+			color: #444 !important;
+		}
+		input:focus {
+			border: 1px solid rgba(0,0,0,0.3) !important;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
@@ -46,7 +61,8 @@ const
 		"center" : "space-evenly"};
 		flex-direction: row;
 		align-items: center;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		box-shadow: 0 1px 2px #555;
+		z-index: 2;
 	`,
 	BackArrow = styled( Icon )`
 		font-size: 1.3rem !important;
@@ -165,7 +181,7 @@ class Conversation extends Component {
 					autoFocus
 					name="messageInput"
 					value={messageInput}
-					placeholder="Write a message"
+					placeholder="Write a message.."
 					onChange={handleChange}
 					onKeyPress={handleKeyPress}
 				/>

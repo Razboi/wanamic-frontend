@@ -19,8 +19,17 @@ const
 		overflow: hidden;
 		display: grid;
 		position: relative;
-		border-bottom: ${props => props.noBorder ?
+
+		@media (min-width: 420px) {
+			border: 1px solid rgba(0, 0, 0, .1);
+			margin-bottom: 1rem;
+			background: #fff;
+		}
+
+		@media (max-width: 420px) {
+			border-bottom: ${props => props.noBorder ?
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
+		}
 	`,
 	PostHeader = styled( Header )`
 		height: 60px;
@@ -86,8 +95,12 @@ const
 		transform: scale(1.2);
 	`,
 	PostUserContent = styled.div`
-		color: #222;
 		padding: 1rem 1rem 2rem 1rem;
+	`,
+	UserContent = styled.p`
+		color: #222;
+		word-break: break-word;
+		font-size: 1rem;
 	`,
 	Description = styled.span`
 		font-weight: bold;
@@ -324,10 +337,10 @@ class MediaPost extends Component {
 
 						{post.content &&
 							<PostUserContent>
-								<p className="postContent">
+								<UserContent className="postContent">
 									<Description>@{post.author.username} </Description>
 									{post.content}
-								</p>
+								</UserContent>
 							</PostUserContent>
 						}
 					</Dimmer>

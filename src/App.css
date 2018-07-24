@@ -39,3 +39,9 @@ body {
 #ShareBoxInput::placeholder {
 	color: #333;
 }
+
+@media (min-width: 420px) {
+	#NavbarUser {
+		display: none;
+	}
+}
