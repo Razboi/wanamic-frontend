@@ -69,10 +69,15 @@ const
 		background: ${props => props.range === 3 && "#134f7c !important"};
 		background: rgba(0,0,0,0.75);
 		border-radius: 25px;
-		width: 70%;
 		align-self: center;
 		display: flex;
 		justify-content: space-between;
+		@media (max-width: 420px) {
+			width: 70%;
+		};
+		@media (min-width: 420px) {
+			width: 300px;
+		}
 	`,
 	PrivacyButton = styled( Button )`
 		margin: 0px !important;

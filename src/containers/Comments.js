@@ -17,10 +17,8 @@ import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
-		position: absolute;
-		height: 100vh;
-		width: 100%;
 		z-index: 20;
+		position: absolute;
 		overflow-y: scroll;
 		background: #fff;
 		display: grid;
@@ -30,11 +28,17 @@ const
 			"hea"
 			"com"
 			"inp";
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
-				display: none !important;
-			}
+		@media (max-width: 420px) {
+			height: 100vh;
+			width: 100%;
+		};
+		@media (min-width: 420px) {
+			width: 600px;
+			height: 600px;
 		}
+		::-webkit-scrollbar {
+			display: none !important;
+		};
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;

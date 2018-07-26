@@ -3,14 +3,14 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import Newsfeed from "./Newsfeed";
+import Home from "./Home";
 import configureStore from "redux-mock-store";
 import sinon from "sinon";
 
 const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<Homepage/>", () => {
+describe( "<Home/>", () => {
 	var
 		wrapper,
 		socketSpy = sinon.spy(),
@@ -23,14 +23,14 @@ describe( "<Homepage/>", () => {
 			conversations: { displayMessages: false }
 		});
 		wrapper = shallow(
-			<Newsfeed
+			<Home
 				socket={{ emit: socketSpy, on: socketSpy }}
 				store={store}
 			/>
 		).dive();
 	});
 
-	it( "Checks that <Newsfeed/> renders", () => {
+	it( "Checks that <Home/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 

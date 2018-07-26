@@ -11,11 +11,16 @@ import Share from "../containers/Share";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
 		width: 100%;
-		position: absolute;
+		position: fixed;
 		z-index: 20;
 		background: #fff;
+		@media (max-width: 420px) {
+			height: 100vh;
+		}
+		@media (min-width: 420px) {
+			width: 600px;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		height: 59.33px;
@@ -59,6 +64,10 @@ class PostDetails extends Component {
 		}
 	}
 
+	componentWillUnmount() {
+		window.history.pushState( null, null, previousHref );
+	}
+
 	getPost = async() => {
 		var posts;
 		try {
@@ -70,7 +79,6 @@ class PostDetails extends Component {
 	}
 
 	handleBack = () => {
-		window.history.pushState( null, null, previousHref );
 		this.props.switchDetails();
 	}
 

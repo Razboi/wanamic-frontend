@@ -14,8 +14,6 @@ import Suggestions from "../components/Suggestions";
 const
 	Wrapper = styled.div`
 		position: absolute;
-		height: 100vh;
-		width: 100%;
 		z-index: 20;
 		background: #222;
 		color: #fff !important;
@@ -24,7 +22,15 @@ const
 		grid-template-rows: 7% 93%;
 		grid-template-areas:
 			"hea"
-			"com"
+			"com";
+		@media (max-width: 420px) {
+			height: 100vh;
+			width: 100%;
+		};
+		@media (min-width: 420px) {
+			height: 700px;
+			width: 700px;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;

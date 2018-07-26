@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
+import { switchNotifications } from "../services/actions/notifications";
+import Notifications from "../pages/Notifications";
 
 const
 	Wrapper = styled.div`
@@ -23,6 +25,9 @@ const
 	    position: absolute;
 	    right: 0;
 	    bottom: -1px;
+		};
+		@media(min-width: 420px) {
+			display: ${props => props.hideOnLargeScreen && "none"};
 		}
 	`,
 	Options = styled.div`
@@ -34,7 +39,7 @@ const
 			justify-content: space-around;
 		}
 		@media (min-width: 420px) {
-			width: 70%;
+			width: 1140px;
 			margin: 0 auto;
 			justify-content: flex-start;
 			position: relative;
@@ -47,7 +52,8 @@ const
 		}
 		@media (min-width: 420px) {
 			width: 49.33px;
-			margin-left: 2rem;
+			margin-right: 2rem;
+			position: relative;
 		}
 		display: flex;
 		align-items: center;
@@ -188,7 +194,10 @@ class NavBar extends Component {
 			console.log( err );
 		}
 		return (
-			<Wrapper hide={this.props.mediaOptions}>
+			<Wrapper
+				hide={this.props.mediaOptions}
+				hideOnLargeScreen={this.props.hideOnLargeScreen}
+			>
 				<Options>
 					<NavOption onClick={this.handleHome} >
 						<NavImage
@@ -199,20 +208,31 @@ class NavBar extends Component {
 							}
 						/>
 					</NavOption>
-					<NavOption onClick={this.handleNotifications}>
-						<NavImage
-							image={this.props.location.pathname === "/notifications" ?
-								require( "../images/bell_color.png" )
+					<NavOption>
+						<div
+							onClick={window.innerWidth > 420 ?
+								this.props.switchNotifications
 								:
-								require( "../images/bell.png" )
-							}
+								this.handleNotifications}
 						>
-							{this.props.newNotifications > 0 &&
-								<NotificationsLength size="small" floating circular color="red">
-									{this.props.newNotifications}
-								</NotificationsLength>
-							}
-						</NavImage>
+							<NavImage
+								image={this.props.location.pathname === "/notifications" ?
+									require( "../images/bell_color.png" )
+									:
+									require( "../images/bell.png" )
+								}
+							>
+								{this.props.newNotifications > 0 &&
+									<NotificationsLength size="small" floating circular color="red">
+										{this.props.newNotifications}
+									</NotificationsLength>
+								}
+							</NavImage>
+						</div>
+
+						{this.props.displayNotifications &&
+							<Notifications socket={this.props.socket} isPopup />
+						}
 					</NavOption>
 					<NavOption onClick={this.handleExplore}>
 						<NavImage
@@ -223,7 +243,10 @@ class NavBar extends Component {
 							}
 						/>
 					</NavOption>
-					<NavOption onClick={this.handleMessages}>
+					<NavOption
+						id="NavbarSmallScreenOption"
+						onClick={this.handleMessages}
+					>
 						<NavImage
 							image={this.props.location.pathname === "/messages" ?
 								require( "../images/chat_color.png" )
@@ -280,7 +303,7 @@ class NavBar extends Component {
 						</Dropdown>
 					</RightOptions>
 
-					<NavOption id="NavbarUser">
+					<NavOption id="NavbarSmallScreenOption">
 						<Dropdown
 							trigger={<ProfileImg circular src={profileImage} />}
 							icon={null} direction="left">
@@ -336,11 +359,13 @@ const
 		newNotifications: state.notifications.newNotifications,
 		chatNotifications: state.conversations.notifications,
 		totalLikes: state.user.totalLikes,
-		totalViews: state.user.totalViews
+		totalViews: state.user.totalViews,
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		logout: () => dispatch( logout())
+		logout: () => dispatch( logout()),
+		switchNotifications: () => dispatch( switchNotifications())
 	});
 
 export default withRouter(

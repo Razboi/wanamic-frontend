@@ -45,6 +45,10 @@ const
 		width: 30px !important;
 		height: 30px !important;
 		margin: 0 !important;
+		@media (min-width: 420px) {
+			width: 35px !important;
+			height: 35px !important;
+		}
 	`,
 	StyledOptions = {
 		position: "absolute",

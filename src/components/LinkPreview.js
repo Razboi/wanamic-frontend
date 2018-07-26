@@ -16,7 +16,7 @@ const
 	`,
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
-		position: absolute;
+		position: absolute !important;
 		width: 100%;
 		height: 100%;
 		top: 0;
@@ -32,6 +32,7 @@ const
 		top: 0;
 		left: 0;
 		border-radius: ${props => props.explore ? "8px" : "0"};
+		border: none;
 	`,
 	LinkMedia = styled.div`
 		position: relative;
@@ -82,12 +83,15 @@ class LinkPreview extends Component {
 					explore={this.props.explore ? 1 : 0}
 					className="linkPreviewWrapper"
 				>
-					<LinkPreviewImage
-						explore={this.props.explore ? 1 : 0}
-						className="linkPreviewImage"
-						src={this.props.linkContent.image}
-					/>
-					<PlayIcon name="video play" />
+					<LinkMedia>
+						<LinkPreviewImage
+							explore={this.props.explore ? 1 : 0}
+							className="linkPreviewImage"
+							src={this.props.linkContent.image}
+						/>
+						<PlayIcon name="video play" />
+					</LinkMedia>
+
 				</LinkPreviewWrapper>
 			);
 		}

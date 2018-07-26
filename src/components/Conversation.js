@@ -23,7 +23,15 @@ const
 		grid-template-areas:
 			"hea"
 			"mes"
-			"inp"
+			"inp";
+		@media (min-width: 420px) {
+			height: 350px;
+			width: 300px;
+			position: fixed;
+			right: 30px;
+			bottom: 0px;
+			border: 1px solid rgba(0,0,0,.066);
+		}
 	`,
 	MessagesWrapper = styled( StayScrolled )`
 		grid-area: mes;

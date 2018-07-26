@@ -26,8 +26,4 @@ describe( "<Messages/>", () => {
 	it( "Checks that <Messages/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
-
-	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 4 );
-	});
 });

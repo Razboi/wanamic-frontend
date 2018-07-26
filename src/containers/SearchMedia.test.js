@@ -30,12 +30,12 @@ describe( "<SearchMedia/>", () => {
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children().children()).to.have.length( 3 );
 	});
 
 	it( "Checks that every children renders when state.selected", () => {
 		wrapper.setState({ selected: true });
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children().children()).to.have.length( 3 );
 	});
 
 	it( "Expects the length of mediaResults to equal state.results", () => {

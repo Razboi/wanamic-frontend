@@ -10,6 +10,11 @@ const
 		position: absolute;
 		z-index: 4;
 		background: #fff;
+		@media (min-width: 420px) {
+			height: 100%;
+			background: none;
+			top: 0;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		height: 49.33px;
@@ -17,11 +22,17 @@ const
 		align-items: center;
 		padding-left: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		@media (min-width: 420px) {
+			border: none;
+		}
 	`,
 	HeaderTxt = styled.span`
 		margin-left: 15px;
 		font-weight: bold;
 		font-size: 16px;
+		@media (min-width: 420px) {
+			font-size: 1rem;
+		}
 	`,
 	Friend = styled.div`
 		display: flex;
@@ -29,21 +40,34 @@ const
 		align-items: center;
 		padding: 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		@media (min-width: 420px) {
+			border: none;
+			padding: 0 1rem 1rem 1rem;
+		}
 	`,
 	FriendImg = styled( Image )`
 		width: 40px !important;
 		height: 40px !important;
 		align-self: flex-start;
+		@media (min-width: 420px) {
+			width: 30px !important;
+			height: 30px !important;
+			align-self: center;
+		}
 	`,
 	FriendData = styled( Header )`
 		margin-top: 0 !important;
 		margin-left: 0.66rem !important;
+		font-family: inherit !important;
 	`,
 	Fullname = styled.span`
 		font-size: 1.1475rem !important;
+		@media (min-width: 420px) {
+			font-size: 1rem !important;
+			font-weight: 500 !important;
+		}
 	`,
 	Username = styled( Header.Subheader )`
-
 	`;
 
 

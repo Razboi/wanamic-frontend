@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Auth from "./pages/Auth";
-import Newsfeed from "./pages/Newsfeed";
+import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import UserRoute from "./utils/routes/UserRoute";
@@ -118,7 +118,7 @@ class App extends Component {
 		return (
 			<div>
 				<Switch>
-					<UserRoute exact path="/" component={Newsfeed} socket={socket}/>
+					<UserRoute exact path="/" component={Home} socket={socket}/>
 					<GuestRoute path="/login" component={Auth} />
 					<UserRoute
 						path="/notifications" component={Notifications} socket={socket}

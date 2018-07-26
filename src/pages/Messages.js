@@ -17,13 +17,27 @@ import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
-		width: 100%;
-		overflow: hidden;
-		position: absolute;
-		z-index: 3;
-		background: #fff;
-		padding-top: 49.33px;
+		@media (max-width: 420px) {
+			display: ${props => props.onHome && "none"};
+			height: 100vh;
+			width: 100%;
+			overflow: hidden;
+			position: absolute;
+			z-index: 3;
+			background: #fff;
+			padding-top: 49.33px;
+			::-webkit-scrollbar {
+				display: none !important;
+			}
+		}
+		@media (min-width: 420px) {
+			height: 500px;
+			position: sticky;
+			position: -webkit-sticky;
+			top: 63.33px;
+			width: 260px;
+			margin-left: 20px;
+		}
 	`,
 	PageHeader = styled.div`
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
@@ -31,6 +45,15 @@ const
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;
+		@media (min-width: 420px) {
+			display: none;
+		}
+	`,
+	ConversationsAndButtons = styled.div`
+		@media (min-width: 420px) {
+			position: relative;
+			height: 100%;
+		}
 	`,
 	NewConversationButton = styled( Button )`
 		position: fixed;
@@ -38,6 +61,16 @@ const
 		bottom: 10px;
 		z-index: 3;
 		background: rgb(133, 217, 191) !important;
+		font-size: 1.28rem !important;
+		margin: 0 !important;
+		@media (min-width: 420px) {
+			background: none !important;
+			position: absolute;
+			font-size: 1rem !important;
+			i {
+				color: rgba(0,0,0,0.4) !important;
+			}
+		}
 	`,
 	OpenConversation = styled.div`
 		display: flex;
@@ -45,14 +78,20 @@ const
 		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.66rem 1rem;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
+		padding: 1rem;
 		background: ${props => props.newMessages ?
 		"rgba(133, 217, 191, 0.22)" : "none"};
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	UserImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
+		@media (min-width: 420px) {
+			width: 30px !important;
+			height: 30px !important;
+		}
 	`,
 	TextInfo = styled( Header )`
 		display: flex;
@@ -63,17 +102,31 @@ const
 		font-family: inherit !important;
 	`,
 	UserFullname = styled.span`
+		white-space: nowrap !important;
+		overflow: hidden !important;
+		text-overflow: ellipsis !important;
 		font-size: 1.1rem !important;
+		color: #111 !important;
+		@media (min-width: 420px) {
+			font-size: 1rem !important;
+			font-weight: 500 !important;
+		}
 	`,
 	LastMessage = styled( Header.Subheader )`
 		white-space: nowrap !important;
 		overflow: hidden !important;
 		text-overflow: ellipsis !important;
+		@media (min-width: 420px) {
+			font-size: 0.9rem !important;
+		}
 	`,
 	LastMessageTime = styled.span`
 		font-size: 0.87rem;
 		color: rgba(0,0,0,0.78);
 		align-self: self-start;
+		@media (min-width: 420px) {
+			font-size: 0.85rem !important;
+		}
 	`,
 	NewMessagesCount = styled( Label )`
 		position: absolute;
@@ -271,9 +324,9 @@ class Messages extends Component {
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
-			messageTarget
+			messageTarget, onHome
 		} = this.props;
-		if ( this.state.displayConversation ) {
+		if ( this.state.displayConversation && !onHome ) {
 			return (
 				<Conversation
 					conversation={newConversation ?
@@ -291,7 +344,7 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( this.state.displayFriendsList ) {
+		if ( this.state.displayFriendsList && !onHome ) {
 			return (
 				<FriendsList
 					friends={this.state.friends}
@@ -302,56 +355,87 @@ class Messages extends Component {
 		}
 		if ( !messageTarget ) {
 			return (
-				<Wrapper>
-					<NavBar socket={this.props.socket} />
-					<PageHeader>Conversations</PageHeader>
-					<div className="conversationsList">
-						{this.props.conversations.map(( chat, index ) =>
-							<OpenConversation
-								key={index}
-								onClick={() => this.handleSelectConversation( index ) }
-								newMessages={chat.newMessagesCount > 0}
-							>
-								<UserImg
-									circular
-									src={chat.target.profileImage ?
-										require( "../images/" + chat.target.profileImage )
-										:
-										require( "../images/defaultUser.png" )
-									}
-								/>
-								<TextInfo>
-									<UserFullname>
-										{chat.target.fullname}
-									</UserFullname>
-									<LastMessage>
-										@{chat.messages[ chat.messages.length - 1 ].author.username}: {
-											chat.messages[ chat.messages.length - 1 ].content}
-									</LastMessage>
-								</TextInfo>
-								<LastMessageTime>
-									{moment(
-										chat.messages[ chat.messages.length - 1 ].createdAt
-									).fromNow( true )}
-								</LastMessageTime>
-								{chat.newMessagesCount > 0 &&
-									<NewMessagesCount
-										size="tiny" circular color="red"
-									>
-										{chat.newMessagesCount}
-									</NewMessagesCount>
-								}
-							</OpenConversation>
-						)}
-					</div>
-					<NewConversationButton
-						onClick={this.handleFriendsList}
-						primary
-						circular
-						icon="comment"
-						size="big"
-					/>
-				</Wrapper>
+				<React.Fragment>
+					<Wrapper onHome={this.props.onHome}>
+						{this.state.displayFriendsList && onHome ?
+							<FriendsList
+								friends={this.state.friends}
+								handleNewConversation={this.handleNewConversation}
+								back={this.backToOpenConversations}
+							/>
+							:
+							<React.Fragment>
+								<NavBar hideOnLargeScreen socket={this.props.socket} />
+								<PageHeader>Conversations</PageHeader>
+
+								<ConversationsAndButtons>
+									<div className="conversationsList">
+										{this.props.conversations.map(( chat, index ) =>
+											<OpenConversation
+												key={index}
+												onClick={() => this.handleSelectConversation( index ) }
+												newMessages={chat.newMessagesCount > 0}
+											>
+												<UserImg
+													circular
+													src={chat.target.profileImage ?
+														require( "../images/" + chat.target.profileImage )
+														:
+														require( "../images/defaultUser.png" )
+													}
+												/>
+												<TextInfo>
+													<UserFullname>
+														{chat.target.fullname}
+													</UserFullname>
+													<LastMessage>
+														@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+															chat.messages[ chat.messages.length - 1 ].content}
+													</LastMessage>
+												</TextInfo>
+												<LastMessageTime>
+													{moment(
+														chat.messages[ chat.messages.length - 1 ].createdAt
+													).fromNow( true )}
+												</LastMessageTime>
+												{chat.newMessagesCount > 0 &&
+													<NewMessagesCount
+														size="tiny" circular color="red"
+													>
+														{chat.newMessagesCount}
+													</NewMessagesCount>
+												}
+											</OpenConversation>
+										)}
+									</div>
+									<NewConversationButton
+										onClick={this.handleFriendsList}
+										primary
+										circular
+										icon="comment"
+									/>
+								</ConversationsAndButtons>
+							</React.Fragment>
+						}
+					</Wrapper>
+
+					{this.state.displayConversation && onHome &&
+						<Conversation
+							conversation={newConversation ?
+								newConversation
+								:
+								conversations[ selectedConversation ]
+							}
+							newConversation={!!newConversation}
+							handleKeyPress={this.handleKeyPress}
+							handleChange={this.handleChange}
+							handleDeleteChat={this.handleDeleteChat}
+							back={this.backToOpenConversations}
+							messageInput={this.state.messageInput}
+							spam={this.state.spam}
+						/>
+					}
+				</React.Fragment>
 			);
 		}
 		return null;
@@ -365,6 +449,7 @@ Messages.propTypes = {
 	chatNotifications: PropTypes.array.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
+	onHome: PropTypes.bool
 };
 
 const

@@ -22,12 +22,25 @@ const
 		height: 100vh;
 		width: 100%;
 		overflow: auto;
-		padding-top: 49.33px;
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
+		@media (max-width: 420px) {
+			padding-top: 49.33px;
+			::-webkit-scrollbar {
 				display: none !important;
-			}
-		}
+			};
+		};
+		@media (min-width: 420px) {
+			height: 400px;
+			width: 400px;
+			position: absolute;
+			bottom: -393px;
+			left: 0;
+			background: #fff;
+			border-radius: 2px;
+			box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+			border: 1px solid rgba(0,0,0,0.1);
+			z-index: 5;
+			border-top: 0;
+		};
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
@@ -35,11 +48,18 @@ const
 	`,
 	Header = styled.div`
 		color: #111;
-		padding: 15px 10px;
+		padding: 15px 0px;
 		font-size: 17px;
 		font-weight: bold;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
 		text-align: center;
+		@media (min-width: 420px) {
+			color: #333;
+			padding: 7px 0;
+			font-size: 1rem;
+			background: rgba(133,217,191,0.34);
+			border-bottom: 0;
+		}
 	`,
 	Notification = styled.div`
 		display: flex;
@@ -229,6 +249,7 @@ class Notifications extends Component {
 	}
 
 	render() {
+		console.log( this.props );
 		if ( this.state.displayComments ) {
 			return (
 				<Comments />
@@ -252,7 +273,9 @@ class Notifications extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<NavBar socket={this.props.socket} />
+					{!this.props.isPopup &&
+						<NavBar socket={this.props.socket} />
+					}
 					<Header>Notifications</Header>
 					{this.state.network &&
 					<div>
@@ -313,6 +336,8 @@ Notifications.propTypes = {
 	notifications: PropTypes.array.isRequired,
 	switchComments: PropTypes.func.isRequired,
 	checkNotifications: PropTypes.func.isRequired,
+	socket: PropTypes.object.isRequired,
+	isPopup: PropTypes.bool
 };
 
 const

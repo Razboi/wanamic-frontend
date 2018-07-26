@@ -15,40 +15,69 @@ import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
+		overflow: auto;
+		height: 100vh;
+		width: 100%;
 		@media (max-width: 420px) {
-			overflow: auto;
 			::-webkit-scrollbar {
 				display: none !important;
 			}
-			height: 100vh;
-			width: 100%;
+		};
+		@media (min-width: 420px) {
+			background: #eee;
 		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
+		height: 100%;
+		width: 100%;
+		display: grid;
+		margin-top: 49.33px;
+		grid-template-columns: 100%;
+		grid-template-areas:
+			"h"
+			"c";
 		@media (max-width: 420px) {
-			height: 100%;
-			width: 100%;
-			display: grid;
-			margin-top: 49.33px;
-			grid-template-columns: 100%;
 			grid-template-rows: 49.33px auto;
-			grid-template-areas:
-				"h"
-				"c"
+		}
+		@media (min-width: 420px) {
+			grid-template-rows: 80px auto;
 		}
 	`,
 	Header = styled.div`
+		grid-area: h;
+		height: 100%;
 		@media (max-width: 420px) {
-			grid-area: h;
-			height: 100%;
 			display: grid;
 			grid-template-columns: 50% 50%;
 			grid-template-rows: 100%;
 			grid-template-areas:
-				"shu shc"
+				"shu shc";
+		}
+		@media (min-width: 420px) {
+			grid-area: h;
+			width: 200px;
+			margin: 0 auto;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 		}
 	`,
 	UserSubheader = styled.div`
+		@media (min-width: 420px) {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 0.5rem;
+	    border-radius: 3px;
+	    border: 1px solid rgba(0,0,0,0.1);
+			box-shadow: ${props => props.active ?
+		"none" : "0 3px 8px rgba(0, 0, 0, .25)"};
+	    background: #fff;
+			:hover {
+				cursor: pointer;
+			};
+		}
 		@media (max-width: 420px) {
 			grid-area: shu;
 			height: 100%;
@@ -59,6 +88,21 @@ const
 		}
 	`,
 	ContentSubheader = styled.div`
+		@media (min-width: 420px) {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 0.5rem;
+	    border-radius: 3px;
+	    border: 1px solid rgba(0,0,0,0.1);
+			box-shadow: ${props => props.active ?
+		"none" : "0 3px 8px rgba(0, 0, 0, .25)"};
+	    background: #fff;
+			:hover {
+				cursor: pointer;
+			};
+		}
 		@media (max-width: 420px) {
 			grid-area: shc;
 			height: 100%;
@@ -69,44 +113,66 @@ const
 		}
 	`,
 	MainComponent = styled.div`
-		@media (max-width: 420px) {
-			grid-area: c;
-		}
+		grid-area: c;
 	`,
 	HeaderImage = styled.span`
-		height: 24px;
-		width: 24px;
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
 		margin: 0;
 		position: relative;
+		@media (max-width: 420px) {
+			height: 24px;
+			width: 24px;
+		}
+		@media (min-width: 420px) {
+			height: 32px;
+			width: 32px;
+		}
+	`,
+	SubheaderText = styled.span`
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: #333;
+		font-family: inherit;
+		margin-top: 5px;
+		display: none;
+		@media (max-width: 420px) {
+			display: none;
+		}
 	`,
 	SearchBar = styled.input`
+		color: #222 !important;
+		text-align: center !important;
+		border: 1px solid rgba( 0,0,0,.4 ) !important;
+		border-radius: 2px !important;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		font-family: inherit;
+		::placeholder {
+			color: #333;
+		}
 		@media (max-width: 420px) {
 			width: 90%;
 			height: 34px;
-			color: #222 !important;
-			text-align: center !important;
-			border: 1px solid rgba( 0,0,0,.4 ) !important;
-			border-radius: 2px !important;
-			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
-			font-family: inherit;
-			:: placeholder {
-				color: #333;
-			}
+		}
+		@media (min-width: 420px) {
+			width: 50%;
+			height: 40px;
 		}
 	`,
 	SearchWrapper = styled.div`
+		z-index: 3;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		width: 100%;
+		position: fixed !important;
+		bottom: 0;
 		@media (max-width: 420px) {
-			z-index: 3;
 			height: 44px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 100%;
-			position: fixed !important;
-			bottom: 0;
+		}
+		@media (min-width: 420px) {
+			height: 54px;
 		}
 	`;
 
@@ -307,14 +373,25 @@ class ExplorePage extends Component {
 			connectImage,
 			contentImage;
 		try {
-			connectImage = !this.state.content ?
-				require( "../images/connect_color.png" )
-				:
-				require( "../images/connect.png" );
-			contentImage = this.state.content ?
-				require( "../images/content_color.png" )
-				:
-				require( "../images/content.png" );
+			if ( window.innerWidth > 420 ) {
+				connectImage = !this.state.content ?
+					require( "../images/big_connect_color.png" )
+					:
+					require( "../images/big_connect.png" );
+				contentImage = this.state.content ?
+					require( "../images/big_content_color.png" )
+					:
+					require( "../images/big_content.png" );
+			} else {
+				connectImage = !this.state.content ?
+					require( "../images/connect_color.png" )
+					:
+					require( "../images/connect.png" );
+				contentImage = this.state.content ?
+					require( "../images/content_color.png" )
+					:
+					require( "../images/content.png" );
+			}
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -354,19 +431,21 @@ class ExplorePage extends Component {
 				>
 					<NavBar socket={this.props.socket} />
 					<Header>
-						<UserSubheader>
+						<UserSubheader active={!this.state.content}>
 							<HeaderImage
 								image={connectImage}
 								className="userIcon"
 								onClick={() => this.setState({ content: false })}
 							/>
+							<SubheaderText>Users</SubheaderText>
 						</UserSubheader>
-						<ContentSubheader>
+						<ContentSubheader active={this.state.content}>
 							<HeaderImage
 								image={contentImage}
 								className="contentIcon"
 								onClick={() => this.setState({ content: true })}
 							/>
+							<SubheaderText>Content</SubheaderText>
 						</ContentSubheader>
 					</Header>
 					<MainComponent>

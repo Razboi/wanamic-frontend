@@ -41,7 +41,7 @@ body {
 }
 
 @media (min-width: 420px) {
-	#NavbarUser {
+	#NavbarSmallScreenOption {
 		display: none;
 	}
 }

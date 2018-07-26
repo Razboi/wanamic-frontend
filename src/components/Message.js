@@ -23,6 +23,9 @@ const
 	MessageContent = styled.p`
 		font-size: 1.1rem;
 		word-break: break-word;
+		@media (min-width: 420px) {
+			font-size: 1rem;
+		}
 	`,
 	MessageDateTime = styled.span`
 		position: absolute;

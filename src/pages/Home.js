@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import {
-	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails
+	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails,
+	switchComments, switchShare
 } from "../services/actions/posts";
+import { switchNotifications } from "../services/actions/notifications";
 import PostDetails from "../containers/PostDetails";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -10,6 +12,7 @@ import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
+import Messages from "./Messages";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
@@ -24,7 +27,7 @@ const
 			::-webkit-scrollbar {
 				display: none !important;
 			}
-		}
+		};
 		@media (min-width: 420px) {
 			background: #eee;
 		}
@@ -66,15 +69,33 @@ const
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		margin-top: ${props => props.blur ? "0px" : "49.33px"};
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
 		display: flex;
+		align-items: center;
 		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
+	`,
+	HomeContent = styled.section`
+		max-width: 1140px;
+		display: flex;
+		justify-content: flex-end;
+		margin: 0 auto;
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		grid-area: nf;
 	`;
 
 
-class HomePage extends Component {
+class Home extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -129,9 +150,27 @@ class HomePage extends Component {
 		this.props.switchPostDetails();
 	}
 
+	hidePopups = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayPostDetails ) {
+			this.props.switchPostDetails();
+		}
+		if ( this.props.displayComments ) {
+			this.props.switchComments();
+		}
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		}
+	}
+
 	render() {
 		var plusImage;
-		const { newsfeed, postDetailsIndex } = this.props;
+		const {
+			newsfeed, postDetailsIndex, displayPostDetails, displayComments,
+			displayShare
+		} = this.props;
 
 		try {
 			plusImage = require( "../images/plus.png" );
@@ -139,18 +178,25 @@ class HomePage extends Component {
 			console.log( err );
 		}
 
-		if ( this.props.displayPostDetails ) {
-			return (
-				<PostDetails
-					post={newsfeed[ postDetailsIndex ]}
-					switchDetails={this.hidePostDetails}
-					socket={this.props.socket}
-					index={postDetailsIndex}
-				/>
-			);
-		}
 		return (
 			<Wrapper>
+				{( displayPostDetails || displayComments || displayShare ) &&
+					<PostDetailsDimmer>
+						<OutsideClickHandler onClick={this.hidePopups} />
+						{displayPostDetails &&
+							<PostDetails
+								post={newsfeed[ postDetailsIndex ]}
+								switchDetails={this.hidePostDetails}
+								socket={this.props.socket}
+								index={postDetailsIndex}
+							/>}
+						{displayComments &&
+							<Comments
+								socket={this.props.socket}
+							/>}
+						{displayShare && <Share />}
+					</PostDetailsDimmer>
+				}
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -173,22 +219,25 @@ class HomePage extends Component {
 						</ShareMediaButton>
 					}
 
-					{this.props.displayShare && <Share />}
-					{this.props.displayComments && <Comments
-						socket={this.props.socket} />}
-
 					{this.props.mediaOptions &&
 						<MediaOptions
 							toggleMediaButton={this.toggleMediaButton}
 							socket={this.props.socket}
 						/>}
 
-					<MediaDimmer blur={this.props.mediaOptions}>
-						<StyledNewsFeed
-							posts={newsfeed}
-							socket={this.props.socket}
-							history={this.props.history}
-						/>
+					<MediaDimmer
+						blur={this.props.mediaOptions}
+						onClick={this.hidePopups}
+					>
+						<HomeContent>
+							<StyledNewsFeed
+								posts={newsfeed}
+								socket={this.props.socket}
+								history={this.props.history}
+							/>
+
+							<Messages onHome socket={this.props.socket} />
+						</HomeContent>
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>
@@ -197,7 +246,7 @@ class HomePage extends Component {
 	}
 }
 
-HomePage.propTypes = {
+Home.propTypes = {
 	history: PropTypes.object.isRequired,
 	socket: PropTypes.object.isRequired
 };
@@ -209,7 +258,8 @@ const
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
-		postDetailsIndex: state.posts.postDetailsIndex
+		postDetailsIndex: state.posts.postDetailsIndex,
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -217,7 +267,10 @@ const
 		addToPosts: posts => dispatch( addToPosts( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		switchPostDetails: () => dispatch( switchPostDetails())
+		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchNotifications: () => dispatch( switchNotifications()),
+		switchComments: () => dispatch( switchComments()),
+		switchShare: () => dispatch( switchShare())
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( HomePage );
+export default connect( mapStateToProps, mapDispatchToProps )( Home );

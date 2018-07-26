@@ -11,7 +11,7 @@ const
 			width: 100%;
 		}
 		@media (min-width: 420px) {
-			width: 35%;
+			width: 600px;
 			padding-top: 1rem;
 		}
 	`;

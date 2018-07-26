@@ -26,11 +26,13 @@ const
 		height: 100%;
 		width: 100%;
 		background: rgba(0,0,0,0.85);
+		z-index: 1;
 	`,
 	MediaButtons = styled.div`
 		display: flex;
 		justify-content: space-between;
 		align-self: center;
+		z-index: 1;
 		@media (min-height: 575px) {
 			flex-direction: column;
 			height: 70%;

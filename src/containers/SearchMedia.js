@@ -22,6 +22,9 @@ const
 		color: #fff !important;
 		font-family: inherit !important;
 	`,
+	Main = styled.div`
+		z-index: 3;
+	`,
 	Header = styled.div`
 		height: 50px;
 		width: 100%;
@@ -261,43 +264,45 @@ class SearchMedia extends Component {
 		}
 		return (
 			<Wrapper>
-				<Header>
-					<BackIcon
-						name="arrow left"
-						onClick={() => this.props.switchSearchMedia()}
-					/>
-					<HeaderTxt>Share {this.state.mediaType}</HeaderTxt>
-				</Header>
-				<Results className="mediaResults">
-					{this.state.results.map(( media, index ) =>
-						<div key={index}>
-							<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
-								<Image
-									src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
-								/>
+				<Main>
+					<Header>
+						<BackIcon
+							name="arrow left"
+							onClick={() => this.props.switchSearchMedia()}
+						/>
+						<HeaderTxt>Share {this.state.mediaType}</HeaderTxt>
+					</Header>
+					<Results className="mediaResults">
+						{this.state.results.map(( media, index ) =>
+							<div key={index}>
+								<ResultMediaWrapper onClick={() => this.handleSelected( media )}>
+									<Image
+										src={media.artworkUrl100.replace( "100x100bb", "200x200bb" )}
+									/>
 
-								<ResultMediaInfo>
-									<MediaTitle>
-										{media.trackName}
-									</MediaTitle>
-									<span>{media.artistName}</span>
-								</ResultMediaInfo>
-							</ResultMediaWrapper>
-							<Divider />
-						</div>
-					)}
-				</Results>
-				<SearchWrapper>
-					<SearchInput
-						autoFocus
-						value={this.state.search}
-						icon="search"
-						name="search"
-						placeholder="Search by artist, album or track."
-						onChange={this.handleChange}
-						onKeyPress={this.handleKeyPress}
-					/>
-				</SearchWrapper>
+									<ResultMediaInfo>
+										<MediaTitle>
+											{media.trackName}
+										</MediaTitle>
+										<span>{media.artistName}</span>
+									</ResultMediaInfo>
+								</ResultMediaWrapper>
+								<Divider />
+							</div>
+						)}
+					</Results>
+					<SearchWrapper>
+						<SearchInput
+							autoFocus
+							value={this.state.search}
+							icon="search"
+							name="search"
+							placeholder="Search by artist, album or track."
+							onChange={this.handleChange}
+							onKeyPress={this.handleKeyPress}
+						/>
+					</SearchWrapper>
+				</Main>
 			</Wrapper>
 		);
 	}

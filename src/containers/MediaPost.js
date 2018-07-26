@@ -19,16 +19,12 @@ const
 		overflow: hidden;
 		display: grid;
 		position: relative;
+		border-bottom: ${props => props.noBorder ?
+		"0" : "1px solid rgba(0, 0, 0, .1)"};
 
 		@media (min-width: 420px) {
-			border: 1px solid rgba(0, 0, 0, .1);
 			margin-bottom: 1rem;
 			background: #fff;
-		}
-
-		@media (max-width: 420px) {
-			border-bottom: ${props => props.noBorder ?
-		"0" : "1px solid rgba(0, 0, 0, .1)"};
 		}
 	`,
 	PostHeader = styled( Header )`
@@ -49,6 +45,10 @@ const
 		width: 30px !important;
 		height: 30px !important;
 		margin: 0 !important;
+		@media (min-width: 420px) {
+			width: 35px !important;
+			height: 35px !important;
+		}
 	`,
 	StyledOptions = {
 		position: "absolute",
