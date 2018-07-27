@@ -11,6 +11,12 @@ const
 	Wrapper = styled.div`
 		height: 100vh;
 		display: grid;
+	`,
+	BackgroundImage = styled.div`
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		filter: brightness(75%);
 		background-image: url(${props => props.image});
 		background-position: ${props => !props.signup ?
 		"left bottom"
@@ -18,11 +24,16 @@ const
 		props.signupStep === 1 ?
 			"center bottom"
 			:
-			"right bottom"
-};
+			"right bottom"};
 		background-repeat: no-repeat;
 		background-size: cover;
 		transition: background-position 1s;
+		@media(min-width: 420px) {
+			background-position: ${props => !props.signup ?
+		"left bottom"
+		:
+		"left top"};
+		};
 	`;
 
 var background;
@@ -102,11 +113,12 @@ class AuthPage extends Component {
 			console.log( err );
 		}
 		return (
-			<Wrapper
-				signup={this.state.signup}
-				signupStep={this.state.signupStep}
-				image={background}
-			>
+			<Wrapper>
+				<BackgroundImage
+					signup={this.state.signup}
+					signupStep={this.state.signupStep}
+					image={background}
+				/>
 				{this.state.signup ?
 					<SignupForm
 						error={this.state.error}

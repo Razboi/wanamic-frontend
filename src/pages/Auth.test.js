@@ -38,6 +38,6 @@ describe( "< Auth />", () => {
 	});
 
 	it( "checks that the form renders", () => {
-		expect( wrapper.children()).to.have.length( 1 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 });

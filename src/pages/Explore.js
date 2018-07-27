@@ -8,6 +8,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
+import Comments from "../containers/Comments";
 import {
 	setPosts, addToPosts, switchPostDetails, switchComments, switchShare
 } from "../services/actions/posts";
@@ -43,10 +44,6 @@ const
 		@media (min-width: 420px) {
 			grid-template-rows: 80px auto;
 		}
-	`,
-	Page = styled.section`
-		height: 100%;
-		width: 100%;
 	`,
 	Header = styled.div`
 		grid-area: h;
@@ -162,7 +159,7 @@ const
 			height: 34px;
 		}
 		@media (min-width: 420px) {
-			width: 50%;
+			width: 800px;
 			height: 40px;
 		}
 	`,
@@ -179,6 +176,9 @@ const
 		}
 		@media (min-width: 420px) {
 			height: 54px;
+			left: 0;
+			align-items: center;
+			bottom: 25px;
 		}
 	`,
 	PostDetailsDimmer = styled.div`
@@ -388,10 +388,6 @@ class ExplorePage extends Component {
 	}
 
 	hidePopups = () => {
-		console.log( "here" );
-		if ( this.props.displayNotifications ) {
-			this.props.switchNotifications();
-		}
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
@@ -403,11 +399,18 @@ class ExplorePage extends Component {
 		}
 	}
 
+	hideNotifications = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+	}
+
 
 	render() {
 		var
 			connectImage,
 			contentImage;
+		const { displayComments, displayPostDetails } = this.props;
 		try {
 			if ( window.innerWidth > 420 ) {
 				connectImage = !this.state.content ?
@@ -447,20 +450,27 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper className="exploreMainWrapper">
-				{( this.props.displayPostDetails ) &&
+				{( displayPostDetails || displayComments ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
-						<PostDetails
-							post={this.props.posts[ this.state.selectedPost ]}
-							switchDetails={this.hidePostDetails}
-							socket={this.props.socket}
-							index={this.state.selectedPost}
-						/>
+						{displayPostDetails &&
+							<PostDetails
+								post={this.props.posts[ this.state.selectedPost ]}
+								switchDetails={this.hidePostDetails}
+								socket={this.props.socket}
+								index={this.state.selectedPost}
+							/>}
+						{displayComments &&
+							<Comments
+								socket={this.props.socket}
+							/>}
 					</PostDetailsDimmer>
 				}
 
+				<NavBar socket={this.props.socket} />
+
 				<StyledInfiniteScroll
-					onClick={this.hidePopups}
+					onClick={this.hideNotifications}
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.state.searching ?
@@ -468,56 +478,53 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<Page>
-						<NavBar socket={this.props.socket} />
-						<Header>
-							<UserSubheader active={!this.state.content}>
-								<HeaderImage
-									image={connectImage}
-									className="userIcon"
-									onClick={() => this.setState({ content: false })}
+					<Header>
+						<UserSubheader active={!this.state.content}>
+							<HeaderImage
+								image={connectImage}
+								className="userIcon"
+								onClick={() => this.setState({ content: false })}
+							/>
+							<SubheaderText>Users</SubheaderText>
+						</UserSubheader>
+						<ContentSubheader active={this.state.content}>
+							<HeaderImage
+								image={contentImage}
+								className="contentIcon"
+								onClick={() => this.setState({ content: true })}
+							/>
+							<SubheaderText>Content</SubheaderText>
+						</ContentSubheader>
+					</Header>
+					<MainComponent>
+						{this.state.content ?
+							<React.Fragment>
+								<ExploreContent
+									className="exploreContent"
+									posts={this.props.posts}
+									displayPostDetails={this.displayPostDetails}
 								/>
-								<SubheaderText>Users</SubheaderText>
-							</UserSubheader>
-							<ContentSubheader active={this.state.content}>
-								<HeaderImage
-									image={contentImage}
-									className="contentIcon"
-									onClick={() => this.setState({ content: true })}
-								/>
-								<SubheaderText>Content</SubheaderText>
-							</ContentSubheader>
-						</Header>
-						<MainComponent>
-							{this.state.content ?
-								<React.Fragment>
-									<ExploreContent
-										className="exploreContent"
-										posts={this.props.posts}
-										displayPostDetails={this.displayPostDetails}
+								<SearchWrapper>
+									<SearchBar
+										placeholder="What are you interested in?"
+										name="search"
+										onChange={this.handleChange}
+										value={this.state.search}
+										onKeyPress={this.handleKeyPress}
 									/>
-									<SearchWrapper>
-										<SearchBar
-											placeholder="What are you interested in?"
-											name="search"
-											onChange={this.handleChange}
-											value={this.state.search}
-											onKeyPress={this.handleKeyPress}
-										/>
-									</SearchWrapper>
-								</React.Fragment>
-								:
-								<ExploreUsers
-									className="exploreUsers"
-									getSugested={this.getSugestedUser}
-									getRandom={this.getRandomUser}
-									matchHobbies={this.matchHobbies}
-									matchUsername={this.matchUsername}
-									handleChange={this.handleChange}
-								/>
-							}
-						</MainComponent>
-					</Page>
+								</SearchWrapper>
+							</React.Fragment>
+							:
+							<ExploreUsers
+								className="exploreUsers"
+								getSugested={this.getSugestedUser}
+								getRandom={this.getRandomUser}
+								matchHobbies={this.matchHobbies}
+								matchUsername={this.matchUsername}
+								handleChange={this.handleChange}
+							/>
+						}
+					</MainComponent>
 				</StyledInfiniteScroll>
 			</Wrapper>
 		);

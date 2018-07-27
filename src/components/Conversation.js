@@ -91,6 +91,7 @@ const
 		display: flex;
 		align-items: center;
 		margin: 0 !important;
+		font-family: inherit !important;
 	`,
 	Fullname = styled.span`
 		font-size: 1.1475rem !important;

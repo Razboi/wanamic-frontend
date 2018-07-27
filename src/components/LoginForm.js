@@ -6,13 +6,14 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		display: grid;
+		z-index: 2;
 		height: 100%;
 		width: 100%;
 		grid-template-columns: 100%;
 		grid-template-rows: 40% 60%;
 		grid-template-areas:
 			"header"
-			"form"
+			"form";
 	`,
 	HeaderContainer = styled.div`
 		grid-area: header;
@@ -20,6 +21,9 @@ const
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		@media (max-width: 420px) {
+			padding: 0 10px;
+		}
 	`,
 	HeaderLogo = styled.span`
 		font-size: 3rem;
@@ -29,19 +33,31 @@ const
 		text-align: center;
 		font-size: 1rem;
 		margin-top: 1.7rem;
-		color: #eee;
+		color: #fff;
+		@media (min-width: 420px) {
+			font-size: 1.2rem;
+		}
 	`,
 	FormContainer = styled.div`
+		grid-area: form;
+		display: flex;
+		flex-direction: column;
+	`,
+	FormDimmer = styled.div`
+		background: rgba( 0, 0, 0, 0.4 );
+		padding: 1.5rem;
+		border-radius: 3px;
+		margin: 0 auto;
 		@media (max-width: 420px) {
-			grid-area: form;
-			display: grid;
+			background: none;
+			width: 100%;
 		}
 	`,
 	StyledForm = styled( Form )`
-		width: 90%;
-		height: 60%;
-		align-self: flex-start;
-		justify-self: center;
+		width: 100%;
+		@media (min-width: 420px) {
+			width: 400px;
+		}
 	`,
 	EmailInput = styled( Form.Input )`
 		input {
@@ -97,11 +113,10 @@ const
 	`,
 	NewAccount = styled.span`
 		display: flex;
-		width: 100%;
-		height: 100%;
 		align-items: center;
 		justify-content: center;
 		color: #eee;
+		margin: auto;
 	`,
 	ErrorMessage = styled( Message )`
 		position: absolute !important;
@@ -132,7 +147,7 @@ class LoginForm extends Component {
 				<HeaderContainer className="formHeader">
 					<HeaderLogo>Wanamic</HeaderLogo>
 					<Subheader>
-						Find people with your same interests and hobbies.
+						Find people and content relative to your interests and hobbies.
 					</Subheader>
 				</HeaderContainer>
 
@@ -142,40 +157,43 @@ class LoginForm extends Component {
 							<Message.Header>{this.props.error}</Message.Header>
 						</ErrorMessage>
 					}
+					<FormDimmer>
+						<StyledForm id="AuthForm">
+							<EmailInput
+								autoFocus
+								className="emailInput"
+								placeholder="Email address"
+								name="email"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.email}
+								icon="mail"
+								iconPosition="left"
+							/>
+							<PasswordInput
+								className="passwordInput"
+								placeholder="Password"
+								type="password"
+								name="password"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.password}
+								icon="lock"
+								iconPosition="left"
+							/>
 
-					<StyledForm id="AuthForm">
-						<EmailInput
-							className="emailInput"
-							placeholder="Email address"
-							name="email"
-							onChange={this.props.handleChange}
-							onKeyPress={this.handleKeyPress}
-							value={this.props.email}
-							icon="mail"
-							iconPosition="left"
-						/>
-						<PasswordInput
-							className="passwordInput"
-							placeholder="Password"
-							type="password"
-							name="password"
-							onChange={this.props.handleChange}
-							onKeyPress={this.handleKeyPress}
-							value={this.props.password}
-							icon="lock"
-							iconPosition="left"
-						/>
+							<LoginButton
+								type="button"
+								className="loginButton"
+								content="Log In"
+								onClick={this.props.handleLogin}
+							/>
 
-						<LoginButton
-							type="button"
-							className="loginButton"
-							content="Log In"
-							onClick={this.props.handleLogin}
-						/>
+							<ForgotPw>Forgot your password?</ForgotPw>
 
-						<ForgotPw>Forgot your password?</ForgotPw>
+						</StyledForm>
+					</FormDimmer>
 
-					</StyledForm>
 					<NewAccount className="swapLink" onClick={this.props.swapForm}>
 						Don't have an account? <Signup>Sign Up</Signup>
 					</NewAccount>
