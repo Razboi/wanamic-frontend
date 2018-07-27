@@ -10,7 +10,7 @@ const
 		width: 100%;
 	`,
 	PostWrapper = styled.div`
-		padding: 0.3rem;
+		padding: 8px;
 		z-index: 1;
 		@media (min-width: 2615px) {
 			width: calc(100% / 13);
@@ -47,6 +47,7 @@ const
 		}
 		@media (max-width: 420px) {
 			width: calc(100% / 2);
+			padding: 0.3rem;
 		}
 	`;
 

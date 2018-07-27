@@ -6,9 +6,13 @@ import styled from "styled-components";
 const
 	Wrapper = styled.div`
 		overflow: hidden;
+		position: absolute;
+		height: 100vh;
+		width: 100%;
+		z-index: 3;
 	`,
 	Options = styled.div`
-		height: 100%;
+		height: 100vh;
 		width: 100%;
 		color: ${props => props.whiteTheme ? "#000" : "#fff" } !important;
 		background: ${props => props.whiteTheme ? "#fff" : "none" };

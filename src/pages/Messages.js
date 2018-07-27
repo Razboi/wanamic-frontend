@@ -31,12 +31,11 @@ const
 			}
 		}
 		@media (min-width: 420px) {
-			height: 500px;
-			position: sticky;
-			position: -webkit-sticky;
-			top: 63.33px;
+			height: 100vh;
+			position: fixed;
+			right: 10px;
 			width: 260px;
-			margin-left: 20px;
+			background: rgba( 255, 255, 255, 0.3 );
 		}
 	`,
 	PageHeader = styled.div`
@@ -49,12 +48,6 @@ const
 			display: none;
 		}
 	`,
-	ConversationsAndButtons = styled.div`
-		@media (min-width: 420px) {
-			position: relative;
-			height: 100%;
-		}
-	`,
 	NewConversationButton = styled( Button )`
 		position: fixed;
 		right: 10px;
@@ -64,6 +57,7 @@ const
 		font-size: 1.28rem !important;
 		margin: 0 !important;
 		@media (min-width: 420px) {
+			bottom: 50px;
 			background: none !important;
 			position: absolute;
 			font-size: 1rem !important;
@@ -368,53 +362,51 @@ class Messages extends Component {
 								<NavBar hideOnLargeScreen socket={this.props.socket} />
 								<PageHeader>Conversations</PageHeader>
 
-								<ConversationsAndButtons>
-									<div className="conversationsList">
-										{this.props.conversations.map(( chat, index ) =>
-											<OpenConversation
-												key={index}
-												onClick={() => this.handleSelectConversation( index ) }
-												newMessages={chat.newMessagesCount > 0}
-											>
-												<UserImg
-													circular
-													src={chat.target.profileImage ?
-														require( "../images/" + chat.target.profileImage )
-														:
-														require( "../images/defaultUser.png" )
-													}
-												/>
-												<TextInfo>
-													<UserFullname>
-														{chat.target.fullname}
-													</UserFullname>
-													<LastMessage>
-														@{chat.messages[ chat.messages.length - 1 ].author.username}: {
-															chat.messages[ chat.messages.length - 1 ].content}
-													</LastMessage>
-												</TextInfo>
-												<LastMessageTime>
-													{moment(
-														chat.messages[ chat.messages.length - 1 ].createdAt
-													).fromNow( true )}
-												</LastMessageTime>
-												{chat.newMessagesCount > 0 &&
-													<NewMessagesCount
-														size="tiny" circular color="red"
-													>
-														{chat.newMessagesCount}
-													</NewMessagesCount>
+								<div className="conversationsList">
+									{this.props.conversations.map(( chat, index ) =>
+										<OpenConversation
+											key={index}
+											onClick={() => this.handleSelectConversation( index ) }
+											newMessages={chat.newMessagesCount > 0}
+										>
+											<UserImg
+												circular
+												src={chat.target.profileImage ?
+													require( "../images/" + chat.target.profileImage )
+													:
+													require( "../images/defaultUser.png" )
 												}
-											</OpenConversation>
-										)}
-									</div>
-									<NewConversationButton
-										onClick={this.handleFriendsList}
-										primary
-										circular
-										icon="comment"
-									/>
-								</ConversationsAndButtons>
+											/>
+											<TextInfo>
+												<UserFullname>
+													{chat.target.fullname}
+												</UserFullname>
+												<LastMessage>
+													@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+														chat.messages[ chat.messages.length - 1 ].content}
+												</LastMessage>
+											</TextInfo>
+											<LastMessageTime>
+												{moment(
+													chat.messages[ chat.messages.length - 1 ].createdAt
+												).fromNow( true )}
+											</LastMessageTime>
+											{chat.newMessagesCount > 0 &&
+												<NewMessagesCount
+													size="tiny" circular color="red"
+												>
+													{chat.newMessagesCount}
+												</NewMessagesCount>
+											}
+										</OpenConversation>
+									)}
+								</div>
+								<NewConversationButton
+									onClick={this.handleFriendsList}
+									primary
+									circular
+									icon="comment"
+								/>
 							</React.Fragment>
 						}
 					</Wrapper>

@@ -91,6 +91,22 @@ const
 		color: #222;
 		margin-bottom: 0px;
 		font-size: 15px;
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
+		bottom: 0;
+		right: 0;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
 	`;
 
 class Notifications extends Component {
@@ -249,19 +265,21 @@ class Notifications extends Component {
 	}
 
 	render() {
-		console.log( this.props );
-		if ( this.state.displayComments ) {
+		if ( this.props.displayComments && !this.props.isPopup ) {
 			return (
 				<Comments />
 			);
 		}
 		if ( this.state.displayDetails ) {
 			return (
-				<PostDetails
-					postId={this.state.postId}
-					switchDetails={this.switchDetails}
-					socket={this.props.socket}
-				/>
+				<PostDetailsDimmer>
+					<OutsideClickHandler onClick={this.switchDetails} />
+					<PostDetails
+						postId={this.state.postId}
+						switchDetails={this.switchDetails}
+						socket={this.props.socket}
+					/>
+				</PostDetailsDimmer>
 			);
 		}
 		return (
@@ -342,7 +360,8 @@ Notifications.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		notifications: state.notifications.allNotifications
+		notifications: state.notifications.allNotifications,
+		displayComments: state.posts.displayComments
 	}),
 
 	mapDispatchToProps = dispatch => ({

@@ -87,7 +87,7 @@ const
 	HomeContent = styled.section`
 		max-width: 1140px;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: center;
 		margin: 0 auto;
 	`,
 	StyledNewsFeed = styled( NewsFeed )`

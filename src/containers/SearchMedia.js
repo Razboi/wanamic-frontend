@@ -24,6 +24,8 @@ const
 	`,
 	Main = styled.div`
 		z-index: 3;
+		height: 100%;
+		background: #333;
 	`,
 	Header = styled.div`
 		height: 50px;
@@ -33,16 +35,23 @@ const
 		padding-left: 10px;
 		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		@media (min-width: 420px) {
+			background: #111;
+			height: 60px;
+		}
 	`,
 	HeaderTxt = styled.span`
 		margin: auto;
 		font-weight: bold;
 		font-size: 16px;
+		@media (min-width: 420px) {
+			display: none;
+		};
 	`,
 	BackIcon = styled( Icon )`
 		position: absolute;
 	`,
-	SearchWrapper = styled.div`
+	SmallScreenSearch = styled.div`
 		height: 44px;
 		display: flex;
 		width: 100%;
@@ -51,32 +60,75 @@ const
 		position: fixed;
 		bottom: 10px;
 		z-index: 3;
+		@media (min-width: 420px) {
+			display: none;
+		};
+	`,
+	BigScreenSearch = styled.div`
+		height: 100%;
+		display: flex;
+		width: 100%;
+		max-width: 1480px;
+		align-items: center;
+		justify-content: center;
+		z-index: 3;
+		margin: auto;
+		@media (max-width: 420px) {
+			display: none;
+		};
 	`,
 	SearchInput = styled( Input )`
 		height: 34px;
-		width: 90%;
 		justify-self: center;
 		align-self: center;
 		input {
 			text-align: center !important;
-			color: #333 !important;
 			font-family: inherit !important;
 			::placeholder {
-				color: #555 !important;
 				font-family: inherit !important;
 			}
 		};
+		@media (max-width: 420px) {
+			width: 90%;
+			input {
+				color: #333 !important;
+				::placeholder {
+					color: #555 !important;
+				}
+			};
+		};
+		@media (min-width: 420px) {
+			width: 100%;
+			input {
+				border: none !important;
+				background: none !important;
+				color: #fff !important;
+				font-size: 1.29rem !important;
+				font-weight: 600 !important;
+				::placeholder {
+					color: #ccc !important;
+				};
+			};
+			i {
+				display: none !important;
+			};
+		};
 	`,
 	Results = styled.div`
-		height: 100%;
 		display: flex;
 		flex-direction: column;
 		overflow-y: scroll;
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
-				display: none !important;
-			}
-		}
+		height: 100%;
+		@media (max-width: 420px) {
+			::-webkit-scrollbar {
+			display: none !important;
+			};
+		};
+		@media (min-width: 420px) {
+			width: 800px;
+			background: #111;
+			margin: 1rem auto 0 auto;
+		};
 	`,
 	ResultMediaWrapper = styled.div`
 		margin: 25px 0px;
@@ -271,6 +323,17 @@ class SearchMedia extends Component {
 							onClick={() => this.props.switchSearchMedia()}
 						/>
 						<HeaderTxt>Share {this.state.mediaType}</HeaderTxt>
+						<BigScreenSearch>
+							<SearchInput
+								autoFocus
+								value={this.state.search}
+								icon="search"
+								name="search"
+								placeholder="Search by artist, album or track..."
+								onChange={this.handleChange}
+								onKeyPress={this.handleKeyPress}
+							/>
+						</BigScreenSearch>
 					</Header>
 					<Results className="mediaResults">
 						{this.state.results.map(( media, index ) =>
@@ -291,7 +354,7 @@ class SearchMedia extends Component {
 							</div>
 						)}
 					</Results>
-					<SearchWrapper>
+					<SmallScreenSearch>
 						<SearchInput
 							autoFocus
 							value={this.state.search}
@@ -301,7 +364,7 @@ class SearchMedia extends Component {
 							onChange={this.handleChange}
 							onKeyPress={this.handleKeyPress}
 						/>
-					</SearchWrapper>
+					</SmallScreenSearch>
 				</Main>
 			</Wrapper>
 		);

@@ -58,7 +58,6 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: rgba( 0, 0, 0, .5 ) !important;
 		i {
 			font-size: 1.45rem !important;
 			margin: 0 !important;

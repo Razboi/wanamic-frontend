@@ -33,8 +33,4 @@ describe( "<Explore/>", () => {
 	it( "Checks that <Explore/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
-
-	it( "Checks that every <Explore/> children renders", () => {
-		expect( wrapper.children().children()).to.have.length( 3 );
-	});
 });

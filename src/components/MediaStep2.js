@@ -8,12 +8,15 @@ import Suggestions from "./Suggestions";
 const
 	Wrapper = styled.div`
 		overflow: hidden;
+		position: absolute;
+		height: 100vh;
+		width: 100%;
+		z-index: 3;
 	`,
 	Content = styled.div`
 		position: absolute;
 		height: 100vh;
 		width: 100%;
-		z-index: 3;
 		display: grid;
 		grid-template-columns: 100%;
 		grid-template-rows: 7% 33% 60%;
@@ -47,13 +50,16 @@ const
 	`,
 	UserContentInput = {
 		width: "90%",
+		maxWidth: "1480px",
 		minHeight: "45px",
 		alignSelf: "flex-end",
 		zIndex: 2,
 		fontFamily: "inherit",
 		background: "none",
 		border: "none",
-		resize: "none"
+		resize: "none",
+		textAlign: "center",
+		fontSize: "1.2rem"
 	},
 	InputTriggerStyles = {
 		display: "flex",

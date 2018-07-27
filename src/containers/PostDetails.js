@@ -20,6 +20,7 @@ const
 		}
 		@media (min-width: 420px) {
 			width: 600px;
+			max-height: 100vh;
 		}
 	`,
 	HeaderWrapper = styled.div`

@@ -9,8 +9,9 @@ import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
 import {
-	setPosts, addToPosts, switchPostDetails
+	setPosts, addToPosts, switchPostDetails, switchComments, switchShare
 } from "../services/actions/posts";
+import { switchNotifications } from "../services/actions/notifications";
 import { connect } from "react-redux";
 
 const
@@ -25,12 +26,12 @@ const
 		};
 		@media (min-width: 420px) {
 			background: #eee;
-		}
+		};
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
+		display: grid;
 		height: 100%;
 		width: 100%;
-		display: grid;
 		margin-top: 49.33px;
 		grid-template-columns: 100%;
 		grid-template-areas:
@@ -42,6 +43,10 @@ const
 		@media (min-width: 420px) {
 			grid-template-rows: 80px auto;
 		}
+	`,
+	Page = styled.section`
+		height: 100%;
+		width: 100%;
 	`,
 	Header = styled.div`
 		grid-area: h;
@@ -114,6 +119,7 @@ const
 	`,
 	MainComponent = styled.div`
 		grid-area: c;
+		padding: 0 16px;
 	`,
 	HeaderImage = styled.span`
 		display: block;
@@ -174,6 +180,20 @@ const
 		@media (min-width: 420px) {
 			height: 54px;
 		}
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
 	`;
 
 class ExplorePage extends Component {
@@ -367,6 +387,22 @@ class ExplorePage extends Component {
 		}
 	}
 
+	hidePopups = () => {
+		console.log( "here" );
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayPostDetails ) {
+			this.props.switchPostDetails();
+		}
+		if ( this.props.displayComments ) {
+			this.props.switchComments();
+		}
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		}
+	}
+
 
 	render() {
 		var
@@ -409,19 +445,22 @@ class ExplorePage extends Component {
 				/>
 			);
 		}
-		if ( this.props.displayPostDetails ) {
-			return (
-				<PostDetails
-					post={this.props.posts[ this.state.selectedPost ]}
-					switchDetails={this.hidePostDetails}
-					socket={this.props.socket}
-					index={this.state.selectedPost}
-				/>
-			);
-		}
 		return (
 			<Wrapper className="exploreMainWrapper">
+				{( this.props.displayPostDetails ) &&
+					<PostDetailsDimmer>
+						<OutsideClickHandler onClick={this.hidePopups} />
+						<PostDetails
+							post={this.props.posts[ this.state.selectedPost ]}
+							switchDetails={this.hidePostDetails}
+							socket={this.props.socket}
+							index={this.state.selectedPost}
+						/>
+					</PostDetailsDimmer>
+				}
+
 				<StyledInfiniteScroll
+					onClick={this.hidePopups}
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.state.searching ?
@@ -429,54 +468,56 @@ class ExplorePage extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					<NavBar socket={this.props.socket} />
-					<Header>
-						<UserSubheader active={!this.state.content}>
-							<HeaderImage
-								image={connectImage}
-								className="userIcon"
-								onClick={() => this.setState({ content: false })}
-							/>
-							<SubheaderText>Users</SubheaderText>
-						</UserSubheader>
-						<ContentSubheader active={this.state.content}>
-							<HeaderImage
-								image={contentImage}
-								className="contentIcon"
-								onClick={() => this.setState({ content: true })}
-							/>
-							<SubheaderText>Content</SubheaderText>
-						</ContentSubheader>
-					</Header>
-					<MainComponent>
-						{this.state.content ?
-							<React.Fragment>
-								<ExploreContent
-									className="exploreContent"
-									posts={this.props.posts}
-									displayPostDetails={this.displayPostDetails}
+					<Page>
+						<NavBar socket={this.props.socket} />
+						<Header>
+							<UserSubheader active={!this.state.content}>
+								<HeaderImage
+									image={connectImage}
+									className="userIcon"
+									onClick={() => this.setState({ content: false })}
 								/>
-								<SearchWrapper>
-									<SearchBar
-										placeholder="What are you interested in?"
-										name="search"
-										onChange={this.handleChange}
-										value={this.state.search}
-										onKeyPress={this.handleKeyPress}
+								<SubheaderText>Users</SubheaderText>
+							</UserSubheader>
+							<ContentSubheader active={this.state.content}>
+								<HeaderImage
+									image={contentImage}
+									className="contentIcon"
+									onClick={() => this.setState({ content: true })}
+								/>
+								<SubheaderText>Content</SubheaderText>
+							</ContentSubheader>
+						</Header>
+						<MainComponent>
+							{this.state.content ?
+								<React.Fragment>
+									<ExploreContent
+										className="exploreContent"
+										posts={this.props.posts}
+										displayPostDetails={this.displayPostDetails}
 									/>
-								</SearchWrapper>
-							</React.Fragment>
-							:
-							<ExploreUsers
-								className="exploreUsers"
-								getSugested={this.getSugestedUser}
-								getRandom={this.getRandomUser}
-								matchHobbies={this.matchHobbies}
-								matchUsername={this.matchUsername}
-								handleChange={this.handleChange}
-							/>
-						}
-					</MainComponent>
+									<SearchWrapper>
+										<SearchBar
+											placeholder="What are you interested in?"
+											name="search"
+											onChange={this.handleChange}
+											value={this.state.search}
+											onKeyPress={this.handleKeyPress}
+										/>
+									</SearchWrapper>
+								</React.Fragment>
+								:
+								<ExploreUsers
+									className="exploreUsers"
+									getSugested={this.getSugestedUser}
+									getRandom={this.getRandomUser}
+									matchHobbies={this.matchHobbies}
+									matchUsername={this.matchUsername}
+									handleChange={this.handleChange}
+								/>
+							}
+						</MainComponent>
+					</Page>
 				</StyledInfiniteScroll>
 			</Wrapper>
 		);
@@ -486,7 +527,10 @@ class ExplorePage extends Component {
 const
 	mapStateToProps = state => ({
 		posts: state.posts.explore,
-		displayPostDetails: state.posts.displayPostDetails
+		displayPostDetails: state.posts.displayPostDetails,
+		displayComments: state.posts.displayComments,
+		displayShare: state.posts.displayShare,
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -494,7 +538,10 @@ const
 			dispatch( setPosts( posts, onExplore )),
 		addToPosts: ( posts, onExplore ) =>
 			dispatch( addToPosts( posts, onExplore )),
-		switchPostDetails: () => dispatch( switchPostDetails())
+		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchNotifications: () => dispatch( switchNotifications()),
+		switchComments: () => dispatch( switchComments()),
+		switchShare: () => dispatch( switchShare())
 	});
 
 

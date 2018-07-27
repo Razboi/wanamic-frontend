@@ -50,6 +50,7 @@ const
 		color: #fff !important;
 		border: 1px solid #fff !important;
 		z-index: 2;
+		margin: 0 !important;
 	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;
