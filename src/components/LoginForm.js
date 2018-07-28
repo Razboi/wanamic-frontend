@@ -117,6 +117,10 @@ const
 		justify-content: center;
 		color: #eee;
 		margin: auto;
+		font-size: 1rem;
+		@media(min-width: 420px) {
+			font-size: 1.05rem;
+		}
 	`,
 	ErrorMessage = styled( Message )`
 		position: absolute !important;

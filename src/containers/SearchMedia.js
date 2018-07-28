@@ -38,6 +38,13 @@ const
 		@media (min-width: 420px) {
 			background: #111;
 			height: 60px;
+			padding: 0px 40px;
+			i {
+				font-size: 1.5rem !important;
+				:hover {
+					cursor: pointer !important;
+				}
+			}
 		}
 	`,
 	HeaderTxt = styled.span`
@@ -68,7 +75,7 @@ const
 		height: 100%;
 		display: flex;
 		width: 100%;
-		max-width: 1480px;
+		max-width: 1080px;
 		align-items: center;
 		justify-content: center;
 		z-index: 3;

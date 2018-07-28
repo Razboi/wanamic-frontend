@@ -33,9 +33,9 @@ const
 		@media (min-width: 420px) {
 			height: 100vh;
 			position: fixed;
-			right: 10px;
+			right: 0;
 			width: 260px;
-			background: rgba( 255, 255, 255, 0.3 );
+			background: rgba( 255, 255, 255, 0.4 );
 		}
 	`,
 	PageHeader = styled.div`

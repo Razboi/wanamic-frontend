@@ -6,23 +6,19 @@ import PropTypes from "prop-types";
 
 const
 	Options = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
-			justify-content: space-evenly;
-			margin-top: 2rem;
-		}
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		justify-content: space-evenly;
+		margin-top: 2rem;
 	`,
 	Option = styled.div`
-		@media (max-width: 420px) {
-			height: 100%;
-			width: 100%;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-		}
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`,
 	OptionImage = styled.span`
 		height: 24px;
@@ -35,10 +31,8 @@ const
 	`,
 	OptionText = styled.div`
 		color: #444;
-		@media (max-width: 420px) {
-			font-size: 0.9rem;
-			margin-top: 0.2rem;
-		}
+		font-size: 0.9rem;
+		margin-top: 0.2rem;
 	`,
 	RequestMessage = styled.div`
 		position: absolute;

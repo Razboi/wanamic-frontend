@@ -20,8 +20,8 @@ import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
-		overflow: auto;
-		height: 100vh;
+		overflow-y: scroll;
+		height: 100%;
 		width: 100%;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
@@ -33,14 +33,12 @@ const
 		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
-		@media (max-width: 420px) {
-			height: 100%;
-			width: 100%;
-			display: grid;
-			grid-template-rows: auto;
-			grid-template-areas:
-				"nf"
-		}
+		height: 100%;
+		width: 100%;
+		display: grid;
+		grid-template-rows: auto;
+		grid-template-areas:
+			"nf";
 	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
@@ -106,7 +104,16 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
+		window.addEventListener( "scroll", this.handleScroll );
 		this.refreshNewsFeed();
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener( "scroll", this.handleScroll );
+	}
+
+	handleScroll = e => {
+		console.log( window.scrollY );
 	}
 
 	getNewsFeed = () => {
@@ -202,7 +209,7 @@ class Home extends Component {
 					hasMore={this.state.hasMore}
 					loadMore={this.getNewsFeed}
 					initialLoad={false}
-					useWindow={false}
+					useWindow={true}
 				>
 					<NavBar
 						socket={this.props.socket}

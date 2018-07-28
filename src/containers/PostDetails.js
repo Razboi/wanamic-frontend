@@ -14,8 +14,8 @@ const
 		width: 100%;
 		position: fixed;
 		z-index: 20;
-		background: #fff;
 		@media (max-width: 420px) {
+			background: #fff;
 			height: 100vh;
 		}
 		@media (min-width: 420px) {
@@ -29,6 +29,11 @@ const
 		align-items: center;
 		padding: 0 10px;
 		justify-content: space-between;
+		@media (min-width: 420px) {
+			box-shadow: 0 1px 2px #555;
+			height: 49.33px;
+			background: #efefef;
+		}
 	`,
 	StyledIcon = styled( Icon )`
 		font-size: 1.4rem !important;

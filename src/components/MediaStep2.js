@@ -34,6 +34,15 @@ const
 		padding: 0px 10px;
 		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		@media (min-width: 420px) {
+			padding: 0px 40px;
+			i {
+				font-size: 1.5rem !important;
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;

@@ -24,10 +24,10 @@ const
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
-		background: rgba( 0,0,0,0.1 );
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
-				display: none !important;
+		background: #eee;
+		@media (max-width: 420px) {
+			::-webkit-scrollbar {
+			display: none !important;
 			}
 		}
 	`,
@@ -38,6 +38,17 @@ const
 	UserInfoWrapper = styled.div`
 		background: #fff;
 	`,
+	TimeLine = styled.div`
+		@media (min-width: 420px) {
+			max-width: 1230px;
+			background: none;
+			display: flex;
+			justify-content: flex-start;
+			align-items: flex-start;
+			margin: 0 auto;
+			position: relative;
+		}
+	`,
 	BackOption = styled.div`
 		position: fixed;
 		top: 0.66rem;
@@ -46,9 +57,12 @@ const
 		align-items: center;
 		justify-content: center;
 		z-index: 10;
-		background: rgba(0,0,0,0.25) !important;
+		background: rgba( 0,0,0,0.1 ) !important;
 		border-radius: 100%;
 		padding: 0.8rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	BackImage = styled.span`
 		height: 24px;
@@ -65,98 +79,127 @@ const
 		flex-direction: column;
 		align-items: center;
 		z-index: 2;
+		@media (min-width: 420px) {
+			display: none;
+		}
+	`,
+	FloatingUserInfo = styled.div`
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		z-index: 2;
+		width: 300px;
+		margin-top: -12rem;
+		padding: 0 5px;
+		@media (max-width: 420px) {
+			display: none;
+		}
 	`,
 	UserInfoBackground = styled.div`
 		height: 180px;
 		background-image: url(${props => props.backgroundImg});
 		background-size: cover;
 		filter: brightness(85%);
+		@media (min-width: 420px) {
+			height: 420px;
+		}
 	`,
 	UserImage = styled.img`
-		@media (max-width: 420px) {
-			z-index: 2;
-			width: 116px;
-			height: 116px;
-			border-radius: 4px;
-			border: 2px solid #fff;
-			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		z-index: 2;
+		width: 116px;
+		height: 116px;
+		border-radius: 4px;
+		border: 2px solid #fff;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		@media (min-width: 420px) {
+			width: 200px;
+			height: 200px;
+			box-shadow: 0px 3px 8px rgba(0, 0, 0, .25);
 		}
 	`,
 	Fullname = styled.h2`
 		font-family: inherit;
 		color: #111;
-		@media (max-width: 420px) {
-			margin: 0px;
+		margin: 0px;
+		@media (min-width: 420px) {
+			margin-top: 1rem;
 		}
 	`,
 	Username = styled.span`
-		@media (max-width: 420px) {
-			color: rgba( 0,0,0,0.5 );
-		}
+		color: rgba( 0,0,0,0.5 );
 	`,
 	LikesCount = styled.div`
 		color: #555 !important;
-		@media (max-width: 420px) {
-			display: flex;
-			margin-top: 0.5rem !important;
-			border: 1px solid rgba(34,36,38,.15);
-			min-width: 60px;
-			padding: 0.4rem;
-			border-radius: 5px;
-			justify-content: space-evenly;
-			align-items: center;
-			font-size: 1rem;
-			color: rgb(140, 140, 140);
-			box-shadow: 0px 1px rgba(0,0,0,.125);
-		}
+		display: flex;
+		margin-top: 0.5rem !important;
+		border: 1px solid rgba(34,36,38,.15);
+		min-width: 60px;
+		padding: 0.4rem;
+		border-radius: 5px;
+		justify-content: space-evenly;
+		align-items: center;
+		font-size: 1rem;
+		color: rgb(140, 140, 140);
+		box-shadow: 0px 1px rgba(0,0,0,.125);
 	`,
 	Description = styled.p`
 		color: #222;
-		@media (max-width: 420px) {
-			margin: 2rem 0 0.5rem 0;
-			text-align: left;
-			font-size: 1.025rem;
-			padding: 0 0.66rem;
+		margin: 2rem 0 0.5rem 0;
+		text-align: center;
+		font-size: 1.025rem;
+		padding: 0 0.66rem;
+		@media (min-width: 420px) {
+			padding: 0;
 		}
 	`,
 	Hobbies = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-wrap: wrap;
-	    width: 90%;
-	    align-items: center;
-	    justify-content: center;
-			margin: 1rem 0;
-		}
+		display: flex;
+		flex-wrap: wrap;
+		width: 90%;
+		align-items: center;
+		justify-content: center;
+		margin: 1rem 0;
 	`,
 	Hobbie = styled.div`
-		@media (max-width: 420px) {
-			border: 1px solid #EFEEEE;
-			color: #333;
-			border-radius: 2px;
-	    padding: 0.5rem;
-	    font-size: 1rem;
-	    font-weight: bold;
-			margin: 0.5rem 0 0 0.5rem;
-			box-shadow: 0 2px 2px rgba(0, 0, 0, .125);
+		border: 1px solid #EFEEEE;
+		color: #333;
+		border-radius: 2px;
+		padding: 0.5rem;
+		font-size: 1rem;
+		font-weight: bold;
+		margin: 0.5rem 0 0 0.5rem;
+		box-shadow: 0 2px 2px rgba(0, 0, 0, .125);
+	`,
+	TabsWrapper = styled.div`
+		color: #222;
+		width: 100%;
+		margin-top: 2rem;
+		padding: 1rem 0;
+		border-top: 2px solid rgba(0,0,0,.1);
+		box-shadow: 0 1px 2px rgba(0,0,0,.125);
+		@media (min-width: 420px) {
+			margin: 0;
 		}
 	`,
 	Tabs = styled.div`
-		color: #222;
-		@media (max-width: 420px) {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
-    	justify-content: space-around;
-			margin-top: 2rem;
-			padding: 1rem 0;
-    	border-top: 2px solid rgba(0,0,0,.1);
-			box-shadow: 0 1px 2px rgba(0,0,0,.125);
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		width: 100%;
+		@media (min-width: 420px) {
+			width: 600px;
+			margin: 0 auto;
+			color: #111;
+			font-size: 1.05rem;
 		}
 	`,
 	UserPostsWrapper = styled.div`
 		background: #fff;
 		margin-top: 1rem;
+		@media (min-width: 420px) {
+			background: none;
+			padding: 0 5px;
+		}
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		height: 100%;
@@ -479,6 +522,8 @@ class UserProfile extends Component {
 								targetRequested={this.state.targetRequested}
 								startChat={() => this.startChat( user )}
 							/>
+						</UserInfo>
+						<TabsWrapper>
 							<Tabs>
 								<span onClick={() =>
 									this.props.toggleTab( "Information" )}>
@@ -491,19 +536,53 @@ class UserProfile extends Component {
 									Network
 								</span>
 							</Tabs>
-						</UserInfo>
+						</TabsWrapper>
 					</UserInfoWrapper>
-					{this.props.profilePosts.length > 0 ?
-						<UserPostsWrapper>
-							<StyledNewsFeed
-								posts={this.props.profilePosts}
-								socket={this.props.socket}
+
+					<TimeLine>
+						<FloatingUserInfo>
+							<UserImage src={profileImg} />
+							<Fullname>{user.fullname}</Fullname>
+							<Username>@{user.username}</Username>
+							<LikesCount>
+								<HeartImage
+									image={require( "../images/small_heart.png" )}
+								/>
+								{user.totalLikes}
+							</LikesCount>
+							<Description>{user.description}</Description>
+							<Hobbies>
+								{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+									<Hobbie key={index}>
+										{hobbie}
+									</Hobbie>
+								)}
+							</Hobbies>
+							<ProfileOptions
+								user={this.state.user}
+								follow={this.follow}
+								addFriend={this.addFriend}
+								unFriend={this.unFriend}
+								unFollow={this.unFollow}
+								acceptRequest={this.acceptRequest}
+								goToUserSettings={this.props.goToUserSettings}
+								userRequested={this.state.userRequested}
+								targetRequested={this.state.targetRequested}
+								startChat={() => this.startChat( user )}
 							/>
-						</UserPostsWrapper>
-						:
-						<EmptyPostsAlert>
-							@{user.username} hasn't posted yet.
-						</EmptyPostsAlert>}
+						</FloatingUserInfo>
+						{this.props.profilePosts.length > 0 ?
+							<UserPostsWrapper>
+								<StyledNewsFeed
+									posts={this.props.profilePosts}
+									socket={this.props.socket}
+								/>
+							</UserPostsWrapper>
+							:
+							<EmptyPostsAlert>
+								@{user.username} hasn't posted yet.
+							</EmptyPostsAlert>}
+					</TimeLine>
 
 					{this.props.explore &&
 						<NextButton

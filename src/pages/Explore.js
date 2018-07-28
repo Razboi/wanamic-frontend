@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
-		overflow: auto;
+		overflow-y: scroll;
 		height: 100vh;
 		width: 100%;
 		@media (max-width: 420px) {
