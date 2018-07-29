@@ -47,6 +47,9 @@ const
 	`,
 	NavOption = styled.div`
 		height: 100%;
+		:hover {
+			cursor: pointer;
+		}
 		@media (max-width: 420px) {
 			width: 100%;
 		}
@@ -213,7 +216,9 @@ class NavBar extends Component {
 								this.handleNotifications}
 						>
 							<NavImage
-								image={this.props.location.pathname === "/notifications" ?
+								image={this.props.location.pathname === "/notifications"
+								|| this.props.displayNotifications
+									?
 									require( "../images/bell_color.png" )
 									:
 									require( "../images/bell.png" )

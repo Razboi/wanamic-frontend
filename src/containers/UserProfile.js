@@ -27,7 +27,7 @@ const
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
-		background: #eee;
+		background: rgb(230, 240, 236);
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 			display: none !important;
@@ -251,8 +251,8 @@ class UserProfile extends Component {
 			userRequested: false,
 			targetRequested: false,
 			tab: "Posts",
-			chat: true,
-			messageTarget: {}
+			chat: false,
+			messageTarget: undefined
 		};
 	}
 
@@ -531,11 +531,13 @@ class UserProfile extends Component {
 				}
 
 				<Messages
-					messageTarget={this.state.messageTarget}
-					onHome
+					startChat={this.startChat}
+					largeScreen={window.innerWidth > 420 ? true : false}
 					chat={this.state.chat}
+					messageTarget={this.state.messageTarget}
 					toggleChat={this.toggleChat}
 					socket={this.props.socket}
+					profilePage
 				/>
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}

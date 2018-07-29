@@ -18,7 +18,7 @@ import NavBar from "../containers/NavBar";
 const
 	Wrapper = styled.div`
 		@media (max-width: 420px) {
-			display: ${props => props.onHome && "none"};
+			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
 			width: 100%;
 			overflow: hidden;
@@ -31,11 +31,13 @@ const
 			}
 		}
 		@media (min-width: 420px) {
-			height: 100vh;
+			height: ${props => props.spaceForNavbar ?
+		"calc(100vh - 49.33px)" : "100vh"};
 			position: fixed;
 			right: 0;
 			width: 260px;
 			background: rgba( 255, 255, 255, 0.4 );
+			z-index: 2;
 		}
 	`,
 	PageHeader = styled.div`
@@ -49,7 +51,7 @@ const
 		}
 	`,
 	NewConversationButton = styled( Button )`
-		position: fixed;
+		position: absolute;
 		right: 10px;
 		bottom: 10px;
 		z-index: 3;
@@ -57,23 +59,22 @@ const
 		font-size: 1.28rem !important;
 		margin: 0 !important;
 		@media (min-width: 420px) {
-			bottom: 50px;
+			bottom: 0px;
 			background: none !important;
 			position: absolute;
 			font-size: 1rem !important;
 			i {
-				color: rgba(0,0,0,0.4) !important;
+				color: rgba(0,0,0,0.5) !important;
 			}
 		}
 	`,
 	HideButton = styled( Button )`
-		position: fixed;
-		left: 0px;
-		bottom: 50px;
 		position: absolute;
+		left: 0px;
+		bottom: 0px;
 		font-size: 1rem !important;
 		i {
-			color: rgba(0,0,0,0.4) !important;
+			color: rgba(0,0,0,0.5) !important;
 		}
 		z-index: 3;
 		margin: 0 !important;
@@ -171,7 +172,8 @@ const
 		background: none !important;
 	`;
 
-var interval;
+var
+	interval;
 class Messages extends Component {
 	constructor() {
 		super();
@@ -190,13 +192,17 @@ class Messages extends Component {
 	async componentDidMount() {
 		interval = setInterval( this.resetMessagesLimit, 10000 );
 		await this.getActiveChats();
-		if ( this.props.messageTarget ) {
-			this.handleNewConversation( this.props.messageTarget );
-		}
 	}
 
 	componentWillUnmount() {
 		clearInterval( interval );
+	}
+
+	componentDidUpdate( prevProps ) {
+		const { messageTarget } = this.props;
+		if ( messageTarget && messageTarget !== prevProps.messageTarget ) {
+			this.handleNewConversation( this.props.messageTarget );
+		}
 	}
 
 	resetMessagesLimit = () => {
@@ -349,6 +355,9 @@ class Messages extends Component {
 			displayFriendsList: false,
 			displayConversation: false
 		});
+		if ( this.props.profilePage && this.props.messageTarget ) {
+			this.props.startChat( undefined );
+		}
 	}
 
 	handleSpam = () => {
@@ -359,7 +368,7 @@ class Messages extends Component {
 	}
 
 	handleHide = () => {
-		if ( this.props.onHome ) {
+		if ( this.props.largeScreen ) {
 			this.props.toggleChat();
 		}
 	}
@@ -367,9 +376,9 @@ class Messages extends Component {
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
-			messageTarget, onHome
+			largeScreen, profilePage
 		} = this.props;
-		if ( this.state.displayConversation && !onHome ) {
+		if ( this.state.displayConversation && !largeScreen ) {
 			return (
 				<Conversation
 					conversation={newConversation ?
@@ -387,7 +396,7 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( this.state.displayFriendsList && !onHome ) {
+		if ( this.state.displayFriendsList && !largeScreen ) {
 			return (
 				<FriendsList
 					friends={this.state.friends}
@@ -396,75 +405,79 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( !messageTarget ) {
+		if ( largeScreen ) {
 			return (
 				<React.Fragment>
-					{this.props.chat ? <Wrapper onHome={this.props.onHome}>
-						{this.state.displayFriendsList && onHome ?
-							<FriendsList
-								friends={this.state.friends}
-								handleNewConversation={this.handleNewConversation}
-								back={this.backToOpenConversations}
-							/>
-							:
-							<React.Fragment>
-								<NavBar hideOnLargeScreen socket={this.props.socket} />
-								<PageHeader>Conversations</PageHeader>
+					{this.props.chat ?
+						<Wrapper
+							largeScreen={this.props.largeScreen}
+							spaceForNavbar={this.props.spaceForNavbar}
+						>
+							{this.state.displayFriendsList && largeScreen ?
+								<FriendsList
+									friends={this.state.friends}
+									handleNewConversation={this.handleNewConversation}
+									back={this.backToOpenConversations}
+								/>
+								:
+								<React.Fragment>
+									<NavBar hideOnLargeScreen socket={this.props.socket} />
+									<PageHeader>Conversations</PageHeader>
 
-								<div className="conversationsList">
-									{this.props.conversations.map(( chat, index ) =>
-										<OpenConversation
-											key={index}
-											onClick={() => this.handleSelectConversation( index ) }
-											newMessages={chat.newMessagesCount > 0}
-										>
-											<UserImg
-												circular
-												src={chat.target.profileImage ?
-													require( "../images/" + chat.target.profileImage )
-													:
-													require( "../images/defaultUser.png" )
+									<div className="conversationsList">
+										{this.props.conversations.map(( chat, index ) =>
+											<OpenConversation
+												key={index}
+												onClick={() => this.handleSelectConversation( index ) }
+												newMessages={chat.newMessagesCount > 0}
+											>
+												<UserImg
+													circular
+													src={chat.target.profileImage ?
+														require( "../images/" + chat.target.profileImage )
+														:
+														require( "../images/defaultUser.png" )
+													}
+												/>
+												<TextInfo>
+													<UserFullname>
+														{chat.target.fullname}
+													</UserFullname>
+													<LastMessage>
+														@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+															chat.messages[ chat.messages.length - 1 ].content}
+													</LastMessage>
+												</TextInfo>
+												<LastMessageTime>
+													{moment(
+														chat.messages[ chat.messages.length - 1 ].createdAt
+													).fromNow( true )}
+												</LastMessageTime>
+												{chat.newMessagesCount > 0 &&
+													<NewMessagesCount
+														size="tiny" circular
+													>
+														{chat.newMessagesCount}
+													</NewMessagesCount>
 												}
-											/>
-											<TextInfo>
-												<UserFullname>
-													{chat.target.fullname}
-												</UserFullname>
-												<LastMessage>
-													@{chat.messages[ chat.messages.length - 1 ].author.username}: {
-														chat.messages[ chat.messages.length - 1 ].content}
-												</LastMessage>
-											</TextInfo>
-											<LastMessageTime>
-												{moment(
-													chat.messages[ chat.messages.length - 1 ].createdAt
-												).fromNow( true )}
-											</LastMessageTime>
-											{chat.newMessagesCount > 0 &&
-												<NewMessagesCount
-													size="tiny" circular
-												>
-													{chat.newMessagesCount}
-												</NewMessagesCount>
-											}
-										</OpenConversation>
-									)}
-								</div>
-								<NewConversationButton
-									onClick={this.handleFriendsList}
-									primary
-									circular
-									icon="comment"
-								/>
-								<HideButton
-									onClick={this.handleHide}
-									primary
-									circular
-									icon="chevron right"
-								/>
-							</React.Fragment>
-						}
-					</Wrapper>
+											</OpenConversation>
+										)}
+									</div>
+									<NewConversationButton
+										onClick={this.handleFriendsList}
+										primary
+										circular
+										icon="comment"
+									/>
+									<HideButton
+										onClick={this.handleHide}
+										primary
+										circular
+										icon="chevron right"
+									/>
+								</React.Fragment>
+							}
+						</Wrapper>
 						:
 						<ChatTab onClick={this.props.toggleChat}>
 							<DisplayChatButton
@@ -476,22 +489,78 @@ class Messages extends Component {
 						</ChatTab>
 					}
 
-					{this.state.displayConversation && onHome &&
-						<Conversation
-							conversation={newConversation ?
-								newConversation
-								:
-								conversations[ selectedConversation ]
-							}
-							newConversation={!!newConversation}
-							handleKeyPress={this.handleKeyPress}
-							handleChange={this.handleChange}
-							handleDeleteChat={this.handleDeleteChat}
-							back={this.backToOpenConversations}
-							messageInput={this.state.messageInput}
-							spam={this.state.spam}
-						/>
+					{this.state.displayConversation && largeScreen &&
+							<Conversation
+								conversation={newConversation ?
+									newConversation
+									:
+									conversations[ selectedConversation ]
+								}
+								newConversation={!!newConversation}
+								handleKeyPress={this.handleKeyPress}
+								handleChange={this.handleChange}
+								handleDeleteChat={this.handleDeleteChat}
+								back={this.backToOpenConversations}
+								messageInput={this.state.messageInput}
+								spam={this.state.spam}
+							/>
 					}
+				</React.Fragment>
+			);
+		}
+
+		if ( !profilePage ) {
+			return (
+				<React.Fragment>
+					<Wrapper>
+						<React.Fragment>
+							<NavBar hideOnLargeScreen socket={this.props.socket} />
+							<PageHeader>Conversations</PageHeader>
+
+							{this.props.conversations.map(( chat, index ) =>
+								<OpenConversation
+									key={index}
+									onClick={() => this.handleSelectConversation( index ) }
+									newMessages={chat.newMessagesCount > 0}
+								>
+									<UserImg
+										circular
+										src={chat.target.profileImage ?
+											require( "../images/" + chat.target.profileImage )
+											:
+											require( "../images/defaultUser.png" )
+										}
+									/>
+									<TextInfo>
+										<UserFullname>
+											{chat.target.fullname}
+										</UserFullname>
+										<LastMessage>
+											@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+												chat.messages[ chat.messages.length - 1 ].content}
+										</LastMessage>
+									</TextInfo>
+									<LastMessageTime>
+										{moment(
+											chat.messages[ chat.messages.length - 1 ].createdAt
+										).fromNow( true )}
+									</LastMessageTime>
+									{chat.newMessagesCount > 0 &&
+												<NewMessagesCount size="tiny" circular>
+													{chat.newMessagesCount}
+												</NewMessagesCount>
+									}
+								</OpenConversation>
+							)}
+
+							<NewConversationButton
+								onClick={this.handleFriendsList}
+								primary
+								circular
+								icon="comment"
+							/>
+						</React.Fragment>
+					</Wrapper>
 				</React.Fragment>
 			);
 		}
@@ -506,8 +575,10 @@ Messages.propTypes = {
 	chatNotifications: PropTypes.array.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	onHome: PropTypes.bool,
-	toggleChat: PropTypes.func
+	toggleChat: PropTypes.func,
+	spaceForNavbar: PropTypes.bool,
+	largeScreen: PropTypes.bool,
+	profilePage: PropTypes.bool
 };
 
 const

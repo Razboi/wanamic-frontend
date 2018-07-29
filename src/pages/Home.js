@@ -44,6 +44,9 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	PlusImage = styled.span`
 		height: 24px;
@@ -229,10 +232,12 @@ class Home extends Component {
 							/>
 
 							<Messages
+								largeScreen
 								onHome
 								chat={this.state.chat}
 								toggleChat={this.toggleChat}
 								socket={this.props.socket}
+								spaceForNavbar
 							/>
 						</HomeContent>
 					</MediaDimmer>

@@ -23,6 +23,6 @@ describe( "<Settings/>", () => {
 	});
 
 	it( "Checks that every children inside the form renders", () => {
-		expect( wrapper.children().children()).to.have.length( 7 );
+		expect( wrapper.children().children().children()).to.have.length( 7 );
 	});
 });

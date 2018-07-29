@@ -27,7 +27,7 @@ const
 			}
 		};
 		@media (min-width: 420px) {
-			background: #eee;
+			background: rgb(230, 240, 236);
 		};
 	`,
 	PageContent = styled.div`

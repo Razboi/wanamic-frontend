@@ -44,6 +44,9 @@ const
 			border: none;
 			padding: 0 1rem 1rem 1rem;
 		}
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	FriendImg = styled( Image )`
 		width: 40px !important;

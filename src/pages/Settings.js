@@ -15,7 +15,14 @@ import ContentSettings from "../components/ContentSettings";
 
 const
 	Wrapper = styled.div`
-		position: absolute;
+		height: 100%;
+		min-height: 100vh;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		background: rgb(230, 240, 236);
+	`,
+	Page = styled.div`
 		height: 100vh;
 		width: 100%;
 		display: grid;
@@ -23,14 +30,22 @@ const
 		grid-template-rows: 9% 91%;
 		grid-template-areas:
 			"hea"
-			"opt"
-	`,
+			"opt";
+		@media (max-width: 420px) {
+			position: absolute;
+		}
+		@media (min-width: 420px) {
+			width: 800px;
+			margin: 0 auto;
+		}
+`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		background: #fff;
 	`,
 	BackArrow = styled( Icon )`
 		font-size: 1.3rem !important;
@@ -43,6 +58,7 @@ const
 	`,
 	Options = styled.div`
 		grid-area: opt;
+		background: #fff;
 		::-webkit-scrollbar {
 			display: none !important;
 		}
@@ -347,31 +363,33 @@ class SettingsPage extends Component {
 		}
 		return (
 			<Wrapper>
-				<HeaderWrapper>
-					<BackArrow
-						name="arrow left"
-						onClick={() => this.props.history.push( "/" )}
-					/>
-					<HeaderTxt>Settings</HeaderTxt>
-				</HeaderWrapper>
-				<Options>
-					<Option onClick={() => this.changeTab( 1 )}>
-						Account
-						<RightArrow name="angle right"/>
-					</Option>
-					<Option onClick={() => this.changeTab( 2 )}>
-						Content preferences<RightArrow name="angle right"/>
-					</Option>
-					<Option onClick={() => this.changeTab( 3 )}>
-						Password<RightArrow name="angle right"/>
-					</Option>
-					<Option onClick={() => this.changeTab( 4 )}>
-						Email<RightArrow name="angle right"/>
-					</Option>
-					<Option onClick={() => this.changeTab( 5 )}>
-						Delete account<RightArrow name="angle right"/>
-					</Option>
-				</Options>
+				<Page>
+					<HeaderWrapper>
+						<BackArrow
+							name="arrow left"
+							onClick={() => this.props.history.push( "/" )}
+						/>
+						<HeaderTxt>Settings</HeaderTxt>
+					</HeaderWrapper>
+					<Options>
+						<Option onClick={() => this.changeTab( 1 )}>
+							Account
+							<RightArrow name="angle right"/>
+						</Option>
+						<Option onClick={() => this.changeTab( 2 )}>
+							Content preferences<RightArrow name="angle right"/>
+						</Option>
+						<Option onClick={() => this.changeTab( 3 )}>
+							Password<RightArrow name="angle right"/>
+						</Option>
+						<Option onClick={() => this.changeTab( 4 )}>
+							Email<RightArrow name="angle right"/>
+						</Option>
+						<Option onClick={() => this.changeTab( 5 )}>
+							Delete account<RightArrow name="angle right"/>
+						</Option>
+					</Options>
+				</Page>
 			</Wrapper>
 		);
 	}
