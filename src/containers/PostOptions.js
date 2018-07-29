@@ -14,6 +14,10 @@ const
 		align-items: center;
 	`,
 	Option = styled.div`
+		:hover {
+			cursor: pointer;
+		}
+		color: #111;
 	`;
 
 class PostOptions extends Component {

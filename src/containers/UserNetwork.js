@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
@@ -8,50 +7,40 @@ import UserPreview from "../components/UserPreview";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		min-height: 100vh;
+		height: 100%;
 		width: 100%;
-	`,
-	HeaderWrapper = styled.div`
-		height: 9%;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
-	`,
-	BackArrow = styled( Icon )`
-		font-size: 1.3rem !important;
-		margin: 0 !important;
-	`,
-	HeaderTxt = styled.span`
-		margin-left: 1rem;
-		font-weight: bold;
-		font-size: 1.25rem;
-	`,
-	Tabs = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
-    	justify-content: space-around;
-			padding: 1rem 0;
-			border-bottom: 1px solid #bec2c9;
+		margin-top: 1rem;
+		@media (min-width: 420px) {
+			width: 600px;
+			margin-top: 2rem;
+			padding: 0 5px;
 		}
 	`,
+	Tabs = styled.div`
+		background: #fff;
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		justify-content: space-around;
+		padding: 1rem 0;
+		border-bottom: 1px solid #bec2c9;
+	`,
 	TabOption = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: 1rem;
-			font-weight: ${props => props.selected ? "bold" : "normal"};
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-size: 1rem;
+		font-weight: ${props => props.selected ? "bold" : "normal"};
+		:hover {
+			cursor: pointer;
 		}
 	`,
 	UsersWrapper = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-direction: column;
-			padding: 1rem;
-		}
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		padding: 1rem;
 	`;
 
 class UserNetwork extends Component {
@@ -151,13 +140,6 @@ class UserNetwork extends Component {
 		const { requesterNetwork, network, tab } = this.state;
 		return (
 			<Wrapper>
-				<HeaderWrapper>
-					<BackArrow
-						name="arrow left"
-						onClick={this.props.toggleTab}
-					/>
-					<HeaderTxt>@{this.props.username} network</HeaderTxt>
-				</HeaderWrapper>
 				<Tabs>
 					<TabOption
 						onClick={() => this.setTab( 0 )}

@@ -88,7 +88,8 @@ class Home extends Component {
 		this.state = {
 			skip: 1,
 			hasMore: true,
-			mediaButton: true
+			mediaButton: true,
+			chat: true
 		};
 	}
 
@@ -150,6 +151,10 @@ class Home extends Component {
 		if ( this.props.displayShare ) {
 			this.props.switchShare();
 		}
+	}
+
+	toggleChat = () => {
+		this.setState( state => ({ chat: !state.chat }));
 	}
 
 	render() {
@@ -223,7 +228,12 @@ class Home extends Component {
 								history={this.props.history}
 							/>
 
-							<Messages onHome socket={this.props.socket} />
+							<Messages
+								onHome
+								chat={this.state.chat}
+								toggleChat={this.toggleChat}
+								socket={this.props.socket}
+							/>
 						</HomeContent>
 					</MediaDimmer>
 

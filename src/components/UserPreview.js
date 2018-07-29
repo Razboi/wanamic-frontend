@@ -13,6 +13,8 @@ const
 	`,
 	MatchFullname = styled.h3`
 		margin: 0px;
+		font-family: inherit;
+		color: #111;
 	`,
 	MatchUsername = styled.span`
 		color: #808080;
@@ -20,28 +22,25 @@ const
 	MatchDescription = styled.p`
 		margin: 0.5rem 0 0 0 !important;
 		font-size: 1.025rem !important;
+		color: #222;
 	`,
 	Hobbies = styled.div`
-		@media (max-width: 420px) {
-			display: flex;
-			flex-wrap: wrap;
-	    width: 90%;
-	    align-items: center;
-	    justify-content: center;
-			margin: 1rem 0;
-		}
+		display: flex;
+		flex-wrap: wrap;
+		width: 90%;
+		align-items: center;
+		justify-content: center;
+		margin: 1rem 0;
 	`,
 	Hobbie = styled.div`
-		@media (max-width: 420px) {
-			border: 1px solid rgba( 0,0,0,0.4);
-			color: rgb( 90,90,90);
-			border-radius: 2px;
-	    padding: 0.5rem;
-	    font-size: 1rem;
-	    font-weight: bold;
-			margin: 0.5rem 0 0 0.5rem;
-			box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
-		}
+		border: 1px solid rgba( 0,0,0,0.4);
+		color: #333;
+		border-radius: 2px;
+		padding: 0.5rem;
+		font-size: 1rem;
+		font-weight: bold;
+		margin: 0.5rem 0 0 0.5rem;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 	`,
 	UserImg = styled( Image )`
 		width: 40px !important;
@@ -51,6 +50,9 @@ const
 	UserInfo = styled.div`
 		display: flex;
 		flex-direction: row;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	TextInfo = styled.div`
 		display: flex;

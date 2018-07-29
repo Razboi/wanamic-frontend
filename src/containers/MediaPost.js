@@ -40,6 +40,9 @@ const
 		display: flex;
 		flex-direction: column;
 		margin-left: 0.5rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorImg = styled( Image )`
 		width: 30px !important;
@@ -48,6 +51,9 @@ const
 		@media (min-width: 420px) {
 			width: 35px !important;
 			height: 35px !important;
+		}
+		:hover {
+			cursor: pointer;
 		}
 	`,
 	StyledOptions = {
@@ -58,6 +64,9 @@ const
 	AuthorFullname = styled.span`
 		font-size: 1.2rem !important;
 		color: #111 !important;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
@@ -73,7 +82,7 @@ const
 		font-family: inherit !important;
 	`,
 	MediaImage = styled( Image )`
-		justify-self: center;
+		margin: 0 auto;
 	`,
 	PostMediaContent = styled.div`
 		display: grid;
@@ -83,6 +92,9 @@ const
 		width: 100%;
 		height: 100%;
 		color: #fff;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	PostMediaBackground = styled.div`
 		z-index: -1;

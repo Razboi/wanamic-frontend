@@ -38,6 +38,9 @@ const
 	`,
 	StyledIcon = styled( Icon )`
 		font-size: 1.4rem !important;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	ItunesImage = styled( Image )`
 		height: 30px;

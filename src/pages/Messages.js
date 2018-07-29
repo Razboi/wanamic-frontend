@@ -66,6 +66,22 @@ const
 			}
 		}
 	`,
+	HideButton = styled( Button )`
+		position: fixed;
+		left: 0px;
+		bottom: 50px;
+		position: absolute;
+		font-size: 1rem !important;
+		i {
+			color: rgba(0,0,0,0.4) !important;
+		}
+		z-index: 3;
+		margin: 0 !important;
+		background: none !important;
+		@media (max-width: 420px) {
+			display: none;
+		}
+	`,
 	OpenConversation = styled.div`
 		display: flex;
 		position: relative;
@@ -126,6 +142,33 @@ const
 		position: absolute;
 		right: 1.1rem;
 		bottom: 0.5rem;
+	`,
+	ChatTab = styled.div`
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		font-weight: 600;
+    font-family: inherit;
+		width: 200px;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+		:hover {
+			cursor: pointer;
+		}
+		@media (max-width: 420px) {
+			display: none;
+		}
+	`,
+	DisplayChatButton = styled( Button )`
+		font-size: 1rem !important;
+		i {
+			color: #111 !important;
+		}
+		z-index: 3;
+		background: none !important;
 	`;
 
 var interval;
@@ -315,6 +358,12 @@ class Messages extends Component {
 		}, 10000 );
 	}
 
+	handleHide = () => {
+		if ( this.props.onHome ) {
+			this.props.toggleChat();
+		}
+	}
+
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
@@ -350,7 +399,7 @@ class Messages extends Component {
 		if ( !messageTarget ) {
 			return (
 				<React.Fragment>
-					<Wrapper onHome={this.props.onHome}>
+					{this.props.chat ? <Wrapper onHome={this.props.onHome}>
 						{this.state.displayFriendsList && onHome ?
 							<FriendsList
 								friends={this.state.friends}
@@ -407,9 +456,25 @@ class Messages extends Component {
 									circular
 									icon="comment"
 								/>
+								<HideButton
+									onClick={this.handleHide}
+									primary
+									circular
+									icon="chevron right"
+								/>
 							</React.Fragment>
 						}
 					</Wrapper>
+						:
+						<ChatTab onClick={this.props.toggleChat}>
+							<DisplayChatButton
+								primary
+								circular
+								icon="chevron left"
+							/>
+							<span>Chat</span>
+						</ChatTab>
+					}
 
 					{this.state.displayConversation && onHome &&
 						<Conversation
@@ -441,7 +506,8 @@ Messages.propTypes = {
 	chatNotifications: PropTypes.array.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	onHome: PropTypes.bool
+	onHome: PropTypes.bool,
+	toggleChat: PropTypes.func
 };
 
 const

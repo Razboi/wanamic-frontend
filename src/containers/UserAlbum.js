@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Image, Icon } from "semantic-ui-react";
+import { Image } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
-import PostDetails from "../containers/PostDetails";
 import { setPosts, switchPostDetails } from "../services/actions/posts";
 import { connect } from "react-redux";
 
@@ -12,21 +11,12 @@ const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
-	`,
-	HeaderWrapper = styled.div`
-		height: 9%;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-	`,
-	BackArrow = styled( Icon )`
-		font-size: 1.3rem !important;
-		margin: 0 !important;
-	`,
-	HeaderTxt = styled.span`
-		margin-left: 1rem;
-		font-weight: bold;
-		font-size: 1.25rem;
+		margin-top: 1rem;
+		@media (min-width: 420px) {
+			margin-top: 2rem;
+			width: 600px;
+			padding: 0 5px;
+		}
 	`,
 	Album = styled.div`
 		display: flex;
@@ -42,6 +32,9 @@ const
 		margin: ${props => props.rightImg ?
 		"3px 0" : "3px 3px 3px 0"};
 		overflow: hidden;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	UserPicture = styled( Image )`
 		position: absolute !important;
@@ -60,12 +53,6 @@ const
 	`;
 
 class UserAlbum extends Component {
-	constructor() {
-		super();
-		this.state = {
-			selectedPost: 0
-		};
-	}
 
 	componentDidMount() {
 		this.getAlbum();
@@ -85,45 +72,15 @@ class UserAlbum extends Component {
 		}
 	}
 
-	displayPostDetails = index => {
-		this.setState({
-			selectedPost: index
-		});
-		this.props.switchPostDetails();
-	}
-
-	hidePostDetails = () => {
-		this.setState({
-			selectedPost: 0
-		});
-		this.props.switchPostDetails();
-	}
-
 	render() {
-		if ( this.props.displayPostDetails ) {
-			return (
-				<PostDetails
-					post={this.props.posts[ this.state.selectedPost ]}
-					switchDetails={this.hidePostDetails}
-					socket={this.props.socket}
-				/>
-			);
-		}
 		return (
 			<Wrapper>
-				<HeaderWrapper>
-					<BackArrow
-						name="arrow left"
-						onClick={this.props.toggleTab}
-					/>
-					<HeaderTxt>@{this.props.username} album</HeaderTxt>
-				</HeaderWrapper>
 				{this.props.posts.length > 0 ?
 					<Album>
 						{this.props.posts.map(( post, index ) =>
 							<PictureWrapper
 								key={index}
-								onClick={() => this.displayPostDetails( index )}
+								onClick={() => this.props.switchPostDetails( index )}
 								rightImg={( index + 1 ) % 3 === 0}
 							>
 								<UserPicture
@@ -158,7 +115,7 @@ const
 	mapDispatchToProps = dispatch => ({
 		setPosts: ( posts, onExplore, onAlbum ) =>
 			dispatch( setPosts( posts, onExplore, onAlbum )),
-		switchPostDetails: () => dispatch( switchPostDetails())
+		switchPostDetails: index => dispatch( switchPostDetails( index ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserAlbum );

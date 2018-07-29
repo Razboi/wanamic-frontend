@@ -9,11 +9,12 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
 import Comments from "../containers/Comments";
+import Messages from "../pages/Messages";
 import Share from "../containers/Share";
 import PostDetails from "../containers/PostDetails";
-import NewsFeed from "../components/NewsFeed";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
+import ProfileTimeLine from "../components/ProfileTimeLine";
 
 var
 	backgroundImg,
@@ -143,6 +144,9 @@ const
 		font-size: 1rem;
 		color: rgb(140, 140, 140);
 		box-shadow: 0px 1px rgba(0,0,0,.125);
+		@media (min-width: 420px) {
+			background: #fff;
+		}
 	`,
 	Description = styled.p`
 		color: #222;
@@ -171,6 +175,9 @@ const
 		font-weight: bold;
 		margin: 0.5rem 0 0 0.5rem;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, .125);
+		@media (min-width: 420px) {
+			background: #fff;
+		}
 	`,
 	TabsWrapper = styled.div`
 		color: #222;
@@ -188,6 +195,9 @@ const
 		flex-direction: row;
 		justify-content: space-around;
 		width: 100%;
+		:hover {
+			cursor: pointer;
+		}
 		@media (min-width: 420px) {
 			width: 600px;
 			margin: 0 auto;
@@ -195,24 +205,8 @@ const
 			font-size: 1.05rem;
 		}
 	`,
-	UserPostsWrapper = styled.div`
-		background: #fff;
-		margin-top: 1rem;
-		@media (min-width: 420px) {
-			background: none;
-			padding: 0 5px;
-		}
-	`,
-	StyledNewsFeed = styled( NewsFeed )`
-		height: 100%;
-	`,
-	EmptyPostsAlert = styled.div`
-		display: flex;
-		background: #fff;
-		margin-top: 1rem;
-		min-height: 100px;
-		align-items: center;
-		justify-content: center;
+	Tab = styled.span`
+		font-weight: ${props => props.active && "600"};
 	`,
 	NextButton = styled( Button )`
 		position: fixed;
@@ -255,7 +249,10 @@ class UserProfile extends Component {
 			skip: 1,
 			inexistent: false,
 			userRequested: false,
-			targetRequested: false
+			targetRequested: false,
+			tab: "Posts",
+			chat: true,
+			messageTarget: {}
 		};
 	}
 
@@ -278,6 +275,10 @@ class UserProfile extends Component {
 		if ( this.state.user !== prevState.user ) {
 			this.refreshTimeline();
 			this.setImages();
+		} else if ( this.props.username !== prevProps.username ) {
+			this.getUserInfo();
+			this.refreshTimeline();
+			this.checkPendingRequest();
 		}
 	}
 
@@ -465,7 +466,7 @@ class UserProfile extends Component {
 	}
 
 	startChat = messageTarget => {
-		this.props.toggleConversation( messageTarget );
+		this.setState({ messageTarget: messageTarget });
 	}
 
 	hidePopups = () => {
@@ -483,10 +484,18 @@ class UserProfile extends Component {
 		}
 	}
 
+	toggleTab = tab => {
+		this.setState({ tab: tab });
+	}
+
+	toggleChat = () => {
+		this.setState( state => ({ chat: !state.chat }));
+	}
+
 	render() {
 		const {
 			postDetailsIndex, displayPostDetails, displayComments,
-			displayShare, profilePosts
+			displayShare, profilePosts, albumPosts
 		} = this.props;
 		if ( this.state.inexistent ) {
 			return (
@@ -504,7 +513,11 @@ class UserProfile extends Component {
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&
 							<PostDetails
-								post={profilePosts[ postDetailsIndex ]}
+								post={this.state.tab === "Album" ?
+									albumPosts[ postDetailsIndex ]
+									:
+									profilePosts[ postDetailsIndex ]
+								}
 								switchDetails={this.props.switchPostDetails}
 								socket={this.props.socket}
 								index={postDetailsIndex}
@@ -516,6 +529,14 @@ class UserProfile extends Component {
 						{displayShare && <Share />}
 					</PostDetailsDimmer>
 				}
+
+				<Messages
+					messageTarget={this.state.messageTarget}
+					onHome
+					chat={this.state.chat}
+					toggleChat={this.toggleChat}
+					socket={this.props.socket}
+				/>
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -563,16 +584,30 @@ class UserProfile extends Component {
 						</UserInfo>
 						<TabsWrapper>
 							<Tabs>
-								<span onClick={() =>
-									this.props.toggleTab( "Information" )}>
+								<Tab
+									active={this.state.tab === "Posts"}
+									onClick={() => this.toggleTab( "Posts" )}
+								>
+									Posts
+								</Tab>
+								<Tab
+									active={this.state.tab === "Information"}
+									onClick={() => this.toggleTab( "Information" )}
+								>
 									Information
-								</span>
-								<span onClick={() => this.props.toggleTab( "Album" )}>
+								</Tab>
+								<Tab
+									active={this.state.tab === "Album"}
+									onClick={() => this.toggleTab( "Album" )}
+								>
 									Album
-								</span>
-								<span onClick={() => this.props.toggleTab( "Network" )}>
+								</Tab>
+								<Tab
+									active={this.state.tab === "Network"}
+									onClick={() => this.toggleTab( "Network" )}
+								>
 									Network
-								</span>
+								</Tab>
 							</Tabs>
 						</TabsWrapper>
 					</UserInfoWrapper>
@@ -609,17 +644,16 @@ class UserProfile extends Component {
 								startChat={() => this.startChat( user )}
 							/>
 						</FloatingUserInfo>
-						{this.props.profilePosts.length > 0 ?
-							<UserPostsWrapper>
-								<StyledNewsFeed
-									posts={this.props.profilePosts}
-									socket={this.props.socket}
-								/>
-							</UserPostsWrapper>
-							:
-							<EmptyPostsAlert>
-								@{user.username} hasn't posted yet.
-							</EmptyPostsAlert>}
+
+						<ProfileTimeLine
+							tab={this.state.tab}
+							socket={this.props.socket}
+							history={this.props.history}
+							username={this.props.username}
+							toggleTab={this.toggleTab}
+							profilePosts={this.props.profilePosts}
+							user={user}
+						/>
 					</TimeLine>
 
 					{this.props.explore &&
@@ -640,8 +674,6 @@ class UserProfile extends Component {
 UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
 	username: PropTypes.string.isRequired,
-	toggleConversation: PropTypes.func.isRequired,
-	toggleTab: PropTypes.func.isRequired,
 	profilePosts: PropTypes.array.isRequired
 };
 
@@ -651,7 +683,8 @@ const
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
 		postDetailsIndex: state.posts.postDetailsIndex,
-		profilePosts: state.posts.profilePosts
+		profilePosts: state.posts.profilePosts,
+		albumPosts: state.posts.album
 	}),
 
 	mapDispatchToProps = dispatch => ({

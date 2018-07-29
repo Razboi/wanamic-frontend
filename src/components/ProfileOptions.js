@@ -19,6 +19,9 @@ const
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	OptionImage = styled.span`
 		height: 24px;
