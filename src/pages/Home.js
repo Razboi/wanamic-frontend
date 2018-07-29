@@ -29,16 +29,8 @@ const
 			}
 		};
 		@media (min-width: 420px) {
-			background: #eee;
+			background: rgb(230, 240, 236);
 		}
-	`,
-	StyledInfiniteScroll = styled( InfiniteScroll )`
-		height: 100%;
-		width: 100%;
-		display: grid;
-		grid-template-rows: auto;
-		grid-template-areas:
-			"nf";
 	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
@@ -87,9 +79,6 @@ const
 		display: flex;
 		justify-content: center;
 		margin: 0 auto;
-	`,
-	StyledNewsFeed = styled( NewsFeed )`
-		grid-area: nf;
 	`;
 
 
@@ -104,16 +93,7 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( "scroll", this.handleScroll );
 		this.refreshNewsFeed();
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener( "scroll", this.handleScroll );
-	}
-
-	handleScroll = e => {
-		console.log( window.scrollY );
 	}
 
 	getNewsFeed = () => {
@@ -204,7 +184,7 @@ class Home extends Component {
 						{displayShare && <Share />}
 					</PostDetailsDimmer>
 				}
-				<StyledInfiniteScroll
+				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getNewsFeed}
@@ -213,7 +193,7 @@ class Home extends Component {
 				>
 					<NavBar
 						socket={this.props.socket}
-						mediaOptions={this.props.mediaOptions}
+						hide={this.props.mediaOptions}
 					/>
 					{this.state.mediaButton &&
 						<ShareMediaButton
@@ -237,7 +217,7 @@ class Home extends Component {
 						onClick={this.hidePopups}
 					>
 						<HomeContent>
-							<StyledNewsFeed
+							<NewsFeed
 								posts={newsfeed}
 								socket={this.props.socket}
 								history={this.props.history}
@@ -247,7 +227,7 @@ class Home extends Component {
 						</HomeContent>
 					</MediaDimmer>
 
-				</StyledInfiniteScroll>
+				</InfiniteScroll>
 			</Wrapper>
 		);
 	}

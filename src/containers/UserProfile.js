@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import { switchPostDetails, setPosts } from "../services/actions/posts";
+import {
+	switchPostDetails, setPosts, switchComments, switchShare
+} from "../services/actions/posts";
 import api from "../services/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -56,7 +58,7 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 10;
+		z-index: 2;
 		background: rgba( 0,0,0,0.1 ) !important;
 		border-radius: 100%;
 		padding: 0.8rem;
@@ -226,6 +228,20 @@ const
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
 		margin: 0 0.5rem 0 0;
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
 	`;
 
 
@@ -452,8 +468,26 @@ class UserProfile extends Component {
 		this.props.toggleConversation( messageTarget );
 	}
 
+	hidePopups = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayPostDetails ) {
+			this.props.switchPostDetails();
+		}
+		if ( this.props.displayComments ) {
+			this.props.switchComments();
+		}
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		}
+	}
+
 	render() {
-		const { postDetailsIndex, displayPostDetails } = this.props;
+		const {
+			postDetailsIndex, displayPostDetails, displayComments,
+			displayShare, profilePosts
+		} = this.props;
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
@@ -462,19 +496,26 @@ class UserProfile extends Component {
 		if ( !this.state.user ) {
 			return null;
 		}
-		if ( displayPostDetails ) {
-			return (
-				<PostDetails
-					post={this.state.posts[ postDetailsIndex ]}
-					switchDetails={this.props.switchPostDetails}
-					socket={this.props.socket}
-					index={postDetailsIndex}
-				/>
-			);
-		}
 		const { user } = this.state;
 		return (
 			<Wrapper>
+				{( displayPostDetails || displayComments || displayShare ) &&
+					<PostDetailsDimmer>
+						<OutsideClickHandler onClick={this.hidePopups} />
+						{displayPostDetails &&
+							<PostDetails
+								post={profilePosts[ postDetailsIndex ]}
+								switchDetails={this.props.switchPostDetails}
+								socket={this.props.socket}
+								index={postDetailsIndex}
+							/>}
+						{displayComments &&
+							<Comments
+								socket={this.props.socket}
+							/>}
+						{displayShare && <Share />}
+					</PostDetailsDimmer>
+				}
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -482,9 +523,6 @@ class UserProfile extends Component {
 					initialLoad={false}
 					useWindow={false}
 				>
-					{this.props.displayShare && <Share />}
-					{this.props.displayComments && <Comments
-						socket={this.props.socket} />}
 
 					<BackOption onClick={this.props.backToMain} >
 						<BackImage image={require( "../images/left-arrow.png" )} />
@@ -619,7 +657,9 @@ const
 	mapDispatchToProps = dispatch => ({
 		setPosts: ( posts, onExplore, onAlbum, onProfile ) =>
 			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
-		switchPostDetails: () => dispatch( switchPostDetails())
+		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchComments: () => dispatch( switchComments()),
+		switchShare: () => dispatch( switchShare())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

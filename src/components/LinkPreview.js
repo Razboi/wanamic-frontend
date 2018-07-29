@@ -38,6 +38,9 @@ const
 		position: relative;
 		height: 0;
 		padding-bottom: 100%;
+		@media (min-width: 420px) {
+			padding-bottom: ${props => props.details ? "50%" : "100%"};
+		}
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
@@ -100,7 +103,7 @@ class LinkPreview extends Component {
 				<LinkPreviewWrapper
 					className="linkPreviewWrapper"
 				>
-					<LinkMedia>
+					<LinkMedia details={this.props.details}>
 						{this.props.linkContent.embeddedUrl ?
 							<LinkPreviewIframe
 								className="linkPreviewIframe"
@@ -137,7 +140,8 @@ class LinkPreview extends Component {
 
 LinkPreview.propTypes = {
 	linkContent: PropTypes.object.isRequired,
-	explore: PropTypes.bool
+	explore: PropTypes.bool,
+	details: PropTypes.bool
 };
 
 export default LinkPreview;

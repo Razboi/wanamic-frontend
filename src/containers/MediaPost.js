@@ -297,7 +297,10 @@ class MediaPost extends Component {
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
 						{post.link ?
-							<LinkPreview linkContent={post.linkContent} />
+							<LinkPreview
+								linkContent={post.linkContent}
+								details={this.props.details}
+							/>
 							:
 							<PostMediaContent onClick={this.displayPostDetails}>
 								<PostMediaBackground background={
@@ -355,7 +358,8 @@ MediaPost.propTypes = {
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
 	goToProfile: PropTypes.func,
-	newsFeed: PropTypes.bool
+	newsFeed: PropTypes.bool,
+	details: PropTypes.bool
 };
 
 const

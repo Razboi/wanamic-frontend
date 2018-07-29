@@ -28,7 +28,7 @@ const
 			height: 350px;
 			width: 300px;
 			position: fixed;
-			right: 30px;
+			left: 20px;
 			bottom: 0px;
 			border: 1px solid rgba(0,0,0,.066);
 		}

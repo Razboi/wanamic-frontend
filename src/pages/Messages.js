@@ -393,7 +393,7 @@ class Messages extends Component {
 											</LastMessageTime>
 											{chat.newMessagesCount > 0 &&
 												<NewMessagesCount
-													size="tiny" circular color="red"
+													size="tiny" circular
 												>
 													{chat.newMessagesCount}
 												</NewMessagesCount>

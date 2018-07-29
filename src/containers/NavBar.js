@@ -13,9 +13,9 @@ const
 		z-index: 4;
 		width: 100%;
 		height: 49.33px;
-		visibility: ${props => props.hide ? "hidden" : "visible"};
+		top: ${props => props.hide ? "-50px" : "0px"};
+		transition: top 0.7s linear;
 		position: fixed;
-		top: 0px
 		background: #fff;
 		&:after {
 			background: rgba(0,0,0,.0975);
@@ -75,8 +75,6 @@ const
 	ProfileImg = styled( Image )`
 		width: 30px !important;
 		height: 30px !important;
-	`,
-	NotificationsLength = styled( Label )`
 	`,
 	DropdownFullname = styled.h4`
 		margin: 0 !important;
@@ -194,7 +192,7 @@ class NavBar extends Component {
 		}
 		return (
 			<Wrapper
-				hide={this.props.mediaOptions}
+				hide={this.props.hide}
 				hideOnLargeScreen={this.props.hideOnLargeScreen}
 			>
 				<Options>
@@ -222,9 +220,9 @@ class NavBar extends Component {
 								}
 							>
 								{this.props.newNotifications > 0 &&
-									<NotificationsLength size="small" floating circular color="red">
+									<Label size="small" floating circular>
 										{this.props.newNotifications}
-									</NotificationsLength>
+									</Label>
 								}
 							</NavImage>
 						</div>
@@ -254,9 +252,9 @@ class NavBar extends Component {
 							}
 						>
 							{this.props.chatNotifications.length > 0 &&
-								<NotificationsLength size="small" floating circular color="red">
+								<Label size="small" floating circular color="red">
 									{this.props.chatNotifications.length}
-								</NotificationsLength>
+								</Label>
 							}
 						</NavImage>
 					</NavOption>

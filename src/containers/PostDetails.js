@@ -20,7 +20,8 @@ const
 		}
 		@media (min-width: 420px) {
 			width: 600px;
-			max-height: 100vh;
+			max-height: 90%;
+			overflow-y: scroll;
 		}
 	`,
 	HeaderWrapper = styled.div`

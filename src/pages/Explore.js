@@ -14,11 +14,12 @@ import {
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { connect } from "react-redux";
+import _ from "lodash";
 
 const
 	Wrapper = styled.div`
 		overflow-y: scroll;
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
@@ -29,9 +30,10 @@ const
 			background: #eee;
 		};
 	`,
-	StyledInfiniteScroll = styled( InfiniteScroll )`
+	PageContent = styled.div`
 		display: grid;
 		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		margin-top: 49.33px;
 		grid-template-columns: 100%;
@@ -170,15 +172,16 @@ const
 		justify-content: center;
 		width: 100%;
 		position: fixed !important;
-		bottom: 0;
+		transition: bottom 0.7s linear;
+		left: 0;
 		@media (max-width: 420px) {
 			height: 44px;
+			bottom: ${props => props.hide ? "-44px" : "0px"};
 		}
 		@media (min-width: 420px) {
 			height: 54px;
-			left: 0;
 			align-items: center;
-			bottom: 25px;
+			bottom: ${props => props.hide ? "-54px" : "25px"};
 		}
 	`,
 	PostDetailsDimmer = styled.div`
@@ -196,6 +199,7 @@ const
 		height: 100%;
 	`;
 
+var lastScrollPosition = 0;
 class ExplorePage extends Component {
 	constructor() {
 		super();
@@ -211,12 +215,30 @@ class ExplorePage extends Component {
 			user: {},
 			selectedPost: {},
 			search: "",
-			searching: false
+			searching: false,
+			scrollingDown: false
 		};
 	}
 
 	componentDidMount() {
+		window.addEventListener(
+			"scroll", _.throttle( this.handleScroll, 500 ));
 		this.refreshPosts();
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener( "scroll", this.handleScroll );
+	}
+
+	handleScroll = e => {
+		const currentScrollPosition = window.pageYOffset;
+		if ( currentScrollPosition > lastScrollPosition + 20 ) {
+			this.setState({ scrollingDown: true });
+			lastScrollPosition = currentScrollPosition;
+		} else if ( currentScrollPosition < lastScrollPosition - 20 ) {
+			this.setState({ scrollingDown: false });
+			lastScrollPosition = currentScrollPosition;
+		}
 	}
 
 	refreshPosts = async() => {
@@ -467,65 +489,70 @@ class ExplorePage extends Component {
 					</PostDetailsDimmer>
 				}
 
-				<NavBar socket={this.props.socket} />
-
-				<StyledInfiniteScroll
-					onClick={this.hideNotifications}
+				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.state.searching ?
 						this.loadSearch : this.getPosts}
 					initialLoad={false}
-					useWindow={false}
+					useWindow={true}
 				>
-					<Header>
-						<UserSubheader active={!this.state.content}>
-							<HeaderImage
-								image={connectImage}
-								className="userIcon"
-								onClick={() => this.setState({ content: false })}
-							/>
-							<SubheaderText>Users</SubheaderText>
-						</UserSubheader>
-						<ContentSubheader active={this.state.content}>
-							<HeaderImage
-								image={contentImage}
-								className="contentIcon"
-								onClick={() => this.setState({ content: true })}
-							/>
-							<SubheaderText>Content</SubheaderText>
-						</ContentSubheader>
-					</Header>
-					<MainComponent>
-						{this.state.content ?
-							<React.Fragment>
-								<ExploreContent
-									className="exploreContent"
-									posts={this.props.posts}
-									displayPostDetails={this.displayPostDetails}
+					<NavBar
+						hide={this.state.scrollingDown}
+						socket={this.props.socket}
+					/>
+
+					<PageContent onClick={this.hideNotifications}>
+						<Header>
+							<UserSubheader active={!this.state.content}>
+								<HeaderImage
+									image={connectImage}
+									className="userIcon"
+									onClick={() => this.setState({ content: false })}
 								/>
-								<SearchWrapper>
-									<SearchBar
-										placeholder="What are you interested in?"
-										name="search"
-										onChange={this.handleChange}
-										value={this.state.search}
-										onKeyPress={this.handleKeyPress}
+								<SubheaderText>Users</SubheaderText>
+							</UserSubheader>
+							<ContentSubheader active={this.state.content}>
+								<HeaderImage
+									image={contentImage}
+									className="contentIcon"
+									onClick={() => this.setState({ content: true })}
+								/>
+								<SubheaderText>Content</SubheaderText>
+							</ContentSubheader>
+						</Header>
+
+						<MainComponent>
+							{this.state.content ?
+								<React.Fragment>
+									<ExploreContent
+										className="exploreContent"
+										posts={this.props.posts}
+										displayPostDetails={this.displayPostDetails}
 									/>
-								</SearchWrapper>
-							</React.Fragment>
-							:
-							<ExploreUsers
-								className="exploreUsers"
-								getSugested={this.getSugestedUser}
-								getRandom={this.getRandomUser}
-								matchHobbies={this.matchHobbies}
-								matchUsername={this.matchUsername}
-								handleChange={this.handleChange}
-							/>
-						}
-					</MainComponent>
-				</StyledInfiniteScroll>
+									<SearchWrapper hide={this.state.scrollingDown}>
+										<SearchBar
+											placeholder="What are you interested in?"
+											name="search"
+											onChange={this.handleChange}
+											value={this.state.search}
+											onKeyPress={this.handleKeyPress}
+										/>
+									</SearchWrapper>
+								</React.Fragment>
+								:
+								<ExploreUsers
+									className="exploreUsers"
+									getSugested={this.getSugestedUser}
+									getRandom={this.getRandomUser}
+									matchHobbies={this.matchHobbies}
+									matchUsername={this.matchUsername}
+									handleChange={this.handleChange}
+								/>
+							}
+						</MainComponent>
+					</PageContent>
+				</InfiniteScroll>
 			</Wrapper>
 		);
 	}
