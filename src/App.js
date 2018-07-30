@@ -79,21 +79,27 @@ class App extends Component {
 			const {
 				conversations, addConversation,
 				addChatNotification, updateConversation, chatNotifications,
-				incrementChatNewMessages
+				incrementChatNewMessages, selectedConversation,
+				displayConversation
 			} = this.props;
-			if ( !chatNotifications.includes( message.author )) {
-				addChatNotification( message.author );
+
+			if ( !chatNotifications.includes( message.author.username )
+			&& ( conversations[ selectedConversation ].target.username
+				!== message.author.username || !displayConversation )) {
+				addChatNotification( message.author.username );
 			}
-			if ( this.props.location.pathname === "/messages" ) {
+
+			if ( this.props.location.pathname === "/messages"
+			|| window.innerWidth > 420 ) {
 				for ( const [ i, conversation ] of conversations.entries()) {
-					if ( conversation.target.username === message.author ) {
+					if ( conversation.target.username === message.author.username ) {
 						updateConversation( message, i );
 						incrementChatNewMessages( i );
 						return;
 					}
 				}
 				const newConversation = await api.getConversation(
-					message.author );
+					message.author.username );
 				addConversation( newConversation.data );
 			}
 		});
@@ -142,7 +148,9 @@ const
 	mapStateToProps = state => ({
 		conversations: state.conversations.allConversations,
 		chatNotifications: state.conversations.notifications,
-		authenticated: state.authenticated
+		authenticated: state.authenticated,
+		selectedConversation: state.conversations.selectedConversation,
+		displayConversation: state.conversations.displayConversation
 	}),
 
 	mapDispatchToProps = dispatch => ({

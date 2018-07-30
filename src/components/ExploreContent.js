@@ -12,6 +12,9 @@ const
 	PostWrapper = styled.div`
 		padding: 8px;
 		z-index: 1;
+		:hover {
+			cursor: pointer;
+		}
 		@media (min-width: 2615px) {
 			width: calc(100% / 13);
 		}

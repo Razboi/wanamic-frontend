@@ -7,7 +7,7 @@ import api from "../services/api";
 import {
 	switchMessages, setConversations, selectConversation,
 	updateConversation, addConversation, setupNewConversation,
-	deleteChat
+	deleteChat, switchConversation
 } from "../services/actions/conversations";
 import Conversation from "../components/Conversation";
 import FriendsList from "../components/FriendsList";
@@ -205,7 +205,6 @@ class Messages extends Component {
 		this.state = {
 			friends: [],
 			displayFriendsList: false,
-			displayConversation: false,
 			messageInput: "",
 			sentMessages: 0,
 			spam: false,
@@ -225,7 +224,6 @@ class Messages extends Component {
 	}
 
 	componentDidUpdate( prevProps ) {
-		console.log( "here" );
 		const { messageTarget } = this.props;
 		if ( messageTarget && messageTarget !== prevProps.messageTarget ) {
 			this.handleNewConversation( this.props.messageTarget );
@@ -277,10 +275,8 @@ class Messages extends Component {
 	}
 
 	displayConversation = () => {
-		this.setState({
-			displayConversation: true,
-			displayFriendsList: false
-		});
+		this.props.switchConversation( true );
+		this.setState({ displayFriendsList: false });
 	}
 
 	handleNewConversation = async selectedUser => {
@@ -303,7 +299,7 @@ class Messages extends Component {
 		this.props.selectConversation( index );
 		this.displayConversation();
 		this.clearChatNotifications( this.props.conversations[ index ]);
-		if ( this.props.largeScreen ) {
+		if ( this.props.largeScreen && this.props.displayPopup ) {
 			this.props.switchMessages();
 		}
 	}
@@ -381,10 +377,8 @@ class Messages extends Component {
 			this.props.toggleConversation();
 			return;
 		}
-		this.setState({
-			displayFriendsList: false,
-			displayConversation: false
-		});
+		this.setState({ displayFriendsList: false });
+		this.props.switchConversation( false );
 		if ( this.props.profilePage && this.props.messageTarget ) {
 			this.props.startChat( undefined );
 		}
@@ -409,7 +403,7 @@ class Messages extends Component {
 			largeScreen, profilePage, displayPopup, hideSidebar,
 			spaceForNavbar
 		} = this.props;
-		if ( this.state.displayConversation && !largeScreen ) {
+		if ( this.props.displayConversation && !largeScreen ) {
 			return (
 				<Conversation
 					conversation={newConversation ?
@@ -520,7 +514,7 @@ class Messages extends Component {
 						</ChatTab>
 					}
 
-					{this.state.displayConversation && largeScreen &&
+					{this.props.displayConversation && largeScreen &&
 							<Conversation
 								conversation={newConversation ?
 									newConversation
@@ -680,7 +674,8 @@ const
 		conversations: state.conversations.allConversations,
 		selectedConversation: state.conversations.selectedConversation,
 		newConversation: state.conversations.newConversation,
-		chatNotifications: state.conversations.notifications
+		chatNotifications: state.conversations.notifications,
+		displayConversation: state.conversations.displayConversation
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -689,7 +684,9 @@ const
 		deleteChat: targetUsername => dispatch( deleteChat( targetUsername )),
 		selectConversation: index => dispatch( selectConversation( index )),
 		setupNewConversation: conver => dispatch( setupNewConversation( conver )),
-		switchMessages: ( id ) => dispatch( switchMessages( id )),
+		switchMessages: () => dispatch( switchMessages()),
+		switchConversation: shouldDisplay =>
+			dispatch( switchConversation( shouldDisplay )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
 	});

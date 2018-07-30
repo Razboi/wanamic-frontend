@@ -90,6 +90,25 @@ const
 			bottom: 2rem;
 			right: 2rem;
 		}
+	`,
+	ErrorMessage = styled( Message )`
+		position: fixed !important;
+		top: 0 !important;
+		width: 100% !important;
+		text-align: center !important;
+		border-radius: 0px !important;
+	`,
+	FieldsPatterns = styled.span`
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #eee;
+		margin: auto;
+		font-size: 1rem;
+		text-align: center;
+		@media(min-width: 420px) {
+			font-size: 1.05rem;
+		}
 	`;
 
 
@@ -111,29 +130,31 @@ class Step1 extends Component {
 
 				<FormContainer>
 					{this.props.error &&
-						<Message negative>
+						<ErrorMessage negative>
 							<Message.Header>{this.props.error}</Message.Header>
-						</Message>
+						</ErrorMessage>
 					}
 					<FormDimmer>
 						<StyledForm>
 							<FormInput
 								autoFocus
 								maxLength="30"
+								pattern="[a-zA-Z]"
 								className="fullnameInput"
 								onChange={this.props.handleChange}
 								onKeyPress={this.handleKeyPress}
 								name="fullname"
-								placeholder="Full name"
+								placeholder="Full name *"
 							/>
 							<FormInput
-								username
+								username={1}
 								maxLength="30"
+								pattern="[a-zA-Z0-9-_]"
 								className="usernameInput"
 								onChange={this.props.handleChange}
 								onKeyPress={this.handleKeyPress}
 								name="username"
-								placeholder="Username"
+								placeholder="Username **"
 							/>
 
 							<NextButton
@@ -145,6 +166,11 @@ class Step1 extends Component {
 							/>
 						</StyledForm>
 					</FormDimmer>
+
+					<FieldsPatterns>
+						*Letters and spaces.<br/>
+						**Letters, numbers and underscores.
+					</FieldsPatterns>
 				</FormContainer>
 			</Wrapper>
 		);

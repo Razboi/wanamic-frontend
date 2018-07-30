@@ -22,6 +22,7 @@ const
 	Wrapper = styled.div`
 		overflow-y: scroll;
 		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
@@ -202,10 +203,7 @@ class Home extends Component {
 					initialLoad={false}
 					useWindow={true}
 				>
-					<NavBar
-						socket={this.props.socket}
-						hide={this.props.mediaOptions}
-					/>
+
 					{this.state.mediaButton &&
 						<ShareMediaButton
 							onClick={() => this.props.switchMediaOptions()}
@@ -223,17 +221,18 @@ class Home extends Component {
 							socket={this.props.socket}
 						/>}
 
-					<MediaDimmer
-						blur={this.props.mediaOptions}
-						onClick={this.hidePopups}
-					>
-						<HomeContent>
-							<NewsFeed
-								posts={newsfeed}
-								socket={this.props.socket}
-								history={this.props.history}
-							/>
-						</HomeContent>
+					<MediaDimmer blur={this.props.mediaOptions} >
+						<NavBar socket={this.props.socket}/>
+
+						<OutsideClickHandler onClick={this.hidePopups}>
+							<HomeContent>
+								<NewsFeed
+									posts={newsfeed}
+									socket={this.props.socket}
+									history={this.props.history}
+								/>
+							</HomeContent>
+						</OutsideClickHandler>
 					</MediaDimmer>
 
 				</InfiniteScroll>

@@ -25,6 +25,11 @@ const
 		min-height: 100px;
 		align-items: center;
 		justify-content: center;
+		@media (min-width: 420px) {
+			width: 600px;
+			margin-top: 3rem;
+			padding: 0 5px;
+		}
 	`;
 
 class ProfileTimeline extends Component {

@@ -16,7 +16,9 @@ const
 		z-index: 20;
 		@media (max-width: 420px) {
 			background: #fff;
-			height: 100vh;
+			min-height: 100vh;
+			height: 100%;
+			overflow-y: scroll;
 		}
 		@media (min-width: 420px) {
 			width: 600px;

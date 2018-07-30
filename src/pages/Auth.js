@@ -74,11 +74,26 @@ class AuthPage extends Component {
 
 	handleSignup = () => {
 		const credentials = {
-			email: this.state.email, password: this.state.password,
-			username: this.state.username, fullname: this.state.fullname
+			email: this.state.email.trim(), password: this.state.password,
+			username: this.state.username.trim(),
+			fullname: this.state.fullname.trim()
 		};
-		if ( !validateEmail( this.state.email )) {
+		if ( !validateEmail( credentials.email )) {
 			this.setState({ error: "Invalid email format" });
+			return;
+		}
+		if ( !/[a-z\s]+$/i.test( credentials.fullname )) {
+			this.setState({
+				error: "Invalid fullname format. Letters and spaces only."
+			});
+			return;
+		}
+
+		if ( !/[a-zA-Z0-9_]+$/.test( credentials.username )
+		|| /\s/.test( credentials.username )) {
+			this.setState({
+				error: "Invalid username format. Alphanumeric and underscores only."
+			});
 			return;
 		}
 		if ( credentials.email !== "" && credentials.password !== "" &&

@@ -3,7 +3,8 @@ const initialState = {
 	selectedConversation: 0,
 	newConversation: undefined,
 	notifications: [],
-	displayMessages: false
+	displayMessages: false,
+	displayConversation: false
 };
 
 export default function conversations( state = initialState, action = {}) {
@@ -74,6 +75,12 @@ export default function conversations( state = initialState, action = {}) {
 			displayMessages: !state.displayMessages
 		};
 
+	case "SWITCH_CONVERSATION":
+		return {
+			...state,
+			displayConversation: action.shouldDisplay
+		};
+
 	case "SET_CHAT_NOTIFICATIONS":
 		return {
 			...state,
@@ -90,7 +97,8 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			allConversations: state.allConversations.map(( conver, index ) => {
-				if ( index === action.index ) {
+				if ( index === action.index && ( index !==
+					state.selectedConversation || !state.displayConversation )) {
 					return {
 						...conver,
 						newMessagesCount: conver.newMessagesCount += 1

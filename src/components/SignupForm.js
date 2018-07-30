@@ -119,7 +119,7 @@ const
 		}
 	`,
 	ErrorMessage = styled( Message )`
-		position: absolute !important;
+		position: fixed !important;
 		top: 0 !important;
 		width: 100% !important;
 		text-align: center !important;
@@ -129,6 +129,11 @@ const
 		color: #fff;
 		margin-left: 0.3rem;
 		font-weight: bold;
+		@media(min-width: 420px) {
+			:hover {
+				cursor: pointer;
+			}
+		}
 	`;
 
 

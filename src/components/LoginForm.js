@@ -110,6 +110,11 @@ const
 		margin-top: 1rem;
 		text-align: center;
 		color: #eee;
+		@media(min-width: 420px) {
+			:hover {
+				cursor: pointer;
+			}
+		}
 	`,
 	NewAccount = styled.span`
 		display: flex;
@@ -133,6 +138,11 @@ const
 		color: #fff;
 		margin-left: 0.3rem;
 		font-weight: bold;
+		@media(min-width: 420px) {
+			:hover {
+				cursor: pointer;
+			}
+		}
 	`;
 
 

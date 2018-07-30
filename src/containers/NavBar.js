@@ -142,7 +142,10 @@ class NavBar extends Component {
 	}
 
 	handleNotifications = () => {
-		if ( this.props.location.pathname !== "/notifications" ) {
+		if ( window.innerWidth > 420 ) {
+			this.props.switchNotifications();
+			this.props.displayMessages && this.props.switchMessages();
+		} else if ( this.props.location.pathname !== "/notifications" ) {
 			this.props.history.push( "/notifications" );
 		}
 	}
@@ -155,7 +158,8 @@ class NavBar extends Component {
 
 	handleMessages = () => {
 		if ( window.innerWidth > 420 ) {
-			this.setState({ messagesPopup: true });
+			this.props.switchMessages();
+			this.props.displayNotifications && this.props.switchNotifications();
 		} else if ( this.props.location.pathname !== "/messages" ) {
 			this.props.history.push( "/messages" );
 		}
@@ -221,10 +225,7 @@ class NavBar extends Component {
 
 					<NavOption>
 						<NavImage
-							onClick={window.innerWidth > 420 ?
-								this.props.switchNotifications
-								:
-								this.handleNotifications}
+							onClick={this.handleNotifications}
 							image={this.props.location.pathname === "/notifications"
 							|| this.props.displayNotifications
 								?
@@ -247,10 +248,7 @@ class NavBar extends Component {
 
 					<NavOption>
 						<NavImage
-							onClick={window.innerWidth > 420 ?
-								this.props.switchMessages
-								:
-								this.handleMessages}
+							onClick={this.handleMessages}
 							image={this.props.location.pathname === "/messages"
 							|| this.props.displayMessages ?
 								require( "../images/chat_color.png" )

@@ -195,14 +195,14 @@ const
 		flex-direction: row;
 		justify-content: space-around;
 		width: 100%;
-		:hover {
-			cursor: pointer;
-		}
 		@media (min-width: 420px) {
 			width: 600px;
 			margin: 0 auto;
 			color: #111;
 			font-size: 1.05rem;
+			:hover {
+				cursor: pointer;
+			}
 		}
 	`,
 	Tab = styled.span`

@@ -22,7 +22,7 @@ const
 		top: 0;
 		left: 0;
 		border-radius: ${props => props.explore ? "8px" : "0"};
-		filter: brightness( 70% );
+		filter: ${props => props.explore && "brightness( 85% )"};
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
@@ -39,7 +39,11 @@ const
 		height: 0;
 		padding-bottom: 100%;
 		@media (min-width: 420px) {
-			padding-bottom: ${props => props.details ? "50%" : "100%"};
+			padding-bottom: ${props => props.details ?
+		( props.video ? "50%" : "420px" ) : "100%"};
+
+			width: ${props => props.details && !props.video && "420px"};
+			margin: ${props => props.details && !props.video && "0 auto"};
 		}
 	`,
 	LinkPreviewText = styled.div`
@@ -75,6 +79,16 @@ const
 		margin: auto !important;
 		font-size: 2.5rem !important;
 		color: rgba( 255, 255, 255, 0.75 );
+	`,
+	LinkIcon = styled( Icon )`
+		position: absolute !important;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto !important;
+		font-size: 2.5rem !important;
+		color: rgba( 255, 255, 255, 0.75 );
 	`;
 
 
@@ -92,18 +106,25 @@ class LinkPreview extends Component {
 							className="linkPreviewImage"
 							src={this.props.linkContent.image}
 						/>
-						<PlayIcon name="video play" />
+						{this.props.linkContent.embeddedUrl ?
+							<PlayIcon name="video play" />
+							:
+							<LinkIcon name="linkify" />
+						}
 					</LinkMedia>
 
 				</LinkPreviewWrapper>
 			);
 		}
 		return (
-			<a href={this.props.linkContent.url}>
+			<a href={this.props.linkContent.url} target="_blank">
 				<LinkPreviewWrapper
 					className="linkPreviewWrapper"
 				>
-					<LinkMedia details={this.props.details}>
+					<LinkMedia
+						video={this.props.linkContent.embeddedUrl}
+						details={this.props.details}
+					>
 						{this.props.linkContent.embeddedUrl ?
 							<LinkPreviewIframe
 								className="linkPreviewIframe"

@@ -9,6 +9,7 @@ export const
 	ADD_CHAT_NOTIFICATION = "ADD_CHAT_NOTIFICATION",
 	INCREMENT_CHAT_NEW_MESSAGES = "INCREMENT_CHAT_NEW_MESSAGES",
 	SWITCH_MESSAGES = "SWITCH_MESSAGES",
+	SWITCH_CONVERSATION = "SWITCH_CONVERSATION",
 
 
 	setConversations = conversations => ({
@@ -44,6 +45,11 @@ export const
 
 	switchMessages = () => ({
 		type: SWITCH_MESSAGES
+	}),
+
+	switchConversation = shouldDisplay => ({
+		type: SWITCH_CONVERSATION,
+		shouldDisplay: shouldDisplay
 	}),
 
 	setChatNotifications = authors => ({
