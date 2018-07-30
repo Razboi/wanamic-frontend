@@ -60,10 +60,6 @@ const
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		i {
-			font-size: 1.45rem !important;
-			margin: 0 !important;
-		}
 	`,
 	NavImage = styled.span`
 		height: 24px;
@@ -158,7 +154,9 @@ class NavBar extends Component {
 	}
 
 	handleMessages = () => {
-		if ( this.props.location.pathname !== "/messages" ) {
+		if ( window.innerWidth > 420 ) {
+			this.setState({ messagesPopup: true });
+		} else if ( this.props.location.pathname !== "/messages" ) {
 			this.props.history.push( "/messages" );
 		}
 	}
@@ -267,9 +265,13 @@ class NavBar extends Component {
 							}
 						</NavImage>
 
-						{this.props.displayMessages &&
-							<Messages socket={this.props.socket} largeScreen isPopup />
-						}
+						<Messages
+							displayPopup={this.props.displayMessages}
+							socket={this.props.socket}
+							largeScreen
+							spaceForNavbar={this.props.location.pathname === "/"}
+							hideSidebar={this.props.location.pathname !== "/"}
+						/>
 					</NavOption>
 
 					<Logo href="localhost:3000">

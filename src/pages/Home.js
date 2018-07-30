@@ -5,6 +5,7 @@ import {
 	switchComments, switchShare
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
+import { switchMessages } from "../services/actions/conversations";
 import PostDetails from "../containers/PostDetails";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -12,7 +13,6 @@ import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import Comments from "../containers/Comments";
-import Messages from "./Messages";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
@@ -145,6 +145,9 @@ class Home extends Component {
 		if ( this.props.displayNotifications ) {
 			this.props.switchNotifications();
 		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
@@ -230,15 +233,6 @@ class Home extends Component {
 								socket={this.props.socket}
 								history={this.props.history}
 							/>
-
-							<Messages
-								largeScreen
-								onHome
-								chat={this.state.chat}
-								toggleChat={this.toggleChat}
-								socket={this.props.socket}
-								spaceForNavbar
-							/>
 						</HomeContent>
 					</MediaDimmer>
 
@@ -261,7 +255,8 @@ const
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
 		postDetailsIndex: state.posts.postDetailsIndex,
-		displayNotifications: state.notifications.displayNotifications
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -271,6 +266,7 @@ const
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchNotifications: () => dispatch( switchNotifications()),
+		switchMessages: () => dispatch( switchMessages()),
 		switchComments: () => dispatch( switchComments()),
 		switchShare: () => dispatch( switchShare())
 	});

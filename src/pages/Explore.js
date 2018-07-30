@@ -13,6 +13,7 @@ import {
 	setPosts, addToPosts, switchPostDetails, switchComments, switchShare
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
+import { switchMessages } from "../services/actions/conversations";
 import { connect } from "react-redux";
 import _ from "lodash";
 
@@ -410,6 +411,12 @@ class ExplorePage extends Component {
 	}
 
 	hidePopups = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
@@ -418,12 +425,6 @@ class ExplorePage extends Component {
 		}
 		if ( this.props.displayShare ) {
 			this.props.switchShare();
-		}
-	}
-
-	hideNotifications = () => {
-		if ( this.props.displayNotifications ) {
-			this.props.switchNotifications();
 		}
 	}
 
@@ -502,7 +503,7 @@ class ExplorePage extends Component {
 						socket={this.props.socket}
 					/>
 
-					<PageContent onClick={this.hideNotifications}>
+					<PageContent onClick={this.hidePopups}>
 						<Header>
 							<UserSubheader active={!this.state.content}>
 								<HeaderImage
@@ -562,6 +563,7 @@ const
 	mapStateToProps = state => ({
 		posts: state.posts.explore,
 		displayPostDetails: state.posts.displayPostDetails,
+		displayMessages: state.conversations.displayMessages,
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications
@@ -574,6 +576,7 @@ const
 			dispatch( addToPosts( posts, onExplore )),
 		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchNotifications: () => dispatch( switchNotifications()),
+		switchMessages: () => dispatch( switchMessages()),
 		switchComments: () => dispatch( switchComments()),
 		switchShare: () => dispatch( switchShare())
 	});

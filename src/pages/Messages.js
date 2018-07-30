@@ -31,10 +31,12 @@ const
 			}
 		}
 		@media (min-width: 420px) {
+			display: ${props => props.hideSidebar && "none"};
 			height: ${props => props.spaceForNavbar ?
 		"calc(100vh - 49.33px)" : "100vh"};
 			position: fixed;
 			right: 0;
+			bottom: 0;
 			width: 260px;
 			background: rgba( 255, 255, 255, 0.466 );
 			z-index: 2;
@@ -65,7 +67,12 @@ const
 		font-size: 17px;
 		font-weight: bold;
 		@media (min-width: 420px) {
-			display: none;
+			display: ${props => !props.isPopup && "none"};
+			color: #333;
+			padding: 7px 0;
+			font-size: 1rem;
+			background: rgba(133,217,191,0.34);
+			border-bottom: 0;
 		}
 	`,
 	NewConversationButton = styled( Button )`
@@ -167,7 +174,7 @@ const
 		bottom: 0;
 		right: 0;
 		background: #fff;
-		display: flex;
+		display: ${props => props.hideSidebar ? "none" : "flex"};
 		align-items: center;
 		justify-content: flex-start;
 		font-weight: 600;
@@ -201,7 +208,8 @@ class Messages extends Component {
 			displayConversation: false,
 			messageInput: "",
 			sentMessages: 0,
-			spam: false
+			spam: false,
+			chat: true
 		};
 	}
 
@@ -295,6 +303,9 @@ class Messages extends Component {
 		this.props.selectConversation( index );
 		this.displayConversation();
 		this.clearChatNotifications( this.props.conversations[ index ]);
+		if ( this.props.largeScreen ) {
+			this.props.switchMessages();
+		}
 	}
 
 	clearChatNotifications = async conversation => {
@@ -386,16 +397,17 @@ class Messages extends Component {
 		}, 10000 );
 	}
 
-	handleHide = () => {
+	toggleChat = () => {
 		if ( this.props.largeScreen ) {
-			this.props.toggleChat();
+			this.setState( state => ({ chat: !state.chat }));
 		}
 	}
 
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
-			largeScreen, profilePage, isPopup
+			largeScreen, profilePage, displayPopup, hideSidebar,
+			spaceForNavbar
 		} = this.props;
 		if ( this.state.displayConversation && !largeScreen ) {
 			return (
@@ -424,14 +436,14 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( largeScreen && !isPopup ) {
+		if ( largeScreen ) {
 			return (
 				<React.Fragment>
-					{this.props.chat ?
+					{this.state.chat ?
 						<Wrapper
-							isPopup={this.props.isPopup}
-							largeScreen={this.props.largeScreen}
-							spaceForNavbar={this.props.spaceForNavbar}
+							hideSidebar={hideSidebar}
+							largeScreen={largeScreen}
+							spaceForNavbar={spaceForNavbar}
 						>
 							{this.state.displayFriendsList && largeScreen ?
 								<FriendsList
@@ -441,7 +453,6 @@ class Messages extends Component {
 								/>
 								:
 								<React.Fragment>
-									<NavBar hideOnLargeScreen socket={this.props.socket} />
 									<PageHeader>Conversations</PageHeader>
 
 									<div className="conversationsList">
@@ -490,7 +501,7 @@ class Messages extends Component {
 										icon="comment"
 									/>
 									<HideButton
-										onClick={this.handleHide}
+										onClick={this.toggleChat}
 										primary
 										circular
 										icon="chevron right"
@@ -499,7 +510,7 @@ class Messages extends Component {
 							}
 						</Wrapper>
 						:
-						<ChatTab onClick={this.props.toggleChat}>
+						<ChatTab hideSidebar={hideSidebar} onClick={this.toggleChat}>
 							<DisplayChatButton
 								primary
 								circular
@@ -525,88 +536,67 @@ class Messages extends Component {
 								spam={this.state.spam}
 							/>
 					}
-				</React.Fragment>
-			);
-		}
 
-		if ( largeScreen && isPopup ) {
-			return (
-				<React.Fragment>
-					<PopupWrapper>
-						{this.state.displayFriendsList && largeScreen ?
-							<FriendsList
-								friends={this.state.friends}
-								handleNewConversation={this.handleNewConversation}
-								back={this.backToOpenConversations}
-							/>
-							:
-							<React.Fragment>
-								<PageHeader>Conversations</PageHeader>
-
-								<div className="conversationsList">
-									{this.props.conversations.map(( chat, index ) =>
-										<OpenConversation
-											key={index}
-											onClick={() => this.handleSelectConversation( index ) }
-											newMessages={chat.newMessagesCount > 0}
-										>
-											<UserImg
-												circular
-												src={chat.target.profileImage ?
-													require( "../images/" + chat.target.profileImage )
-													:
-													require( "../images/defaultUser.png" )
-												}
-											/>
-											<TextInfo>
-												<UserFullname>
-													{chat.target.fullname}
-												</UserFullname>
-												<LastMessage>
-													@{chat.messages[ chat.messages.length - 1 ].author.username}: {
-														chat.messages[ chat.messages.length - 1 ].content}
-												</LastMessage>
-											</TextInfo>
-											<LastMessageTime>
-												{moment(
-													chat.messages[ chat.messages.length - 1 ].createdAt
-												).fromNow( true )}
-											</LastMessageTime>
-											{chat.newMessagesCount > 0 &&
-												<NewMessagesCount
-													size="tiny" circular
-												>
-													{chat.newMessagesCount}
-												</NewMessagesCount>
-											}
-										</OpenConversation>
-									)}
-								</div>
-								<NewConversationButton
-									onClick={this.handleFriendsList}
-									primary
-									circular
-									icon="comment"
+					{displayPopup &&
+						<PopupWrapper>
+							{this.state.displayFriendsList && largeScreen ?
+								<FriendsList
+									friends={this.state.friends}
+									handleNewConversation={this.handleNewConversation}
+									back={this.backToOpenConversations}
 								/>
-							</React.Fragment>
-						}
-					</PopupWrapper>
+								:
+								<React.Fragment>
+									<PageHeader isPopup>Conversations</PageHeader>
 
-					{this.state.displayConversation && largeScreen &&
-							<Conversation
-								conversation={newConversation ?
-									newConversation
-									:
-									conversations[ selectedConversation ]
-								}
-								newConversation={!!newConversation}
-								handleKeyPress={this.handleKeyPress}
-								handleChange={this.handleChange}
-								handleDeleteChat={this.handleDeleteChat}
-								back={this.backToOpenConversations}
-								messageInput={this.state.messageInput}
-								spam={this.state.spam}
-							/>
+									<div className="conversationsList">
+										{this.props.conversations.map(( chat, index ) =>
+											<OpenConversation
+												key={index}
+												onClick={() => this.handleSelectConversation( index ) }
+												newMessages={chat.newMessagesCount > 0}
+											>
+												<UserImg
+													circular
+													src={chat.target.profileImage ?
+														require( "../images/" + chat.target.profileImage )
+														:
+														require( "../images/defaultUser.png" )
+													}
+												/>
+												<TextInfo>
+													<UserFullname>
+														{chat.target.fullname}
+													</UserFullname>
+													<LastMessage>
+														@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+															chat.messages[ chat.messages.length - 1 ].content}
+													</LastMessage>
+												</TextInfo>
+												<LastMessageTime>
+													{moment(
+														chat.messages[ chat.messages.length - 1 ].createdAt
+													).fromNow( true )}
+												</LastMessageTime>
+												{chat.newMessagesCount > 0 &&
+													<NewMessagesCount
+														size="tiny" circular
+													>
+														{chat.newMessagesCount}
+													</NewMessagesCount>
+												}
+											</OpenConversation>
+										)}
+									</div>
+									<NewConversationButton
+										onClick={this.handleFriendsList}
+										primary
+										circular
+										icon="comment"
+									/>
+								</React.Fragment>
+							}
+						</PopupWrapper>
 					}
 				</React.Fragment>
 			);
@@ -678,10 +668,11 @@ Messages.propTypes = {
 	chatNotifications: PropTypes.array.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	toggleChat: PropTypes.func,
 	spaceForNavbar: PropTypes.bool,
 	largeScreen: PropTypes.bool,
-	profilePage: PropTypes.bool
+	profilePage: PropTypes.bool,
+	displayPopup: PropTypes.bool,
+	hideSidebar: PropTypes.bool
 };
 
 const
