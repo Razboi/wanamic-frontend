@@ -36,8 +36,26 @@ const
 			position: fixed;
 			right: 0;
 			width: 260px;
-			background: rgba( 255, 255, 255, 0.4 );
+			background: rgba( 255, 255, 255, 0.466 );
 			z-index: 2;
+		}
+	`,
+	PopupWrapper = styled.div`
+		@media (min-width: 420px) {
+			height: 400px;
+			width: 400px;
+			position: absolute;
+			bottom: -393px;
+			left: 0;
+			background: #fff;
+			border-radius: 2px;
+			box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+			border: 1px solid rgba(0,0,0,0.1);
+			z-index: 5;
+			border-top: 0;
+		};
+		@media (max-width: 420px) {
+			display: none;
 		}
 	`,
 	PageHeader = styled.div`
@@ -199,6 +217,7 @@ class Messages extends Component {
 	}
 
 	componentDidUpdate( prevProps ) {
+		console.log( "here" );
 		const { messageTarget } = this.props;
 		if ( messageTarget && messageTarget !== prevProps.messageTarget ) {
 			this.handleNewConversation( this.props.messageTarget );
@@ -376,7 +395,7 @@ class Messages extends Component {
 	render() {
 		const {
 			conversations, selectedConversation, newConversation,
-			largeScreen, profilePage
+			largeScreen, profilePage, isPopup
 		} = this.props;
 		if ( this.state.displayConversation && !largeScreen ) {
 			return (
@@ -405,11 +424,12 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( largeScreen ) {
+		if ( largeScreen && !isPopup ) {
 			return (
 				<React.Fragment>
 					{this.props.chat ?
 						<Wrapper
+							isPopup={this.props.isPopup}
 							largeScreen={this.props.largeScreen}
 							spaceForNavbar={this.props.spaceForNavbar}
 						>
@@ -509,7 +529,90 @@ class Messages extends Component {
 			);
 		}
 
-		if ( !profilePage ) {
+		if ( largeScreen && isPopup ) {
+			return (
+				<React.Fragment>
+					<PopupWrapper>
+						{this.state.displayFriendsList && largeScreen ?
+							<FriendsList
+								friends={this.state.friends}
+								handleNewConversation={this.handleNewConversation}
+								back={this.backToOpenConversations}
+							/>
+							:
+							<React.Fragment>
+								<PageHeader>Conversations</PageHeader>
+
+								<div className="conversationsList">
+									{this.props.conversations.map(( chat, index ) =>
+										<OpenConversation
+											key={index}
+											onClick={() => this.handleSelectConversation( index ) }
+											newMessages={chat.newMessagesCount > 0}
+										>
+											<UserImg
+												circular
+												src={chat.target.profileImage ?
+													require( "../images/" + chat.target.profileImage )
+													:
+													require( "../images/defaultUser.png" )
+												}
+											/>
+											<TextInfo>
+												<UserFullname>
+													{chat.target.fullname}
+												</UserFullname>
+												<LastMessage>
+													@{chat.messages[ chat.messages.length - 1 ].author.username}: {
+														chat.messages[ chat.messages.length - 1 ].content}
+												</LastMessage>
+											</TextInfo>
+											<LastMessageTime>
+												{moment(
+													chat.messages[ chat.messages.length - 1 ].createdAt
+												).fromNow( true )}
+											</LastMessageTime>
+											{chat.newMessagesCount > 0 &&
+												<NewMessagesCount
+													size="tiny" circular
+												>
+													{chat.newMessagesCount}
+												</NewMessagesCount>
+											}
+										</OpenConversation>
+									)}
+								</div>
+								<NewConversationButton
+									onClick={this.handleFriendsList}
+									primary
+									circular
+									icon="comment"
+								/>
+							</React.Fragment>
+						}
+					</PopupWrapper>
+
+					{this.state.displayConversation && largeScreen &&
+							<Conversation
+								conversation={newConversation ?
+									newConversation
+									:
+									conversations[ selectedConversation ]
+								}
+								newConversation={!!newConversation}
+								handleKeyPress={this.handleKeyPress}
+								handleChange={this.handleChange}
+								handleDeleteChat={this.handleDeleteChat}
+								back={this.backToOpenConversations}
+								messageInput={this.state.messageInput}
+								spam={this.state.spam}
+							/>
+					}
+				</React.Fragment>
+			);
+		}
+
+		if ( !largeScreen && !profilePage ) {
 			return (
 				<React.Fragment>
 					<Wrapper>

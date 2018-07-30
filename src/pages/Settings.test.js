@@ -13,16 +13,12 @@ Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<Settings/>", () => {
 	const
-		store = mockStore({}),
+		store = mockStore({ notifications: {} }),
 		wrapper = shallow(
 			<Settings store={store} />
 		).dive();
 
 	it( "Checks that <Settings/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
-	});
-
-	it( "Checks that every children inside the form renders", () => {
-		expect( wrapper.children().children().children()).to.have.length( 7 );
 	});
 });

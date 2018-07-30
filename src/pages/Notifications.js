@@ -68,6 +68,9 @@ const
 		justify-content: space-between;
 		padding: 1rem;
 		background: #fff;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	NotificationImg = styled( Image )`
 		width: 35px !important;

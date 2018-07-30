@@ -6,7 +6,9 @@ import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
 import { switchNotifications } from "../services/actions/notifications";
+import { switchMessages } from "../services/actions/conversations";
 import Notifications from "../pages/Notifications";
+import Messages from "../pages/Messages";
 
 const
 	Wrapper = styled.div`
@@ -47,9 +49,6 @@ const
 	`,
 	NavOption = styled.div`
 		height: 100%;
-		:hover {
-			cursor: pointer;
-		}
 		@media (max-width: 420px) {
 			width: 100%;
 		}
@@ -74,6 +73,9 @@ const
 		background-repeat: no-repeat;
 		margin: 0;
 		position: relative;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	ProfileImg = styled( Image )`
 		width: 30px !important;
@@ -208,34 +210,7 @@ class NavBar extends Component {
 							}
 						/>
 					</NavOption>
-					<NavOption>
-						<div
-							onClick={window.innerWidth > 420 ?
-								this.props.switchNotifications
-								:
-								this.handleNotifications}
-						>
-							<NavImage
-								image={this.props.location.pathname === "/notifications"
-								|| this.props.displayNotifications
-									?
-									require( "../images/bell_color.png" )
-									:
-									require( "../images/bell.png" )
-								}
-							>
-								{this.props.newNotifications > 0 &&
-									<Label size="small" floating circular>
-										{this.props.newNotifications}
-									</Label>
-								}
-							</NavImage>
-						</div>
 
-						{this.props.displayNotifications &&
-							<Notifications socket={this.props.socket} isPopup />
-						}
-					</NavOption>
 					<NavOption onClick={this.handleExplore}>
 						<NavImage
 							image={this.props.location.pathname === "/explore" ?
@@ -245,12 +220,41 @@ class NavBar extends Component {
 							}
 						/>
 					</NavOption>
-					<NavOption
-						id="NavbarSmallScreenOption"
-						onClick={this.handleMessages}
-					>
+
+					<NavOption>
 						<NavImage
-							image={this.props.location.pathname === "/messages" ?
+							onClick={window.innerWidth > 420 ?
+								this.props.switchNotifications
+								:
+								this.handleNotifications}
+							image={this.props.location.pathname === "/notifications"
+							|| this.props.displayNotifications
+								?
+								require( "../images/bell_color.png" )
+								:
+								require( "../images/bell.png" )
+							}
+						>
+							{this.props.newNotifications > 0 &&
+								<Label size="small" floating circular>
+									{this.props.newNotifications}
+								</Label>
+							}
+						</NavImage>
+
+						{this.props.displayNotifications &&
+							<Notifications socket={this.props.socket} isPopup />
+						}
+					</NavOption>
+
+					<NavOption>
+						<NavImage
+							onClick={window.innerWidth > 420 ?
+								this.props.switchMessages
+								:
+								this.handleMessages}
+							image={this.props.location.pathname === "/messages"
+							|| this.props.displayMessages ?
 								require( "../images/chat_color.png" )
 								:
 								require( "../images/chat.png" )
@@ -262,6 +266,10 @@ class NavBar extends Component {
 								</Label>
 							}
 						</NavImage>
+
+						{this.props.displayMessages &&
+							<Messages socket={this.props.socket} largeScreen isPopup />
+						}
 					</NavOption>
 
 					<Logo href="localhost:3000">
@@ -362,12 +370,14 @@ const
 		chatNotifications: state.conversations.notifications,
 		totalLikes: state.user.totalLikes,
 		totalViews: state.user.totalViews,
-		displayNotifications: state.notifications.displayNotifications
+		displayNotifications: state.notifications.displayNotifications,
+		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		logout: () => dispatch( logout()),
-		switchNotifications: () => dispatch( switchNotifications())
+		switchNotifications: () => dispatch( switchNotifications()),
+		switchMessages: () => dispatch( switchMessages())
 	});
 
 export default withRouter(

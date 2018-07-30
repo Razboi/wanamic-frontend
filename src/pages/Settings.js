@@ -4,9 +4,11 @@ import api from "../services/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "../services/actions/auth";
+import { switchNotifications } from "../services/actions/notifications";
 import refreshToken from "../utils/refreshToken";
 import validateEmail from "../utils/validateEmail";
 import styled from "styled-components";
+import NavBar from "../containers/NavBar";
 import AccountSettings from "../components/AccountSettings";
 import PasswordSettings from "../components/PasswordSettings";
 import EmailSettings from "../components/EmailSettings";
@@ -22,40 +24,36 @@ const
 		justify-content: center;
 		background: rgb(230, 240, 236);
 	`,
+	StyledNavBar = styled( NavBar )`
+		@media (max-width: 420px) {
+			display: none !important;
+		}
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
+	`,
 	Page = styled.div`
 		height: 100vh;
-		width: 100%;
 		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 9% 91%;
-		grid-template-areas:
-			"hea"
-			"opt";
+		margin-top: 69.33px !important;
 		@media (max-width: 420px) {
 			position: absolute;
+			width: 100%;
+			grid-template-columns: 100%;
+			grid-template-rows: 100%;
+			grid-template-areas:
+				"opt";
 		}
 		@media (min-width: 420px) {
-			width: 800px;
+			width: 1000px;
 			margin: 0 auto;
+			grid-template-columns: 20% 80%;
+			grid-template-rows: 100%;
+			grid-template-areas:
+				"sidebar main";
 		}
 `,
-	HeaderWrapper = styled.div`
-		grid-area: hea;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
-		background: #fff;
-	`,
-	BackArrow = styled( Icon )`
-		font-size: 1.3rem !important;
-		margin: 0 !important;
-	`,
-	HeaderTxt = styled.span`
-		margin-left: 1rem;
-		font-weight: bold;
-		font-size: 1.28rem;
-	`,
 	Options = styled.div`
 		grid-area: opt;
 		background: #fff;
@@ -63,12 +61,25 @@ const
 			display: none !important;
 		}
 		overflow-y: scroll;
+		@media (min-width: 420px) {
+			grid-area: sidebar;
+			border-right: 1px solid rgba(0,0,0,0.1);
+			z-index: 2;
+		}
 	`,
 	Option = styled.div`
 		display: flex;
+		color: #111;
 		font-size: 1.03rem;
 		padding: 1.5rem 1rem !important;
 		border-bottom: 1px solid rgba(0, 0, 0, .2);
+		:hover {
+			cursor: pointer;
+		}
+		@media (min-width: 420px) {
+			border: none;
+			font-weight: ${props => props.active && "600"};
+		}
 	`,
 	RightArrow = styled( Icon )`
 		font-size: 1.15rem !important;
@@ -95,6 +106,9 @@ class SettingsPage extends Component {
 
 	componentDidMount() {
 		this.getUserInfo();
+		if ( window.innerWidth > 420 ) {
+			this.setState({ tab: 1 });
+		}
 	}
 
 	getUserInfo = async() => {
@@ -294,8 +308,14 @@ class SettingsPage extends Component {
 		}));
 	}
 
+	hideNotifications = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+	}
+
 	render() {
-		if ( this.state.tab === 1 ) {
+		if ( this.state.tab === 1 && window.innerWidth < 420 ) {
 			return (
 				<AccountSettings
 					updateUserInfo={this.updateUserInfo}
@@ -312,7 +332,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 2 ) {
+		if ( this.state.tab === 2 && window.innerWidth < 420 ) {
 			return (
 				<ContentSettings
 					updatePreferences={this.updatePreferences}
@@ -324,7 +344,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 3 ) {
+		if ( this.state.tab === 3 && window.innerWidth < 420 ) {
 			return (
 				<PasswordSettings
 					updatePassword={this.updatePassword}
@@ -337,7 +357,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 4 ) {
+		if ( this.state.tab === 4 && window.innerWidth < 420 ) {
 			return (
 				<EmailSettings
 					updateEmail={this.updateEmail}
@@ -349,7 +369,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 5 ) {
+		if ( this.state.tab === 5 && window.innerWidth < 420 ) {
 			return (
 				<DeleteAccount
 					deleteAccount={this.deleteAccount}
@@ -363,33 +383,105 @@ class SettingsPage extends Component {
 		}
 		return (
 			<Wrapper>
-				<Page>
-					<HeaderWrapper>
-						<BackArrow
-							name="arrow left"
-							onClick={() => this.props.history.push( "/" )}
-						/>
-						<HeaderTxt>Settings</HeaderTxt>
-					</HeaderWrapper>
-					<Options>
-						<Option onClick={() => this.changeTab( 1 )}>
-							Account
-							<RightArrow name="angle right"/>
-						</Option>
-						<Option onClick={() => this.changeTab( 2 )}>
-							Content preferences<RightArrow name="angle right"/>
-						</Option>
-						<Option onClick={() => this.changeTab( 3 )}>
-							Password<RightArrow name="angle right"/>
-						</Option>
-						<Option onClick={() => this.changeTab( 4 )}>
-							Email<RightArrow name="angle right"/>
-						</Option>
-						<Option onClick={() => this.changeTab( 5 )}>
-							Delete account<RightArrow name="angle right"/>
-						</Option>
-					</Options>
-				</Page>
+				<StyledNavBar socket={this.props.socket} />
+				<OutsideClickHandler onClick={this.hideNotifications}>
+					<Page onClick={this.hidePopups}>
+						<Options>
+							<Option
+								active={this.state.tab === 1}
+								onClick={() => this.changeTab( 1 )}
+							>
+								Account
+								<RightArrow name="angle right"/>
+							</Option>
+							<Option
+								active={this.state.tab === 2}
+								onClick={() => this.changeTab( 2 )}
+							>
+								Content preferences<RightArrow name="angle right"/>
+							</Option>
+							<Option
+								active={this.state.tab === 3}
+								onClick={() => this.changeTab( 3 )}
+							>
+								Password<RightArrow name="angle right"/>
+							</Option>
+							<Option
+								active={this.state.tab === 4}
+								onClick={() => this.changeTab( 4 )}
+							>
+								Email<RightArrow name="angle right"/>
+							</Option>
+							<Option
+								active={this.state.tab === 5}
+								onClick={() => this.changeTab( 5 )}
+							>
+								Delete account<RightArrow name="angle right"/>
+							</Option>
+						</Options>
+
+						{this.state.tab === 1 && window.innerWidth > 420 &&
+							<AccountSettings
+								largeScreen
+								updateUserInfo={this.updateUserInfo}
+								handleFileChange={this.handleFileChange}
+								handleChange={this.handleChange}
+								backToMain={this.backToMain}
+								hobbies={this.state.hobbies}
+								handleDelete={this.handleDelete}
+								handleAddition={this.handleAddition}
+								description={this.state.description}
+								username={this.state.username}
+								fullname={this.state.fullname}
+								error={this.state.error}
+							/>}
+						{this.state.tab === 2 && window.innerWidth > 420 &&
+							<ContentSettings
+								largeScreen
+								updatePreferences={this.updatePreferences}
+								checkedCategories={this.state.checkedCategories}
+								backToMain={this.backToMain}
+								categories={categories}
+								handleCategoryClick={this.handleCategoryClick}
+								categoriesChanged={this.state.categoriesChanged}
+							/>
+						}
+						{this.state.tab === 3 && window.innerWidth > 420 &&
+							<PasswordSettings
+								largeScreen
+								updatePassword={this.updatePassword}
+								handleChange={this.handleChange}
+								backToMain={this.backToMain}
+								currentPassword={this.state.currentPassword}
+								newPassword={this.state.newPassword}
+								confirmPassword={this.state.confirmPassword}
+								error={this.state.error}
+							/>
+						}
+						{this.state.tab === 4 && window.innerWidth > 420 &&
+							<EmailSettings
+								largeScreen
+								updateEmail={this.updateEmail}
+								handleChange={this.handleChange}
+								backToMain={this.backToMain}
+								currentEmail={this.state.currentEmail}
+								newEmail={this.state.newEmail}
+								error={this.state.error}
+							/>
+						}
+						{this.state.tab === 5 && window.innerWidth > 420 &&
+							<DeleteAccount
+								largeScreen
+								deleteAccount={this.deleteAccount}
+								handleChange={this.handleChange}
+								backToMain={this.backToMain}
+								deletePassword={this.state.deletePassword}
+								deleteFeedback={this.state.deleteFeedback}
+								error={this.state.error}
+							/>
+						}
+					</Page>
+				</OutsideClickHandler>
 			</Wrapper>
 		);
 	}
@@ -402,10 +494,12 @@ SettingsPage.propTypes = {
 
 const
 	mapStateToProps = state => ({
+		displayNotifications: state.notifications.displayNotifications
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		logout: () => dispatch( logout())
+		logout: () => dispatch( logout()),
+		switchNotifications: () => dispatch( switchNotifications())
 	});
 
 

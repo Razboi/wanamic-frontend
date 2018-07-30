@@ -5,15 +5,22 @@ import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		position: absolute;
 		height: 100vh;
 		width: 100%;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 9% 91%;
-		grid-template-areas:
-			"hea"
-			"opt"
+		@media (max-width: 420px) {
+			display: ${props => props.largeScreen && "none"} !important;
+			grid-area: main;
+			display: grid;
+			grid-template-columns: 100%;
+			grid-template-rows: 9% 91%;
+			grid-template-areas:
+				"hea"
+				"opt";
+		}
+		@media (min-width: 420px) {
+			grid-area: main;
+			background: #fff;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
@@ -21,6 +28,9 @@ const
 		align-items: center;
 		padding-left: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		@media (min-width: 420px) {
+			display: none;
+		}
 	`,
 	BackArrow = styled( Icon )`
 		font-size: 1.3rem !important;
@@ -55,7 +65,7 @@ const
 class ContentSettings extends Component {
 	render() {
 		return (
-			<Wrapper>
+			<Wrapper largeScreen={this.props.largeScreen}>
 				<HeaderWrapper>
 					<BackArrow
 						name="arrow left"
@@ -99,7 +109,8 @@ ContentSettings.propTypes = {
 	backToMain: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
 	categories: PropTypes.array.isRequired,
-	handleCategoryClick: PropTypes.func.isRequired
+	handleCategoryClick: PropTypes.func.isRequired,
+	largeScreen: PropTypes.bool
 };
 
 export default ContentSettings;
