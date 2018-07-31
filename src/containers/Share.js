@@ -295,7 +295,7 @@ class Share extends Component {
 				<ShareWrapper>
 					<InputTrigger
 						style={InputTriggerStyles}
-						trigger={{ keyCode: 50 }}
+						trigger={{ key: "@" }}
 						onStart={metaData => this.toggleSuggestions( metaData ) }
 						onCancel={metaData => this.toggleSuggestions( metaData ) }
 						onType={metaData => this.handleMentionInput( metaData ) }

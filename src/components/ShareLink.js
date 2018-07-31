@@ -242,7 +242,7 @@ class ShareLink extends Component {
 						placeholder="Share your link"
 					/>
 					<InputTrigger
-						trigger={{ keyCode: 50 }}
+						trigger={{ key: "@" }}
 						onStart={metaData => this.toggleSuggestions( metaData ) }
 						onCancel={metaData => this.toggleSuggestions( metaData ) }
 						onType={metaData => this.handleMentionInput( metaData ) }

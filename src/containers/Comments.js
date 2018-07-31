@@ -368,7 +368,7 @@ class Comments extends Component {
 
 				<InputTrigger
 					style={InputTriggerStyles}
-					trigger={{ keyCode: 50 }}
+					trigger={{ key: "@" }}
 					onStart={metaData => this.toggleSuggestions( metaData ) }
 					onCancel={metaData => this.toggleSuggestions( metaData ) }
 					onType={metaData => this.handleMentionInput( metaData ) }
