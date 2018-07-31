@@ -659,7 +659,6 @@ Messages.propTypes = {
 	conversations: PropTypes.array.isRequired,
 	selectedConversation: PropTypes.number.isRequired,
 	switchMessages: PropTypes.func.isRequired,
-	chatNotifications: PropTypes.array.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
 	spaceForNavbar: PropTypes.bool,
@@ -674,7 +673,6 @@ const
 		conversations: state.conversations.allConversations,
 		selectedConversation: state.conversations.selectedConversation,
 		newConversation: state.conversations.newConversation,
-		chatNotifications: state.conversations.notifications,
 		displayConversation: state.conversations.displayConversation
 	}),
 

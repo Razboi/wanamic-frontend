@@ -48,7 +48,7 @@ class MediaPicture extends Component {
 
 	handleSubmit = () => {
 		const {
-				description, privacyRange, checkNsfw, checkSpoiler
+				description, privacyRange, checkNsfw, checkSpoiler, mediaData
 			} = this.state,
 			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
 

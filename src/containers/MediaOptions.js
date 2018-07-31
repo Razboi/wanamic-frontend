@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button } from "semantic-ui-react";
+import { Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
@@ -19,6 +19,14 @@ const
 		position: fixed;
 		height: 100vh;
 		width: 100%;
+		z-index: 2;
+	`,
+	ErrorMessage = styled( Message )`
+		position: absolute !important;
+		top: 0 !important;
+		width: 100% !important;
+		text-align: center !important;
+		border-radius: 0px !important;
 		z-index: 2;
 	`,
 	MediaDimmer = styled.div`
@@ -77,7 +85,8 @@ class MediaOptions extends Component {
 			shareState: false,
 			sharePicture: false,
 			mediaType: "",
-			mediaData: {}
+			mediaData: {},
+			error: undefined
 		};
 	}
 
@@ -193,6 +202,20 @@ class MediaOptions extends Component {
 	};
 
 	handlePicture = e => {
+		const
+			file = e.target.files[ 0 ],
+			fileExt = file.name.split( "." ).pop();
+
+		if (( file.type !== "image/jpeg" && file.type !== "image/png"
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )
+			||
+			( fileExt !== "jpeg" && fileExt !== "png"
+			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			this.setState({
+				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
+			});
+			return;
+		}
 		this.props.toggleMediaButton();
 		this.setState({
 			mediaData: {
@@ -205,9 +228,7 @@ class MediaOptions extends Component {
 
 	submitPicture = async( description, privacyRange, alerts ) => {
 		var
-			data = new FormData(),
-			i;
-
+			data = new FormData();
 		const
 			{ mediaData } = this.state,
 			{ mentions, hashtags } = await extract(
@@ -217,35 +238,31 @@ class MediaOptions extends Component {
 		if ( !mediaData.imageFile ) {
 			return;
 		}
+		data.append( "picture", mediaData.imageFile );
+		data.append( "content", description );
+		data.append( "mentions", mentions );
+		data.append( "hashtags", hashtags );
+		data.append( "privacyRange", privacyRange );
+		data.append( "alerts", alerts );
+		data.append( "token", localStorage.getItem( "token" ));
 
-		await data.append( "picture", mediaData.imageFile );
-		await data.append( "content", description );
-		await data.append( "mentions", mentions );
-		await data.append( "hashtags", hashtags );
-		await data.append( "privacyRange", privacyRange );
-		await data.append( "alerts", alerts );
-		await data.append( "token", localStorage.getItem( "token" ));
-
-		api.createMediaPicture( data )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.submitPicture())
-						.catch( err => console.log( err ));
-				} else if ( res ) {
-					this.props.addPost( res.newPost );
-					this.props.switchMediaOptions();
-					this.props.toggleMediaButton();
-					if ( res.mentionsNotifications ) {
-						const notifLength = res.mentionsNotifications.length;
-						for ( i = 0; i < notifLength; i++ ) {
-							this.props.socket.emit(
-								"sendNotification", res.mentionsNotifications[ i ]
-							);
-						}
-					}
+		try {
+			const res = await api.createMediaPicture( data );
+			this.props.addPost( res.newPost );
+			this.props.switchMediaOptions();
+			this.props.toggleMediaButton();
+			if ( res.mentionsNotifications ) {
+				for ( const notification of res.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
 				}
-			}).catch( err => console.log( err ));
+			}
+		} catch ( err ) {
+			this.setState({ error: err.response.data, sharePicture: false });
+			if ( err.response.status === 401 ) {
+				await refreshToken();
+				this.submitPicture( description, privacyRange, alerts );
+			}
+		}
 	}
 
 	render() {
@@ -302,6 +319,11 @@ class MediaOptions extends Component {
 		}
 		return (
 			<MediaOptionsWrapper>
+				{this.state.error &&
+					<ErrorMessage warning>
+						<Message.Header>{this.state.error}</Message.Header>
+					</ErrorMessage>
+				}
 				<MediaDimmer />
 				<MediaButtons>
 					<MediaButton secondary circular icon="book" size="huge"

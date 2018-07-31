@@ -90,7 +90,9 @@ export default {
 			data: data
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getNewsFeed: skip =>
 		axios({
