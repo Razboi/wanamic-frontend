@@ -7,9 +7,12 @@ import UserPreview from "./UserPreview";
 const
 	Wrapper = styled.div`
 		padding: 1rem;
-		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+		@media (min-width: 420px) {
+			max-width: 600px;
+			margin: 0 auto;
+		}
 	`,
 	HeaderWrapper = styled.header`
 		display: flex;
@@ -18,10 +21,12 @@ const
 		margin-bottom: 3.5rem;
 	`,
 	Step = styled.h2`
+		font-family: inherit !important;
 	`,
 	Subheader = styled.span`
 		font-size: 1rem;
-		color: rgba( 0,0,0,0.4);
+		color: #444;
+		font-family: inherit;
 		text-align: center;
 	`,
 	MatchesWrapper = styled.div`
@@ -30,6 +35,18 @@ const
 		display: flex;
 		justify-content: space-between;
 		margin-top: auto;
+	`,
+	NextButton = styled( Button )`
+		background: rgb(133, 217, 191) !important;
+		color: #fff !important;
+		font-family: inherit !important;
+		border-radius: 2px !important;
+		margin: 0 !important;
+	`,
+	PrevButton = styled( Button )`
+		font-family: inherit !important;
+		border-radius: 2px !important;
+		margin: 0 !important;
 	`;
 
 class Step4 extends Component {
@@ -59,14 +76,14 @@ class Step4 extends Component {
 					)}
 				</MatchesWrapper>
 				<ButtonsFooter>
-					<Button
+					<PrevButton
 						className="prevButton"
 						secondary
 						floated="left"
 						content="Prev"
 						onClick={handlePrev}
 					/>
-					<Button
+					<NextButton
 						className="nextButton"
 						disabled={toFollow.length === 0}
 						primary

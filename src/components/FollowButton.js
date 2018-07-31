@@ -6,9 +6,16 @@ import PropTypes from "prop-types";
 const
 	FollowButton = styled( Button )`
 		position: absolute !important;
-		top: 0 !important;
 		right: 0 !important;
-		margin: 0 !important;
+		top: 0 !important;
+		font-family: inherit !important;
+		background: ${props => props.active ?
+		"rgb(133, 217, 191)" : "#fff"} !important;
+		color: ${props => props.active ?
+		"#fff" : "rgb(133, 217, 191)"} !important;
+		border-radius: 2px !important;
+		border: ${props => props.active ?
+		"none" : "1px solid rgb(133, 217, 191)"} !important;
 	`;
 
 class FollowButtonComponent extends Component {
@@ -17,13 +24,14 @@ class FollowButtonComponent extends Component {
 			user, handleFollow, alreadyFollowing, alreadyFriends,
 			handleUnfollow, handleUnfriend
 		} = this.props;
+
 		if ( alreadyFollowing ) {
 			return (
 				<FollowButton
 					size="tiny"
 					onClick={() => handleUnfollow( user.username, user._id )}
 					content="Following"
-					primary={true}
+					active
 				/>
 			);
 		}
@@ -33,7 +41,7 @@ class FollowButtonComponent extends Component {
 					size="tiny"
 					onClick={() => handleUnfriend( user.username, user._id )}
 					content="Friends"
-					primary={true}
+					active
 				/>
 			);
 		}

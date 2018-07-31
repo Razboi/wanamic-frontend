@@ -96,7 +96,7 @@ class SettingsPage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			tab: 0, userImage: null, headerImage: null, description: "",
+			tab: 0, userImage: { name: "test" }, headerImage: null, description: "",
 			fullname: "", hobbies: [], username: "", currentPassword: "",
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
@@ -128,8 +128,36 @@ class SettingsPage extends Component {
 	}
 
 	handleFileChange = e => {
+		const
+			file = e.target.files[ 0 ],
+			fileExt = file && file.name.split( "." ).pop();
+
+		if ( !file ) {
+			return;
+		}
+
+		if (( file.type !== "image/jpeg" && file.type !== "image/png"
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )
+			||
+			( fileExt !== "jpeg" && fileExt !== "png"
+			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			this.setState({
+				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
+			});
+			this.resetError();
+			return;
+		}
+
+		if ( file.size > 1010000 ) {
+			this.setState({
+				error: "The filesize limit is 1MB"
+			});
+			this.resetError();
+			return;
+		}
+
 		this.setState({
-			[ e.target.name ]: e.target.files[ 0 ]
+			[ e.target.name ]: file
 		});
 	}
 
@@ -164,6 +192,7 @@ class SettingsPage extends Component {
 				return;
 			}
 			this.setState({ error: err.response.data });
+			this.resetError();
 		}
 	}
 
@@ -183,12 +212,14 @@ class SettingsPage extends Component {
 		}
 		if ( newPassword !== confirmPassword ) {
 			this.setState({ error: "Passwords don't match" });
+			this.resetError();
 			return;
 		}
 		if ( newPassword === currentPassword ) {
 			this.setState({
 				error: "Current password and new password can't be the same"
 			});
+			this.resetError();
 			return;
 		}
 		try {
@@ -208,6 +239,7 @@ class SettingsPage extends Component {
 				return;
 			}
 			this.setState({ error: err.response.data });
+			this.resetError();
 		}
 	}
 
@@ -220,10 +252,12 @@ class SettingsPage extends Component {
 			this.setState({
 				error: "Current email and new email can't be the same"
 			});
+			this.resetError();
 			return;
 		}
 		if ( !validateEmail( newEmail )) {
 			this.setState({ error: "Invalid email format" });
+			this.resetError();
 			return;
 		}
 		try {
@@ -239,6 +273,7 @@ class SettingsPage extends Component {
 				return;
 			}
 			this.setState({ error: err.response.data });
+			this.resetError();
 		}
 	}
 
@@ -258,6 +293,7 @@ class SettingsPage extends Component {
 				return;
 			}
 			this.setState({ error: err.response.data });
+			this.resetError();
 		}
 	}
 
@@ -312,6 +348,12 @@ class SettingsPage extends Component {
 		if ( this.props.displayNotifications ) {
 			this.props.switchNotifications();
 		}
+	}
+
+	resetError = () => {
+		setTimeout(() => {
+			this.setState({ error: "" });
+		}, 3000 );
 	}
 
 	render() {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Button, Message } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { WithContext as ReactTags } from "react-tag-input";
@@ -8,6 +8,10 @@ import { WithContext as ReactTags } from "react-tag-input";
 const
 	Wrapper = styled.div`
 		padding: 1rem;
+		@media (min-width: 420px) {
+			max-width: 600px;
+			margin: 0 auto;
+		}
 	`,
 	HeaderWrapper = styled.header`
 		display: flex;
@@ -16,10 +20,12 @@ const
 		align-items: center;
 	`,
 	Step = styled.h2`
+		font-family: inherit !important;
 	`,
 	Subheader = styled.span`
 		font-size: 1rem;
-		color: rgba( 0,0,0,0.4);
+		color: #444;
+		font-family: inherit;
 	`,
 	FormTextarea = styled( Form.TextArea )`
 		margin-bottom: 2rem !important;
@@ -51,6 +57,16 @@ const
 		font-weight: 700;
 		text-transform: none;
 	`,
+	NextButton = styled( Button )`
+		background: rgb(133, 217, 191) !important;
+		color: #fff !important;
+		font-family: inherit !important;
+		border-radius: 2px !important;
+		margin: 0 !important;
+	`,
+	StyledMessage = styled( Message )`
+		z-index: 2;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 
@@ -58,6 +74,11 @@ class Step2 extends Component {
 	render() {
 		return (
 			<Wrapper>
+				{this.props.error &&
+					<StyledMessage negative>
+						<Message.Header>{this.props.error}</Message.Header>
+					</StyledMessage>
+				}
 				<HeaderWrapper>
 					<Step>Basic information</Step>
 					<Subheader>Let us know a little bit about yourself</Subheader>
@@ -94,12 +115,13 @@ class Step2 extends Component {
 						label="Profile image"
 						type="file"
 					/>
-					<Form.Button
+					<NextButton
 						className="nextButton"
 						type="button"
 						floated="right"
 						content="Next"
 						onClick={this.props.handleNext}
+						disabled={!!this.props.error}
 					/>
 				</Form>
 			</Wrapper>

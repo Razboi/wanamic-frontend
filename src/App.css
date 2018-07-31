@@ -7,6 +7,15 @@ body ::-webkit-scrollbar {
 	width: 0 !important;
 }
 
+input {
+	font-family: inherit !important;
+}
+
+textarea {
+	font-family: inherit !important;
+	resize: none !important;
+}
+
 .mediaPostDescription {
 	color: #FFF !important;
 }

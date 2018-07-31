@@ -28,7 +28,8 @@ class WelcomePage extends Component {
 			step: 1,
 			checkedCategories: [],
 			toFollow: [],
-			matchedUsers: []
+			matchedUsers: [],
+			error: ""
 		};
 	}
 
@@ -37,8 +38,35 @@ class WelcomePage extends Component {
 		this.setState({ [ e.target.name ]: e.target.value })
 
 	handleFileChange = e => {
+		const
+			file = e.target.files[ 0 ],
+			fileExt = file && file.name.split( "." ).pop();
+
+		if ( !file ) {
+			return;
+		}
+
+		if (( file.type !== "image/jpeg" && file.type !== "image/png"
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )
+			||
+			( fileExt !== "jpeg" && fileExt !== "png"
+			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			this.setState({
+				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
+			});
+			return;
+		}
+
+		if ( file.size > 1010000 ) {
+			this.setState({
+				error: "The filesize limit is 1MB"
+			});
+			return;
+		}
+
 		this.setState({
-			[ e.target.name ]: e.target.files[ 0 ]
+			[ e.target.name ]: file,
+			error: ""
 		});
 	}
 
@@ -119,7 +147,9 @@ class WelcomePage extends Component {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.finish();
+				return;
 			}
+			this.setState({ error: err.response.data });
 		}
 	}
 
@@ -135,6 +165,7 @@ class WelcomePage extends Component {
 						hobbies={this.state.hobbies}
 						handleDelete={this.handleDelete}
 						handleAddition={this.handleAddition}
+						error={this.state.error}
 					/>
 				}
 

@@ -24,8 +24,12 @@ const
 		}
 	`,
 	StyledMessage = styled( Message )`
-		position: fixed !important;
 		z-index: 2;
+		@media (max-width: 420px) {
+			position: fixed !important;
+			width: 100%;
+			left: 0;
+		}
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;

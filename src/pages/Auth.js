@@ -118,6 +118,14 @@ class AuthPage extends Component {
 			this.setState({ error: "Invalid email format" });
 			return;
 		}
+		if ( !/^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/.test(
+			this.state.password )) {
+			this.setState({
+				error: "The password must be at least 8 characters " +
+				"and contain letters and numbers."
+			});
+			return;
+		}
 		this.setState({ signupStep: 2, error: undefined });
 	}
 

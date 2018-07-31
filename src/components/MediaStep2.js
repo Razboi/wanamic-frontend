@@ -8,7 +8,7 @@ import Suggestions from "./Suggestions";
 const
 	Wrapper = styled.div`
 		overflow: hidden;
-		position: absolute;
+		position: fixed;
 		height: 100vh;
 		width: 100%;
 		z-index: 3;
@@ -84,11 +84,12 @@ const
 		background-image: url(${props => props.background});
 		background-size: cover;
 		filter: blur(20px) brightness(50%);
-		transform: scale(1.2);
 	`,
 	SelectedMediaImg = styled( Image )`
 		justify-self: center;
 		align-self: start;
+		max-width: 600px !important;
+    max-height: 300px !important;
 		z-index: 2;
 	`,
 	SuggestionsWrapper = styled.div`

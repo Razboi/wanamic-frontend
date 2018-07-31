@@ -6,11 +6,16 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		padding: 1rem;
+		@media (min-width: 420px) {
+			max-width: 600px;
+			margin: 0 auto;
+		}
 	`,
 	Categories = styled.div`
 		flex-wrap: wrap;
 		display: flex;
 		margin-bottom: 3rem;
+		justify-content: space-between;
 	`,
 	HeaderWrapper = styled.header`
 		display: flex;
@@ -19,19 +24,39 @@ const
 		align-items: center;
 	`,
 	Step = styled.h2`
+		font-family: inherit !important;
 	`,
 	Subheader = styled.span`
 		font-size: 1rem;
-		color: rgba( 0,0,0,0.4);
+		color: #444;
+		font-family: inherit;
 		text-align: center;
 	`,
 	CategoryButton = styled( Button )`
 		margin: 0.5rem !important;
-		flex: 1 0 0%;
+		flex: 0 0 0%;
+		border-radius: 2px !important;
+		font-family: inherit !important;
+		border: ${props => props.active &&
+			"1px solid rgb(133, 217, 191)"} !important;
+		background: ${props => props.active && "#fff"} !important;
+		color: ${props => props.active && "rgb(133, 217, 191)"} !important;
 	`,
 	Buttons = styled.div`
 		display: flex;
 		justify-content: space-between;
+	`,
+	NextButton = styled( Button )`
+		background: rgb(133, 217, 191) !important;
+		color: #fff !important;
+		font-family: inherit !important;
+		border-radius: 2px !important;
+		margin: 0 !important;
+	`,
+	PrevButton = styled( Button )`
+		font-family: inherit !important;
+		border-radius: 2px !important;
+		margin: 0 !important;
 	`;
 
 class Step3 extends Component {
@@ -52,22 +77,19 @@ class Step3 extends Component {
 								this.props.handleCategoryClick( category )
 							}
 							content={category}
-							secondary={
-								this.props.checkedCategories.includes( category )
-							}
+							active={this.props.checkedCategories.includes( category )}
 						/>
 					)}
 				</Categories>
 				<Buttons>
-					<Button
-						className="prevButton"
+					<PrevButton
 						secondary
+						className="prevButton"
 						content="Prev"
 						onClick={this.props.handlePrev}
 					/>
-					<Button
+					<NextButton
 						className="nextButton"
-						primary
 						content="Next"
 						disabled={this.props.checkedCategories.length === 0}
 						onClick={this.props.categoriesNext}

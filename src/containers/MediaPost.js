@@ -83,6 +83,8 @@ const
 	`,
 	MediaImage = styled( Image )`
 		margin: 0 auto;
+		max-height: 1100px !important;
+		max-width: 100% !important;
 	`,
 	PostMediaContent = styled.div`
 		display: grid;

@@ -107,6 +107,11 @@ const
 		color: #fff !important;
 		background: rgb(133, 217, 191) !important;
 	`,
+	PasswordInfo = styled.div`
+		margin-top: 2rem;
+		text-align: center;
+		color: #eee;
+	`,
 	LoginWrapper = styled.span`
 		display: flex;
 		align-items: center;
@@ -186,7 +191,7 @@ class SignupForm extends Component {
 								/>
 								<PasswordInput
 									className="passwordInput"
-									placeholder="Password"
+									placeholder="Password *"
 									type="password"
 									name="password"
 									onChange={this.props.handleChange}
@@ -204,6 +209,9 @@ class SignupForm extends Component {
 								/>
 
 							</StyledForm>
+							<PasswordInfo>
+								* At least 8 characters containing one or more letters and numbers.
+							</PasswordInfo>
 						</FormDimmer>
 
 						<LoginWrapper className="swapLink" onClick={this.props.swapForm}>

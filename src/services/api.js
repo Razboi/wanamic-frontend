@@ -81,7 +81,9 @@ export default {
 			}
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	createMediaPicture: data =>
 		axios({

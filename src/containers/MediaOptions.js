@@ -30,7 +30,7 @@ const
 		z-index: 2;
 	`,
 	MediaDimmer = styled.div`
-		position: absolute;
+		position: fixed;
 		height: 100%;
 		width: 100%;
 		background: rgba(0,0,0,0.85);
@@ -121,28 +121,38 @@ class MediaOptions extends Component {
 			description, { symbol: false, type: "all" }
 		);
 
-		api.createMediaLink(
-			link, description, mentions, hashtags, privacyRange, alerts
-		)
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.submitLink())
-						.catch( err => console.log( err ));
-				} else if ( res ) {
-					this.props.addPost( res.newPost );
-					this.props.switchMediaOptions();
-					this.props.toggleMediaButton();
-					if ( res.mentionsNotifications ) {
-						const notifLength = res.mentionsNotifications.length;
-						for ( i = 0; i < notifLength; i++ ) {
-							this.props.socket.emit(
-								"sendNotification", res.mentionsNotifications[ i ]
-							);
-						}
-					}
+		try {
+			const res = await api.createMediaLink( link, description,
+				mentions, hashtags, privacyRange, alerts );
+
+			this.props.addPost( res.newPost );
+			this.props.switchMediaOptions();
+			this.props.toggleMediaButton();
+			if ( res.mentionsNotifications ) {
+				const notifLength = res.mentionsNotifications.length;
+				for ( i = 0; i < notifLength; i++ ) {
+					this.props.socket.emit(
+						"sendNotification", res.mentionsNotifications[ i ]
+					);
 				}
-			}).catch( err => console.log( err ));
+			}
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.status === 401 ) {
+				await refreshToken();
+				this.submitLink( description, link, privacyRange, alerts );
+				return;
+			} else if ( err.response.status === 500 ) {
+				this.setState({
+					error: ( "Ops, something went wrong on the server. " +
+					"Let's just pretend like nothing happened and try again in a few seconds." )
+				});
+			} else {
+				this.setState({ error: err.response.data });
+			}
+			this.setState({ shareLink: false });
+			this.props.toggleMediaButton();
+		}
 	}
 
 	handleLinkKeyPress = e => {
@@ -204,7 +214,11 @@ class MediaOptions extends Component {
 	handlePicture = e => {
 		const
 			file = e.target.files[ 0 ],
-			fileExt = file.name.split( "." ).pop();
+			fileExt = file && file.name.split( "." ).pop();
+
+		if ( !file ) {
+			return;
+		}
 
 		if (( file.type !== "image/jpeg" && file.type !== "image/png"
 			&& file.type !== "image/jpg" && file.type !== "image/gif" )
@@ -216,13 +230,22 @@ class MediaOptions extends Component {
 			});
 			return;
 		}
+
+		if ( file.size > 1010000 ) {
+			this.setState({
+				error: "The filesize limit is 1MB"
+			});
+			return;
+		}
+
 		this.props.toggleMediaButton();
 		this.setState({
 			mediaData: {
-				imageFile: e.target.files[ 0 ],
-				image: URL.createObjectURL( e.target.files[ 0 ])
+				imageFile: file,
+				image: URL.createObjectURL( file )
 			},
-			sharePicture: true
+			sharePicture: true,
+			error: ""
 		});
 	}
 
@@ -257,11 +280,13 @@ class MediaOptions extends Component {
 				}
 			}
 		} catch ( err ) {
-			this.setState({ error: err.response.data, sharePicture: false });
 			if ( err.response.status === 401 ) {
 				await refreshToken();
 				this.submitPicture( description, privacyRange, alerts );
+				return;
 			}
+			this.setState({ error: err.response.data, sharePicture: false });
+			this.props.toggleMediaButton();
 		}
 	}
 
