@@ -106,7 +106,7 @@ const
 		};
 	`,
 	SpamWarning = styled( MessageInfo )`
-		position: fixed !important;
+		position: absolute !important;
 		left: 5px;
 		right: 5px;
 		z-index: 2;

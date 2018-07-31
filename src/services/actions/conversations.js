@@ -5,8 +5,6 @@ export const
 	ADD_CONVERSATION = "ADD_CONVERSATION",
 	UPDATE_CONVERSATION = "UPDATE_CONVERSATION",
 	DELETE_CHAT = "DELETE_CHAT",
-	SET_CHAT_NOTIFICATIONS = "SET_CHAT_NOTIFICATIONS",
-	ADD_CHAT_NOTIFICATION = "ADD_CHAT_NOTIFICATION",
 	INCREMENT_CHAT_NEW_MESSAGES = "INCREMENT_CHAT_NEW_MESSAGES",
 	SWITCH_MESSAGES = "SWITCH_MESSAGES",
 	SWITCH_CONVERSATION = "SWITCH_CONVERSATION",
@@ -32,9 +30,9 @@ export const
 		conversation: conversation
 	}),
 
-	deleteChat = targetUsername => ({
+	deleteChat = target => ({
 		type: DELETE_CHAT,
-		targetUsername: targetUsername
+		target: target
 	}),
 
 	updateConversation = ( message, index ) => ({
@@ -50,16 +48,6 @@ export const
 	switchConversation = shouldDisplay => ({
 		type: SWITCH_CONVERSATION,
 		shouldDisplay: shouldDisplay
-	}),
-
-	setChatNotifications = authors => ({
-		type: SET_CHAT_NOTIFICATIONS,
-		notifications: authors
-	}),
-
-	addChatNotification = author => ({
-		type: ADD_CHAT_NOTIFICATION,
-		newNotification: author
 	}),
 
 	incrementChatNewMessages = index => ({

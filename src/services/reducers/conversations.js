@@ -2,7 +2,6 @@ const initialState = {
 	allConversations: [],
 	selectedConversation: 0,
 	newConversation: undefined,
-	notifications: [],
 	displayMessages: false,
 	displayConversation: false
 };
@@ -20,9 +19,6 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			selectedConversation: action.index,
-			notifications: state.notifications.filter( author =>
-				author !== state.allConversations[ action.index ].target.username
-			),
 			allConversations: state.allConversations.map(( conver, index ) => {
 				if ( index === action.index ) {
 					return {
@@ -65,7 +61,7 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			allConversations: state.allConversations.filter( conver =>
-				conver.target.username !== action.targetUsername
+				conver.target._id !== action.target._id
 			)
 		};
 
@@ -79,18 +75,6 @@ export default function conversations( state = initialState, action = {}) {
 		return {
 			...state,
 			displayConversation: action.shouldDisplay
-		};
-
-	case "SET_CHAT_NOTIFICATIONS":
-		return {
-			...state,
-			notifications: action.notifications
-		};
-
-	case "ADD_CHAT_NOTIFICATION":
-		return {
-			...state,
-			notifications: [ action.newNotification, ...state.notifications ]
 		};
 
 	case "INCREMENT_CHAT_NEW_MESSAGES":

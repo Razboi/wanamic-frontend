@@ -17,8 +17,7 @@ import {
 	setNewNotifications, addNotification
 } from "./services/actions/notifications";
 import {
-	setChatNotifications, addConversation, updateConversation,
-	addChatNotification, incrementChatNewMessages
+	addConversation, updateConversation, incrementChatNewMessages
 } from "./services/actions/conversations";
 import { setupLikesViews } from "./services/actions/user";
 import { connect } from "react-redux";
@@ -61,8 +60,6 @@ class App extends Component {
 			this.props.setNewNotifications(
 				notifications.data.newNotifications
 			);
-			this.props.setChatNotifications(
-				notifications.data.chatNotifications );
 		}
 	}
 
@@ -78,16 +75,9 @@ class App extends Component {
 		socket.on( "message", async message => {
 			const {
 				conversations, addConversation,
-				addChatNotification, updateConversation, chatNotifications,
-				incrementChatNewMessages, selectedConversation,
-				displayConversation
+				updateConversation, incrementChatNewMessages,
+				selectedConversation, displayConversation
 			} = this.props;
-
-			if ( !chatNotifications.includes( message.author.username )
-			&& ( conversations[ selectedConversation ].target.username
-				!== message.author.username || !displayConversation )) {
-				addChatNotification( message.author.username );
-			}
 
 			if ( this.props.location.pathname === "/messages"
 			|| window.innerWidth > 420 ) {
@@ -95,6 +85,12 @@ class App extends Component {
 					if ( conversation.target.username === message.author.username ) {
 						updateConversation( message, i );
 						incrementChatNewMessages( i );
+
+						if ( conversations[ selectedConversation ].target.username
+							=== message.author.username && displayConversation ) {
+							this.clearChatNotifications(
+								conversations[ selectedConversation ]);
+						}
 						return;
 					}
 				}
@@ -119,6 +115,21 @@ class App extends Component {
 			this.props.setupLikesViews( totalLikes, totalViews );
 		}
 	}
+
+	clearChatNotifications = async conversation => {
+		const response = await api.clearChatNotifications(
+			conversation.target.username
+		);
+		if ( response === "jwt expired" ) {
+			try {
+				await refreshToken();
+			} catch ( err ) {
+				console.log( err );
+			}
+			this.clearChatNotifications( conversation );
+		}
+	}
+
 	render() {
 		// Switch will render the first match. /:username must be last
 		return (
@@ -132,7 +143,7 @@ class App extends Component {
 					<UserRoute
 						path="/messages" component={Messages} socket={socket}
 					/>
-					<UserRoute path="/settings" component={Settings}/>
+					<UserRoute path="/settings" component={Settings} socket={socket}/>
 					<NewUserRoute path="/welcome" component={Welcome} />
 					<UserRoute
 						path="/explore" component={Explore} socket={socket}
@@ -147,7 +158,6 @@ class App extends Component {
 const
 	mapStateToProps = state => ({
 		conversations: state.conversations.allConversations,
-		chatNotifications: state.conversations.notifications,
 		authenticated: state.authenticated,
 		selectedConversation: state.conversations.selectedConversation,
 		displayConversation: state.conversations.displayConversation
@@ -156,15 +166,12 @@ const
 	mapDispatchToProps = dispatch => ({
 		setupLikesViews: ( likes, views ) =>
 			dispatch( setupLikesViews( likes, views )),
-		setChatNotifications: authors =>
-			dispatch( setChatNotifications( authors )),
 		addConversation: conver => dispatch( addConversation( conver )),
 		updateConversation: ( message, index ) =>
 			dispatch( updateConversation( message, index )),
 		incrementChatNewMessages: index =>
 			dispatch( incrementChatNewMessages( index )),
 		addNotification: notif => dispatch( addNotification( notif )),
-		addChatNotification: notif => dispatch( addChatNotification( notif )),
 		setNewNotifications: newNotifications =>
 			dispatch( setNewNotifications( newNotifications ))
 	});

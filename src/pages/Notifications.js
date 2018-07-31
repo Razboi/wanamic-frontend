@@ -301,6 +301,7 @@ class Notifications extends Component {
 					{this.state.network &&
 					<div>
 						{this.props.notifications.map(( notification, index ) =>
+							notification.author &&
 							<React.Fragment key={index}>
 								<Notification
 									onClick={() => this.handleDetails( notification, index )}

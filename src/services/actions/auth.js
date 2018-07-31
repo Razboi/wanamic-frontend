@@ -32,6 +32,7 @@ export const
 		api.signup( credentials ).then( data => {
 			if ( data && data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
+				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
 				localStorage.setItem( "uimg", data.profileImage );
 				localStorage.setItem( "id", data.id );

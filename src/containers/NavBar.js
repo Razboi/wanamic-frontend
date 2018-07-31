@@ -183,12 +183,19 @@ class NavBar extends Component {
 	}
 
 	render() {
-		var profileImage;
+		var
+			profileImage,
+			chatNotifications = 0;
 		const
 			username = localStorage.getItem( "username" ),
 			fullname = localStorage.getItem( "fullname" );
 		try {
-			if ( localStorage.getItem( "uimg" )) {
+			for ( const conversation of this.props.allConversations ) {
+				if ( conversation.newMessagesCount > 0 ) {
+					chatNotifications++;
+				}
+			}
+			if ( localStorage.getItem( "uimg" ) !== "undefined" ) {
 				profileImage = require( "../images/" +
 				localStorage.getItem( "uimg" ));
 			} else {
@@ -256,9 +263,9 @@ class NavBar extends Component {
 								require( "../images/chat.png" )
 							}
 						>
-							{this.props.chatNotifications.length > 0 &&
+							{chatNotifications > 0 &&
 								<Label size="small" floating circular color="red">
-									{this.props.chatNotifications.length}
+									{chatNotifications}
 								</Label>
 							}
 						</NavImage>
@@ -359,7 +366,6 @@ NavBar.propTypes = {
 	mediaOptions: PropTypes.bool,
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
-	chatNotifications: PropTypes.array.isRequired,
 	totalLikes: PropTypes.number.isRequired,
 	totalViews: PropTypes.number.isRequired
 };
@@ -367,11 +373,11 @@ NavBar.propTypes = {
 const
 	mapStateToProps = state => ({
 		newNotifications: state.notifications.newNotifications,
-		chatNotifications: state.conversations.notifications,
 		totalLikes: state.user.totalLikes,
 		totalViews: state.user.totalViews,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages
+		displayMessages: state.conversations.displayMessages,
+		allConversations: state.conversations.allConversations
 	}),
 
 	mapDispatchToProps = dispatch => ({
