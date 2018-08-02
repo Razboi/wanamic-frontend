@@ -33,6 +33,6 @@ describe( "<ShareBox/>", () => {
 	});
 
 	it( "Checks that #ShareBox children render", () => {
-		expect( wrapper.find( "#ShareBox" ).children()).to.have.length( 1 );
+		expect( wrapper.find( "#ShareBox" ).children()).to.have.length( 2 );
 	});
 });

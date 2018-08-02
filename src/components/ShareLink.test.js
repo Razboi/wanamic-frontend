@@ -27,6 +27,6 @@ describe( "<ShareLink/>", () => {
 	});
 
 	it( "Checks that <ShareLink/> children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children()).to.have.length( 2 );
 	});
 });

@@ -64,7 +64,7 @@ class PostDetails extends Component {
 	componentDidMount() {
 		previousHref = window.location.href;
 		window.history.pushState( null, null, "/post" );
-		window.onpopstate = () => this.props.switchDetails();
+		window.onpopstate = () => this.handlePopstate();
 		if ( !this.props.post ) {
 			this.getPost();
 		} else {
@@ -80,6 +80,13 @@ class PostDetails extends Component {
 
 	componentWillUnmount() {
 		window.history.pushState( null, null, previousHref );
+		window.onpopstate = () => {};
+	}
+
+	handlePopstate = () => {
+		if ( this.props.displayPostDetails ) {
+			this.props.switchDetails();
+		}
 	}
 
 	getPost = async() => {
@@ -94,6 +101,13 @@ class PostDetails extends Component {
 
 	handleBack = () => {
 		this.props.switchDetails();
+	}
+
+	goToProfile = async user => {
+		if ( this.props.history ) {
+			await this.handleBack();
+			this.props.history.push( "/" + user.username );
+		}
 	}
 
 	render() {
@@ -128,6 +142,7 @@ class PostDetails extends Component {
 						socket={this.props.socket}
 						post={post}
 						index={this.props.index}
+						goToProfile={() => this.goToProfile( post.author )}
 						details
 					/>
 					:
@@ -135,6 +150,7 @@ class PostDetails extends Component {
 						socket={this.props.socket}
 						post={post}
 						index={this.props.index}
+						goToProfile={() => this.goToProfile( post.author )}
 						details
 					/>
 				}
@@ -147,6 +163,7 @@ PostDetails.propTypes = {
 	postId: PropTypes.string,
 	post: PropTypes.object,
 	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired,
 	displayComments: PropTypes.bool.isRequired,
 	index: PropTypes.number.isRequired
 };
@@ -154,7 +171,8 @@ PostDetails.propTypes = {
 const
 	mapStateToProps = state => ({
 		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare
+		displayShare: state.posts.displayShare,
+		displayPostDetails: state.posts.displayPostDetails
 	});
 
 export default connect( mapStateToProps )( PostDetails );

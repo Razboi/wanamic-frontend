@@ -6,16 +6,21 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		z-index: 3;
-		height: ${props => props.media ? "100%" : "auto"};
+		height: 100%;
 		display: ${props => props.showSuggestions ? "flex" : "none"};
 		flex-direction: column;
 		flex-grow: 1;
-		width: 100vw;
+		width: 100%;
 		background: #fff;
 		padding: 10px;
-		overflow-y: scroll;
+		overflow-y: auto;
+		border-radius: 2px !important;
 		::-webkit-scrollbar {
-			@media (max-width: 420px) {
+			display: block !important;
+			width: 10px !important;
+		}
+		@media (max-width: 420px) {
+			::-webkit-scrollbar {
 				display: none !important;
 			}
 		}
@@ -24,6 +29,9 @@ const
 		display: flex;
 		flex-direction: row;
 		margin-top: 0px !important;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	SugestionImg = styled( Image )`
 		width: 35px !important;

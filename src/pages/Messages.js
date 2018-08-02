@@ -32,14 +32,19 @@ const
 		}
 		@media (min-width: 420px) {
 			display: ${props => props.hideSidebar && "none"};
-			height: ${props => props.spaceForNavbar ?
-		"calc(100vh - 49.33px)" : "100vh"};
+			height: 350px;
 			position: fixed;
-			right: 0;
+			right: 10px;
 			bottom: 0;
 			width: 260px;
-			background: rgba( 255, 255, 255, 0.466 );
+			background: rgba( 255, 255, 255, 0.35 );
+			border-radius: 2px;
+			overflow-y: auto;
 			z-index: 2;
+			::-webkit-scrollbar {
+				display: block !important;
+				width: 10px !important;
+			}
 		}
 	`,
 	PopupWrapper = styled.div`
@@ -75,34 +80,33 @@ const
 			border-bottom: 0;
 		}
 	`,
-	NewConversationButton = styled( Button )`
+	Buttons = styled.div`
+		display: flex;
 		position: absolute;
-		right: 10px;
-		bottom: 10px;
+		bottom: 0;
+		width: 100%;
+		background: #fff;
+	`,
+	NewConversationButton = styled( Button )`
 		z-index: 3;
 		background: rgb(133, 217, 191) !important;
 		font-size: 1.28rem !important;
-		margin: 0 !important;
+		margin: 0 0 0 auto !important;
 		@media (min-width: 420px) {
-			bottom: 0px;
 			background: none !important;
-			position: absolute;
 			font-size: 1rem !important;
 			i {
-				color: rgba(0,0,0,0.5) !important;
+				color: rgba(0,0,0,0.25) !important;
 			}
 		}
 	`,
 	HideButton = styled( Button )`
-		position: absolute;
-		left: 0px;
-		bottom: 0px;
 		font-size: 1rem !important;
 		i {
-			color: rgba(0,0,0,0.5) !important;
+			color: rgba(0,0,0,0.25) !important;
 		}
 		z-index: 3;
-		margin: 0 !important;
+		margin: 0 auto 0 0 !important;
 		background: none !important;
 		@media (max-width: 420px) {
 			display: none;
@@ -172,15 +176,14 @@ const
 	ChatTab = styled.div`
 		position: fixed;
 		bottom: 0;
-		right: 0;
+		right: 10px;
 		background: #fff;
 		display: ${props => props.hideSidebar ? "none" : "flex"};
 		align-items: center;
 		justify-content: flex-start;
 		font-weight: 600;
     font-family: inherit;
-		width: 200px;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+		width: 260px;
 		:hover {
 			cursor: pointer;
 		}
@@ -191,7 +194,7 @@ const
 	DisplayChatButton = styled( Button )`
 		font-size: 1rem !important;
 		i {
-			color: #111 !important;
+			color: rgba(0,0,0,0.25) !important;
 		}
 		z-index: 3;
 		background: none !important;
@@ -486,18 +489,20 @@ class Messages extends Component {
 											</OpenConversation>
 										)}
 									</div>
-									<NewConversationButton
-										onClick={this.handleFriendsList}
-										primary
-										circular
-										icon="comment"
-									/>
-									<HideButton
-										onClick={this.toggleChat}
-										primary
-										circular
-										icon="chevron right"
-									/>
+									<Buttons>
+										<HideButton
+											onClick={this.toggleChat}
+											primary
+											circular
+											icon="chevron right"
+										/>
+										<NewConversationButton
+											onClick={this.handleFriendsList}
+											primary
+											circular
+											icon="comment"
+										/>
+									</Buttons>
 								</React.Fragment>
 							}
 						</Wrapper>
@@ -580,12 +585,14 @@ class Messages extends Component {
 											</OpenConversation>
 										)}
 									</div>
-									<NewConversationButton
-										onClick={this.handleFriendsList}
-										primary
-										circular
-										icon="comment"
-									/>
+									<Buttons>
+										<NewConversationButton
+											onClick={this.handleFriendsList}
+											primary
+											circular
+											icon="comment"
+										/>
+									</Buttons>
 								</React.Fragment>
 							}
 						</PopupWrapper>

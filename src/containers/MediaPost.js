@@ -30,10 +30,10 @@ const
 		}
 	`,
 	PostHeader = styled( Header )`
-		height: 60px;
+		min-height: 60px;
 		display: flex;
 		flex-direction: row;
-		padding: 0 1rem !important;
+		padding: 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
 		font-family: inherit !important;
@@ -41,12 +41,13 @@ const
 	HeaderInfo = styled.div`
 		display: flex;
 		flex-direction: column;
-		margin-left: 0.5rem;
+		margin: 0 2rem 0 0.5rem;
 		:hover {
 			cursor: pointer;
 		}
 	`,
 	AuthorImg = styled( Image )`
+		overflow: visible !important;
 		width: 30px !important;
 		height: 30px !important;
 		margin: 0 !important;
@@ -64,8 +65,9 @@ const
 		top: "1rem",
 	},
 	AuthorFullname = styled.span`
-		font-size: 1.2rem !important;
+		font-size: 1.05rem !important;
 		color: #111 !important;
+		word-break: break-word !important;
 		:hover {
 			cursor: pointer;
 		}
@@ -75,6 +77,7 @@ const
 		color: rgba(0,0,0,0.65);
 		font-weight: normal;
 		margin-left: 0.25rem;
+		word-break: break-word !important;
 	`,
 	DateTime = styled( Header.Subheader )`
 		font-size: 1rem !important;
@@ -120,7 +123,7 @@ const
 	`,
 	Description = styled.span`
 		font-weight: bold;
-		font-size: 16px;
+		font-size: 1rem;
 		word-break: break-all;
 	`,
 	PostBody = styled.div`

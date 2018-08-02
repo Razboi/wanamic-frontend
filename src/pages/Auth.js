@@ -121,8 +121,8 @@ class AuthPage extends Component {
 			return;
 		}
 
-		if ( !/[a-zA-Z0-9_]+$/.test( credentials.username )
-		|| /\s/.test( credentials.username )) {
+		if ( !/[\w]+$/.test( credentials.username )
+		|| /[\s.]/.test( credentials.username )) {
 			this.setState({
 				error: "Invalid username format. Alphanumeric and underscores only."
 			});
@@ -154,7 +154,7 @@ class AuthPage extends Component {
 			this.state.password )) {
 			this.setState({
 				error: "The password must be at least 8 characters " +
-				"and contain letters and numbers."
+				"containing letters and numbers."
 			});
 			return;
 		}

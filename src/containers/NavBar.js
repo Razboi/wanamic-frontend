@@ -276,6 +276,9 @@ class NavBar extends Component {
 							largeScreen
 							spaceForNavbar={this.props.location.pathname === "/"}
 							hideSidebar={this.props.location.pathname !== "/"}
+							messageTarget={this.props.messageTarget}
+							profilePage={this.props.profilePage}
+							startChat={this.props.startChat}
 						/>
 					</NavOption>
 
@@ -367,7 +370,8 @@ NavBar.propTypes = {
 	logout: PropTypes.func.isRequired,
 	newNotifications: PropTypes.number.isRequired,
 	totalLikes: PropTypes.number.isRequired,
-	totalViews: PropTypes.number.isRequired
+	totalViews: PropTypes.number.isRequired,
+	messageTarget: PropTypes.object
 };
 
 const

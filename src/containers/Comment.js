@@ -15,33 +15,38 @@ const
 		margin-bottom: 2rem;
 	`,
 	CommentHeader = styled( Header )`
-		height: 60px;
+		min-height: 60px;
 		display: flex;
 		flex-direction: row;
-		padding: 0 1rem !important;
+		padding: 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
 		font-family: inherit !important;
-		color: #111 !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
 		flex-direction: column;
-		margin-left: 0.5rem;
+		margin: 0 2rem 0 0.5rem;
 	`,
 	AuthorImg = styled( Image )`
 		width: 30px !important;
 		height: 30px !important;
+		@media (min-width: 420px) {
+			width: 35px !important;
+			height: 35px !important;
+		}
 	`,
 	AuthorFullname = styled.span`
-		font-size: 1.2rem !important;
+		font-size: 1.05rem !important;
 		color: #111 !important;
+		word-break: break-word !important;
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
 		color: rgba(0,0,0,0.65);
 		font-weight: normal;
 		margin-left: 0.25rem;
+		word-break: break-word !important;
 	`,
 	DateTime = styled( Header.Subheader )`
 		color: rgba(0,0,0,0.45) !important;

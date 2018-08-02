@@ -57,12 +57,33 @@ const
 		}
 		@media (min-width: 700px)  {
 			width: 600px;
+			position: relative;
 		}
 	`,
 	TextAreaStyle = {
 		width: "100%",
 		borderRadius: "2px"
-	};
+	},
+	SuggestionsWrapper = styled.div`
+		display: ${props => !props.showSuggestions && "none"};
+		z-index: 3;
+		border: 1px solid rgba(0,0,0,0.1);
+		@media (min-width: 420px) {
+			position: absolute;
+			grid-area: none;
+			height: 150px;
+			width: 300px;
+			top: ${props => props.top}px;
+			left: ${props => props.left}px;
+		}
+		@media (max-width: 420px) {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 50%;
+		}
+	`;
 
 
 class ShareBox extends Component {
@@ -265,14 +286,21 @@ class ShareBox extends Component {
 							onKeyDown={this.handleKeyPress}
 						/>
 					</InputTrigger>
+
+					<SuggestionsWrapper
+						showSuggestions={this.state.showSuggestions}
+						left={this.state.suggestionsLeft}
+						top={this.state.suggestionsTop}
+					>
+						<Suggestions
+							socialCircle={this.props.socialCircle}
+							showSuggestions={this.state.showSuggestions}
+							mentionInput={this.state.mentionInput}
+							selectFromMentions={this.selectFromMentions}
+						/>
+					</SuggestionsWrapper>
 				</Box>
 
-				<Suggestions
-					socialCircle={this.props.socialCircle}
-					showSuggestions={this.state.showSuggestions}
-					mentionInput={this.state.mentionInput}
-					selectFromMentions={this.selectFromMentions}
-				/>
 			</Wrapper>
 		);
 	}

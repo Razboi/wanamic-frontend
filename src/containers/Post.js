@@ -14,24 +14,23 @@ import AlertsFilter from "../components/AlertsFilter";
 
 const
 	Wrapper = styled.div`
+		overflow: hidden;
 		position: relative;
-
 		@media (min-width: 420px) {
 			border: 1px solid rgba(0, 0, 0, .1);
 			margin-bottom: 1rem;
 			background: #fff;
 		}
-
 		@media (max-width: 420px) {
 			border-bottom: ${props => props.noBorder ?
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
 		}
 	`,
 	PostHeader = styled( Header )`
-		height: 60px;
+		min-height: 60px;
 		display: flex;
 		flex-direction: row;
-		padding: 0 1rem !important;
+		padding: 1rem !important;
 		margin: 0 !important;
 		align-items: center !important;
 		font-family: inherit !important;
@@ -39,15 +38,22 @@ const
 	HeaderInfo = styled.div`
 		display: flex;
 		flex-direction: column;
-		margin-left: 0.5rem;
+		margin: 0 2rem 0 0.5rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorImg = styled( Image )`
+		overflow: visible !important;
 		width: 30px !important;
 		height: 30px !important;
 		margin: 0 !important;
 		@media (min-width: 420px) {
 			width: 35px !important;
 			height: 35px !important;
+		}
+		:hover {
+			cursor: pointer;
 		}
 	`,
 	StyledOptions = {
@@ -56,14 +62,19 @@ const
 		top: "1rem",
 	},
 	AuthorFullname = styled.span`
-		font-size: 1.2rem !important;
-		color: hsl(0,0%,13%) !important;
+		font-size: 1.05rem !important;
+		color: #111 !important;
+		word-break: break-word !important;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorUsername = styled.span`
 		font-size: 1rem;
 		color: rgba(0,0,0,0.65);
 		font-weight: normal;
 		margin-left: 0.25rem;
+		word-break: break-word !important;
 	`,
 	DateTime = styled( Header.Subheader )`
 		color: rgba(0,0,0,0.45) !important;

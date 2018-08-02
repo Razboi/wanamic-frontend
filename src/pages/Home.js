@@ -62,7 +62,7 @@ const
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
-		margin-top: ${props => props.blur ? "0px" : "49.33px"};
+		padding-top: 49.33px;
 	`,
 	PostDetailsDimmer = styled.div`
 		position: fixed;

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {
-	Icon, Input, Header, Image, Dropdown, Message as MessageInfo
+	Icon, Input, Image, Dropdown, Message as MessageInfo
 } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -65,17 +65,31 @@ const
 	HeaderWrapper = styled.div`
 		grid-area: hea;
 		display: flex;
-		justify-content: ${props => props.newconversation ?
-		"center" : "space-evenly"};
+		justify-content: space-between;
 		flex-direction: row;
 		align-items: center;
 		box-shadow: 0 1px 2px #555;
 		z-index: 2;
+		padding: 10px;
 	`,
-	BackArrow = styled( Icon )`
+	ArrowIcon = styled( Icon )`
 		font-size: 1.3rem !important;
 		margin: ${props => props.newconversation ?
 		"0 1rem 0 -1rem" : "0"} !important;
+		@media (min-width: 420px) {
+			display: none !important;
+		}
+	`,
+	CloseIcon = styled( Icon )`
+		margin-bottom: 3px !important;
+		color: rgba(0,0,0,0.25) !important;
+		font-size: 1.1em !important;
+		@media (max-width: 420px) {
+			display: none !important;
+		}
+		:hover {
+			 cursor: pointer;
+		}
 	`,
 	UserInfo = styled.div`
 		display: flex;
@@ -86,23 +100,27 @@ const
 		height: 35px !important;
 		align-self: flex-start;
 		margin-right: 0.5rem !important;
+		overflow: visible !important;
 	`,
-	TextInfo = styled( Header )`
+	TextInfo = styled.div`
 		display: flex;
 		align-items: center;
 		margin: 0 !important;
 		font-family: inherit !important;
 	`,
 	Fullname = styled.span`
-		font-size: 1.1475rem !important;
-	`,
-	Username = styled( Header.Subheader )`
-		margin: 0 !important;
+		font-size: 1rem;
+		word-break: break-word;
+		font-weight: 600;
+		color: #111;
 	`,
 	StyledDropdown = styled( Dropdown )`
 		i {
-			color: rgba(0,0,0,0.45) !important;
+			color: rgba(0,0,0,0.25) !important;
 			font-size: 1.433rem !important;
+			@media (min-width: 420px) {
+				font-size: 1rem !important;
+			}
 		};
 	`,
 	SpamWarning = styled( MessageInfo )`
@@ -137,7 +155,7 @@ class Conversation extends Component {
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
-					<BackArrow
+					<ArrowIcon
 						newconversation={newConversation ? 1 : 0}
 						className="arrowBack"
 						name="arrow left"
@@ -151,23 +169,28 @@ class Conversation extends Component {
 						/>
 						<TextInfo>
 							<Fullname>{conversation.target.fullname}</Fullname>
-							<Username>@{conversation.target.username}</Username>
 						</TextInfo>
 					</UserInfo>
 
-					{!newConversation &&
-						<StyledDropdown icon="setting" direction="left">
-							<Dropdown.Menu className="postDropdown">
-								<Dropdown.Item
-									className="postDeleteOption"
-									text="Delete Conversation"
-									onClick={() =>
-										this.props.handleDeleteChat(
-											conversation.target
-										)}
-								/>
-							</Dropdown.Menu>
-						</StyledDropdown>}
+					<div>
+						{!newConversation &&
+							<StyledDropdown icon="setting" direction="left">
+								<Dropdown.Menu className="postDropdown">
+									<Dropdown.Item
+										className="postDeleteOption"
+										text="Delete Conversation"
+										onClick={() =>
+											this.props.handleDeleteChat(
+												conversation.target
+											)}
+									/>
+								</Dropdown.Menu>
+							</StyledDropdown>}
+						<CloseIcon
+							name="close"
+							onClick={back}
+						/>
+					</div>
 				</HeaderWrapper>
 
 				<MessagesWrapper component="div" className="messagesWrapper">
@@ -190,7 +213,7 @@ class Conversation extends Component {
 					autoFocus
 					name="messageInput"
 					value={messageInput}
-					placeholder="Write a message.."
+					placeholder={"Write to @" + conversation.target.username}
 					onChange={handleChange}
 					onKeyPress={handleKeyPress}
 				/>

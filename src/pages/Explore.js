@@ -467,6 +467,7 @@ class ExplorePage extends Component {
 								switchDetails={this.hidePostDetails}
 								socket={this.props.socket}
 								index={this.state.selectedPost}
+								history={this.props.history}
 							/>}
 						{displayComments &&
 							<Comments

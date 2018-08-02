@@ -108,10 +108,15 @@ const
 			grid-area: none;
 			height: 150px;
 			width: 300px;
-			overflow-y: scroll;
 			top: 90%;
 			left: 50%;
-			border-radius: 2px;
+		}
+		@media (max-width: 420px) {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 50%;
 		}
 	`;
 
@@ -131,7 +136,7 @@ class MediaStep2 extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" ) {
+		if ( e.key === "Enter" && this.state.showSuggestions ) {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
@@ -153,8 +158,6 @@ class MediaStep2 extends Component {
 				});
 
 				this.endHandler();
-			} else {
-				this.props.nextStep( this.state.description );
 			}
 		}
 
@@ -274,10 +277,7 @@ class MediaStep2 extends Component {
 								onKeyDown={this.handleKeyPress}
 							/>
 						</InputTrigger>
-						<SuggestionsWrapper
-							left={this.state.suggestionsLeft}
-							top={this.state.suggestionsTop}
-						>
+						<SuggestionsWrapper>
 							<Suggestions
 								socialCircle={this.props.socialCircle}
 								showSuggestions={this.state.showSuggestions}

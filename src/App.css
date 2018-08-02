@@ -66,8 +66,17 @@ textarea {
 	color: #fff !important;
 }
 
+#ShareLinkTextarea {
+	color: #111;
+	padding: 0.5rem 1rem;
+}
+
+#ShareLinkTextarea::placeholder {
+	color: #333;
+}
+
 @media (min-width: 420px) {
-	#mediaStep2Input {
-		height: 55px;
+	#ShareLinkTextarea {
+		min-height: 120px;
 	}
 }

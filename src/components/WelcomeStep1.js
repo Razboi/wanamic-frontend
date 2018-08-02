@@ -148,7 +148,7 @@ class Step1 extends Component {
 							/>
 							<FormInput
 								username={1}
-								maxLength="30"
+								maxLength="20"
 								pattern="[a-zA-Z0-9-_]"
 								className="usernameInput"
 								onChange={this.props.handleChange}

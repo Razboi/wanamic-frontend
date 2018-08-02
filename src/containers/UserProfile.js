@@ -24,7 +24,7 @@ var
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		overflow: auto;
 		display: flex;
@@ -260,10 +260,10 @@ class UserProfile extends Component {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		window.scrollTo( 0, 0 );
 		if ( this.state.user !== prevState.user ) {
 			this.refreshTimeline();
 			this.setImages();
+			window.scrollTo( 0, 0 );
 		} else if ( this.props.username !== prevProps.username ) {
 			this.getUserInfo();
 			this.refreshTimeline();
@@ -500,7 +500,12 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
-				<NavBar socket={this.props.socket} />
+				<NavBar
+					profilePage
+					socket={this.props.socket}
+					messageTarget={this.state.messageTarget}
+					startChat={this.startChat}
+				/>
 
 				{( displayPostDetails || displayComments || displayShare ) &&
 					<PostDetailsDimmer>
@@ -530,7 +535,7 @@ class UserProfile extends Component {
 					hasMore={this.state.hasMore}
 					loadMore={this.getTimeline}
 					initialLoad={false}
-					useWindow={false}
+					useWindow={true}
 				>
 
 					<UserInfoBackground backgroundImg={backgroundImg} />

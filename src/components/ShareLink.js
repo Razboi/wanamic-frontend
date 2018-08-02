@@ -26,6 +26,15 @@ const
 		padding: 0px 10px;
 		color: #fff;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		@media (min-width: 420px) {
+			padding: 0px 40px;
+			i {
+				font-size: 1.5rem !important;
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -36,6 +45,7 @@ const
 		max-width: 65%;
 	`,
 	BoxContainer = styled.div`
+		position: relative;
 		display: flex;
 		width: 90%;
 		flex-direction: column;
@@ -49,10 +59,37 @@ const
 	`,
 	TextAreaStyle = {
 		width: "100%",
-		marginTop: "1rem"
+		marginTop: "1rem",
+		borderRadius: "2px"
 	},
 	ShareLinkInput = styled( Input )`
 		width: 100%;
+		input {
+			color: #111 !important;
+			::placeholder {
+				color: #333 !important;
+			}
+		}
+	`,
+	SuggestionsWrapper = styled.div`
+		display: ${props => !props.showSuggestions && "none"};
+		z-index: 3;
+		border: 1px solid rgba(0,0,0,0.1);
+		@media (min-width: 420px) {
+			position: absolute;
+			grid-area: none;
+			height: 150px;
+			width: 300px;
+			top: calc(${props => props.top}px + 70px);
+			left: ${props => props.left}px;
+		}
+		@media (max-width: 420px) {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 50%;
+		}
 	`;
 
 
@@ -77,31 +114,27 @@ class ShareLink extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" ) {
+		if ( e.key === "Enter" && this.state.showSuggestions ) {
 			e.preventDefault();
-			if ( this.state.showSuggestions ) {
-				const
-					{ description, startPosition, currentSelection } = this.state,
-					user = this.props.socialCircle[ currentSelection ],
-					updatedDescription =
-						description.slice( 0, startPosition - 1 )
-						+ "@" + user.username + " " +
-						description.slice( startPosition + user.username.length, description.length );
+			const
+				{ description, startPosition, currentSelection } = this.state,
+				user = this.props.socialCircle[ currentSelection ],
+				updatedDescription =
+					description.slice( 0, startPosition - 1 )
+					+ "@" + user.username + " " +
+					description.slice( startPosition + user.username.length, description.length );
 
-				this.setState({
-					description: updatedDescription,
-					startPosition: undefined,
-					showSuggestions: false,
-					suggestionsLeft: undefined,
-					suggestionsTop: undefined,
-					mentionInput: "",
-					currentSelection: 0
-				});
+			this.setState({
+				description: updatedDescription,
+				startPosition: undefined,
+				showSuggestions: false,
+				suggestionsLeft: undefined,
+				suggestionsTop: undefined,
+				mentionInput: "",
+				currentSelection: 0
+			});
 
-				this.endHandler();
-			} else {
-				this.nextStep();
-			}
+			this.endHandler();
 		}
 
 		if ( this.state.showSuggestions ) {
@@ -257,24 +290,31 @@ class ShareLink extends Component {
 						endTrigger={endHandler => this.endHandler = endHandler }
 					>
 						<textarea
+							id="ShareLinkTextarea"
 							maxLength="2200"
 							rows="4"
 							style={TextAreaStyle}
-							placeholder="Anything to say?"
+							placeholder="Share your opinion, tag @users and add #hashtags..."
 							name="description"
 							value={this.state.description}
 							onChange={this.handleChange}
 							onKeyDown={this.handleKeyPress}
 						/>
 					</InputTrigger>
-				</BoxContainer>
 
-				<Suggestions
-					socialCircle={this.props.socialCircle}
-					showSuggestions={this.state.showSuggestions}
-					mentionInput={this.state.mentionInput}
-					selectFromMentions={this.selectFromMentions}
-				/>
+					<SuggestionsWrapper
+						showSuggestions={this.state.showSuggestions}
+						left={this.state.suggestionsLeft}
+						top={this.state.suggestionsTop}
+					>
+						<Suggestions
+							socialCircle={this.props.socialCircle}
+							showSuggestions={this.state.showSuggestions}
+							mentionInput={this.state.mentionInput}
+							selectFromMentions={this.selectFromMentions}
+						/>
+					</SuggestionsWrapper>
+				</BoxContainer>
 			</Wrapper>
 		);
 	}
