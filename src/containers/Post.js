@@ -103,6 +103,7 @@ class Post extends Component {
 			likedBy: [],
 			nsfw: false,
 			spoiler: false,
+			spoilerDescription: "",
 			updatedContent: "",
 			id: ""
 		};
@@ -117,6 +118,7 @@ class Post extends Component {
 			likedBy: post.likedBy,
 			nsfw: post.alerts.nsfw,
 			spoiler: post.alerts.spoiler,
+			spoilerDescription: post.alerts.spoilerDescription,
 			updatedContent: post.content,
 			id: post._id
 		};
@@ -257,6 +259,7 @@ class Post extends Component {
 						handleFilter={this.handleFilter}
 						nsfw={this.state.nsfw}
 						spoiler={this.state.spoiler}
+						spoilerDescription={this.state.spoilerDescription}
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
 						<ContentWrapper>

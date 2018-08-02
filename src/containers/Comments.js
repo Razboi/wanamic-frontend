@@ -35,6 +35,7 @@ const
 		@media (min-width: 420px) {
 			width: 600px;
 			height: 600px;
+			border-radius: 2px;
 		}
 		::-webkit-scrollbar {
 			display: none !important;

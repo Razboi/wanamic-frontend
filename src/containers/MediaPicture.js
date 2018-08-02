@@ -13,7 +13,8 @@ class MediaPicture extends Component {
 			step: 1,
 			privacyRange: 1,
 			checkNsfw: false,
-			checkSpoiler: false
+			checkSpoiler: false,
+			spoilerDescription: ""
 		};
 	}
 
@@ -48,11 +49,20 @@ class MediaPicture extends Component {
 
 	handleSubmit = () => {
 		const {
-				description, privacyRange, checkNsfw, checkSpoiler
+				description, privacyRange, checkNsfw, checkSpoiler,
+				spoilerDescription
 			} = this.state,
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+			alerts = {
+				nsfw: checkNsfw,
+				spoiler: checkSpoiler,
+				spoilerDescription: spoilerDescription
+			};
 
 		this.props.submitPicture( description, privacyRange, alerts );
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	render() {
@@ -65,6 +75,8 @@ class MediaPicture extends Component {
 					handleSubmit={this.handleSubmit}
 					mediaData={this.state.mediaData}
 					privacyRange={this.state.privacyRange}
+					spoilers={this.state.checkSpoiler}
+					handleChange={this.handleChange}
 				/>
 			);
 		}

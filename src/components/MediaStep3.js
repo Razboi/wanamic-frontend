@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Button, Checkbox, Icon } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const
 	Wrapper = styled.div`
 		overflow: hidden;
-		position: absolute;
+		position: fixed;
 		height: 100vh;
 		width: 100%;
 		z-index: 3;
@@ -34,6 +34,15 @@ const
 		justify-content: space-between;
 		padding: 0px 10px;
 		box-shadow: 0 1px 2px #111;
+		@media (min-width: 420px) {
+			padding: 0px 40px;
+			i {
+				font-size: 1.5rem !important;
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -42,6 +51,9 @@ const
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
+		@media (min-width: 420px) {
+			font-size: 1.1rem !important;
+		}
 	`,
 	ShareOptions = styled.div`
 		grid-area: so;
@@ -52,7 +64,9 @@ const
 	`,
 	AlertsWrapper = styled.div`
 		grid-area: al;
-		justify-self: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	`,
 	Alerts = styled.div`
 		display: flex;
@@ -95,7 +109,27 @@ const
 		background-image: url(${props => props.background});
 		background-size: cover;
 		filter: blur(20px) brightness(50%);
-		transform: scale(1.2);
+		transform: scale(1.05);
+	`,
+	SpoilerDescription = styled.div`
+		margin-top: 3rem;
+		display: flex;
+		flex-direction: column;
+		text-align: center;
+		font-size: 1rem;
+	`,
+	StyledInput = styled( Input )`
+		margin-top: 5px;
+		width: 300px;
+		input {
+			font-size: 1rem;
+			color: #111 !important;
+			border-radius: 2px !important;
+			text-align: center !important;
+			::placeholder {
+				color: #444 !important;
+			}
+		}
 	`;
 
 
@@ -122,7 +156,7 @@ class MediaStep3 extends Component {
 							{this.props.privacyRange === 1 && "Friends"}
 							{this.props.privacyRange === 2 && "Friends and Followers"}
 							{this.props.privacyRange === 3 &&
-								"Everybody (will be included in the explore page unless it has alerts)"}
+								"Everybody (will be included in the explore page)"}
 						</SliderHeader>
 						<PrivacySlider range={this.props.privacyRange}>
 							<PrivacyButton
@@ -161,6 +195,17 @@ class MediaStep3 extends Component {
 								<AlertLabel>Spoiler</AlertLabel>
 							</AlertCheck>
 						</Alerts>
+						{this.props.spoilers &&
+							<SpoilerDescription>
+								<span>What is the spoiler about?</span>
+								<StyledInput
+									name="spoilerDescription"
+									placeholder="GoT episode 4 season 2"
+									onChange={this.props.handleChange}
+									maxLength="70"
+								/>
+							</SpoilerDescription>
+						}
 					</AlertsWrapper>
 
 				</Options>
@@ -174,11 +219,13 @@ class MediaStep3 extends Component {
 
 MediaStep3.propTypes = {
 	handleCheck: PropTypes.func.isRequired,
+	handleChange: PropTypes.func.isRequired,
 	setPrivacyRange: PropTypes.func.isRequired,
 	privacyRange: PropTypes.number.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
+	spoilers: PropTypes.bool.isRequired,
 	whiteTheme: PropTypes.bool
 };
 

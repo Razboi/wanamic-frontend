@@ -197,8 +197,6 @@ const
 		background: none !important;
 	`;
 
-var
-	interval;
 class Messages extends Component {
 	constructor() {
 		super();
@@ -215,12 +213,12 @@ class Messages extends Component {
 	// Must await to get chats for checking if the conversation
 	// already exists
 	async componentDidMount() {
-		interval = setInterval( this.resetMessagesLimit, 10000 );
+		this.interval = setInterval( this.resetMessagesLimit, 10000 );
 		await this.getActiveChats();
 	}
 
 	componentWillUnmount() {
-		clearInterval( interval );
+		clearInterval( this.interval );
 	}
 
 	componentDidUpdate( prevProps ) {

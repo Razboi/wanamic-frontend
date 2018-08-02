@@ -36,6 +36,8 @@ const
 			box-shadow: 0 1px 2px #555;
 			height: 49.33px;
 			background: #efefef;
+			border-top-left-radius: 2px;
+			border-top-right-radius: 2px;
 		}
 	`,
 	StyledIcon = styled( Icon )`

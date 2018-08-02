@@ -165,6 +165,7 @@ class SearchMedia extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
+			spoilerDescription: "",
 			mentions: [],
 			mediaType: ""
 		};
@@ -252,7 +253,8 @@ class SearchMedia extends Component {
 			i,
 			finalData = this.state.mediaData;
 		const
-			{ description, privacyRange, checkNsfw, checkSpoiler } = this.state,
+			{ description, privacyRange, checkNsfw, checkSpoiler,
+				spoilerDescription } = this.state,
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
 			);
@@ -262,7 +264,8 @@ class SearchMedia extends Component {
 		finalData.privacyRange = privacyRange;
 		finalData.alerts = {
 			nsfw: checkNsfw,
-			spoiler: checkSpoiler
+			spoiler: checkSpoiler,
+			spoilerDescription: spoilerDescription
 		};
 
 		api.createMediaPost( finalData )
@@ -318,6 +321,8 @@ class SearchMedia extends Component {
 					handleSubmit={this.handleSubmit}
 					mediaData={this.state.mediaData}
 					privacyRange={this.state.privacyRange}
+					spoilers={this.state.checkSpoiler}
+					handleChange={this.handleChange}
 				/>
 			);
 		}

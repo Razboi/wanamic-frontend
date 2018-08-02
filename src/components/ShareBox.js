@@ -27,6 +27,15 @@ const
 		padding: 0px 10px;
 		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		@media (min-width: 420px) {
+			padding: 0px 40px;
+			i {
+				font-size: 1.5rem !important;
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
@@ -35,6 +44,9 @@ const
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
+		@media (min-width: 420px) {
+			font-size: 1.1rem;
+		}
 	`,
 	Box = styled( Form )`
 		display: flex;
@@ -48,7 +60,8 @@ const
 		}
 	`,
 	TextAreaStyle = {
-		width: "100%"
+		width: "100%",
+		borderRadius: "2px"
 	};
 
 
@@ -61,6 +74,7 @@ class ShareBox extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
+			spoilerDescription: "",
 			showSuggestions: false,
 			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
@@ -188,9 +202,14 @@ class ShareBox extends Component {
 
 	handleSubmit = () => {
 		const {
-				userInput, privacyRange, checkNsfw, checkSpoiler
+				userInput, privacyRange, checkNsfw, checkSpoiler,
+				spoilerDescription
 			} = this.state,
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+			alerts = {
+				nsfw: checkNsfw,
+				spoiler: checkSpoiler,
+				spoilerDescription: spoilerDescription
+			};
 
 		this.props.shareTextPost( userInput, privacyRange, alerts );
 		this.setState({ userInput: "" });
@@ -206,6 +225,8 @@ class ShareBox extends Component {
 					handleSubmit={this.handleSubmit}
 					mediaData={{}}
 					privacyRange={this.state.privacyRange}
+					spoilers={this.state.checkSpoiler}
+					handleChange={this.handleChange}
 				/>
 			);
 		}

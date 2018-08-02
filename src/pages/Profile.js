@@ -11,10 +11,6 @@ class ProfilePage extends Component {
 			window.history.back();
 		}
 	}
-
-	backToMain = () => {
-		this.props.history.push( "/" );
-	}
 	goToUserSettings = () => {
 		this.props.history.push( "/settings" );
 	}
@@ -37,10 +33,7 @@ class ProfilePage extends Component {
 				socket={this.props.socket}
 				history={this.props.history}
 				username={username}
-				backToMain={ this.props.explore ?
-					this.props.backToMenu
-					:
-					this.backToMain}
+				backToMenu={ this.props.backToMenu}
 				goToUserSettings={this.goToUserSettings}
 				next={this.props.next}
 				explore={this.props.explore}
@@ -56,6 +49,7 @@ ProfilePage.propTypes = {
 			username: PropTypes.string.isRequired
 		})
 	}),
+	backToMenu: PropTypes.func
 };
 
 export default ProfilePage;

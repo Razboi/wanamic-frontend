@@ -26,7 +26,8 @@ export const
 	addToPosts = ( posts, onExplore, onProfile ) => ({
 		type: ADD_TO_POSTS,
 		posts: posts,
-		onExplore: onExplore
+		onExplore: onExplore,
+		onProfile: onProfile
 	}),
 
 	addPost = post => ({

@@ -266,7 +266,9 @@ class MediaOptions extends Component {
 		data.append( "mentions", mentions );
 		data.append( "hashtags", hashtags );
 		data.append( "privacyRange", privacyRange );
-		data.append( "alerts", alerts );
+		data.append( "nsfw", alerts.nsfw );
+		data.append( "spoiler", alerts.spoiler );
+		data.append( "spoilerDescription", alerts.spoilerDescription );
 		data.append( "token", localStorage.getItem( "token" ));
 
 		try {

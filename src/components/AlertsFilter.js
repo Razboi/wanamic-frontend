@@ -5,12 +5,13 @@ import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		position: absolute;
+		position: ${props => !props.explore && "absolute !important"};
 		display: flex;
 		z-index: 2;
 		height: 100%;
 		width: 100%;
 		justify-content: center;
+		padding: 10px;
 	`,
 	Warning = styled.div`
 		align-self: center;
@@ -23,16 +24,33 @@ const
 	`,
 	StyledButton = styled( Button )`
 		align-self: center;
+		background: rgb(133, 217, 191) !important;
+    border-radius: 2px !important;
+    font-family: inherit !important;
+		@media (max-width: 420px) {
+			padding: 10px !important;
+		}
 	`,
 	StyledHeader = styled( Header )`
 		color: #fff !important;
+		font-family: inherit !important;
+		margin: 10px 0 !important;
+		@media (max-width: 420px) {
+			font-size: 1.1rem !important;
+		}
 	`,
 	StyledSubHeader = styled( Header.Subheader )`
 		color: #fff !important;
+		font-family: inherit !important;
+		word-break: break-word !important;
+		margin-top: 5px !important;
+		@media (max-width: 420px) {
+			font-size: 0.9rem !important;
+		}
 	`,
 	AlertImage = styled.span`
-		height: 64px;
-		width: 64px;
+		height: ${window.innerWidth > 420 ? "64px" : "32px"};;
+		width: ${window.innerWidth > 420 ? "64px" : "32px"};;
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
@@ -43,10 +61,13 @@ class AlertsFilter extends Component {
 	render() {
 		if ( this.props.nsfw ) {
 			return (
-				<Wrapper>
+				<Wrapper explore={this.props.explore}>
 					<Warning>
 						<AlertImage
-							image={require( "../images/plus_18.png" )}
+							image={window.innerWidth > 420 ?
+								require( "../images/plus_18.png" )
+								:
+								require( "../images/plus_18_small.png" )}
 						/>
 						<StyledHeader>
 							Mature content
@@ -65,15 +86,23 @@ class AlertsFilter extends Component {
 		}
 		if ( this.props.spoiler ) {
 			return (
-				<Wrapper>
+				<Wrapper explore={this.props.explore}>
 					<Warning>
 						<AlertImage
-							image={require( "../images/warning.png" )}
+							image={window.innerWidth > 420 ?
+								require( "../images/warning.png" )
+								:
+								require( "../images/warning_small.png" )}
 						/>
 						<StyledHeader>
 							Spoilers
 							<StyledSubHeader>
-								This post contains spoilers.
+								{this.props.spoilerDescription ?
+									`This post contains spoilers related to
+									"${this.props.spoilerDescription}".`
+									:
+									"This post contains spoilers."
+								}
 							</StyledSubHeader>
 						</StyledHeader>
 						<StyledButton
@@ -85,7 +114,6 @@ class AlertsFilter extends Component {
 				</Wrapper>
 			);
 		}
-
 		return null;
 	}
 }
@@ -93,7 +121,9 @@ class AlertsFilter extends Component {
 AlertsFilter.propTypes = {
 	nsfw: PropTypes.bool.isRequired,
 	spoiler: PropTypes.bool.isRequired,
-	handleFilter: PropTypes.func.isRequired
+	spoilerDescription: PropTypes.string,
+	handleFilter: PropTypes.func.isRequired,
+	explore: PropTypes.bool
 };
 
 export default AlertsFilter;

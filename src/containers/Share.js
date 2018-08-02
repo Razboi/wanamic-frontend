@@ -93,6 +93,7 @@ class Share extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
+			spoilerDescription: "",
 			socialCircle: [],
 			showSuggestions: false,
 			suggestionsTop: undefined,
@@ -273,6 +274,8 @@ class Share extends Component {
 						handleSubmit={this.handleShare}
 						mediaData={{}}
 						privacyRange={this.state.privacyRange}
+						spoilers={this.state.checkSpoiler}
+						handleChange={this.handleChange}
 					/>
 				</Wrapper>
 			);

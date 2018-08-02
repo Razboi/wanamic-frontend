@@ -65,3 +65,9 @@ textarea {
 	border-color: rgb(133, 217, 191) !important;
 	color: #fff !important;
 }
+
+@media (min-width: 420px) {
+	#mediaStep2Input {
+		height: 55px;
+	}
+}

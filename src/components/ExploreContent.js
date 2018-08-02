@@ -60,12 +60,10 @@ class ExploreContent extends Component {
 		return (
 			<Wrapper options={ { transitionDuration: "0.95s" } }>
 				{this.props.posts.map(( post, index ) =>
-					<PostWrapper
-						key={index}
-						onClick={() => this.props.displayPostDetails( index )}
-					>
+					<PostWrapper key={index}>
 						<ExplorePost
 							post={post}
+							handleClick={() => this.props.displayPostDetails( index )}
 						/>
 					</PostWrapper>
 				)}

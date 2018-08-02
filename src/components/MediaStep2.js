@@ -51,15 +51,21 @@ const
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
+		@media (min-width: 420px) {
+			font-size: 1.1rem !important;
+		}
 	`,
 	ContentInputWrapper = styled.div`
 		grid-area: inp;
 		display: grid;
 		padding-bottom: 40px;
+		@media (min-width: 420px) {
+			position: relative;
+		}
 	`,
 	UserContentInput = {
 		width: "90%",
-		maxWidth: "1480px",
+		maxWidth: "1000px",
 		minHeight: "45px",
 		alignSelf: "flex-end",
 		zIndex: 2,
@@ -84,6 +90,7 @@ const
 		background-image: url(${props => props.background});
 		background-size: cover;
 		filter: blur(20px) brightness(50%);
+		transform: scale(1.05);
 	`,
 	SelectedMediaImg = styled( Image )`
 		justify-self: center;
@@ -97,6 +104,15 @@ const
 		grid-area: img;
 		position: absolute;
 		height: 100%;
+		@media (min-width: 420px) {
+			grid-area: none;
+			height: 150px;
+			width: 300px;
+			overflow-y: scroll;
+			top: 90%;
+			left: 50%;
+			border-radius: 2px;
+		}
 	`;
 
 
@@ -246,6 +262,7 @@ class MediaStep2 extends Component {
 							endTrigger={endHandler => this.endHandler = endHandler }
 						>
 							<textarea
+								id="mediaStep2Input"
 								maxLength="2200"
 								style={UserContentInput}
 								autoFocus
@@ -257,7 +274,10 @@ class MediaStep2 extends Component {
 								onKeyDown={this.handleKeyPress}
 							/>
 						</InputTrigger>
-						<SuggestionsWrapper>
+						<SuggestionsWrapper
+							left={this.state.suggestionsLeft}
+							top={this.state.suggestionsTop}
+						>
 							<Suggestions
 								socialCircle={this.props.socialCircle}
 								showSuggestions={this.state.showSuggestions}

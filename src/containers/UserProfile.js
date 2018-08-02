@@ -2,19 +2,21 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import {
-	switchPostDetails, setPosts, switchComments, switchShare
+	switchPostDetails, setPosts, switchComments, switchShare, addToPosts
 } from "../services/actions/posts";
+import { switchMessages } from "../services/actions/conversations";
+import { switchNotifications } from "../services/actions/notifications";
 import api from "../services/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
 import Comments from "../containers/Comments";
-import Messages from "../pages/Messages";
 import Share from "../containers/Share";
 import PostDetails from "../containers/PostDetails";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
 import ProfileTimeLine from "../components/ProfileTimeLine";
+import NavBar from "./NavBar";
 
 var
 	backgroundImg,
@@ -37,6 +39,7 @@ const
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
 		width: 100%;
+		margin-top: 49.33px;
 	`,
 	UserInfoWrapper = styled.div`
 		background: #fff;
@@ -51,30 +54,6 @@ const
 			margin: 0 auto;
 			position: relative;
 		}
-	`,
-	BackOption = styled.div`
-		position: fixed;
-		top: 0.66rem;
-		left: 0.66rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 2;
-		background: rgba( 0,0,0,0.1 ) !important;
-		border-radius: 100%;
-		padding: 0.8rem;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	BackImage = styled.span`
-		height: 24px;
-		width: 24px;
-		display: block;
-		background-image: url(${props => props.image});
-		background-repeat: no-repeat;
-		margin: 0;
-		position: relative;
 	`,
 	UserInfo = styled.div`
 		margin-top: -5rem;
@@ -104,7 +83,7 @@ const
 		background-size: cover;
 		filter: brightness(85%);
 		@media (min-width: 420px) {
-			height: 420px;
+			height: 500px;
 		}
 	`,
 	UserImage = styled.img`
@@ -214,6 +193,15 @@ const
 		right: 10px;
 		background: rgba( 0,0,0,0.5 ) !important;
 		color: #fff !important;
+		z-index: 99;
+	`,
+	BackButton = styled( Button )`
+		position: fixed;
+		bottom: 10px;
+		left: 10px;
+		background: rgba( 0,0,0,0.5 ) !important;
+		color: #fff !important;
+		z-index: 99;
 	`,
 	HeartImage = styled.span`
 		height: 16px;
@@ -272,6 +260,7 @@ class UserProfile extends Component {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
+		window.scrollTo( 0, 0 );
 		if ( this.state.user !== prevState.user ) {
 			this.refreshTimeline();
 			this.setImages();
@@ -347,9 +336,9 @@ class UserProfile extends Component {
 					await refreshToken();
 					this.getTimeline();
 				} else if ( posts.data ) {
-					this.props.setPosts( posts.data, false, false, true );
+					this.props.addToPosts( posts.data, false, true );
 					this.setState({
-						hasMore: posts.data.length > 10,
+						hasMore: posts.data.length === 10,
 						skip: this.state.skip + 1
 					});
 				}
@@ -367,7 +356,7 @@ class UserProfile extends Component {
 				this.refreshTimeline();
 			} else if ( posts.data ) {
 				this.props.setPosts( posts.data, false, false, true );
-				this.setState({ hasMore: posts.data.length > 10 });
+				this.setState({ hasMore: posts.data.length === 10 });
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -473,6 +462,9 @@ class UserProfile extends Component {
 		if ( this.props.displayNotifications ) {
 			this.props.switchNotifications();
 		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
@@ -508,6 +500,8 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
+				<NavBar socket={this.props.socket} />
+
 				{( displayPostDetails || displayComments || displayShare ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
@@ -530,26 +524,14 @@ class UserProfile extends Component {
 					</PostDetailsDimmer>
 				}
 
-				<Messages
-					startChat={this.startChat}
-					largeScreen={window.innerWidth > 420 ? true : false}
-					chat={this.state.chat}
-					messageTarget={this.state.messageTarget}
-					toggleChat={this.toggleChat}
-					socket={this.props.socket}
-					profilePage
-				/>
 				<StyledInfiniteScroll
+					onClick={this.hidePopups}
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getTimeline}
 					initialLoad={false}
 					useWindow={false}
 				>
-
-					<BackOption onClick={this.props.backToMain} >
-						<BackImage image={require( "../images/left-arrow.png" )} />
-					</BackOption>
 
 					<UserInfoBackground backgroundImg={backgroundImg} />
 					<UserInfoWrapper>
@@ -659,13 +641,22 @@ class UserProfile extends Component {
 					</TimeLine>
 
 					{this.props.explore &&
-						<NextButton
-							className="nextButton"
-							circular
-							icon="angle double right"
-							size="large"
-							onClick={this.props.next}
-						/>
+						<React.Fragment>
+							<NextButton
+								className="nextButton"
+								circular
+								icon="angle double right"
+								size="large"
+								onClick={this.props.next}
+							/>
+							<BackButton
+								className="backButton"
+								circular
+								icon="close"
+								size="large"
+								onClick={this.props.backToMenu}
+							/>
+						</React.Fragment>
 					}
 				</StyledInfiniteScroll>
 			</Wrapper>
@@ -676,11 +667,15 @@ class UserProfile extends Component {
 UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
 	username: PropTypes.string.isRequired,
-	profilePosts: PropTypes.array.isRequired
+	profilePosts: PropTypes.array.isRequired,
+	backToMenu: PropTypes.func,
+	next: PropTypes.func
 };
 
 const
 	mapStateToProps = state => ({
+		displayMessages: state.conversations.displayMessages,
+		displayNotifications: state.notifications.displayNotifications,
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
@@ -692,7 +687,11 @@ const
 	mapDispatchToProps = dispatch => ({
 		setPosts: ( posts, onExplore, onAlbum, onProfile ) =>
 			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
+		addToPosts: ( posts, onExplore, onProfile ) =>
+			dispatch( addToPosts( posts, onExplore, onProfile )),
 		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchMessages: () => dispatch( switchMessages()),
+		switchNotifications: () => dispatch( switchNotifications()),
 		switchComments: () => dispatch( switchComments()),
 		switchShare: () => dispatch( switchShare())
 	});

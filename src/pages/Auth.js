@@ -47,7 +47,9 @@ class AuthPage extends Component {
 			fullname: "",
 			signup: false,
 			signupStep: 1,
-			error: undefined
+			error: undefined,
+			loginAttempts: 0,
+			blockedLogin: false
 		};
 	}
 
@@ -58,6 +60,9 @@ class AuthPage extends Component {
 		this.setState({ signup: !this.state.signup, error: undefined })
 
 	handleLogin = () => {
+		if ( this.state.blockedLogin ) {
+			return;
+		}
 		const credentials = {
 			email: this.state.email, password: this.state.password
 		};
@@ -68,9 +73,36 @@ class AuthPage extends Component {
 		if ( credentials.email !== "" && credentials.password !== "" ) {
 			this.props.login( credentials )
 				.then(() => this.props.history.push( "/" ))
-				.catch( err => this.setState({ error: err.response.data }));
+				.catch( err => {
+					if ( err.response.status === 401 ) {
+						console.log( "here" );
+						if ( this.state.loginAttempts >= 3 ) {
+							this.blockLogin();
+							return;
+						} else {
+							this.setState( state => ({
+								loginAttempts: state.loginAttempts + 1 }));
+						}
+					}
+					this.setState({ error: err.response.data });
+				});
 		}
 	};
+
+	blockLogin = () => {
+		this.setState({
+			error: "You have exceeded the login attempts limit. " +
+			"Please try again in 2 minutes.",
+			blockedLogin: true
+		});
+		setTimeout(() => {
+			this.setState({
+				error: "",
+				blockedLogin: false,
+				loginAttempts: 0
+			});
+		}, 10000 );
+	}
 
 	handleSignup = () => {
 		const credentials = {

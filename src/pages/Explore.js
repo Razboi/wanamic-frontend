@@ -52,11 +52,9 @@ const
 		grid-area: h;
 		height: 100%;
 		@media (max-width: 420px) {
-			display: grid;
-			grid-template-columns: 50% 50%;
-			grid-template-rows: 100%;
-			grid-template-areas:
-				"shu shc";
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
 		}
 		@media (min-width: 420px) {
 			grid-area: h;
@@ -84,9 +82,7 @@ const
 			};
 		}
 		@media (max-width: 420px) {
-			grid-area: shu;
 			height: 100%;
-			width: 100%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -109,9 +105,7 @@ const
 			};
 		}
 		@media (max-width: 420px) {
-			grid-area: shc;
 			height: 100%;
-			width: 100%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -134,17 +128,6 @@ const
 		@media (min-width: 420px) {
 			height: 32px;
 			width: 32px;
-		}
-	`,
-	SubheaderText = styled.span`
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: #333;
-		font-family: inherit;
-		margin-top: 5px;
-		display: none;
-		@media (max-width: 420px) {
-			display: none;
 		}
 	`,
 	SearchBar = styled.input`
@@ -219,20 +202,22 @@ class ExplorePage extends Component {
 			searching: false,
 			scrollingDown: false
 		};
+		this.throttledScroll = _.throttle( this.handleScroll, 500 );
 	}
 
 	componentDidMount() {
-		window.addEventListener(
-			"scroll", _.throttle( this.handleScroll, 500 ));
+		window.scrollTo( 0, 0 );
+		window.addEventListener( "scroll", this.throttledScroll );
 		this.refreshPosts();
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( "scroll", this.handleScroll );
+		window.removeEventListener( "scroll", this.throttledScroll );
 	}
 
 	handleScroll = e => {
 		const currentScrollPosition = window.pageYOffset;
+
 		if ( currentScrollPosition > lastScrollPosition + 20 ) {
 			this.setState({ scrollingDown: true });
 			lastScrollPosition = currentScrollPosition;
@@ -511,7 +496,6 @@ class ExplorePage extends Component {
 									className="userIcon"
 									onClick={() => this.setState({ content: false })}
 								/>
-								<SubheaderText>Users</SubheaderText>
 							</UserSubheader>
 							<ContentSubheader active={this.state.content}>
 								<HeaderImage
@@ -519,7 +503,6 @@ class ExplorePage extends Component {
 									className="contentIcon"
 									onClick={() => this.setState({ content: true })}
 								/>
-								<SubheaderText>Content</SubheaderText>
 							</ContentSubheader>
 						</Header>
 

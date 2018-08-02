@@ -66,6 +66,7 @@ class ShareLink extends Component {
 			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
+			spoilerDescription: "",
 			startPosition: undefined,
 			showSuggestions: false,
 			suggestionsLeft: undefined,
@@ -197,9 +198,14 @@ class ShareLink extends Component {
 
 	handleSubmit = () => {
 		const {
-				description, link, privacyRange, checkNsfw, checkSpoiler
+				description, link, privacyRange, checkNsfw, checkSpoiler,
+				spoilerDescription
 			} = this.state,
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+			alerts = {
+				nsfw: checkNsfw,
+				spoiler: checkSpoiler,
+				spoilerDescription: spoilerDescription
+			};
 		this.props.submitLink( description, link, privacyRange, alerts );
 	}
 
@@ -213,6 +219,8 @@ class ShareLink extends Component {
 					handleSubmit={this.handleSubmit}
 					mediaData={{}}
 					privacyRange={this.state.privacyRange}
+					spoilers={this.state.checkSpoiler}
+					handleChange={this.handleChange}
 				/>
 			);
 		}

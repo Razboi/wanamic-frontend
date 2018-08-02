@@ -25,6 +25,8 @@ const
 		@media (min-width: 420px) {
 			margin-bottom: 1rem;
 			background: #fff;
+			border-bottom-left-radius: 2px;
+			border-bottom-right-radius: 2px;
 		}
 	`,
 	PostHeader = styled( Header )`
@@ -130,7 +132,7 @@ const
 	Dimmer = styled.div`
 		min-height: ${props => props.blurFilter && "250px"};
 		filter: ${props => props.blurFilter ?
-		"blur(25px) brightness(50%)" : "blur(0px)"};
+		"blur(15px) brightness(50%)" : "blur(0px)"};
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
@@ -145,6 +147,7 @@ class MediaPost extends Component {
 			likedBy: [],
 			nsfw: false,
 			spoiler: false,
+			spoilerDescription: "",
 			updatedContent: "",
 			id: ""
 		};
@@ -159,6 +162,7 @@ class MediaPost extends Component {
 			likedBy: post.likedBy,
 			nsfw: post.alerts.nsfw,
 			spoiler: post.alerts.spoiler,
+			spoilerDescription: post.alerts.spoilerDescription,
 			updatedContent: post.content,
 			id: post._id
 		};
@@ -308,6 +312,7 @@ class MediaPost extends Component {
 						handleFilter={this.handleFilter}
 						nsfw={this.state.nsfw}
 						spoiler={this.state.spoiler}
+						spoilerDescription={this.state.spoilerDescription}
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
 						{post.link ?
