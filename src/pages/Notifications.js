@@ -22,13 +22,13 @@ const
 		height: 100vh;
 		width: 100%;
 		overflow: auto;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			padding-top: 49.33px;
 			::-webkit-scrollbar {
 				display: none !important;
 			};
 		};
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			height: 400px;
 			width: 400px;
 			position: absolute;
@@ -53,7 +53,7 @@ const
 		font-weight: bold;
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
 		text-align: center;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			color: #333;
 			padding: 7px 0;
 			font-size: 1rem;

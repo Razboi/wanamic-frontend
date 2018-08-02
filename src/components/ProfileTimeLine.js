@@ -10,9 +10,11 @@ const
 	UserPostsWrapper = styled.div`
 		background: #fff;
 		margin-top: 1rem;
-		@media (min-width: 420px) {
+		@media (min-width: 600px) and (max-width: 960px) {
+			width: 600px;
+			padding-top: 1rem;
 			background: none;
-			padding: 0 5px;
+			margin: 0 auto;
 		}
 	`,
 	StyledNewsFeed = styled( NewsFeed )`

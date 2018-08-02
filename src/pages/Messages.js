@@ -17,7 +17,7 @@ import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
 			width: 100%;
@@ -30,7 +30,7 @@ const
 				display: none !important;
 			}
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			display: ${props => props.hideSidebar && "none"};
 			height: 350px;
 			position: fixed;
@@ -48,7 +48,7 @@ const
 		}
 	`,
 	PopupWrapper = styled.div`
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			height: 400px;
 			width: 400px;
 			position: absolute;
@@ -61,7 +61,7 @@ const
 			z-index: 5;
 			border-top: 0;
 		};
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`,
@@ -71,7 +71,7 @@ const
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			display: ${props => !props.isPopup && "none"};
 			color: #333;
 			padding: 7px 0;
@@ -91,10 +91,15 @@ const
 		z-index: 3;
 		background: rgb(133, 217, 191) !important;
 		font-size: 1.28rem !important;
-		margin: 0 0 0 auto !important;
-		@media (min-width: 420px) {
+		@media (max-width: 960px) {
+			position: fixed;
+			bottom: 1rem;
+			right: 1rem;
+		}
+		@media (min-width: 960px) {
 			background: none !important;
 			font-size: 1rem !important;
+			margin: 0 0 0 auto !important;
 			i {
 				color: rgba(0,0,0,0.25) !important;
 			}
@@ -108,7 +113,7 @@ const
 		z-index: 3;
 		margin: 0 auto 0 0 !important;
 		background: none !important;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`,
@@ -128,7 +133,7 @@ const
 	UserImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 30px !important;
 			height: 30px !important;
 		}
@@ -147,7 +152,7 @@ const
 		text-overflow: ellipsis !important;
 		font-size: 1.1rem !important;
 		color: #111 !important;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			font-size: 1rem !important;
 			font-weight: 500 !important;
 		}
@@ -156,7 +161,7 @@ const
 		white-space: nowrap !important;
 		overflow: hidden !important;
 		text-overflow: ellipsis !important;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			font-size: 0.9rem !important;
 		}
 	`,
@@ -164,7 +169,7 @@ const
 		font-size: 0.87rem;
 		color: rgba(0,0,0,0.78);
 		align-self: self-start;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			font-size: 0.85rem !important;
 		}
 	`,
@@ -187,7 +192,7 @@ const
 		:hover {
 			cursor: pointer;
 		}
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`,

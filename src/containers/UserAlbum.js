@@ -50,6 +50,7 @@ const
 		min-height: 100px;
 		align-items: center;
 		justify-content: center;
+		padding: 1rem;
 	`;
 
 class UserAlbum extends Component {

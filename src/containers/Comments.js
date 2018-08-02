@@ -28,11 +28,11 @@ const
 			"hea"
 			"com"
 			"inp";
-		@media (max-width: 420px) {
+		@media (max-width: 600px) {
 			height: 100vh;
 			width: 100%;
 		};
-		@media (min-width: 420px) {
+		@media (min-width: 600px) {
 			width: 600px;
 			height: 600px;
 			border-radius: 2px;

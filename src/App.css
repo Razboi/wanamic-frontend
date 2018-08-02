@@ -54,7 +54,7 @@ textarea {
 	color: #333;
 }
 
-@media (min-width: 420px) {
+@media (min-width: 960px) {
 	#NavbarSmallScreenOption {
 		display: none;
 	}

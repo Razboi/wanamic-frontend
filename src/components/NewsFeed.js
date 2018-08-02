@@ -10,7 +10,7 @@ const
 		@media (max-width: 420px) {
 			width: 100%;
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 600px) {
 			width: 600px;
 			padding-top: 1rem;
 		}

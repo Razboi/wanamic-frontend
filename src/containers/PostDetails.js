@@ -14,13 +14,13 @@ const
 		width: 100%;
 		position: fixed;
 		z-index: 20;
-		@media (max-width: 420px) {
+		@media (max-width: 600px) {
 			background: #fff;
 			min-height: 100vh;
 			height: 100%;
 			overflow-y: scroll;
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 600px) {
 			width: 600px;
 			max-height: 90%;
 			overflow-y: scroll;
@@ -32,7 +32,7 @@ const
 		align-items: center;
 		padding: 0 10px;
 		justify-content: space-between;
-		@media (min-width: 420px) {
+		@media (min-width: 600px) {
 			box-shadow: 0 1px 2px #555;
 			height: 49.33px;
 			background: #efefef;

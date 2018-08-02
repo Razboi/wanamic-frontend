@@ -24,7 +24,7 @@ const
 			"hea"
 			"mes"
 			"inp";
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			height: 350px;
 			width: 300px;
 			position: fixed;
@@ -76,7 +76,7 @@ const
 		font-size: 1.3rem !important;
 		margin: ${props => props.newconversation ?
 		"0 1rem 0 -1rem" : "0"} !important;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			display: none !important;
 		}
 	`,
@@ -84,7 +84,7 @@ const
 		margin-bottom: 3px !important;
 		color: rgba(0,0,0,0.25) !important;
 		font-size: 1.1em !important;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none !important;
 		}
 		:hover {
@@ -118,7 +118,7 @@ const
 		i {
 			color: rgba(0,0,0,0.25) !important;
 			font-size: 1.433rem !important;
-			@media (min-width: 420px) {
+			@media (min-width: 960px) {
 				font-size: 1rem !important;
 			}
 		};

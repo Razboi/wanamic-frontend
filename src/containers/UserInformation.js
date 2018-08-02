@@ -13,10 +13,16 @@ const
 		overflow: hidden;
 		margin-top: 1rem;
 		font-size: 1.05rem;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 600px;
 			margin-top: 2rem;
 			padding: 0 5px;
+		}
+		@media (min-width: 600px) and (max-width: 960px) {
+			width: 600px;
+			padding-top: 1rem;
+			background: none;
+			margin: 0 auto;
 		}
 	`,
 	InfoSegment = styled.div`

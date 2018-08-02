@@ -16,6 +16,11 @@ const
 			margin-top: 2rem;
 			padding: 0 5px;
 		}
+		@media (min-width: 600px) and (max-width: 960px) {
+			width: 600px;
+			background: none;
+			margin: 2rem auto 0 auto;
+		}
 	`,
 	Tabs = styled.div`
 		background: #fff;

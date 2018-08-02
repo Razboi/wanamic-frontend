@@ -140,13 +140,15 @@ const
 		::placeholder {
 			color: #333;
 		}
-		@media (max-width: 420px) {
+		@media (max-width: 900px) {
 			width: 90%;
 			height: 34px;
 		}
 		@media (min-width: 420px) {
-			width: 800px;
 			height: 40px;
+		}
+		@media (min-width: 900px) {
+			width: 800px;
 		}
 	`,
 	SearchWrapper = styled.div`

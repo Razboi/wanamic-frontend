@@ -29,6 +29,7 @@ const
 		margin: 0 2rem 0 0.5rem;
 	`,
 	AuthorImg = styled( Image )`
+		overflow: visible !important;
 		width: 30px !important;
 		height: 30px !important;
 		@media (min-width: 420px) {

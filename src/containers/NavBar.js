@@ -28,7 +28,7 @@ const
 	    right: 0;
 	    bottom: -1px;
 		};
-		@media(min-width: 420px) {
+		@media(min-width: 960px) {
 			display: ${props => props.hideOnLargeScreen && "none"};
 		}
 	`,
@@ -36,11 +36,11 @@ const
 		height: 100%;
 		display: flex;
 		align-items: center;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			width: 100%;
 			justify-content: space-around;
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 1140px;
 			margin: 0 auto;
 			justify-content: flex-start;
@@ -49,10 +49,10 @@ const
 	`,
 	NavOption = styled.div`
 		height: 100%;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			width: 100%;
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 49.33px;
 			margin-right: 2rem;
 			position: relative;
@@ -95,7 +95,7 @@ const
 		align-content: center;
 		justify-content: space-between;
 		font-size: 1rem !important;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			margin-right: 2rem;
 		}
 	`,
@@ -110,14 +110,14 @@ const
 		font-size: 1rem;
 		color: rgb(168, 170, 171);
 		line-height: 2rem;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			margin-left: 0.5rem;
 		}
 	`,
 	RightOptions = styled.div`
 		display: flex;
 		margin-left: auto;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`,
@@ -128,7 +128,7 @@ const
 		font-size: 1.9rem;
     font-family: inherit;
     color: #111 !important;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`;
@@ -142,7 +142,7 @@ class NavBar extends Component {
 	}
 
 	handleNotifications = () => {
-		if ( window.innerWidth > 420 ) {
+		if ( window.innerWidth > 960 ) {
 			this.props.switchNotifications();
 			this.props.displayMessages && this.props.switchMessages();
 		} else if ( this.props.location.pathname !== "/notifications" ) {
@@ -157,7 +157,7 @@ class NavBar extends Component {
 	}
 
 	handleMessages = () => {
-		if ( window.innerWidth > 420 ) {
+		if ( window.innerWidth > 960 ) {
 			this.props.switchMessages();
 			this.props.displayNotifications && this.props.switchNotifications();
 		} else if ( this.props.location.pathname !== "/messages" ) {

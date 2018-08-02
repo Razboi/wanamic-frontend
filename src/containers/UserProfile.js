@@ -30,7 +30,7 @@ const
 		display: flex;
 		flex-direction: column;
 		background: rgb(230, 240, 236);
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			::-webkit-scrollbar {
 			display: none !important;
 			}
@@ -45,7 +45,7 @@ const
 		background: #fff;
 	`,
 	TimeLine = styled.div`
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			max-width: 1230px;
 			background: none;
 			display: flex;
@@ -54,6 +54,9 @@ const
 			margin: 0 auto;
 			position: relative;
 		}
+		@media (min-width: 600px) {
+			margin: 0 auto;
+		}
 	`,
 	UserInfo = styled.div`
 		margin-top: -5rem;
@@ -61,7 +64,7 @@ const
 		flex-direction: column;
 		align-items: center;
 		z-index: 2;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			display: none;
 		}
 	`,
@@ -73,7 +76,7 @@ const
 		width: 300px;
 		margin-top: -12rem;
 		padding: 0 5px;
-		@media (max-width: 420px) {
+		@media (max-width: 960px) {
 			display: none;
 		}
 	`,
@@ -82,7 +85,7 @@ const
 		background-image: url(${props => props.backgroundImg});
 		background-size: cover;
 		filter: brightness(85%);
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			height: 500px;
 		}
 	`,
@@ -93,7 +96,7 @@ const
 		border-radius: 4px;
 		border: 2px solid #fff;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 200px;
 			height: 200px;
 			box-shadow: 0px 3px 8px rgba(0, 0, 0, .25);
@@ -103,7 +106,7 @@ const
 		font-family: inherit;
 		color: #111;
 		margin: 0px;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			margin-top: 1rem;
 		}
 	`,
@@ -123,7 +126,7 @@ const
 		font-size: 1rem;
 		color: rgb(140, 140, 140);
 		box-shadow: 0px 1px rgba(0,0,0,.125);
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			background: #fff;
 		}
 	`,
@@ -133,7 +136,7 @@ const
 		text-align: center;
 		font-size: 1.025rem;
 		padding: 0 0.66rem;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			padding: 0;
 		}
 	`,
@@ -154,7 +157,7 @@ const
 		font-weight: bold;
 		margin: 0.5rem 0 0 0.5rem;
 		box-shadow: 0 2px 2px rgba(0, 0, 0, .125);
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			background: #fff;
 		}
 	`,
@@ -165,7 +168,7 @@ const
 		padding: 1rem 0;
 		border-top: 2px solid rgba(0,0,0,.1);
 		box-shadow: 0 1px 2px rgba(0,0,0,.125);
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			margin: 0;
 		}
 	`,
@@ -174,7 +177,7 @@ const
 		flex-direction: row;
 		justify-content: space-around;
 		width: 100%;
-		@media (min-width: 420px) {
+		@media (min-width: 960px) {
 			width: 600px;
 			margin: 0 auto;
 			color: #111;
@@ -193,7 +196,7 @@ const
 		right: 10px;
 		background: rgba( 0,0,0,0.5 ) !important;
 		color: #fff !important;
-		z-index: 99;
+		z-index: 4;
 	`,
 	BackButton = styled( Button )`
 		position: fixed;
@@ -201,7 +204,7 @@ const
 		left: 10px;
 		background: rgba( 0,0,0,0.5 ) !important;
 		color: #fff !important;
-		z-index: 99;
+		z-index: 4;
 	`,
 	HeartImage = styled.span`
 		height: 16px;
