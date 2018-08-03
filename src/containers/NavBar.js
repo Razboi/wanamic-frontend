@@ -28,7 +28,7 @@ const
 	    right: 0;
 	    bottom: -1px;
 		};
-		@media(min-width: 960px) {
+		@media(min-width: 760px) and (min-height: 450px) {
 			display: ${props => props.hideOnLargeScreen && "none"};
 		}
 	`,
@@ -41,10 +41,15 @@ const
 			justify-content: space-around;
 		}
 		@media (min-width: 960px) {
-			width: 1140px;
 			margin: 0 auto;
 			justify-content: flex-start;
 			position: relative;
+		}
+		@media (min-width: 960px) and (max-width: 1200px) {
+			width: 960px;
+		}
+		@media (min-width: 1200px) {
+			width: 1140px;
 		}
 	`,
 	NavOption = styled.div`
@@ -142,7 +147,7 @@ class NavBar extends Component {
 	}
 
 	handleNotifications = () => {
-		if ( window.innerWidth > 960 ) {
+		if ( window.innerWidth > 760 && window.innerHeight > 450 ) {
 			this.props.switchNotifications();
 			this.props.displayMessages && this.props.switchMessages();
 		} else if ( this.props.location.pathname !== "/notifications" ) {
@@ -157,7 +162,7 @@ class NavBar extends Component {
 	}
 
 	handleMessages = () => {
-		if ( window.innerWidth > 960 ) {
+		if ( window.innerWidth > 760 && window.innerHeight > 450 ) {
 			this.props.switchMessages();
 			this.props.displayNotifications && this.props.switchNotifications();
 		} else if ( this.props.location.pathname !== "/messages" ) {
@@ -274,7 +279,7 @@ class NavBar extends Component {
 							displayPopup={this.props.displayMessages}
 							socket={this.props.socket}
 							largeScreen
-							spaceForNavbar={this.props.location.pathname === "/"}
+							onHome={this.props.location.pathname === "/"}
 							hideSidebar={this.props.location.pathname !== "/"}
 							messageTarget={this.props.messageTarget}
 							profilePage={this.props.profilePage}

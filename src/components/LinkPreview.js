@@ -38,7 +38,7 @@ const
 		position: relative;
 		height: 0;
 		padding-bottom: 100%;
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			padding-bottom: ${props => props.details ?
 		( props.video ? "50%" : "420px" ) : "100%"};
 

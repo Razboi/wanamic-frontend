@@ -17,7 +17,7 @@ import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
-		@media (max-width: 960px) {
+		@media (max-width: 1300px) {
 			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
 			width: 100%;
@@ -30,7 +30,10 @@ const
 				display: none !important;
 			}
 		}
-		@media (min-width: 960px) {
+		@media (min-width: 760px) and (max-width: 1300px) {
+			display: ${props => props.onHome && "none"};
+		}
+		@media (min-width: 1300px) {
 			display: ${props => props.hideSidebar && "none"};
 			height: 350px;
 			position: fixed;
@@ -48,7 +51,7 @@ const
 		}
 	`,
 	PopupWrapper = styled.div`
-		@media (min-width: 960px) {
+		@media (min-width: 760px)  {
 			height: 400px;
 			width: 400px;
 			position: absolute;
@@ -61,7 +64,11 @@ const
 			z-index: 5;
 			border-top: 0;
 		};
-		@media (max-width: 960px) {
+		@media (min-width: 760px) and (max-width: 960px)  {
+			right: 0;
+			left: auto;
+		}
+		@media (max-width: 760px) {
 			display: none;
 		}
 	`,
@@ -71,7 +78,7 @@ const
 		padding: 15px 10px;
 		font-size: 17px;
 		font-weight: bold;
-		@media (min-width: 960px) {
+		@media (min-width: 760px) and (min-height: 450px) {
 			display: ${props => !props.isPopup && "none"};
 			color: #333;
 			padding: 7px 0;
@@ -91,12 +98,13 @@ const
 		z-index: 3;
 		background: rgb(133, 217, 191) !important;
 		font-size: 1.28rem !important;
-		@media (max-width: 960px) {
-			position: fixed;
-			bottom: 1rem;
-			right: 1rem;
-		}
-		@media (min-width: 960px) {
+		position: fixed;
+		bottom: 1rem;
+		right: 1rem;
+		@media (min-width: 760px) and (min-height: 450px) {
+			position: static;
+			bottom: auto;
+			right: auto;
 			background: none !important;
 			font-size: 1rem !important;
 			margin: 0 0 0 auto !important;
@@ -113,7 +121,7 @@ const
 		z-index: 3;
 		margin: 0 auto 0 0 !important;
 		background: none !important;
-		@media (max-width: 960px) {
+		@media (max-width: 760px) {
 			display: none;
 		}
 	`,
@@ -133,7 +141,7 @@ const
 	UserImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
-		@media (min-width: 960px) {
+		@media (min-width: 760px) {
 			width: 30px !important;
 			height: 30px !important;
 		}
@@ -152,7 +160,7 @@ const
 		text-overflow: ellipsis !important;
 		font-size: 1.1rem !important;
 		color: #111 !important;
-		@media (min-width: 960px) {
+		@media (min-width: 760px) {
 			font-size: 1rem !important;
 			font-weight: 500 !important;
 		}
@@ -161,7 +169,7 @@ const
 		white-space: nowrap !important;
 		overflow: hidden !important;
 		text-overflow: ellipsis !important;
-		@media (min-width: 960px) {
+		@media (min-width: 760px) {
 			font-size: 0.9rem !important;
 		}
 	`,
@@ -169,7 +177,7 @@ const
 		font-size: 0.87rem;
 		color: rgba(0,0,0,0.78);
 		align-self: self-start;
-		@media (min-width: 960px) {
+		@media (min-width: 760px) {
 			font-size: 0.85rem !important;
 		}
 	`,
@@ -192,7 +200,7 @@ const
 		:hover {
 			cursor: pointer;
 		}
-		@media (max-width: 960px) {
+		@media (max-width: 760px) {
 			display: none;
 		}
 	`,
@@ -407,7 +415,7 @@ class Messages extends Component {
 		const {
 			conversations, selectedConversation, newConversation,
 			largeScreen, profilePage, displayPopup, hideSidebar,
-			spaceForNavbar
+			onHome
 		} = this.props;
 		if ( this.props.displayConversation && !largeScreen ) {
 			return (
@@ -443,7 +451,7 @@ class Messages extends Component {
 						<Wrapper
 							hideSidebar={hideSidebar}
 							largeScreen={largeScreen}
-							spaceForNavbar={spaceForNavbar}
+							onHome={onHome}
 						>
 							{this.state.displayFriendsList && largeScreen ?
 								<FriendsList
@@ -671,7 +679,7 @@ Messages.propTypes = {
 	switchMessages: PropTypes.func.isRequired,
 	messageTarget: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	spaceForNavbar: PropTypes.bool,
+	onHome: PropTypes.bool,
 	largeScreen: PropTypes.bool,
 	profilePage: PropTypes.bool,
 	displayPopup: PropTypes.bool,

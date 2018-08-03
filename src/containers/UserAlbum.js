@@ -12,10 +12,13 @@ const
 		height: 100vh;
 		width: 100%;
 		margin-top: 1rem;
-		@media (min-width: 420px) {
+		@media (min-width: 600px) {
 			margin-top: 2rem;
 			width: 600px;
 			padding: 0 5px;
+		}
+		@media (max-width: 1100px) {
+			margin: 0 auto;
 		}
 	`,
 	Album = styled.div`

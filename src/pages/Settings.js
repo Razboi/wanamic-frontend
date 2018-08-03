@@ -24,11 +24,6 @@ const
 		justify-content: center;
 		background: rgb(230, 240, 236);
 	`,
-	StyledNavBar = styled( NavBar )`
-		@media (max-width: 420px) {
-			display: none !important;
-		}
-	`,
 	OutsideClickHandler = styled.div`
 		width: 100%;
 		height: 100%;
@@ -37,7 +32,7 @@ const
 		height: 100vh;
 		display: grid;
 		margin-top: 69.33px !important;
-		@media (max-width: 420px) {
+		@media (max-width: 760px) {
 			position: absolute;
 			width: 100%;
 			grid-template-columns: 100%;
@@ -45,8 +40,9 @@ const
 			grid-template-areas:
 				"opt";
 		}
-		@media (min-width: 420px) {
-			width: 1000px;
+		@media (min-width: 760px) {
+			width: 90%;
+			max-width: 1000px;
 			margin: 0 auto;
 			grid-template-columns: 20% 80%;
 			grid-template-rows: 100%;
@@ -61,7 +57,7 @@ const
 			display: none !important;
 		}
 		overflow-y: scroll;
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			grid-area: sidebar;
 			border-right: 1px solid rgba(0,0,0,0.1);
 			z-index: 2;
@@ -76,7 +72,7 @@ const
 		:hover {
 			cursor: pointer;
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			border: none;
 			font-weight: ${props => props.active && "600"};
 		}
@@ -85,12 +81,7 @@ const
 		font-size: 1.15rem !important;
 		margin: 0 0 0 auto !important;
 		color: rgba(0, 0, 0, .5);
-	`,
-	categories = [
-		"Art", "Technology", "Cooking", "Science", "Travel", "Films", "Health",
-		"Fitness", "Beauty", "Humor", "Business", "Music", "Photography", "TV",
-		"Family", "Sports", "Gaming", "Motor", "Books", "Pets", "Fashion"
-	];
+	`;
 
 class SettingsPage extends Component {
 	constructor() {
@@ -106,7 +97,7 @@ class SettingsPage extends Component {
 
 	componentDidMount() {
 		this.getUserInfo();
-		if ( window.innerWidth > 420 ) {
+		if ( window.innerWidth > 760 ) {
 			this.setState({ tab: 1 });
 		}
 	}
@@ -357,7 +348,7 @@ class SettingsPage extends Component {
 	}
 
 	render() {
-		if ( this.state.tab === 1 && window.innerWidth < 420 ) {
+		if ( this.state.tab === 1 && window.innerWidth < 760 ) {
 			return (
 				<AccountSettings
 					updateUserInfo={this.updateUserInfo}
@@ -374,19 +365,18 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 2 && window.innerWidth < 420 ) {
+		if ( this.state.tab === 2 && window.innerWidth < 760 ) {
 			return (
 				<ContentSettings
 					updatePreferences={this.updatePreferences}
 					checkedCategories={this.state.checkedCategories}
 					backToMain={this.backToMain}
-					categories={categories}
 					handleCategoryClick={this.handleCategoryClick}
 					categoriesChanged={this.state.categoriesChanged}
 				/>
 			);
 		}
-		if ( this.state.tab === 3 && window.innerWidth < 420 ) {
+		if ( this.state.tab === 3 && window.innerWidth < 760 ) {
 			return (
 				<PasswordSettings
 					updatePassword={this.updatePassword}
@@ -399,7 +389,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 4 && window.innerWidth < 420 ) {
+		if ( this.state.tab === 4 && window.innerWidth < 760 ) {
 			return (
 				<EmailSettings
 					updateEmail={this.updateEmail}
@@ -411,7 +401,7 @@ class SettingsPage extends Component {
 				/>
 			);
 		}
-		if ( this.state.tab === 5 && window.innerWidth < 420 ) {
+		if ( this.state.tab === 5 && window.innerWidth < 760 ) {
 			return (
 				<DeleteAccount
 					deleteAccount={this.deleteAccount}
@@ -425,7 +415,7 @@ class SettingsPage extends Component {
 		}
 		return (
 			<Wrapper>
-				<StyledNavBar socket={this.props.socket} />
+				<NavBar socket={this.props.socket} />
 				<OutsideClickHandler onClick={this.hideNotifications}>
 					<Page onClick={this.hidePopups}>
 						<Options>
@@ -462,7 +452,7 @@ class SettingsPage extends Component {
 							</Option>
 						</Options>
 
-						{this.state.tab === 1 && window.innerWidth > 420 &&
+						{this.state.tab === 1 && window.innerWidth > 760 &&
 							<AccountSettings
 								largeScreen
 								updateUserInfo={this.updateUserInfo}
@@ -477,18 +467,17 @@ class SettingsPage extends Component {
 								fullname={this.state.fullname}
 								error={this.state.error}
 							/>}
-						{this.state.tab === 2 && window.innerWidth > 420 &&
+						{this.state.tab === 2 && window.innerWidth > 760 &&
 							<ContentSettings
 								largeScreen
 								updatePreferences={this.updatePreferences}
 								checkedCategories={this.state.checkedCategories}
 								backToMain={this.backToMain}
-								categories={categories}
 								handleCategoryClick={this.handleCategoryClick}
 								categoriesChanged={this.state.categoriesChanged}
 							/>
 						}
-						{this.state.tab === 3 && window.innerWidth > 420 &&
+						{this.state.tab === 3 && window.innerWidth > 760 &&
 							<PasswordSettings
 								largeScreen
 								updatePassword={this.updatePassword}
@@ -500,7 +489,7 @@ class SettingsPage extends Component {
 								error={this.state.error}
 							/>
 						}
-						{this.state.tab === 4 && window.innerWidth > 420 &&
+						{this.state.tab === 4 && window.innerWidth > 760 &&
 							<EmailSettings
 								largeScreen
 								updateEmail={this.updateEmail}
@@ -511,7 +500,7 @@ class SettingsPage extends Component {
 								error={this.state.error}
 							/>
 						}
-						{this.state.tab === 5 && window.innerWidth > 420 &&
+						{this.state.tab === 5 && window.innerWidth > 760 &&
 							<DeleteAccount
 								largeScreen
 								deleteAccount={this.deleteAccount}

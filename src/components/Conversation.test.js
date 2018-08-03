@@ -34,10 +34,4 @@ describe( "<Conversation/>", () => {
 			conversation.messages.length
 		);
 	});
-
-	it( "Checks that clicking arrowBack calls back", () => {
-		expect( backSpy.called ).to.equal( false );
-		wrapper.find( ".arrowBack" ).simulate( "click" );
-		expect( backSpy.called ).to.equal( true );
-	});
 });

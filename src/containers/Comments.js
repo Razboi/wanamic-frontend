@@ -22,20 +22,22 @@ const
 		overflow-y: scroll;
 		background: #fff;
 		display: grid;
-		grid-template-columns: 100%;
+		height: 100vh;
+		width: 100%;
 		grid-template-rows: 10% 80% 10%;
+		grid-template-columns: 100%;
 		grid-template-areas:
 			"hea"
 			"com"
 			"inp";
-		@media (max-width: 600px) {
-			height: 100vh;
-			width: 100%;
-		};
-		@media (min-width: 600px) {
+		@media (min-width: 760px) and (min-height: 600px) {
 			width: 600px;
 			height: 600px;
 			border-radius: 2px;
+			grid-template-rows: 10% 76% 14%;
+		}
+		@media (max-height: 500px) {
+			grid-template-rows: 14% 70% 16%;
 		}
 		::-webkit-scrollbar {
 			display: none !important;
@@ -57,8 +59,8 @@ const
 		grid-area: com;
 		z-index: 3;
 		overflow-y: scroll;
-		::-webkit-scrollbar {
-			@media (max-width: 420px) {
+		@media (max-width: 420px) {
+			::-webkit-scrollbar {
 				display: none !important;
 			}
 		}
@@ -71,7 +73,8 @@ const
 	StyledTextArea = {
 		width: "100%",
 		fontFamily: "inherit",
-		resize: "none"
+		resize: "none",
+		padding: "0.5rem"
 	},
 	HeaderTxt = styled.span`
 		margin-left: 15px;

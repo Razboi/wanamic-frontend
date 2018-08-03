@@ -36,11 +36,6 @@ describe( "<WelcomeStep3/>", () => {
 		expect( wrapper.children()).to.have.length( 3 );
 	});
 
-	it( "Checks that categoriesWrapper renders all the categories", () => {
-		expect( wrapper.find( ".categoriesWrapper" ).children()
-		).to.have.length( categories.length );
-	});
-
 	it( "Checks that next button is disabled if checkedCategories === 0", () => {
 		const disabledProp = wrapper.find( ".nextButton" ).prop( "disabled" );
 		expect( disabledProp ).to.equal( checkedCategories.length === 0 );

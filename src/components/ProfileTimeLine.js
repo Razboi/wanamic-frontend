@@ -10,7 +10,7 @@ const
 	UserPostsWrapper = styled.div`
 		background: #fff;
 		margin-top: 1rem;
-		@media (min-width: 600px) and (max-width: 960px) {
+		@media (min-width: 600px) and (max-width: 1100px) {
 			width: 600px;
 			padding-top: 1rem;
 			background: none;

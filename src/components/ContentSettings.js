@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import { Button, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import CategoriesButtons from "./CategoriesButtons";
 
 const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
-		@media (max-width: 420px) {
+		@media (max-width: 760px) {
 			display: ${props => props.largeScreen && "none"} !important;
 			grid-area: main;
 			display: grid;
@@ -17,7 +18,7 @@ const
 				"hea"
 				"opt";
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			grid-area: main;
 			background: #fff;
 		}
@@ -28,7 +29,7 @@ const
 		align-items: center;
 		padding-left: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			display: none;
 		}
 	`,
@@ -49,14 +50,6 @@ const
 		}
 		overflow-y: scroll;
 	`,
-	Categories = styled.div`
-		flex-wrap: wrap;
-		display: flex;
-	`,
-	CategoryButton = styled( Button )`
-		margin: 0.5rem !important;
-		flex: 1 0 0%;
-	`,
 	SaveButton = styled( Button )`
 		display: flex !important;
 		margin: 1rem 0 0 auto !important;
@@ -74,20 +67,11 @@ class ContentSettings extends Component {
 					<HeaderTxt>Content preferences</HeaderTxt>
 				</HeaderWrapper>
 				<Options>
-					<Categories>
-						{this.props.categories.map(( category, index ) =>
-							<CategoryButton
-								key={index}
-								onClick={() =>
-									this.props.handleCategoryClick( category )
-								}
-								content={category}
-								secondary={
-									this.props.checkedCategories.includes( category )
-								}
-							/>
-						)}
-					</Categories>
+
+					<CategoriesButtons
+						checkedCategories={this.props.checkedCategories}
+						handleCategoryClick={this.props.handleCategoryClick}
+					/>
 
 					<SaveButton
 						primary

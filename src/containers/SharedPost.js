@@ -17,6 +17,7 @@ class SharedPost extends Component {
 					<MediaPost
 						post={this.props.post}
 						fakeOptions={true}
+						onShare
 					/>
 					:
 					<Post

@@ -48,7 +48,7 @@ const
 		@media (min-width: 615px) and (max-width: 815px) {
 			width: calc(100% / 3);
 		}
-		@media (max-width: 420px) {
+		@media (max-width: 615px) {
 			width: calc(100% / 2);
 			padding: 0.3rem;
 		}

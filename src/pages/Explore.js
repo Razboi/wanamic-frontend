@@ -8,10 +8,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
-import Comments from "../containers/Comments";
-import {
-	setPosts, addToPosts, switchPostDetails, switchComments, switchShare
-} from "../services/actions/posts";
+import { setPosts, addToPosts, switchPostDetails } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
 import { connect } from "react-redux";
@@ -89,11 +86,11 @@ const
 		}
 	`,
 	ContentSubheader = styled.div`
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		@media (min-width: 420px) {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
 			padding: 0.5rem;
 	    border-radius: 3px;
 	    border: 1px solid rgba(0,0,0,0.1);
@@ -104,16 +101,9 @@ const
 				cursor: pointer;
 			};
 		}
-		@media (max-width: 420px) {
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
 	`,
 	MainComponent = styled.div`
 		grid-area: c;
-		padding: 0 16px;
 	`,
 	HeaderImage = styled.span`
 		display: block;
@@ -129,6 +119,9 @@ const
 			height: 32px;
 			width: 32px;
 		}
+	`,
+	ExploreContentWrapper = styled.div`
+	padding: 0 16px;
 	`,
 	SearchBar = styled.input`
 		color: #222 !important;
@@ -150,6 +143,9 @@ const
 		@media (min-width: 900px) {
 			width: 800px;
 		}
+		@media (max-height: 500px) {
+			height: 34px;
+		}
 	`,
 	SearchWrapper = styled.div`
 		z-index: 3;
@@ -160,11 +156,11 @@ const
 		position: fixed !important;
 		transition: bottom 0.7s linear;
 		left: 0;
-		@media (max-width: 420px) {
+		@media (max-height: 500px) {
 			height: 44px;
 			bottom: ${props => props.hide ? "-44px" : "0px"};
 		}
-		@media (min-width: 420px) {
+		@media (min-height: 500px) {
 			height: 54px;
 			align-items: center;
 			bottom: ${props => props.hide ? "-54px" : "25px"};
@@ -407,12 +403,6 @@ class ExplorePage extends Component {
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
-		if ( this.props.displayComments ) {
-			this.props.switchComments();
-		}
-		if ( this.props.displayShare ) {
-			this.props.switchShare();
-		}
 	}
 
 
@@ -420,7 +410,7 @@ class ExplorePage extends Component {
 		var
 			connectImage,
 			contentImage;
-		const { displayComments, displayPostDetails } = this.props;
+		const { displayPostDetails } = this.props;
 		try {
 			if ( window.innerWidth > 420 ) {
 				connectImage = !this.state.content ?
@@ -460,7 +450,7 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper className="exploreMainWrapper">
-				{( displayPostDetails || displayComments ) &&
+				{( displayPostDetails ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&
@@ -470,10 +460,6 @@ class ExplorePage extends Component {
 								socket={this.props.socket}
 								index={this.state.selectedPost}
 								history={this.props.history}
-							/>}
-						{displayComments &&
-							<Comments
-								socket={this.props.socket}
 							/>}
 					</PostDetailsDimmer>
 				}
@@ -511,7 +497,7 @@ class ExplorePage extends Component {
 
 						<MainComponent>
 							{this.state.content ?
-								<React.Fragment>
+								<ExploreContentWrapper>
 									<ExploreContent
 										className="exploreContent"
 										posts={this.props.posts}
@@ -526,7 +512,7 @@ class ExplorePage extends Component {
 											onKeyPress={this.handleKeyPress}
 										/>
 									</SearchWrapper>
-								</React.Fragment>
+								</ExploreContentWrapper>
 								:
 								<ExploreUsers
 									className="exploreUsers"
@@ -550,8 +536,6 @@ const
 		posts: state.posts.explore,
 		displayPostDetails: state.posts.displayPostDetails,
 		displayMessages: state.conversations.displayMessages,
-		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare,
 		displayNotifications: state.notifications.displayNotifications
 	}),
 
@@ -562,9 +546,7 @@ const
 			dispatch( addToPosts( posts, onExplore )),
 		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: () => dispatch( switchMessages()),
-		switchComments: () => dispatch( switchComments()),
-		switchShare: () => dispatch( switchShare())
+		switchMessages: () => dispatch( switchMessages())
 	});
 
 

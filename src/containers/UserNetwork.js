@@ -11,14 +11,12 @@ const
 		height: 100%;
 		width: 100%;
 		margin-top: 1rem;
-		@media (min-width: 420px) {
-			width: 600px;
-			margin-top: 2rem;
-			padding: 0 5px;
-		}
-		@media (min-width: 600px) and (max-width: 960px) {
+		padding: 0 5px;
+		@media (min-width: 600px) {
 			width: 600px;
 			background: none;
+		}
+		@media (max-width: 1100px) {
 			margin: 2rem auto 0 auto;
 		}
 	`,

@@ -16,12 +16,11 @@ const
 			"s"
 			"i"
 			"u";
-		@media (min-width: 420px) {
+		@media (min-width: 800px) {
 			width: 800px;
 			margin: auto;
 	    margin-bottom: 4rem;
-	    background: #fff;
-	    border: 1px solid rgba(0,0,0,0.1);
+			background: #fff;
 		}
 	`,
 	ButtonsWrapper = styled.div`
@@ -32,8 +31,6 @@ const
 		grid-template-areas:
 			"h h"
 			"rb sb";
-		@media (max-width: 420px) {
-		}
 	`,
 	SugestedHeader = styled.h4`
 		grid-area: h;
@@ -42,8 +39,6 @@ const
 		color: #222;
 		align-self: center;
 		font-family: inherit;
-		@media (max-width: 420px) {
-		}
 	`,
 	SugestedButton = styled( Button )`
 		grid-area: sb;
@@ -52,8 +47,6 @@ const
 		font-family: inherit !important;
 		background: rgb(133, 217, 191) !important;
 		border-radius: 2px !important;
-		@media (max-width: 420px) {
-		}
 	`,
 	RandomButton = styled( Button )`
 		grid-area: rb;
@@ -64,16 +57,12 @@ const
 		background: #fff !important;
 		font-family: inherit !important;
 		border-radius: 2px !important;
-		@media (max-width: 420px) {
-		}
 	`,
 	SeparatorWrapper = styled( Divider )`
 		grid-area: s;
 		color: rgba(0,0,0,0.40) !important;
 		:before, :after {
 			position: static !important;
-		}
-		@media (max-width: 420px) {
 		}
 	`,
 	InterestsWrapper = styled.div`
@@ -84,8 +73,6 @@ const
 		grid-template-areas:
 			"ih"
 			"is";
-		@media (max-width: 420px) {
-		}
 	`,
 	InterestsHeader = styled.h4`
 		grid-area: ih;
@@ -94,8 +81,6 @@ const
 		align-self: flex-end;
 		font-family: inherit;
 		color: #333;
-		@media (max-width: 420px) {
-		}
 	`,
 	InterestsSearch = styled( Input )`
 		grid-area: is;
@@ -115,8 +100,6 @@ const
 		i {
 			color: rgb(133, 217, 191) !important;
 		};
-		@media (max-width: 420px) {
-		}
 	`,
 	UsernameWrapper = styled.div`
 		grid-area: u;
@@ -126,8 +109,6 @@ const
 		grid-template-areas:
 			"ih"
 			"is";
-		@media (max-width: 420px) {
-		}
 	`,
 	UsernameHeader = styled.h4`
 		grid-area: ih;
@@ -136,8 +117,6 @@ const
 		align-self: flex-end;
 		font-family: inherit;
 		color: #333;
-		@media (max-width: 420px) {
-		}
 	`,
 	UsernameSearch = styled( Input )`
 		grid-area: is;
@@ -156,8 +135,6 @@ const
 		i {
 			color: rgb(133, 217, 191) !important;
 		};
-		@media (max-width: 420px) {
-		}
 	`;
 
 class ExploreUsers extends Component {

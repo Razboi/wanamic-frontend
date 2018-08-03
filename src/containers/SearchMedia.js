@@ -55,9 +55,6 @@ const
 			display: none;
 		};
 	`,
-	BackIcon = styled( Icon )`
-		position: absolute;
-	`,
 	SmallScreenSearch = styled.div`
 		height: 44px;
 		display: flex;
@@ -330,7 +327,7 @@ class SearchMedia extends Component {
 			<Wrapper>
 				<Main>
 					<Header>
-						<BackIcon
+						<Icon
 							name="arrow left"
 							onClick={() => this.props.switchSearchMedia()}
 						/>

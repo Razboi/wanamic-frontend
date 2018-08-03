@@ -23,7 +23,7 @@ const
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
 
 		@media (min-width: 420px) {
-			margin-bottom: 1rem;
+			margin-bottom: ${props => !props.noBorder && "1rem"};
 			background: #fff;
 			border-bottom-left-radius: 2px;
 			border-bottom-right-radius: 2px;
@@ -111,7 +111,7 @@ const
 		background-size: cover;
 		background-image: url(${props => props.background});
 		filter: blur(17px) brightness(90%);
-		transform: scale(1.2);
+		transform: scale(1.066);
 	`,
 	PostUserContent = styled.div`
 		padding: 1rem 1rem 2rem 1rem;
@@ -136,7 +136,7 @@ const
 		min-height: ${props => props.blurFilter && "250px"};
 		filter: ${props => props.blurFilter ?
 		"blur(15px) brightness(50%)" : "blur(0px)"};
-		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
+		transform: scale(${props => props.blurFilter ? "1.05" : "1"});
 	`;
 
 var
@@ -278,8 +278,11 @@ class MediaPost extends Component {
 		}
 
 		return (
-			<Wrapper noBorder={this.props.fakeOptions || this.props.details
-				? 1 : 0}>
+			<Wrapper
+				onShare={this.props.onShare}
+				noBorder={this.props.fakeOptions || this.props.details
+					? 1 : 0}
+			>
 				<PostHeader className="mediaPostHeader">
 					<AuthorImg
 						circular

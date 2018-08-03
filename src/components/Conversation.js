@@ -12,7 +12,9 @@ var userImage;
 const
 	ConversationWrapper = styled.div`
 		overflow: hidden;
-		position: absolute;
+		position: fixed;
+		bottom: 0;
+		left: 0;
 		height: 100vh;
 		width: 100%;
 		z-index: 4;
@@ -24,7 +26,7 @@ const
 			"hea"
 			"mes"
 			"inp";
-		@media (min-width: 960px) {
+		@media (min-width: 760px) {
 			height: 350px;
 			width: 300px;
 			position: fixed;
@@ -72,21 +74,10 @@ const
 		z-index: 2;
 		padding: 10px;
 	`,
-	ArrowIcon = styled( Icon )`
-		font-size: 1.3rem !important;
-		margin: ${props => props.newconversation ?
-		"0 1rem 0 -1rem" : "0"} !important;
-		@media (min-width: 960px) {
-			display: none !important;
-		}
-	`,
 	CloseIcon = styled( Icon )`
 		margin-bottom: 3px !important;
 		color: rgba(0,0,0,0.25) !important;
 		font-size: 1.1em !important;
-		@media (max-width: 960px) {
-			display: none !important;
-		}
 		:hover {
 			 cursor: pointer;
 		}
@@ -118,7 +109,7 @@ const
 		i {
 			color: rgba(0,0,0,0.25) !important;
 			font-size: 1.433rem !important;
-			@media (min-width: 960px) {
+			@media (min-width: 760px) {
 				font-size: 1rem !important;
 			}
 		};
@@ -155,12 +146,6 @@ class Conversation extends Component {
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
-					<ArrowIcon
-						newconversation={newConversation ? 1 : 0}
-						className="arrowBack"
-						name="arrow left"
-						onClick={back}
-					/>
 
 					<UserInfo>
 						<FriendImg

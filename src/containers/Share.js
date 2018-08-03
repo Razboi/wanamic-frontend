@@ -18,18 +18,25 @@ const
 		background: #222;
 		color: #fff !important;
 		display: grid;
+		overflow-y: auto;
+		height: 100vh;
+		width: 100%;
 		grid-template-columns: 100%;
 		grid-template-rows: 7% 93%;
 		grid-template-areas:
 			"hea"
 			"com";
-		@media (max-width: 420px) {
-			height: 100vh;
-			width: 100%;
-		};
-		@media (min-width: 420px) {
+		@media (min-width: 760px) and (min-height: 700px) {
 			height: 700px;
-			width: 700px;
+			width: 600px;
+		}
+		@media (max-height: 500px) {
+			grid-template-rows: 12% 88%;
+		}
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+			background: #fff;
 		}
 	`,
 	HeaderWrapper = styled.div`
@@ -51,12 +58,16 @@ const
 		grid-template-rows: 15% 85%;
 		grid-template-areas:
 			"inp"
-			"mai"
+			"mai";
+		@media (max-height: 450px) {
+			grid-template-areas:
+				"inp";
+			grid-template-rows: 100%;
+		}
 	`,
 	UserContentInput = {
 		width: "90%",
 		minHeight: "45px",
-		alignSelf: "flex-end",
 		zIndex: 2,
 		fontFamily: "inherit",
 		background: "none",
@@ -82,6 +93,18 @@ const
 	PostToShare = styled.div`
 		transform: scale( 0.75 );
 		background: #fff;
+		max-width: 390px;
+		max-height: 600px;
+    margin: 0 auto;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 10px !important;
+			background: #fff;
+		}
+		@media (max-height: 450px) {
+			display: none;
+		}
 	`;
 
 class Share extends Component {
@@ -276,6 +299,7 @@ class Share extends Component {
 						privacyRange={this.state.privacyRange}
 						spoilers={this.state.checkSpoiler}
 						handleChange={this.handleChange}
+						onShare
 					/>
 				</Wrapper>
 			);

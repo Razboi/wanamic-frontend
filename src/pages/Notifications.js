@@ -21,14 +21,14 @@ const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
-		overflow: auto;
-		@media (max-width: 960px) {
+		overflow-y: auto;
+		@media (max-width: 760px) {
 			padding-top: 49.33px;
 			::-webkit-scrollbar {
 				display: none !important;
 			};
 		};
-		@media (min-width: 960px) {
+		@media (min-width: 760px) and (min-height: 400px) {
 			height: 400px;
 			width: 400px;
 			position: absolute;

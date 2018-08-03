@@ -14,16 +14,20 @@ const
 		width: 100%;
 		position: fixed;
 		z-index: 20;
-		@media (max-width: 600px) {
+		overflow-y: auto !important;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 10px !important;
+			background: #fff;
+		}
+		@media (max-width: 760px) {
 			background: #fff;
 			min-height: 100vh;
 			height: 100%;
-			overflow-y: scroll;
 		}
-		@media (min-width: 600px) {
+		@media (min-width: 760px) {
 			width: 600px;
 			max-height: 90%;
-			overflow-y: scroll;
 		}
 	`,
 	HeaderWrapper = styled.div`

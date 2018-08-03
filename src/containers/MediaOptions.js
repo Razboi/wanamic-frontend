@@ -52,6 +52,9 @@ const
 			height: 60%;
     	align-content: space-between;
 		}
+		@media (min-width: 450px) and (max-height: 575px) {
+			width: 70%;
+		}
 	`,
 	MediaButton = styled( Button )`
 		background: none !important;

@@ -11,12 +11,7 @@ import refreshToken from "../utils/refreshToken";
 const
 	Wrapper = styled.div`
 		height: 100%;
-	`,
-	categories = [
-		"Art", "Technology", "Cooking", "Science", "Travel", "Films", "Health",
-		"Fitness", "Beauty", "Humor", "Business", "Music", "Photography", "TV",
-		"Family", "Sports", "Gaming", "Motor", "Books", "Pets", "Fashion"
-	];
+	`;
 
 class WelcomePage extends Component {
 	constructor() {
@@ -174,7 +169,6 @@ class WelcomePage extends Component {
 						categoriesNext={this.categoriesNext}
 						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
-						categories={categories}
 						toggle={this.toggle}
 						handleCategoryClick={this.handleCategoryClick}
 						checkedCategories={this.state.checkedCategories}

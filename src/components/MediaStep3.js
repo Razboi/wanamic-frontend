@@ -6,7 +6,7 @@ import styled from "styled-components";
 const
 	Wrapper = styled.div`
 		overflow: hidden;
-		position: fixed;
+		position: ${props => props.onShare ? "absolute" : "fixed"};
 		height: 100vh;
 		width: 100%;
 		z-index: 3;
@@ -136,7 +136,7 @@ const
 class MediaStep3 extends Component {
 	render() {
 		return (
-			<Wrapper>
+			<Wrapper onShare={this.props.onShare}>
 				<Options whiteTheme={this.props.whiteTheme}>
 					<HeaderWrapper>
 						<Icon
@@ -226,7 +226,8 @@ MediaStep3.propTypes = {
 	handleSubmit: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
 	spoilers: PropTypes.bool.isRequired,
-	whiteTheme: PropTypes.bool
+	whiteTheme: PropTypes.bool,
+	onShare: PropTypes.bool
 };
 
 export default MediaStep3;

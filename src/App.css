@@ -18,6 +18,7 @@ textarea {
 
 .mediaPostDescription {
 	color: #FFF !important;
+	align-self: center;
 }
 
 .mediaPostDescription::placeholder {
@@ -26,6 +27,13 @@ textarea {
 
 .mediaPostDescription:focus {
 	outline: none !important;
+}
+
+@media (max-height: 500px) {
+	.mediaPostDescription {
+		align-self: flex-start;
+		margin-top: 1rem;
+	}
 }
 
 .commentsTextarea::placeholder {
@@ -38,7 +46,7 @@ textarea {
 
 .commentsTextarea {
 	color: #111;
-	border: 1px solid rgba(0,0,0,0.3);
+	border-top: 1px solid rgba(0,0,0,0.15);
 	border-width: 1px 0 0 0;
 }
 

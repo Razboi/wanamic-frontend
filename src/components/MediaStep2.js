@@ -98,6 +98,12 @@ const
 		max-width: 600px !important;
     max-height: 300px !important;
 		z-index: 2;
+		@media (max-width: 600px) {
+			width: 90%;
+		}
+		@media (max-width: 420px) {
+			width: 100%;
+		}
 	`,
 	SuggestionsWrapper = styled.div`
 		z-index: 3;

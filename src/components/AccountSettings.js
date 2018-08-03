@@ -8,7 +8,7 @@ const
 	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
-		@media (max-width: 420px) {
+		@media (max-width: 760px) {
 			display: ${props => props.largeScreen && "none"} !important;
 			grid-area: main;
 			display: grid;
@@ -18,14 +18,14 @@ const
 				"hea"
 				"opt";
 		}
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			grid-area: main;
 			background: #fff;
 		}
 	`,
 	StyledMessage = styled( Message )`
 		z-index: 2;
-		@media (max-width: 420px) {
+		@media (max-width: 760px) {
 			position: fixed !important;
 			width: 100%;
 			left: 0;
@@ -37,7 +37,7 @@ const
 		align-items: center;
 		padding-left: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, .5);
-		@media (min-width: 420px) {
+		@media (min-width: 760px) {
 			display: none;
 		}
 	`,

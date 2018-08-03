@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import CategoriesButtons from "./CategoriesButtons";
 
 const
 	Wrapper = styled.div`
@@ -10,12 +11,6 @@ const
 			max-width: 600px;
 			margin: 0 auto;
 		}
-	`,
-	Categories = styled.div`
-		flex-wrap: wrap;
-		display: flex;
-		margin-bottom: 3rem;
-		justify-content: space-between;
 	`,
 	HeaderWrapper = styled.header`
 		display: flex;
@@ -31,16 +26,6 @@ const
 		color: #444;
 		font-family: inherit;
 		text-align: center;
-	`,
-	CategoryButton = styled( Button )`
-		margin: 0.5rem !important;
-		flex: 0 0 0%;
-		border-radius: 2px !important;
-		font-family: inherit !important;
-		border: ${props => props.active &&
-			"1px solid rgb(133, 217, 191)"} !important;
-		background: ${props => props.active && "#fff"} !important;
-		color: ${props => props.active && "rgb(133, 217, 191)"} !important;
 	`,
 	Buttons = styled.div`
 		display: flex;
@@ -69,18 +54,12 @@ class Step3 extends Component {
 						This will allow us to show you relevant content and users
 					</Subheader>
 				</HeaderWrapper>
-				<Categories className="categoriesWrapper">
-					{this.props.categories.map(( category, index ) =>
-						<CategoryButton
-							key={index}
-							onClick={() =>
-								this.props.handleCategoryClick( category )
-							}
-							content={category}
-							active={this.props.checkedCategories.includes( category )}
-						/>
-					)}
-				</Categories>
+
+				<CategoriesButtons
+					checkedCategories={this.props.checkedCategories}
+					handleCategoryClick={this.props.handleCategoryClick}
+				/>
+
 				<Buttons>
 					<PrevButton
 						secondary
