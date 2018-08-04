@@ -65,6 +65,9 @@ const
 			grid-template-rows: 100%;
 		}
 	`,
+	InputWrapper = styled.div`
+		position: relative;
+	`,
 	UserContentInput = {
 		width: "90%",
 		minHeight: "45px",
@@ -78,13 +81,26 @@ const
 		gridArea: "inp",
 		display: "flex",
 		justifyContent: "center",
-		zIndex: 2
+		zIndex: 2,
+		height: "100%"
 	},
 	SuggestionsWrapper = styled.div`
+		display: ${props => !props.showSuggestions && "none"};
 		z-index: 3;
-		position: absolute;
-		height: 100%;
-		box-shadow: 0 -1px 2px #000;
+		position: fixed;
+		width: 100%;
+		height: 80%;
+		bottom: 0;
+		left: 0;
+		border: 1px solid rgba(0,0,0,0.1);
+		@media (min-width: 420px) {
+			position: absolute;
+			bottom: auto;
+			height: 150px;
+			width: 300px;
+			top: calc( ${props => props.top}px + 40px );
+			left: ${props => props.left}px;
+		}
 	`,
 	ShareMain = styled.div`
 		grid-area: mai;
@@ -320,28 +336,33 @@ class Share extends Component {
 					/>
 				</HeaderWrapper>
 				<ShareWrapper>
-					<InputTrigger
-						style={InputTriggerStyles}
-						trigger={{ key: "@" }}
-						onStart={metaData => this.toggleSuggestions( metaData ) }
-						onCancel={metaData => this.toggleSuggestions( metaData ) }
-						onType={metaData => this.handleMentionInput( metaData ) }
-						endTrigger={endHandler => this.endHandler = endHandler }
-					>
-						<textarea
-							maxLength="2200"
-							style={UserContentInput}
-							autoFocus
-							className="mediaPostDescription"
-							name="description"
-							value={this.state.description}
-							placeholder="Share your opinion, tag @users and add #hashtags..."
-							onChange={this.handleChange}
-							onKeyDown={this.handleKeyPress}
-						/>
-					</InputTrigger>
-					<ShareMain>
-						<SuggestionsWrapper>
+					<InputWrapper>
+						<InputTrigger
+							style={InputTriggerStyles}
+							trigger={{ key: "@" }}
+							onStart={metaData => this.toggleSuggestions( metaData ) }
+							onCancel={metaData => this.toggleSuggestions( metaData ) }
+							onType={metaData => this.handleMentionInput( metaData ) }
+							endTrigger={endHandler => this.endHandler = endHandler }
+						>
+							<textarea
+								id="SharePostInput"
+								maxLength="2200"
+								style={UserContentInput}
+								autoFocus
+								name="description"
+								value={this.state.description}
+								placeholder="Share your opinion, tag @users and add #hashtags..."
+								onChange={this.handleChange}
+								onKeyDown={this.handleKeyPress}
+							/>
+						</InputTrigger>
+
+						<SuggestionsWrapper
+							showSuggestions={this.state.showSuggestions}
+							left={this.state.suggestionsLeft}
+							top={this.state.suggestionsTop}
+						>
 							<Suggestions
 								socialCircle={this.state.socialCircle}
 								showSuggestions={this.state.showSuggestions}
@@ -350,6 +371,9 @@ class Share extends Component {
 								media={"true"}
 							/>
 						</SuggestionsWrapper>
+					</InputWrapper>
+
+					<ShareMain>
 						<PostToShare>
 							<SharedPost
 								post={this.props.postToShare.sharedPost ?

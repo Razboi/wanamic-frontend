@@ -37,14 +37,15 @@ const
 	`,
 	MessagesWrapper = styled( StayScrolled )`
 		grid-area: mes;
-		::-webkit-scrollbar {
-			display: none !important;
-		}
 		display: flex;
 		flex-direction: column;
-		position: relative;
+		position: relative !important;
 		padding: 10px;
-		overflow-y: scroll;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`,
 	StyledInput = styled( Input )`
 		grid-area: inp;
@@ -66,6 +67,7 @@ const
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
+		position: relative;
 		display: flex;
 		justify-content: space-between;
 		flex-direction: row;
@@ -118,6 +120,7 @@ const
 		position: absolute !important;
 		left: 5px;
 		right: 5px;
+		bottom: -100px;
 		z-index: 2;
 		word-break: break-word;
 	`;
@@ -146,7 +149,6 @@ class Conversation extends Component {
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
-
 					<UserInfo>
 						<FriendImg
 							circular
@@ -176,9 +178,7 @@ class Conversation extends Component {
 							onClick={back}
 						/>
 					</div>
-				</HeaderWrapper>
 
-				<MessagesWrapper component="div" className="messagesWrapper">
 					{spam &&
 						<SpamWarning warning>
 							<MessageInfo.Header>
@@ -187,7 +187,9 @@ class Conversation extends Component {
 							<p>To prevent spam you must wait a couple seconds.</p>
 						</SpamWarning>
 					}
+				</HeaderWrapper>
 
+				<MessagesWrapper component="div" className="messagesWrapper">
 					{conversation.messages.map(( message, index ) =>
 						<Message message={message} key={index} />
 					)}

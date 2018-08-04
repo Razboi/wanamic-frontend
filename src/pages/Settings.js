@@ -158,6 +158,21 @@ class SettingsPage extends Component {
 
 	updateUserInfo = async() => {
 		var data = new FormData();
+		const { username, fullname } = this.state;
+
+		if ( fullname && !/[a-z\s]+$/i.test( fullname )) {
+			this.setState({
+				error: "Invalid fullname format. Letters and spaces only."
+			});
+			return;
+		}
+		if (( username && !/[\w]+$/.test( username )) || /[\s.]/.test( username )) {
+			this.setState({
+				error: "Invalid username format. Alphanumeric and underscores only."
+			});
+			return;
+		}
+
 		data.append( "userImage", this.state.userImage );
 		data.append( "headerImage", this.state.headerImage );
 		data.append( "description", this.state.description );
@@ -199,6 +214,13 @@ class SettingsPage extends Component {
 		const
 			{ currentPassword, newPassword, confirmPassword } = this.state;
 		if ( !currentPassword || !newPassword || !confirmPassword ) {
+			return;
+		}
+		if ( !/^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/.test( newPassword )) {
+			this.setState({
+				error: "The password must be at least 8 characters " +
+				"containing letters and numbers."
+			});
 			return;
 		}
 		if ( newPassword !== confirmPassword ) {
