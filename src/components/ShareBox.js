@@ -74,7 +74,8 @@ const
 			height: 150px;
 			width: 300px;
 			top: ${props => props.top}px;
-			left: ${props => props.left}px;
+			left: ${props => props.left < 280 ? props.left + "px" : "auto"};
+			right: ${props => props.left > 280 ? 0 + "px" : "auto"};
 		}
 		@media (max-width: 420px) {
 			position: fixed;

@@ -81,7 +81,8 @@ const
 			height: 150px;
 			width: 300px;
 			top: calc(${props => props.top}px + 70px);
-			left: ${props => props.left}px;
+			left: ${props => props.left < 280 ? props.left + "px" : "auto"};
+			right: ${props => props.left > 280 ? 0 + "px" : "auto"};
 		}
 		@media (max-width: 420px) {
 			position: fixed;

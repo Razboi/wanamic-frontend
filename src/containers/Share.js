@@ -99,7 +99,8 @@ const
 			height: 150px;
 			width: 300px;
 			top: calc( ${props => props.top}px + 40px );
-			left: ${props => props.left}px;
+			left: ${props => props.left < 280 ? props.left + "px" : "auto"};
+			right: ${props => props.left > 280 ? 0 + "px" : "auto"};
 		}
 	`,
 	ShareMain = styled.div`
