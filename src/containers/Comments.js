@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
 	switchComments, setComments, addComment, deleteComment, updatePost,
-	addToComments
+	addToComments, updateComment
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
@@ -278,6 +278,10 @@ class Comments extends Component {
 		);
 	};
 
+	handleUpdate = comment => {
+		this.props.updateComment( comment );
+	}
+
 	handleReply = target => {
 		this.setState({ comment: "@" + target.username + " " });
 	}
@@ -363,6 +367,7 @@ class Comments extends Component {
 								key={index}
 								index={index}
 								comment={comment}
+								handleUpdate={this.handleUpdate}
 								handleDelete={this.handleDelete}
 								handleReply={() => this.handleReply( comment.author )}
 							/>
@@ -426,6 +431,7 @@ const
 		addToComments: comments => dispatch( addToComments( comments )),
 		addComment: comment => dispatch( addComment( comment )),
 		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
+		updateComment: comment => dispatch( updateComment( comment )),
 		updatePost: ( post, onExplore ) =>
 			dispatch( updatePost( post, onExplore ))
 	});

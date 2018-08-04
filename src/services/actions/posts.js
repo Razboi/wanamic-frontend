@@ -8,6 +8,7 @@ export const
 	SET_COMMENTS = "SET_COMMENTS",
 	ADD_COMMENT = "ADD_COMMENT",
 	DELETE_COMMENT = "DELETE_COMMENT",
+	UPDATE_COMMENT = "UPDATE_COMMENT",
 	UPDATE_POST = "UPDATE_POST",
 	ADD_POST = "ADD_POST",
 	DELETE_POST = "DELETE_POST",
@@ -30,9 +31,10 @@ export const
 		onProfile: onProfile
 	}),
 
-	addPost = post => ({
+	addPost = ( post, onProfile ) => ({
 		type: ADD_POST,
-		post: post
+		post: post,
+		onProfile: onProfile
 	}),
 
 	deletePost = postId => ({
@@ -57,6 +59,11 @@ export const
 
 	addComment = comment => ({
 		type: ADD_COMMENT,
+		comment: comment
+	}),
+
+	updateComment = comment => ({
+		type: UPDATE_COMMENT,
 		comment: comment
 	}),
 

@@ -8,8 +8,10 @@ import NewsFeed from "../components/NewsFeed";
 
 const
 	UserPostsWrapper = styled.div`
-		background: #fff;
 		margin-top: 1rem;
+		@media (max-width: 420px) {
+			background: #fff;
+		}
 		@media (min-width: 600px) and (max-width: 1100px) {
 			width: 600px;
 			padding-top: 1rem;

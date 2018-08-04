@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import {
-	switchPostDetails, setPosts, switchComments, switchShare, addToPosts
+	switchPostDetails, setPosts, switchComments, switchShare, addToPosts,
+	switchMediaOptions
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
 import { switchNotifications } from "../services/actions/notifications";
@@ -17,6 +18,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
 import ProfileTimeLine from "../components/ProfileTimeLine";
 import NavBar from "./NavBar";
+import MediaOptions from "../containers/MediaOptions";
 
 var
 	backgroundImg,
@@ -36,10 +38,36 @@ const
 			}
 		}
 	`,
+	ShareMediaButton = styled.div`
+		position: fixed;
+		left: 50%;
+		transform: translateX(-50%);
+		bottom: 5px;
+		z-index: 3;
+		border-radius: 100%;
+		padding: 1rem;
+		background: rgba(133, 217, 191, 0.9) !important;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		:hover {
+			cursor: pointer;
+		}
+	`,
+	PlusImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
+		transform: ${props => props.active ? "rotate(45deg)" : "none"};
+		transition: transform 0.5s;
+	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
 		width: 100%;
-		margin-top: 49.33px;
 	`,
 	UserInfoWrapper = styled.div`
 		background: #fff;
@@ -230,6 +258,10 @@ const
 	OutsideClickHandler = styled.div`
 		width: 100%;
 		height: 100%;
+	`,
+	MediaDimmer = styled.div`
+		filter: ${props => props.blur ? "blur(15px)" : "none"};
+		padding-top: 49.33px;
 	`;
 
 
@@ -237,6 +269,7 @@ class UserProfile extends Component {
 	constructor() {
 		super();
 		this.state = {
+			mediaButton: true,
 			user: undefined,
 			posts: [],
 			hasMore: true,
@@ -490,11 +523,26 @@ class UserProfile extends Component {
 		this.setState( state => ({ chat: !state.chat }));
 	}
 
+	toggleMediaButton = () => {
+		this.setState({ mediaButton: !this.state.mediaButton });
+	}
+
 	render() {
+		var
+			ownProfile = this.props.username === localStorage.getItem( "username" ),
+			plusImage;
+
 		const {
 			postDetailsIndex, displayPostDetails, displayComments,
 			displayShare, profilePosts, albumPosts
 		} = this.props;
+
+		try {
+			plusImage = require( "../images/plus.png" );
+		} catch ( err ) {
+			console.log( err );
+		}
+
 		if ( this.state.inexistent ) {
 			return (
 				<h2>This account doesn't exist</h2>
@@ -506,13 +554,6 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
-				<NavBar
-					profilePage
-					socket={this.props.socket}
-					messageTarget={this.state.messageTarget}
-					startChat={this.startChat}
-				/>
-
 				{( displayPostDetails || displayComments || displayShare ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
@@ -544,131 +585,159 @@ class UserProfile extends Component {
 					useWindow={true}
 				>
 
-					<UserInfoBackground backgroundImg={backgroundImg} />
-					<UserInfoWrapper>
-						<UserInfo>
-							<UserImage src={profileImg} />
-							<Fullname>{user.fullname}</Fullname>
-							<Username>@{user.username}</Username>
-							<LikesCount>
-								<HeartImage
-									image={require( "../images/small_heart.png" )}
-								/>
-								{user.totalLikes}
-							</LikesCount>
-							<Description>{user.description}</Description>
-							<Hobbies>
-								{user.hobbies && user.hobbies.map(( hobbie, index ) =>
-									<Hobbie key={index}>
-										{hobbie}
-									</Hobbie>
-								)}
-							</Hobbies>
-							<ProfileOptions
-								user={this.state.user}
-								follow={this.follow}
-								addFriend={this.addFriend}
-								unFriend={this.unFriend}
-								unFollow={this.unFollow}
-								acceptRequest={this.acceptRequest}
-								goToUserSettings={this.props.goToUserSettings}
-								userRequested={this.state.userRequested}
-								targetRequested={this.state.targetRequested}
-								startChat={() => this.startChat( user )}
+					{ownProfile && this.state.mediaButton &&
+						<ShareMediaButton
+							onClick={() => this.props.switchMediaOptions()}
+						>
+							<PlusImage
+								image={plusImage}
+								active={this.props.mediaOptions}
 							/>
-						</UserInfo>
-						<TabsWrapper>
-							<Tabs>
-								<Tab
-									active={this.state.tab === "Posts"}
-									onClick={() => this.toggleTab( "Posts" )}
-								>
-									Posts
-								</Tab>
-								<Tab
-									active={this.state.tab === "Information"}
-									onClick={() => this.toggleTab( "Information" )}
-								>
-									Information
-								</Tab>
-								<Tab
-									active={this.state.tab === "Album"}
-									onClick={() => this.toggleTab( "Album" )}
-								>
-									Album
-								</Tab>
-								<Tab
-									active={this.state.tab === "Network"}
-									onClick={() => this.toggleTab( "Network" )}
-								>
-									Network
-								</Tab>
-							</Tabs>
-						</TabsWrapper>
-					</UserInfoWrapper>
-
-					<TimeLine>
-						<FloatingUserInfo>
-							<UserImage src={profileImg} />
-							<Fullname>{user.fullname}</Fullname>
-							<Username>@{user.username}</Username>
-							<LikesCount>
-								<HeartImage
-									image={require( "../images/small_heart.png" )}
-								/>
-								{user.totalLikes}
-							</LikesCount>
-							<Description>{user.description}</Description>
-							<Hobbies>
-								{user.hobbies && user.hobbies.map(( hobbie, index ) =>
-									<Hobbie key={index}>
-										{hobbie}
-									</Hobbie>
-								)}
-							</Hobbies>
-							<ProfileOptions
-								user={this.state.user}
-								follow={this.follow}
-								addFriend={this.addFriend}
-								unFriend={this.unFriend}
-								unFollow={this.unFollow}
-								acceptRequest={this.acceptRequest}
-								goToUserSettings={this.props.goToUserSettings}
-								userRequested={this.state.userRequested}
-								targetRequested={this.state.targetRequested}
-								startChat={() => this.startChat( user )}
-							/>
-						</FloatingUserInfo>
-
-						<ProfileTimeLine
-							tab={this.state.tab}
-							socket={this.props.socket}
-							history={this.props.history}
-							username={this.props.username}
-							toggleTab={this.toggleTab}
-							profilePosts={this.props.profilePosts}
-							user={user}
-						/>
-					</TimeLine>
-
-					{this.props.explore &&
-						<React.Fragment>
-							<NextButton
-								className="nextButton"
-								circular
-								icon="angle double right"
-								size="large"
-								onClick={this.props.next}
-							/>
-							<BackButton
-								className="backButton"
-								circular
-								icon="close"
-								size="large"
-								onClick={this.props.backToMenu}
-							/>
-						</React.Fragment>
+						</ShareMediaButton>
 					}
+
+					{ownProfile && this.props.mediaOptions &&
+						<MediaOptions
+							toggleMediaButton={this.toggleMediaButton}
+							socket={this.props.socket}
+							onProfile
+						/>}
+
+					<MediaDimmer blur={this.props.mediaOptions} >
+						<NavBar
+							profilePage
+							socket={this.props.socket}
+							messageTarget={this.state.messageTarget}
+							startChat={this.startChat}
+						/>
+
+						<UserInfoBackground backgroundImg={backgroundImg} />
+						<UserInfoWrapper>
+							<UserInfo>
+								<UserImage src={profileImg} />
+								<Fullname>{user.fullname}</Fullname>
+								<Username>@{user.username}</Username>
+								<LikesCount>
+									<HeartImage
+										image={require( "../images/small_heart.png" )}
+									/>
+									{user.totalLikes}
+								</LikesCount>
+								<Description>{user.description}</Description>
+								<Hobbies>
+									{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+										<Hobbie key={index}>
+											{hobbie}
+										</Hobbie>
+									)}
+								</Hobbies>
+								<ProfileOptions
+									user={this.state.user}
+									follow={this.follow}
+									addFriend={this.addFriend}
+									unFriend={this.unFriend}
+									unFollow={this.unFollow}
+									acceptRequest={this.acceptRequest}
+									goToUserSettings={this.props.goToUserSettings}
+									userRequested={this.state.userRequested}
+									targetRequested={this.state.targetRequested}
+									startChat={() => this.startChat( user )}
+								/>
+							</UserInfo>
+							<TabsWrapper>
+								<Tabs>
+									<Tab
+										active={this.state.tab === "Posts"}
+										onClick={() => this.toggleTab( "Posts" )}
+									>
+										Posts
+									</Tab>
+									<Tab
+										active={this.state.tab === "Information"}
+										onClick={() => this.toggleTab( "Information" )}
+									>
+										Information
+									</Tab>
+									<Tab
+										active={this.state.tab === "Album"}
+										onClick={() => this.toggleTab( "Album" )}
+									>
+										Album
+									</Tab>
+									<Tab
+										active={this.state.tab === "Network"}
+										onClick={() => this.toggleTab( "Network" )}
+									>
+										Network
+									</Tab>
+								</Tabs>
+							</TabsWrapper>
+						</UserInfoWrapper>
+
+						<TimeLine>
+							<FloatingUserInfo>
+								<UserImage src={profileImg} />
+								<Fullname>{user.fullname}</Fullname>
+								<Username>@{user.username}</Username>
+								<LikesCount>
+									<HeartImage
+										image={require( "../images/small_heart.png" )}
+									/>
+									{user.totalLikes}
+								</LikesCount>
+								<Description>{user.description}</Description>
+								<Hobbies>
+									{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+										<Hobbie key={index}>
+											{hobbie}
+										</Hobbie>
+									)}
+								</Hobbies>
+								<ProfileOptions
+									user={this.state.user}
+									follow={this.follow}
+									addFriend={this.addFriend}
+									unFriend={this.unFriend}
+									unFollow={this.unFollow}
+									acceptRequest={this.acceptRequest}
+									goToUserSettings={this.props.goToUserSettings}
+									userRequested={this.state.userRequested}
+									targetRequested={this.state.targetRequested}
+									startChat={() => this.startChat( user )}
+								/>
+							</FloatingUserInfo>
+
+							<ProfileTimeLine
+								tab={this.state.tab}
+								socket={this.props.socket}
+								history={this.props.history}
+								username={this.props.username}
+								toggleTab={this.toggleTab}
+								profilePosts={this.props.profilePosts}
+								user={user}
+							/>
+						</TimeLine>
+
+						{this.props.explore &&
+							<React.Fragment>
+								<NextButton
+									className="nextButton"
+									circular
+									icon="angle double right"
+									size="large"
+									onClick={this.props.next}
+								/>
+								<BackButton
+									className="backButton"
+									circular
+									icon="close"
+									size="large"
+									onClick={this.props.backToMenu}
+								/>
+							</React.Fragment>
+						}
+					</MediaDimmer>
+
 				</StyledInfiniteScroll>
 			</Wrapper>
 		);
@@ -685,6 +754,7 @@ UserProfile.propTypes = {
 
 const
 	mapStateToProps = state => ({
+		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
 		displayComments: state.posts.displayComments,
@@ -700,6 +770,7 @@ const
 			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
 		addToPosts: ( posts, onExplore, onProfile ) =>
 			dispatch( addToPosts( posts, onExplore, onProfile )),
+		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchMessages: () => dispatch( switchMessages()),
 		switchNotifications: () => dispatch( switchNotifications()),

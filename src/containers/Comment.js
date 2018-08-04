@@ -126,9 +126,9 @@ class Comment extends Component {
 				await refreshToken();
 				this.handleUpdate();
 			} else {
-				console.log( updatedContent );
 				this.setState({ content: updatedContent });
-				for ( const notification of res.data ) {
+				this.props.handleUpdate( res.data.updatedComment );
+				for ( const notification of res.data.mentionsNotifications ) {
 					this.props.socket.emit( "sendNotification", notification );
 				}
 			}
@@ -190,6 +190,7 @@ class Comment extends Component {
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
 	handleDelete: PropTypes.func.isRequired,
+	handleUpdate: PropTypes.func.isRequired,
 	handleReply: PropTypes.func.isRequired,
 	socket: PropTypes.object.isRequired
 };

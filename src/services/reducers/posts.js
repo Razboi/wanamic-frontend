@@ -36,7 +36,11 @@ export default function posts( state = initialState, action = {}) {
 		}
 
 	case "ADD_POST":
-		return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };
+		if ( action.onProfile ) {
+			return { ...state, profilePosts: [ action.post, ...state.profilePosts ] };
+		} else {
+			return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };
+		}
 
 	case "DELETE_POST":
 		return {
@@ -103,6 +107,17 @@ export default function posts( state = initialState, action = {}) {
 			...state,
 			comments: state.comments.filter(( comment, index ) => {
 				return index !== action.commentIndex;
+			})
+		};
+
+	case "UPDATE_COMMENT":
+		return {
+			...state,
+			comments: state.comments.map( comment => {
+				if ( comment._id === action.comment._id ) {
+					return { ...comment, ...action.comment };
+				}
+				return comment;
 			})
 		};
 

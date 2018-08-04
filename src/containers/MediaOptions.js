@@ -128,7 +128,7 @@ class MediaOptions extends Component {
 			const res = await api.createMediaLink( link, description,
 				mentions, hashtags, privacyRange, alerts );
 
-			this.props.addPost( res.newPost );
+			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
 			if ( res.mentionsNotifications ) {
@@ -198,7 +198,7 @@ class MediaOptions extends Component {
 							.then(() => this.shareTextPost())
 							.catch( err => console.log( err ));
 					} else if ( res ) {
-						this.props.addPost( res.newPost );
+						this.props.addPost( res.newPost, this.props.onProfile );
 						this.props.switchMediaOptions();
 						this.props.toggleMediaButton();
 						if ( res.mentionsNotifications ) {
@@ -276,7 +276,7 @@ class MediaOptions extends Component {
 
 		try {
 			const res = await api.createMediaPicture( data );
-			this.props.addPost( res.newPost );
+			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
 			if ( res.mentionsNotifications ) {
@@ -392,7 +392,8 @@ class MediaOptions extends Component {
 MediaOptions.propTypes = {
 	addPost: PropTypes.func.isRequired,
 	switchMediaOptions: PropTypes.func.isRequired,
-	toggleMediaButton: PropTypes.func.isRequired
+	toggleMediaButton: PropTypes.func.isRequired,
+	onProfile: PropTypes.bool
 };
 
 const
@@ -400,7 +401,7 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		addPost: post => dispatch( addPost( post )),
+		addPost: ( post, onProfile ) => dispatch( addPost( post, onProfile )),
 		switchMediaOptions: () => dispatch( switchMediaOptions())
 	});
 
