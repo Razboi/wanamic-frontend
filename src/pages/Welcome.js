@@ -20,6 +20,7 @@ class WelcomePage extends Component {
 			description: "",
 			hobbies: [],
 			userImage: null,
+			imagePreview: undefined,
 			step: 1,
 			checkedCategories: [],
 			toFollow: [],
@@ -61,6 +62,7 @@ class WelcomePage extends Component {
 
 		this.setState({
 			[ e.target.name ]: file,
+			imagePreview: URL.createObjectURL( file ),
 			error: ""
 		});
 	}
@@ -161,6 +163,7 @@ class WelcomePage extends Component {
 						handleDelete={this.handleDelete}
 						handleAddition={this.handleAddition}
 						error={this.state.error}
+						imagePreview={this.state.imagePreview}
 					/>
 				}
 

@@ -10,7 +10,7 @@ import {
 	deleteChat, switchConversation
 } from "../services/actions/conversations";
 import Conversation from "../components/Conversation";
-import FriendsList from "../components/FriendsList";
+import SocialCircleList from "../components/SocialCircleList";
 import refreshToken from "../utils/refreshToken";
 import moment from "moment";
 import NavBar from "../containers/NavBar";
@@ -217,8 +217,8 @@ class Messages extends Component {
 	constructor() {
 		super();
 		this.state = {
-			friends: [],
-			displayFriendsList: false,
+			socialCircle: [],
+			displaySocialCircle: false,
 			messageInput: "",
 			sentMessages: 0,
 			spam: false,
@@ -290,7 +290,7 @@ class Messages extends Component {
 
 	displayConversation = () => {
 		this.props.switchConversation( true );
-		this.setState({ displayFriendsList: false });
+		this.setState({ displaySocialCircle: false });
 	}
 
 	handleNewConversation = async selectedUser => {
@@ -332,17 +332,20 @@ class Messages extends Component {
 		}
 	}
 
-	handleFriendsList = async() => {
-		const friends = await api.getFriends();
-		if ( friends === "jwt expired" ) {
+	handleSocialCircle = async() => {
+		const socialCircle = await api.getFriends();
+		if ( socialCircle === "jwt expired" ) {
 			try {
 				await refreshToken();
 			} catch ( err ) {
 				console.log( err );
 			}
-			this.handleFriendsList();
+			this.handleSocialCircle();
 		} else {
-			this.setState({ friends: friends.data, displayFriendsList: true });
+			this.setState({
+				socialCircle: socialCircle.data,
+				displaySocialCircle: true
+			});
 		}
 	}
 
@@ -391,7 +394,7 @@ class Messages extends Component {
 			this.props.toggleConversation();
 			return;
 		}
-		this.setState({ displayFriendsList: false });
+		this.setState({ displaySocialCircle: false });
 		this.props.switchConversation( false );
 		if ( this.props.profilePage && this.props.messageTarget ) {
 			this.props.startChat( undefined );
@@ -435,10 +438,10 @@ class Messages extends Component {
 				/>
 			);
 		}
-		if ( this.state.displayFriendsList && !largeScreen ) {
+		if ( this.state.displaySocialCircle && !largeScreen ) {
 			return (
-				<FriendsList
-					friends={this.state.friends}
+				<SocialCircleList
+					socialCircle={this.state.socialCircle}
 					handleNewConversation={this.handleNewConversation}
 					back={this.backToOpenConversations}
 				/>
@@ -453,9 +456,9 @@ class Messages extends Component {
 							largeScreen={largeScreen}
 							onHome={onHome}
 						>
-							{this.state.displayFriendsList && largeScreen ?
-								<FriendsList
-									friends={this.state.friends}
+							{this.state.displaySocialCircle && largeScreen ?
+								<SocialCircleList
+									socialCircle={this.state.socialCircle}
 									handleNewConversation={this.handleNewConversation}
 									back={this.backToOpenConversations}
 								/>
@@ -510,7 +513,7 @@ class Messages extends Component {
 											icon="chevron right"
 										/>
 										<NewConversationButton
-											onClick={this.handleFriendsList}
+											onClick={this.handleSocialCircle}
 											primary
 											circular
 											icon="comment"
@@ -549,9 +552,9 @@ class Messages extends Component {
 
 					{displayPopup &&
 						<PopupWrapper>
-							{this.state.displayFriendsList && largeScreen ?
-								<FriendsList
-									friends={this.state.friends}
+							{this.state.displaySocialCircle && largeScreen ?
+								<SocialCircleList
+									socialCircle={this.state.socialCircle}
 									handleNewConversation={this.handleNewConversation}
 									back={this.backToOpenConversations}
 								/>
@@ -600,7 +603,7 @@ class Messages extends Component {
 									</div>
 									<Buttons>
 										<NewConversationButton
-											onClick={this.handleFriendsList}
+											onClick={this.handleSocialCircle}
 											primary
 											circular
 											icon="comment"
@@ -659,7 +662,7 @@ class Messages extends Component {
 							)}
 
 							<NewConversationButton
-								onClick={this.handleFriendsList}
+								onClick={this.handleSocialCircle}
 								primary
 								circular
 								icon="comment"

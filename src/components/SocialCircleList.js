@@ -4,7 +4,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 
 const
-	FriendListWrapper = styled.div`
+	Wrapper = styled.div`
 		height: 100vh;
 		width: 100%;
 		position: absolute;
@@ -74,11 +74,11 @@ const
 	`;
 
 
-class FriendsList extends Component {
+class SocialCircleList extends Component {
 	constructor() {
 		super();
 		this.state = {
-			friendsImages: []
+			socialCircleImages: []
 		};
 	}
 
@@ -88,7 +88,7 @@ class FriendsList extends Component {
 
 	setFriendsImages = async() => {
 		var images = [];
-		for ( const friend of this.props.friends ) {
+		for ( const friend of this.props.socialCircle ) {
 			try {
 				await friend.profileImage ?
 					images.push( require( "../images/" + friend.profileImage ))
@@ -98,22 +98,22 @@ class FriendsList extends Component {
 				console.log( err );
 			}
 		}
-		this.setState({ friendsImages: images });
+		this.setState({ socialCircleImages: images });
 	}
 
 	render() {
 		return (
-			<FriendListWrapper>
+			<Wrapper>
 				<HeaderWrapper>
 					<Icon
 						name="arrow left"
 						onClick={this.props.back}
 						className="arrowBack"
 					/>
-					<HeaderTxt>Friends</HeaderTxt>
+					<HeaderTxt>Social Circle</HeaderTxt>
 				</HeaderWrapper>
-				<div className="friendsList">
-					{this.props.friends.map(( friend, index ) =>
+				<div className="socialCircleList">
+					{this.props.socialCircle.map(( friend, index ) =>
 						<Friend
 							key={index}
 							className="friend"
@@ -121,7 +121,7 @@ class FriendsList extends Component {
 						>
 							<FriendImg
 								circular
-								src={this.state.friendsImages[ index ]}
+								src={this.state.socialCircleImages[ index ]}
 							/>
 							<FriendData>
 								<Fullname>{friend.fullname}</Fullname>
@@ -130,16 +130,16 @@ class FriendsList extends Component {
 						</Friend>
 					)}
 				</div>
-			</FriendListWrapper>
+			</Wrapper>
 		);
 	}
 }
 
-FriendsList.propTypes = {
-	friends: PropTypes.array.isRequired,
+SocialCircleList.propTypes = {
+	socialCircle: PropTypes.array.isRequired,
 	handleNewConversation: PropTypes.func.isRequired,
 	back: PropTypes.func.isRequired
 };
 
 
-export default FriendsList;
+export default SocialCircleList;

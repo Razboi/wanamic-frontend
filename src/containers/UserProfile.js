@@ -262,7 +262,8 @@ const
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		padding-top: 49.33px;
-	`;
+	`,
+	Page = styled.div``;
 
 
 class UserProfile extends Component {
@@ -424,10 +425,11 @@ class UserProfile extends Component {
 			if ( notification === "jwt expired" ) {
 				await refreshToken();
 				this.follow();
-			} else if ( notification.data ) {
+			} else {
 				user.followers.push( localStorage.getItem( "id" ));
 				this.setState({ user: user });
-				this.props.socket.emit( "sendNotification", notification.data );
+				notification.data && this.props.socket.emit(
+					"sendNotification", notification.data );
 				this.refreshTimeline();
 			}
 		} catch ( err ) {
@@ -577,7 +579,6 @@ class UserProfile extends Component {
 				}
 
 				<StyledInfiniteScroll
-					onClick={this.hidePopups}
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
 					loadMore={this.getTimeline}
@@ -610,132 +611,133 @@ class UserProfile extends Component {
 							messageTarget={this.state.messageTarget}
 							startChat={this.startChat}
 						/>
-
-						<UserInfoBackground backgroundImg={backgroundImg} />
-						<UserInfoWrapper>
-							<UserInfo>
-								<UserImage src={profileImg} />
-								<Fullname>{user.fullname}</Fullname>
-								<Username>@{user.username}</Username>
-								<LikesCount>
-									<HeartImage
-										image={require( "../images/small_heart.png" )}
+						<Page onClick={this.hidePopups}>
+							<UserInfoBackground backgroundImg={backgroundImg} />
+							<UserInfoWrapper>
+								<UserInfo>
+									<UserImage src={profileImg} />
+									<Fullname>{user.fullname}</Fullname>
+									<Username>@{user.username}</Username>
+									<LikesCount>
+										<HeartImage
+											image={require( "../images/small_heart.png" )}
+										/>
+										{user.totalLikes}
+									</LikesCount>
+									<Description>{user.description}</Description>
+									<Hobbies>
+										{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+											<Hobbie key={index}>
+												{hobbie}
+											</Hobbie>
+										)}
+									</Hobbies>
+									<ProfileOptions
+										user={this.state.user}
+										follow={this.follow}
+										addFriend={this.addFriend}
+										unFriend={this.unFriend}
+										unFollow={this.unFollow}
+										acceptRequest={this.acceptRequest}
+										goToUserSettings={this.props.goToUserSettings}
+										userRequested={this.state.userRequested}
+										targetRequested={this.state.targetRequested}
+										startChat={() => this.startChat( user )}
 									/>
-									{user.totalLikes}
-								</LikesCount>
-								<Description>{user.description}</Description>
-								<Hobbies>
-									{user.hobbies && user.hobbies.map(( hobbie, index ) =>
-										<Hobbie key={index}>
-											{hobbie}
-										</Hobbie>
-									)}
-								</Hobbies>
-								<ProfileOptions
-									user={this.state.user}
-									follow={this.follow}
-									addFriend={this.addFriend}
-									unFriend={this.unFriend}
-									unFollow={this.unFollow}
-									acceptRequest={this.acceptRequest}
-									goToUserSettings={this.props.goToUserSettings}
-									userRequested={this.state.userRequested}
-									targetRequested={this.state.targetRequested}
-									startChat={() => this.startChat( user )}
-								/>
-							</UserInfo>
-							<TabsWrapper>
-								<Tabs>
-									<Tab
-										active={this.state.tab === "Posts"}
-										onClick={() => this.toggleTab( "Posts" )}
-									>
-										Posts
-									</Tab>
-									<Tab
-										active={this.state.tab === "Information"}
-										onClick={() => this.toggleTab( "Information" )}
-									>
-										Information
-									</Tab>
-									<Tab
-										active={this.state.tab === "Album"}
-										onClick={() => this.toggleTab( "Album" )}
-									>
-										Album
-									</Tab>
-									<Tab
-										active={this.state.tab === "Network"}
-										onClick={() => this.toggleTab( "Network" )}
-									>
-										Network
-									</Tab>
-								</Tabs>
-							</TabsWrapper>
-						</UserInfoWrapper>
+								</UserInfo>
+								<TabsWrapper>
+									<Tabs>
+										<Tab
+											active={this.state.tab === "Posts"}
+											onClick={() => this.toggleTab( "Posts" )}
+										>
+											Posts
+										</Tab>
+										<Tab
+											active={this.state.tab === "Information"}
+											onClick={() => this.toggleTab( "Information" )}
+										>
+											Information
+										</Tab>
+										<Tab
+											active={this.state.tab === "Album"}
+											onClick={() => this.toggleTab( "Album" )}
+										>
+											Album
+										</Tab>
+										<Tab
+											active={this.state.tab === "Network"}
+											onClick={() => this.toggleTab( "Network" )}
+										>
+											Network
+										</Tab>
+									</Tabs>
+								</TabsWrapper>
+							</UserInfoWrapper>
 
-						<TimeLine>
-							<FloatingUserInfo>
-								<UserImage src={profileImg} />
-								<Fullname>{user.fullname}</Fullname>
-								<Username>@{user.username}</Username>
-								<LikesCount>
-									<HeartImage
-										image={require( "../images/small_heart.png" )}
+							<TimeLine>
+								<FloatingUserInfo>
+									<UserImage src={profileImg} />
+									<Fullname>{user.fullname}</Fullname>
+									<Username>@{user.username}</Username>
+									<LikesCount>
+										<HeartImage
+											image={require( "../images/small_heart.png" )}
+										/>
+										{user.totalLikes}
+									</LikesCount>
+									<Description>{user.description}</Description>
+									<Hobbies>
+										{user.hobbies && user.hobbies.map(( hobbie, index ) =>
+											<Hobbie key={index}>
+												{hobbie}
+											</Hobbie>
+										)}
+									</Hobbies>
+									<ProfileOptions
+										user={this.state.user}
+										follow={this.follow}
+										addFriend={this.addFriend}
+										unFriend={this.unFriend}
+										unFollow={this.unFollow}
+										acceptRequest={this.acceptRequest}
+										goToUserSettings={this.props.goToUserSettings}
+										userRequested={this.state.userRequested}
+										targetRequested={this.state.targetRequested}
+										startChat={() => this.startChat( user )}
 									/>
-									{user.totalLikes}
-								</LikesCount>
-								<Description>{user.description}</Description>
-								<Hobbies>
-									{user.hobbies && user.hobbies.map(( hobbie, index ) =>
-										<Hobbie key={index}>
-											{hobbie}
-										</Hobbie>
-									)}
-								</Hobbies>
-								<ProfileOptions
-									user={this.state.user}
-									follow={this.follow}
-									addFriend={this.addFriend}
-									unFriend={this.unFriend}
-									unFollow={this.unFollow}
-									acceptRequest={this.acceptRequest}
-									goToUserSettings={this.props.goToUserSettings}
-									userRequested={this.state.userRequested}
-									targetRequested={this.state.targetRequested}
-									startChat={() => this.startChat( user )}
-								/>
-							</FloatingUserInfo>
+								</FloatingUserInfo>
 
-							<ProfileTimeLine
-								tab={this.state.tab}
-								socket={this.props.socket}
-								history={this.props.history}
-								username={this.props.username}
-								toggleTab={this.toggleTab}
-								profilePosts={this.props.profilePosts}
-								user={user}
-							/>
-						</TimeLine>
+								<ProfileTimeLine
+									tab={this.state.tab}
+									socket={this.props.socket}
+									history={this.props.history}
+									username={this.props.username}
+									toggleTab={this.toggleTab}
+									profilePosts={this.props.profilePosts}
+									user={user}
+								/>
+							</TimeLine>
 
-						{this.props.explore &&
-							<React.Fragment>
-								<NextButton
-									className="nextButton"
-									circular
-									icon="angle double right"
-									size="large"
-									onClick={this.props.next}
-								/>
-								<BackButton
-									className="backButton"
-									circular
-									icon="close"
-									size="large"
-									onClick={this.props.backToMenu}
-								/>
-							</React.Fragment>
-						}
+							{this.props.explore &&
+								<React.Fragment>
+									<NextButton
+										className="nextButton"
+										circular
+										icon="angle double right"
+										size="large"
+										onClick={this.props.next}
+									/>
+									<BackButton
+										className="backButton"
+										circular
+										icon="close"
+										size="large"
+										onClick={this.props.backToMenu}
+									/>
+								</React.Fragment>
+							}
+						</Page>
 					</MediaDimmer>
 
 				</StyledInfiniteScroll>

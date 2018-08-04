@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Button, Message } from "semantic-ui-react";
+import { Form, Button, Message, Image } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { WithContext as ReactTags } from "react-tag-input";
@@ -67,11 +67,31 @@ const
 	StyledMessage = styled( Message )`
 		z-index: 2;
 	`,
+	ImageInputWrapper = styled.div`
+		position: relative;
+	`,
+	PreviewImage = styled( Image )`
+		height: 55px;
+		width: 55px;
+		position: absolute !important;
+		top: 0;
+		right: 0;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 
 class Step2 extends Component {
 	render() {
+		var previewImage;
+		try {
+			if ( this.props.imagePreview ) {
+				previewImage = this.props.imagePreview;
+			} else {
+				previewImage = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
 			<Wrapper>
 				{this.props.error &&
@@ -108,13 +128,17 @@ class Step2 extends Component {
 							maxLength={"17"}
 						/>
 					</Hobbies>
-					<FormInput
-						className="profileImageInput"
-						name="userImage"
-						onChange={this.props.handleFileChange}
-						label="Profile image"
-						type="file"
-					/>
+					<ImageInputWrapper>
+						<FormInput
+							className="profileImageInput"
+							name="userImage"
+							onChange={this.props.handleFileChange}
+							label="Profile image"
+							type="file"
+						/>
+						<PreviewImage circular src={previewImage} />
+					</ImageInputWrapper>
+
 					<NextButton
 						className="nextButton"
 						type="button"
@@ -135,7 +159,8 @@ Step2.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	handleDelete: PropTypes.func.isRequired,
 	handleAddition: PropTypes.func.isRequired,
-	hobbies: PropTypes.array.isRequired
+	hobbies: PropTypes.array.isRequired,
+	imagePreview: PropTypes.array.isRequired
 };
 
 export default Step2;
