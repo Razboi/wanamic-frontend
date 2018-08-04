@@ -11,6 +11,7 @@ import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import AlertsFilter from "../components/AlertsFilter";
+import extract from "mention-hashtag";
 
 const
 	Wrapper = styled.div`
@@ -115,7 +116,6 @@ class Post extends Component {
 			nsfw: false,
 			spoiler: false,
 			spoilerDescription: "",
-			updatedContent: "",
 			id: ""
 		};
 	}
@@ -156,21 +156,28 @@ class Post extends Component {
 		}
 	};
 
-	handleUpdate = async() => {
-		if ( this.state.content !== this.state.updatedContent
-			&& this.state.updatedContent !== "" ) {
-			try {
-				const res = await api.updatePost(
-					this.props.post._id, this.state.updatedContent );
-				if ( res === "jwt expired" ) {
-					await refreshToken();
-					this.handleUpdate();
-				} else if ( res.data ) {
-					this.props.updatePost( res.data );
+	handleUpdate = async updatedContent => {
+		if (( !updatedContent && !this.props.post.content )
+			|| this.props.post.content === updatedContent ) {
+			return;
+		}
+		try {
+			const
+				{ mentions, hashtags } = await extract(
+					updatedContent, { symbol: false, type: "all" }),
+				res = await api.updatePost(
+					this.props.post._id, updatedContent, mentions, hashtags );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.handleUpdate();
+			} else {
+				this.props.updatePost( res.data.updatedPost );
+				for ( const notification of res.data.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
 				}
-			} catch ( err ) {
-				console.log( err );
 			}
+		} catch ( err ) {
+			console.log( err );
 		}
 	};
 
@@ -257,10 +264,9 @@ class Post extends Component {
 						<DropdownOptions
 							style={StyledOptions}
 							author={post.author}
-							updatedContent={this.state.updatedContent}
+							currentContent={post.content}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
-							handleChange={this.handleChange}
 						/>
 					}
 				</PostHeader>

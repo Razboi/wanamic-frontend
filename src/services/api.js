@@ -123,14 +123,16 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	updatePost: ( postId, newContent ) =>
+	updatePost: ( postId, newContent, mentions, hashtags ) =>
 		axios({
 			method: "patch",
 			url: "/posts/update",
 			data: {
 				token: localStorage.getItem( "token" ),
 				postId: postId,
-				newContent: newContent
+				newContent: newContent,
+				mentions: mentions,
+				hashtags: hashtags
 			}
 		})
 			.then( res => res )
@@ -345,13 +347,14 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	updateComment: ( commentId, newContent ) =>
+	updateComment: ( commentId, newContent, mentions, hashtags ) =>
 		axios({
 			method: "patch",
 			data: {
 				token: localStorage.getItem( "token" ),
 				commentId: commentId,
-				newContent: newContent
+				newContent: newContent,
+				mentions: mentions
 			},
 			url: "/comments/update/"
 		})

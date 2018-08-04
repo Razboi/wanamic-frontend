@@ -6,6 +6,7 @@ import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import extract from "mention-hashtag";
 
 var userPicture;
 
@@ -84,8 +85,7 @@ class Comment extends Component {
 	constructor() {
 		super();
 		this.state = {
-			content: "",
-			updatedContent: ""
+			content: ""
 		};
 	}
 
@@ -95,8 +95,7 @@ class Comment extends Component {
 
 	static getDerivedStateFromProps( nextProps, prevState ) {
 		return {
-			content: nextProps.comment.content,
-			updatedContent: nextProps.comment.content
+			content: nextProps.comment.content
 		};
 	}
 
@@ -113,19 +112,28 @@ class Comment extends Component {
 			}).catch( err => console.log( err ));
 	};
 
-	handleUpdate = () => {
-		if ( this.state.content !== this.state.updatedContent
-			&& this.state.updatedContent !== "" ) {
-			api.updateComment( this.props.comment._id, this.state.updatedContent )
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.handleUpdate())
-							.catch( err => console.log( err ));
-					} else {
-						this.setState({ content: this.state.updatedContent });
-					}
-				}).catch( err => console.log( err ));
+	handleUpdate = async updatedContent => {
+		if ( !updatedContent || !this.state.content === updatedContent ) {
+			return;
+		}
+		try {
+			const
+				mentions = await extract(
+					updatedContent, { symbol: false }),
+				res = await api.updateComment(
+					this.props.comment._id, updatedContent, mentions );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.handleUpdate();
+			} else {
+				console.log( updatedContent );
+				this.setState({ content: updatedContent });
+				for ( const notification of res.data ) {
+					this.props.socket.emit( "sendNotification", notification );
+				}
+			}
+		} catch ( err ) {
+			console.log( err );
 		}
 	};
 
@@ -160,7 +168,7 @@ class Comment extends Component {
 						<DropdownOptions
 							style={StyledOptions}
 							author={comment.author}
-							updatedContent={this.state.updatedContent}
+							currentContent={comment.content}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
 							handleChange={this.handleChange}
@@ -182,7 +190,8 @@ class Comment extends Component {
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
 	handleDelete: PropTypes.func.isRequired,
-	handleReply: PropTypes.func.isRequired
+	handleReply: PropTypes.func.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 export default Comment;

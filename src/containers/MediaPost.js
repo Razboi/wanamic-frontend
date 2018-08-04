@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
 import refreshToken from "../utils/refreshToken";
+import extract from "mention-hashtag";
 
 const
 	Wrapper = styled.div`
@@ -151,7 +152,6 @@ class MediaPost extends Component {
 			nsfw: false,
 			spoiler: false,
 			spoilerDescription: "",
-			updatedContent: "",
 			id: ""
 		};
 	}
@@ -166,7 +166,6 @@ class MediaPost extends Component {
 			nsfw: post.alerts.nsfw,
 			spoiler: post.alerts.spoiler,
 			spoilerDescription: post.alerts.spoilerDescription,
-			updatedContent: post.content,
 			id: post._id
 		};
 	}
@@ -188,20 +187,28 @@ class MediaPost extends Component {
 			}).catch( err => console.log( err ));
 	};
 
-	handleUpdate = () => {
-		if ( this.state.content !== this.state.updatedContent
-			&& this.state.updatedContent !== "" ) {
-			api.updatePost( this.props.post._id, this.state.updatedContent )
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.handleUpdate())
-							.catch( err => console.log( err ));
-					} else {
-						this.props.updatePost( res.data );
-					}
-				})
-				.catch( err => console.log( err ));
+	handleUpdate = async updatedContent => {
+		if (( !updatedContent && !this.props.post.content )
+			|| this.props.post.content === updatedContent ) {
+			return;
+		}
+		try {
+			const
+				{ mentions, hashtags } = await extract(
+					updatedContent, { symbol: false, type: "all" }),
+				res = await api.updatePost(
+					this.props.post._id, updatedContent, mentions, hashtags );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.handleUpdate();
+			} else {
+				this.props.updatePost( res.data.updatedPost );
+				for ( const notification of res.data.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
+				}
+			}
+		} catch ( err ) {
+			console.log( err );
 		}
 	};
 
@@ -305,10 +312,9 @@ class MediaPost extends Component {
 						<DropdownOptions
 							style={StyledOptions}
 							author={post.author}
-							updatedContent={this.state.updatedContent}
+							currentContent={post.content}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
-							handleChange={this.handleChange}
 						/>
 					}
 				</PostHeader>

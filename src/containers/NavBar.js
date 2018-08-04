@@ -269,7 +269,7 @@ class NavBar extends Component {
 							}
 						>
 							{chatNotifications > 0 &&
-								<Label size="small" floating circular color="red">
+								<Label size="small" floating circular>
 									{chatNotifications}
 								</Label>
 							}
