@@ -95,6 +95,11 @@ class MediaOptions extends Component {
 
 	componentDidMount() {
 		this.getSocialCircle();
+		document.body.style.overflowY = "hidden";
+	}
+
+	componentWillUnmount() {
+		document.body.style.overflowY = "auto";
 	}
 
 	getSocialCircle = () => {

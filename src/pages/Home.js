@@ -20,7 +20,7 @@ import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: 100%;
 		min-height: 100vh;
 		width: 100%;
@@ -190,6 +190,7 @@ class Home extends Component {
 								switchDetails={this.hidePostDetails}
 								socket={this.props.socket}
 								index={postDetailsIndex}
+								history={this.props.history}
 							/>}
 						{displayComments &&
 							<Comments

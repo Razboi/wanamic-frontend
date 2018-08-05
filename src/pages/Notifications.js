@@ -270,7 +270,7 @@ class Notifications extends Component {
 	render() {
 		if ( this.props.displayComments && !this.props.isPopup ) {
 			return (
-				<Comments />
+				<Comments socket={this.props.socket} />
 			);
 		}
 		if ( this.state.displayDetails ) {
@@ -281,6 +281,7 @@ class Notifications extends Component {
 						postId={this.state.postId}
 						switchDetails={this.switchDetails}
 						socket={this.props.socket}
+						history={this.props.history}
 					/>
 				</PostDetailsDimmer>
 			);
@@ -359,6 +360,7 @@ Notifications.propTypes = {
 	switchComments: PropTypes.func.isRequired,
 	checkNotifications: PropTypes.func.isRequired,
 	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired,
 	isPopup: PropTypes.bool
 };
 

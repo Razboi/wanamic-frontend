@@ -569,6 +569,7 @@ class UserProfile extends Component {
 								switchDetails={this.props.switchPostDetails}
 								socket={this.props.socket}
 								index={postDetailsIndex}
+								history={this.props.history}
 							/>}
 						{displayComments &&
 							<Comments

@@ -95,7 +95,6 @@ const
 	`;
 
 
-var interval;
 class Comments extends Component {
 	constructor() {
 		super();
@@ -113,16 +112,24 @@ class Comments extends Component {
 			sentComments: 0,
 			spam: false
 		};
+		this.scrollAlreadyBlocked = false;
+		this.interval = setInterval( this.resetCommentsLimit, 30000 );
 	}
 
 	componentDidMount() {
-		interval = setInterval( this.resetCommentsLimit, 30000 );
+		document.body.style.overflowY === "hidden" ?
+			this.scrollAlreadyBlocked = true
+			:
+			document.body.style.overflowY = "hidden";
 		this.getInitialComments();
 		this.getSocialCircle();
 	}
 
 	componentWillUnmount() {
-		clearInterval( interval );
+		if ( !this.scrollAlreadyBlocked ) {
+			document.body.style.overflowY = "auto";
+		}
+		clearInterval( this.interval );
 	}
 
 	resetCommentsLimit = () => {
@@ -370,6 +377,7 @@ class Comments extends Component {
 								handleUpdate={this.handleUpdate}
 								handleDelete={this.handleDelete}
 								handleReply={() => this.handleReply( comment.author )}
+								socket={this.props.socket}
 							/>
 						)}
 					</StyledInfiniteScroll>
@@ -410,6 +418,7 @@ class Comments extends Component {
 }
 
 Comments.propTypes = {
+	socket: PropTypes.object.isRequired,
 	switchComments: PropTypes.func.isRequired,
 	setComments: PropTypes.func.isRequired,
 	postId: PropTypes.string.isRequired,

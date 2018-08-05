@@ -111,14 +111,7 @@ const
 		transform: scale( 0.75 );
 		background: #fff;
 		max-width: 390px;
-		max-height: 600px;
-    margin: 0 auto;
-		overflow-y: auto;
-		::-webkit-scrollbar {
-			display: block !important;
-			width: 10px !important;
-			background: #fff;
-		}
+    margin: 0 auto 3rem auto;
 		@media (max-height: 450px) {
 			display: none;
 		}
@@ -142,10 +135,21 @@ class Share extends Component {
 			currentSelection: 0,
 			startPosition: undefined
 		};
+		this.scrollAlreadyBlocked = false;
 	}
 
 	componentDidMount() {
+		document.body.style.overflowY === "hidden" ?
+			this.scrollAlreadyBlocked = true
+			:
+			document.body.style.overflowY = "hidden";
 		this.getSocialCircle();
+	}
+
+	componentWillUnmount() {
+		if ( !this.scrollAlreadyBlocked ) {
+			document.body.style.overflowY = "auto";
+		}
 	}
 
 	getSocialCircle = () => {

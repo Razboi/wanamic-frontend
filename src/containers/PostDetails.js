@@ -66,6 +66,7 @@ class PostDetails extends Component {
 	}
 
 	componentDidMount() {
+		document.body.style.overflowY = "hidden";
 		previousHref = window.location.href;
 		window.history.pushState( null, null, "/post" );
 		window.onpopstate = () => this.handlePopstate();
@@ -83,6 +84,7 @@ class PostDetails extends Component {
 	}
 
 	componentWillUnmount() {
+		document.body.style.overflowY = "auto";
 		window.history.pushState( null, null, previousHref );
 		window.onpopstate = () => {};
 	}
@@ -169,7 +171,7 @@ PostDetails.propTypes = {
 	socket: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
 	displayComments: PropTypes.bool.isRequired,
-	index: PropTypes.number.isRequired
+	index: PropTypes.number
 };
 
 const

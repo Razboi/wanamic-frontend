@@ -92,7 +92,6 @@ ContentSettings.propTypes = {
 	updatePreferences: PropTypes.func.isRequired,
 	backToMain: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
-	categories: PropTypes.array.isRequired,
 	handleCategoryClick: PropTypes.func.isRequired,
 	largeScreen: PropTypes.bool
 };

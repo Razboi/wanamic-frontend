@@ -30,9 +30,6 @@ const
 	FormTextarea = styled( Form.TextArea )`
 		margin-bottom: 2rem !important;
 	`,
-	FormInput = styled( Form.Input )`
-		margin-bottom: 2rem !important;
-	`,
 	Hobbies = styled.div`
 		margin-bottom: 2rem;
 		.ReactTags__tag {
@@ -63,6 +60,7 @@ const
 		font-family: inherit !important;
 		border-radius: 2px !important;
 		margin: 0 !important;
+		z-index: 4 !important;
 	`,
 	StyledMessage = styled( Message )`
 		z-index: 2;
@@ -70,12 +68,19 @@ const
 	ImageInputWrapper = styled.div`
 		position: relative;
 	`,
+	ImageInput = styled( Form.Input )`
+		input {
+			z-index: 3 !important;
+			opacity: 0 !important;
+			height: 60px !important;
+		}
+	`,
 	PreviewImage = styled( Image )`
 		height: 55px;
 		width: 55px;
 		position: absolute !important;
-		top: 0;
-		right: 0;
+		top: 30px;
+		left: 10px;
 	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
@@ -129,7 +134,7 @@ class Step2 extends Component {
 						/>
 					</Hobbies>
 					<ImageInputWrapper>
-						<FormInput
+						<ImageInput
 							className="profileImageInput"
 							name="userImage"
 							onChange={this.props.handleFileChange}
