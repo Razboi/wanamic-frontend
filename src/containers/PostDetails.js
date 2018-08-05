@@ -52,6 +52,19 @@ const
 	`,
 	ItunesImage = styled( Image )`
 		height: 30px;
+	`,
+	NullPostWarning = styled.div`
+		z-index: 20;
+		position: absolute;
+		background: #fff;
+		width: 300px;
+		height: 200px;
+		border-radius: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1rem;
+		font-weight: 600;
 	`;
 
 var previousHref;
@@ -60,7 +73,7 @@ class PostDetails extends Component {
 	constructor() {
 		super();
 		this.state = {
-			post: undefined,
+			post: {},
 			displayComments: false
 		};
 	}
@@ -96,13 +109,13 @@ class PostDetails extends Component {
 	}
 
 	getPost = async() => {
-		var posts;
+		var post;
 		try {
-			posts = await api.getPost( this.props.postId );
+			post = await api.getPost( this.props.postId );
 		} catch ( err ) {
 			console.log( err );
 		}
-		this.setState({ post: posts.data });
+		this.setState({ post: post.data });
 	}
 
 	handleBack = () => {
@@ -118,9 +131,6 @@ class PostDetails extends Component {
 
 	render() {
 		const { post } = this.state;
-		if ( !post ) {
-			return null;
-		}
 		if ( this.props.displayComments ) {
 			return <Comments
 				onExplore={this.props.onExplore}
@@ -129,6 +139,17 @@ class PostDetails extends Component {
 		}
 		if ( this.props.displayShare ) {
 			return <Share />;
+		}
+		// empty obj
+		if ( Object.keys( post ).length === 0 && post.constructor === Object ) {
+			return null;
+		}
+		if ( !post ) {
+			return (
+				<NullPostWarning>
+					<span>This post doesn't exist</span>
+				</NullPostWarning>
+			);
 		}
 		return (
 			<Wrapper>

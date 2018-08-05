@@ -8,7 +8,10 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
-import { setPosts, addToPosts, switchPostDetails } from "../services/actions/posts";
+import Comments from "../containers/Comments";
+import {
+	setPosts, addToPosts, switchPostDetails, switchComments
+} from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
 import { connect } from "react-redux";
@@ -403,6 +406,9 @@ class ExplorePage extends Component {
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
+		if ( this.props.displayComments ) {
+			this.props.switchComments();
+		}
 	}
 
 
@@ -410,7 +416,7 @@ class ExplorePage extends Component {
 		var
 			connectImage,
 			contentImage;
-		const { displayPostDetails } = this.props;
+		const { displayPostDetails, displayComments } = this.props;
 		try {
 			if ( window.innerWidth > 420 ) {
 				connectImage = !this.state.content ?
@@ -450,7 +456,7 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper className="exploreMainWrapper">
-				{( displayPostDetails ) &&
+				{( displayPostDetails || displayComments ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&
@@ -460,6 +466,10 @@ class ExplorePage extends Component {
 								socket={this.props.socket}
 								index={this.state.selectedPost}
 								history={this.props.history}
+							/>}
+						{displayComments && !displayPostDetails &&
+							<Comments
+								socket={this.props.socket}
 							/>}
 					</PostDetailsDimmer>
 				}
@@ -536,6 +546,7 @@ const
 		posts: state.posts.explore,
 		displayPostDetails: state.posts.displayPostDetails,
 		displayMessages: state.conversations.displayMessages,
+		displayComments: state.posts.displayComments,
 		displayNotifications: state.notifications.displayNotifications
 	}),
 
@@ -546,7 +557,8 @@ const
 			dispatch( addToPosts( posts, onExplore )),
 		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: () => dispatch( switchMessages())
+		switchMessages: () => dispatch( switchMessages()),
+		switchComments: () => dispatch( switchComments()),
 	});
 
 

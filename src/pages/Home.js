@@ -169,7 +169,7 @@ class Home extends Component {
 		var plusImage;
 		const {
 			newsfeed, postDetailsIndex, displayPostDetails, displayComments,
-			displayShare, displayNotifications
+			displayShare
 		} = this.props;
 
 		try {
@@ -180,8 +180,7 @@ class Home extends Component {
 
 		return (
 			<Wrapper>
-				{( displayPostDetails || displayComments || displayShare )
-					&& !displayNotifications &&
+				{( displayPostDetails || displayComments || displayShare ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&

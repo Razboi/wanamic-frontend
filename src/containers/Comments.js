@@ -92,6 +92,19 @@ const
 		right: 5px;
 		z-index: 2;
 		word-break: break-word;
+	`,
+	NullPostWarning = styled.div`
+		z-index: 20;
+		position: absolute;
+		background: #fff;
+		width: 300px;
+		height: 200px;
+		border-radius: 2px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1rem;
+		font-weight: 600;
 	`;
 
 
@@ -344,7 +357,17 @@ class Comments extends Component {
 	}
 
 	render() {
-		const placeholder = "Comment as @" + localStorage.getItem( "username" );
+		const
+			{ comments } = this.props,
+			placeholder = "Comment as @" + localStorage.getItem( "username" );
+
+		if ( !comments ) {
+			return (
+				<NullPostWarning>
+					<span>This post doesn't exist</span>
+				</NullPostWarning>
+			);
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -369,7 +392,7 @@ class Comments extends Component {
 							</SpamWarning>
 						}
 
-						{this.props.comments.map(( comment, index ) =>
+						{comments.map(( comment, index ) =>
 							<Comment
 								key={index}
 								index={index}
