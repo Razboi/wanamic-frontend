@@ -111,32 +111,47 @@ class WelcomePage extends Component {
 		this.setState({ toFollow: usersToFollow });
 	}
 
-	categoriesNext = () => {
-		api.getInterestsMatches( this.state.checkedCategories )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.categoriesNext())
-						.catch( err => console.log( err ));
-				} else {
-					this.setState({ matchedUsers: res.data });
-					this.handleNext();
-				}
-			}).catch( err => console.log( err ));
-	}
-
-	finish = async() => {
+	finishStep2 = async() => {
 		var data = new FormData();
 		data.append( "userImage", this.state.userImage );
 		data.append( "description", this.state.description );
 		data.append( "token", localStorage.getItem( "token" ));
+
+		this.handleNext();
 		try {
-			await Promise.all([
-				api.setUserInfo( data ),
-				api.updateInterests( this.state.checkedCategories ),
-				api.setupFollow( this.state.toFollow ),
-				api.setUserKw( this.state.hobbies )
-			]);
+			const res = await api.setUserInfo( data );
+			await api.setUserKw( this.state.hobbies );
+			if ( res.data.newImage ) {
+				localStorage.setItem( "uimg", res.data.newImage );
+			}
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.finishStep2();
+			}
+		}
+	}
+
+	categoriesNext = async() => {
+		try {
+			const res = await api.getInterestsMatches( this.state.checkedCategories );
+			if ( res === "jwt expired" ) {
+				await refreshToken();
+				this.categoriesNext();
+			} else {
+				this.setState({ matchedUsers: res.data });
+				this.handleNext();
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
+	finish = async() => {
+		try {
+			await api.updateInterests( this.state.checkedCategories );
+			await api.setupFollow( this.state.toFollow );
 			localStorage.removeItem( "NU" );
 			this.props.history.push( "/" );
 		} catch ( err ) {
@@ -155,7 +170,7 @@ class WelcomePage extends Component {
 			<Wrapper>
 				{ this.state.step === 1 &&
 					<Step2
-						handleNext={this.handleNext}
+						handleNext={this.finishStep2}
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
 						description={this.state.description}

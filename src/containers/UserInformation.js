@@ -83,7 +83,10 @@ class UserInformation extends Component {
 				</InfoSegment>
 				<InfoSegment>
 					<InfoLabel>Hobbies</InfoLabel>
-					<InfoContent>{userInformation.keywords}</InfoContent>
+					<InfoContent>
+						{userInformation.hobbies &&
+						userInformation.hobbies.map( hobbie => hobbie + ", " )}
+					</InfoContent>
 				</InfoSegment>
 				<InfoSegment>
 					<InfoLabel>Location</InfoLabel>

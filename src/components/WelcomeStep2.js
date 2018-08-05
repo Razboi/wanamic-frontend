@@ -130,7 +130,7 @@ class Step2 extends Component {
 								[]}
 							placeholder="Add a new interest (with enter or comma)"
 							autofocus={false}
-							maxLength={"17"}
+							maxLength={17}
 						/>
 					</Hobbies>
 					<ImageInputWrapper>
@@ -165,7 +165,7 @@ Step2.propTypes = {
 	handleDelete: PropTypes.func.isRequired,
 	handleAddition: PropTypes.func.isRequired,
 	hobbies: PropTypes.array.isRequired,
-	imagePreview: PropTypes.array.isRequired
+	imagePreview: PropTypes.string
 };
 
 export default Step2;

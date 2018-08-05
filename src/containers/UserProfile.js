@@ -38,6 +38,14 @@ const
 			}
 		}
 	`,
+	NullAccountWarning = styled.div`
+		height: 100vh;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: rgb(230, 240, 236);
+	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
 		left: 50%;
@@ -547,7 +555,9 @@ class UserProfile extends Component {
 
 		if ( this.state.inexistent ) {
 			return (
-				<h2>This account doesn't exist</h2>
+				<NullAccountWarning>
+					<h2>This account doesn't exist</h2>
+				</NullAccountWarning>
 			);
 		}
 		if ( !this.state.user ) {

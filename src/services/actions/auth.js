@@ -47,6 +47,7 @@ export const
 		localStorage.removeItem( "token" );
 		localStorage.removeItem( "refreshToken" );
 		localStorage.removeItem( "username" );
+		localStorage.removeItem( "fullname" );
 		localStorage.removeItem( "uimg" );
 		localStorage.removeItem( "id" );
 		dispatch( userLoggedOut());

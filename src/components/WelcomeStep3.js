@@ -83,7 +83,6 @@ Step3.propTypes = {
 	handlePrev: PropTypes.func.isRequired,
 	categoriesNext: PropTypes.func.isRequired,
 	checkedCategories: PropTypes.array.isRequired,
-	categories: PropTypes.array.isRequired,
 	handleCategoryClick: PropTypes.func.isRequired
 };
 
