@@ -144,7 +144,7 @@ class App extends Component {
 						path="/messages" component={Messages} socket={socket}
 					/>
 					<UserRoute path="/settings" component={Settings} socket={socket}/>
-					<NewUserRoute path="/welcome" component={Welcome} />
+					<NewUserRoute path="/welcome" component={Welcome} socket={socket} />
 					<UserRoute
 						path="/explore" component={Explore} socket={socket}
 					/>

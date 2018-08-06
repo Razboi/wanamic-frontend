@@ -12,7 +12,7 @@ const NewUserRoute = ({ authenticated, component: Component, ...rest }) => (
 				localStorage.getItem( "NU" ) === null ?
 					<Redirect to="/" />
 					:
-					<Component {...props} />
+					<Component socket={rest.socket} {...props} />
 				:
 				<Redirect to="/login" />}
 	/>

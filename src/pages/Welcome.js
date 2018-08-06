@@ -113,7 +113,9 @@ class WelcomePage extends Component {
 
 	finishStep2 = async() => {
 		var data = new FormData();
-		data.append( "userImage", this.state.userImage );
+		if ( this.state.userImage ) {
+			data.append( "userImage", this.state.userImage );
+		}
 		data.append( "description", this.state.description );
 		data.append( "token", localStorage.getItem( "token" ));
 
@@ -151,17 +153,20 @@ class WelcomePage extends Component {
 	finish = async() => {
 		try {
 			await api.updateInterests( this.state.checkedCategories );
-			await api.setupFollow( this.state.toFollow );
+			const notifications = await api.setupFollow( this.state.toFollow );
+			for ( const index in notifications ) {
+				this.props.socket.emit( "sendNotification", notifications[ index ]);
+			}
 			localStorage.removeItem( "NU" );
 			this.props.history.push( "/" );
 		} catch ( err ) {
 			console.log( err );
-			if ( err.response.data === "jwt expired" ) {
+			if ( err.response && err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.finish();
 				return;
 			}
-			this.setState({ error: err.response.data });
+			this.setState({ error: err.response && err.response.data });
 		}
 	}
 
@@ -213,7 +218,8 @@ class WelcomePage extends Component {
 WelcomePage.propTypes = {
 	history: PropTypes.shape({
 		push: PropTypes.func.isRequired
-	}).isRequired
+	}).isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 export default withRouter( WelcomePage );
