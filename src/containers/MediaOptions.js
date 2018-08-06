@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Message } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import SearchMedia from "../containers/SearchMedia";
@@ -316,6 +316,17 @@ class MediaOptions extends Component {
 	}
 
 	render() {
+		try {
+			this.bookIcon = require( "../images/book.png" );
+			this.musicIcon = require( "../images/music.png" );
+			this.popcornIcon = require( "../images/popcorn.png" );
+			this.monitorIcon = require( "../images/monitor.png" );
+			this.cameraIcon = require( "../images/camera.png" );
+			this.linkIcon = require( "../images/link.png" );
+			this.pencilIcon = require( "../images/pencil.png" );
+		} catch ( err ) {
+			console.log( err );
+		}
 		if ( this.state.searchMedia ) {
 			return (
 				<div>
@@ -378,28 +389,28 @@ class MediaOptions extends Component {
 				<MediaButtons>
 					<MediaOption secondary circular icon="book" size="huge"
 						onClick={() => this.switchSearchMedia( "book" )}>
-						<OptionImage image={require( "../images/book.png" )} />
+						<OptionImage image={this.bookIcon} />
 					</MediaOption>
 
 					<MediaOption secondary circular icon="music" size="huge"
 						onClick={() => this.switchSearchMedia( "music" )}>
-						<OptionImage image={require( "../images/music.png" )} />
+						<OptionImage image={this.musicIcon} />
 					</MediaOption>
 
 					<MediaOption secondary circular icon="film" size="huge"
 						onClick={() => this.switchSearchMedia( "movie" )}>
-						<OptionImage image={require( "../images/popcorn.png" )} />
+						<OptionImage image={this.popcornIcon} />
 					</MediaOption>
 
 					<MediaOption secondary circular icon="tv" size="huge"
 						onClick={() => this.switchSearchMedia( "tv" )}>
-						<OptionImage image={require( "../images/monitor.png" )} />
+						<OptionImage image={this.monitorIcon} />
 					</MediaOption>
 
 					<PictureUploadWrapper>
 						<MediaOption secondary circular icon="picture" size="huge"
 							onClick={() => document.getElementById( "pictureInput" ).click()}>
-							<OptionImage image={require( "../images/camera.png" )} />
+							<OptionImage image={this.cameraIcon} />
 						</MediaOption>
 						<PictureUploadInput type="file" name="picture" id="pictureInput"
 							onChange={this.handlePicture}
@@ -408,12 +419,12 @@ class MediaOptions extends Component {
 
 					<MediaOption secondary circular icon="linkify" size="huge"
 						onClick={this.switchLink}>
-						<OptionImage image={require( "../images/link.png" )} />
+						<OptionImage image={this.linkIcon} />
 					</MediaOption>
 
 					<MediaOption secondary circular icon="pencil" size="huge"
 						onClick={this.switchState}>
-						<OptionImage image={require( "../images/pencil.png" )} />
+						<OptionImage image={this.pencilIcon} />
 					</MediaOption>
 				</MediaButtons>
 			</MediaOptionsWrapper>
