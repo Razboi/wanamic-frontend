@@ -3,6 +3,7 @@ import { Form, Icon, Button, Message } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { WithContext as ReactTags } from "react-tag-input";
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 const
 	Wrapper = styled.div`
@@ -90,13 +91,22 @@ const
 			margin-left: 0.5rem;
 		}
 	`,
-	HobbiesLabel = styled.label`
+	CustomLabel = styled.label`
 		display: block;
 		margin: 0 0 .28571429rem 0;
 		color: rgba(0,0,0,0.45);
 		font-size: .92857143em;
 		font-weight: 700;
 		text-transform: none;
+	`,
+	Location = styled.div`
+		margin-bottom: 2rem;
+		select {
+			margin-bottom: 1rem;
+		}
+	`,
+	Gender = styled.div`
+		margin-bottom: 2rem;
 	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
@@ -143,7 +153,7 @@ class AccountSettings extends Component {
 							value={this.props.description}
 						/>
 						<Hobbies>
-							<HobbiesLabel>Hobbies and interests</HobbiesLabel>
+							<CustomLabel>Hobbies and interests</CustomLabel>
 							<ReactTags
 								tags={this.props.hobbies}
 								handleDelete={this.props.handleDelete}
@@ -157,6 +167,43 @@ class AccountSettings extends Component {
 								maxLength={17}
 							/>
 						</Hobbies>
+						<Location>
+							<CustomLabel>Location</CustomLabel>
+							<CountryDropdown
+								value={this.props.country}
+								onChange={e => this.props.handleChange({
+									target: { name: "country", value: e }
+								})}
+							/>
+							<RegionDropdown
+								country={this.props.country}
+								value={this.props.region}
+								onChange={e => this.props.handleChange({
+									target: { name: "region", value: e }
+								})}
+							/>
+						</Location>
+						<FormInput
+							name="birthday"
+							onChange={this.props.handleChange}
+							label="Birthday"
+							type="date"
+						/>
+						<Gender>
+							<CustomLabel>Gender</CustomLabel>
+							<select name="gender" onChange={this.props.handleChange}>
+								<option>{this.props.gender}</option>
+								{this.props.gender !== "Male" &&
+								<option value="Male">Male</option>
+								}
+								{this.props.gender !== "Female" &&
+								<option value="Female">Female</option>
+								}
+								{this.props.gender !== "Other" &&
+								<option value="Other">Other</option>
+								}
+							</select>
+						</Gender>
 						<FormInput
 							className="profileImageInput"
 							name="userImage"
@@ -191,7 +238,10 @@ AccountSettings.propTypes = {
 	error: PropTypes.string.isRequired,
 	handleDelete: PropTypes.func.isRequired,
 	handleAddition: PropTypes.func.isRequired,
-	largeScreen: PropTypes.bool
+	largeScreen: PropTypes.bool,
+	region: PropTypes.string,
+	country: PropTypes.string,
+	gender: PropTypes.string
 };
 
 export default AccountSettings;

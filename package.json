@@ -8,6 +8,7 @@
     "mention-hashtag": "^1.1.1",
     "moment": "^2.22.2",
     "react": "^16.4.2",
+    "react-country-region-selector": "^1.3.0",
     "react-dom": "^16.4.2",
     "react-google-login": "^3.2.1",
     "react-infinite-scroller": "^1.2.0",

@@ -91,7 +91,8 @@ class SettingsPage extends Component {
 			fullname: "", hobbies: [], username: "", currentPassword: "",
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
-			checkedCategories: [], error: "", categoriesChanged: false
+			checkedCategories: [], error: "", categoriesChanged: false,
+			country: "", region: "", birthday: "", gender: ""
 		};
 	}
 
@@ -114,6 +115,10 @@ class SettingsPage extends Component {
 			fullname: res.data.fullname,
 			username: res.data.username,
 			hobbies: tagCompatibleHobbies,
+			country: res.data.country,
+			region: res.data.region,
+			birthday: res.data.birthday,
+			gender: res.data.gender,
 			checkedCategories: res.data.interests
 		});
 	}
@@ -155,7 +160,6 @@ class SettingsPage extends Component {
 	handleChange = e =>
 		this.setState({ [ e.target.name ]: e.target.value })
 
-
 	updateUserInfo = async() => {
 		var data = new FormData();
 		const { username, fullname } = this.state;
@@ -178,6 +182,10 @@ class SettingsPage extends Component {
 		data.append( "description", this.state.description );
 		data.append( "fullname", this.state.fullname );
 		data.append( "username", this.state.username );
+		data.append( "country", this.state.country );
+		data.append( "region", this.state.region );
+		data.append( "birthday", this.state.birthday );
+		data.append( "gender", this.state.gender );
 		data.append( "token", localStorage.getItem( "token" ));
 
 		try {
@@ -383,6 +391,9 @@ class SettingsPage extends Component {
 					description={this.state.description}
 					username={this.state.username}
 					fullname={this.state.fullname}
+					country={this.state.country}
+					region={this.state.region}
+					gender={this.state.gender}
 					error={this.state.error}
 				/>
 			);
@@ -487,6 +498,9 @@ class SettingsPage extends Component {
 								description={this.state.description}
 								username={this.state.username}
 								fullname={this.state.fullname}
+								country={this.state.country}
+								region={this.state.region}
+								gender={this.state.gender}
 								error={this.state.error}
 							/>}
 						{this.state.tab === 2 && window.innerWidth > 760 &&

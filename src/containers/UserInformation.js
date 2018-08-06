@@ -89,12 +89,19 @@ class UserInformation extends Component {
 					</InfoContent>
 				</InfoSegment>
 				<InfoSegment>
-					<InfoLabel>Location</InfoLabel>
-					<InfoContent>{userInformation.location}</InfoContent>
+					<InfoLabel>Country</InfoLabel>
+					<InfoContent>{userInformation.country}</InfoContent>
+				</InfoSegment>
+				<InfoSegment>
+					<InfoLabel>Region</InfoLabel>
+					<InfoContent>{userInformation.region}</InfoContent>
 				</InfoSegment>
 				<InfoSegment>
 					<InfoLabel>Birthday</InfoLabel>
-					<InfoContent>{userInformation.birthday}</InfoContent>
+					<InfoContent>
+						{userInformation.birthday &&
+						userInformation.birthday.split( "T" )[ 0 ]}
+					</InfoContent>
 				</InfoSegment>
 				<InfoSegment>
 					<InfoLabel>Gender</InfoLabel>
