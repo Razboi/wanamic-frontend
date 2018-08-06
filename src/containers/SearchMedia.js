@@ -11,8 +11,6 @@ import MediaStep3 from "../components/MediaStep3";
 import refreshToken from "../utils/refreshToken";
 import extract from "mention-hashtag";
 
-var itunesAPI;
-
 const
 	Wrapper = styled.div`
 		z-index: 2;
@@ -121,8 +119,9 @@ const
 	Results = styled.div`
 		display: flex;
 		flex-direction: column;
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: 100%;
+		padding-bottom: 5rem;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 			display: none !important;
@@ -132,6 +131,11 @@ const
 			width: 800px;
 			background: #111;
 			margin: 1rem auto 0 auto;
+			::-webkit-scrollbar {
+				display: block !important;
+				background: #fff !important;
+				width: 10px !important;
+			};
 		};
 	`,
 	ResultMediaWrapper = styled.div`
@@ -139,14 +143,27 @@ const
 		display: flex;
 		align-items: start;
 		padding: 0 1rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	MediaTitle = styled.h3`
 		font-family: inherit;
 		font-size: 1rem;
+		@media (min-width:420px) {
+			font-size: 1.2rem !important;
+		}
 	`,
 	ResultMediaInfo = styled.div`
 		align-self: start;
 		margin-left: 1rem;
+	`,
+	ArtistName = styled.div`
+		font-size: 1.05rem;
+		margin-bottom: 1rem;
+	`,
+	CollectionName = styled.div`
+		font-size: 1rem;
 	`;
 
 
@@ -166,6 +183,8 @@ class SearchMedia extends Component {
 			mentions: [],
 			mediaType: ""
 		};
+		this.itunesAPI = "";
+		this.searchPlaceholder = "";
 	}
 
 	componentDidMount() {
@@ -186,31 +205,36 @@ class SearchMedia extends Component {
 		switch ( this.props.mediaType ) {
 		case "book":
 			this.setState({ mediaType: "books" });
-			itunesAPI =
+			this.searchPlaceholder = "Search books by title or author.";
+			this.itunesAPI =
 				"https://itunes.apple.com/search?limit=11&media=ebook&term=";
 			this.itunesSearch();
 			break;
 		case "music":
 			this.setState({ mediaType: "music" });
-			itunesAPI =
+			this.searchPlaceholder = "Search music by track, artist or album.";
+			this.itunesAPI =
 				"https://itunes.apple.com/search?limit=11&media=music&term=";
 			this.itunesSearch();
 			break;
 		case "movie":
 			this.setState({ mediaType: "movies" });
-			itunesAPI =
+			this.searchPlaceholder = "Search movies by title, director or actor.";
+			this.itunesAPI =
 				"https://itunes.apple.com/search?limit=11&media=movie&term=";
 			this.itunesSearch();
 			break;
 		case "tv":
 			this.setState({ mediaType: "TV shows" });
-			itunesAPI =
+			this.searchPlaceholder = "Search TV shows.";
+			this.itunesAPI =
 				"https://itunes.apple.com/search?limit=11&media=tvShow&term=";
 			this.itunesSearch();
 			break;
 		default:
 			this.setState({ mediaType: "books" });
-			itunesAPI =
+			this.searchPlaceholder = "Search books by title or author.";
+			this.itunesAPI =
 				"https://itunes.apple.com/search?limit=11&media=ebook&term=";
 			this.itunesSearch();
 		}
@@ -218,7 +242,7 @@ class SearchMedia extends Component {
 
 	itunesSearch = () => {
 		if ( this.state.search ) {
-			axios.get( itunesAPI + this.state.search )
+			axios.get( this.itunesAPI + this.state.search )
 				.then( res => this.setState({ results: res.data.results }))
 				.catch( err => console.log( err ));
 		}
@@ -338,7 +362,7 @@ class SearchMedia extends Component {
 								value={this.state.search}
 								icon="search"
 								name="search"
-								placeholder="Search by artist, album or track..."
+								placeholder={this.searchPlaceholder}
 								onChange={this.handleChange}
 								onKeyPress={this.handleKeyPress}
 							/>
@@ -356,7 +380,8 @@ class SearchMedia extends Component {
 										<MediaTitle>
 											{media.trackName}
 										</MediaTitle>
-										<span>{media.artistName}</span>
+										<ArtistName>{media.artistName}</ArtistName>
+										<CollectionName>{media.collectionName}</CollectionName>
 									</ResultMediaInfo>
 								</ResultMediaWrapper>
 								<Divider />
@@ -369,7 +394,7 @@ class SearchMedia extends Component {
 							value={this.state.search}
 							icon="search"
 							name="search"
-							placeholder="Search by artist, album or track."
+							placeholder={this.searchPlaceholder}
 							onChange={this.handleChange}
 							onKeyPress={this.handleKeyPress}
 						/>

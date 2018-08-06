@@ -56,12 +56,26 @@ const
 			width: 70%;
 		}
 	`,
-	MediaButton = styled( Button )`
-		background: none !important;
-		color: #fff !important;
-		border: 1px solid #fff !important;
-		z-index: 2;
-		margin: 0 !important;
+	MediaOption = styled.div`
+		height: 60px;
+		width: 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid #fff;
+		border-radius: 100%;
+		:hover {
+			cursor: pointer;
+		}
+	`,
+	OptionImage = styled.span`
+		height: 24px;
+		width: 24px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
 	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;
@@ -77,6 +91,7 @@ const
 	StyledSearchMedia = styled( SearchMedia )`
 		z-index: 2;
 	`;
+
 
 class MediaOptions extends Component {
 	constructor() {
@@ -361,33 +376,45 @@ class MediaOptions extends Component {
 				}
 				<MediaDimmer />
 				<MediaButtons>
-					<MediaButton secondary circular icon="book" size="huge"
-						onClick={() => this.switchSearchMedia( "book" )}
-					/>
-					<MediaButton secondary circular icon="music" size="huge"
-						onClick={() => this.switchSearchMedia( "music" )}
-					/>
-					<MediaButton secondary circular icon="linkify" size="huge"
-						onClick={this.switchLink}
-					/>
+					<MediaOption secondary circular icon="book" size="huge"
+						onClick={() => this.switchSearchMedia( "book" )}>
+						<OptionImage image={require( "../images/book.png" )} />
+					</MediaOption>
+
+					<MediaOption secondary circular icon="music" size="huge"
+						onClick={() => this.switchSearchMedia( "music" )}>
+						<OptionImage image={require( "../images/music.png" )} />
+					</MediaOption>
+
+					<MediaOption secondary circular icon="film" size="huge"
+						onClick={() => this.switchSearchMedia( "movie" )}>
+						<OptionImage image={require( "../images/popcorn.png" )} />
+					</MediaOption>
+
+					<MediaOption secondary circular icon="tv" size="huge"
+						onClick={() => this.switchSearchMedia( "tv" )}>
+						<OptionImage image={require( "../images/monitor.png" )} />
+					</MediaOption>
+
 					<PictureUploadWrapper>
-						<MediaButton secondary circular icon="picture" size="huge"
-							onClick={() => document.getElementById( "pictureInput" ).click()}
-						>
-						</MediaButton>
+						<MediaOption secondary circular icon="picture" size="huge"
+							onClick={() => document.getElementById( "pictureInput" ).click()}>
+							<OptionImage image={require( "../images/camera.png" )} />
+						</MediaOption>
 						<PictureUploadInput type="file" name="picture" id="pictureInput"
 							onChange={this.handlePicture}
 						/>
 					</PictureUploadWrapper>
-					<MediaButton secondary circular icon="film" size="huge"
-						onClick={() => this.switchSearchMedia( "movie" )}
-					/>
-					<MediaButton secondary circular icon="tv" size="huge"
-						onClick={() => this.switchSearchMedia( "tv" )}
-					/>
-					<MediaButton secondary circular icon="pencil" size="huge"
-						onClick={this.switchState}
-					/>
+
+					<MediaOption secondary circular icon="linkify" size="huge"
+						onClick={this.switchLink}>
+						<OptionImage image={require( "../images/link.png" )} />
+					</MediaOption>
+
+					<MediaOption secondary circular icon="pencil" size="huge"
+						onClick={this.switchState}>
+						<OptionImage image={require( "../images/pencil.png" )} />
+					</MediaOption>
 				</MediaButtons>
 			</MediaOptionsWrapper>
 		);
