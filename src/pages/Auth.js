@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 import validateEmail from "../utils/validateEmail";
+import api from "../services/api";
 
 const
 	Wrapper = styled.div`
@@ -49,7 +50,8 @@ class AuthPage extends Component {
 			signupStep: 1,
 			error: undefined,
 			loginAttempts: 0,
-			blockedLogin: false
+			blockedLogin: false,
+			forgotPassword: false
 		};
 	}
 
@@ -170,6 +172,27 @@ class AuthPage extends Component {
 		this.setState({ signupStep: 2, error: undefined });
 	}
 
+	toggleForgotPassword = () => {
+		this.setState( state => ({ forgotPassword: !state.forgotPassword }));
+	}
+
+	resetPassword = async() => {
+		if ( !this.state.email ) {
+			return;
+		}
+		if ( !validateEmail( this.state.email )) {
+			this.setState({ error: "Invalid email format" });
+			return;
+		}
+		try {
+			await api.resetPassword( this.state.email );
+			this.setState({ error: undefined });
+		} catch ( err ) {
+			console.log( err );
+			this.setState({ error: err.response.data });
+		}
+	}
+
 	render() {
 		try {
 			background = require( "../images/stars.jpg" );
@@ -202,6 +225,9 @@ class AuthPage extends Component {
 						email={this.state.email}
 						password={this.state.password}
 						handleLogin={this.handleLogin}
+						forgotPassword={this.state.forgotPassword}
+						toggleForgotPassword={this.toggleForgotPassword}
+						resetPassword={this.resetPassword}
 					/>
 				}
 			</Wrapper>

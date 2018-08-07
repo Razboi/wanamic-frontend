@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Form, Button, Message } from "semantic-ui-react";
+import { Form, Button, Message, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
-import ForgotPasswordForm from "./ForgotPasswordForm";
 
 const
 	Wrapper = styled.div`
@@ -45,6 +44,7 @@ const
 		flex-direction: column;
 	`,
 	FormDimmer = styled.div`
+		position: relative;
 		background: rgba( 0, 0, 0, 0.4 );
 		padding: 1.5rem;
 		border-radius: 3px;
@@ -79,26 +79,7 @@ const
 		}
 		margin: 0 !important;
 	`,
-	PasswordInput = styled( Form.Input )`
-		input {
-			border-width: 0px 0px 1px 0px !important;
-			border-color: #fff !important;
-			border-radius: 0px !important;
-			background: none !important;
-			font-family: inherit !important;
-			color: #eee !important;
-		}
-		i {
-			left: -10px !important;
-			color: #fff !important;
-			opacity: 1 !important;
-		}
-		input::placeholder {
-			color: #eee !important;
-		}
-		margin: 2rem 0 0 0 !important;
-	`,
-	LoginButton = styled( Button )`
+	ContinueButton = styled( Button )`
 		width: 100% !important;
 		margin: 3rem 0 0 0 !important;
 		font-size: 1.2rem !important;
@@ -107,27 +88,6 @@ const
 		color: #fff !important;
 		background: rgb(133, 217, 191) !important;
 	`,
-	ForgotPw = styled.div`
-		margin-top: 1rem;
-		text-align: center;
-		color: #eee;
-		@media(min-width: 420px) {
-			:hover {
-				cursor: pointer;
-			}
-		}
-	`,
-	NewAccount = styled.span`
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #eee;
-		margin: auto;
-		font-size: 1rem;
-		@media(min-width: 420px) {
-			font-size: 1.05rem;
-		}
-	`,
 	ErrorMessage = styled( Message )`
 		position: absolute !important;
 		top: 0 !important;
@@ -135,41 +95,25 @@ const
 		text-align: center !important;
 		border-radius: 0px !important;
 	`,
-	Signup = styled.span`
-		color: #fff;
-		margin-left: 0.3rem;
-		font-weight: bold;
-		@media(min-width: 420px) {
-			:hover {
-				cursor: pointer;
-			}
+	CloseIcon = styled( Icon )`
+		color: #fff !important;
+		font-size: 1.1rem !important;
+		position: absolute !important;
+		top: 2px;
+		right: 0px;
+		:hover {
+			cursor: pointer;
 		}
 	`;
 
 
 
-class LoginForm extends Component {
-	handleKeyPress = e => {
-		if ( e.key === "Enter" ) {
-			this.props.handleLogin();
-		}
-	}
-
+class ForgotPasswordForm extends Component {
 	render() {
-		if ( this.props.forgotPassword ) {
-			return (
-				<ForgotPasswordForm
-					toggleForgotPassword={this.props.toggleForgotPassword}
-					handleChange={this.props.handleChange}
-					resetPassword={this.props.resetPassword}
-					error={this.props.error}
-				/>
-			);
-		}
 		return (
 			<Wrapper>
 
-				<HeaderContainer className="formHeader">
+				<HeaderContainer>
 					<HeaderLogo>Wanamic</HeaderLogo>
 					<Subheader>
 						Find people and content relative to your interests and hobbies.
@@ -183,6 +127,10 @@ class LoginForm extends Component {
 						</ErrorMessage>
 					}
 					<FormDimmer>
+						<CloseIcon
+							name="close"
+							onClick={this.props.toggleForgotPassword}
+						/>
 						<StyledForm id="AuthForm">
 							<EmailInput
 								autoFocus
@@ -195,51 +143,26 @@ class LoginForm extends Component {
 								icon="mail"
 								iconPosition="left"
 							/>
-							<PasswordInput
-								className="passwordInput"
-								placeholder="Password"
-								type="password"
-								name="password"
-								onChange={this.props.handleChange}
-								onKeyPress={this.handleKeyPress}
-								value={this.props.password}
-								icon="lock"
-								iconPosition="left"
-							/>
 
-							<LoginButton
+							<ContinueButton
 								type="button"
-								className="loginButton"
-								content="Log In"
-								onClick={this.props.handleLogin}
+								content="Reset Password"
+								onClick={this.props.resetPassword}
 							/>
-
-							<ForgotPw onClick={this.props.toggleForgotPassword}>
-								Forgot your password?
-							</ForgotPw>
 
 						</StyledForm>
 					</FormDimmer>
-
-					<NewAccount className="swapLink" onClick={this.props.swapForm}>
-						Don't have an account? <Signup>Sign Up</Signup>
-					</NewAccount>
 				</FormContainer>
 			</Wrapper>
 		);
 	}
 }
 
-LoginForm.propTypes = {
-	handleLogin: PropTypes.func.isRequired,
+ForgotPasswordForm.propTypes = {
 	handleChange: PropTypes.func.isRequired,
-	swapForm: PropTypes.func.isRequired,
-	password: PropTypes.string.isRequired,
-	email: PropTypes.string.isRequired,
-	forgotPassword: PropTypes.bool.isRequired,
-	toggleForgotPassword: PropTypes.func.isRequired,
 	resetPassword: PropTypes.func.isRequired,
+	toggleForgotPassword: PropTypes.func.isRequired,
 	error: PropTypes.string.isRequired
 };
 
-export default LoginForm;
+export default ForgotPasswordForm;

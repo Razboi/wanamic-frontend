@@ -23,6 +23,17 @@ export default {
 				throw err;
 			}),
 
+	resetPassword: email =>
+		axios({
+			method: "post",
+			url: "/auth/resetPassword",
+			data: { email: email }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
 	verifyToken: () =>
 		axios({
 			method: "post",
