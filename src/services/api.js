@@ -34,6 +34,17 @@ export default {
 				throw err;
 			}),
 
+	setNewPassword: ( token, newPassword ) =>
+		axios({
+			method: "post",
+			url: "/auth/setNewPassword",
+			data: { token: token, newPassword: newPassword }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
 	verifyToken: () =>
 		axios({
 			method: "post",

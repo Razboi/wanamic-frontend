@@ -10,6 +10,7 @@ import Welcome from "./pages/Welcome";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
+import PasswordReset from "./pages/PasswordReset";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
 import io from "socket.io-client";
@@ -147,6 +148,9 @@ class App extends Component {
 					<NewUserRoute path="/welcome" component={Welcome} socket={socket} />
 					<UserRoute
 						path="/explore" component={Explore} socket={socket}
+					/>
+					<GuestRoute
+						path="/reset_password/:token" component={PasswordReset}
 					/>
 					<UserRoute path="/:username" component={Profile} socket={socket} />
 				</Switch>
