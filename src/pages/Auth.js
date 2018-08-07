@@ -114,7 +114,8 @@ class AuthPage extends Component {
 			this.setState({ error: "Invalid email format" });
 			return;
 		}
-		if ( !/[a-z\s]+$/i.test( credentials.fullname )) {
+		if ( !/[a-z\s]+$/i.test( credentials.fullname ) ||
+			/[._]/.test( credentials.fullname )) {
 			this.setState({
 				error: "Invalid fullname format. Letters and spaces only."
 			});
@@ -135,9 +136,17 @@ class AuthPage extends Component {
 				.catch( err => {
 					if ( err.response.data === "Email already registered" ) {
 						this.setState({ error: err.response.data, signupStep: 1 });
-					} else {
-						this.setState({ error: err.response.data });
+						return;
 					}
+					if ( err.response.data === "Invalid email format" ) {
+						this.setState({ error: err.response.data, signupStep: 1 });
+						return;
+					}
+					if ( err.response.data === "Invalid password format" ) {
+						this.setState({ error: err.response.data, signupStep: 1 });
+						return;
+					}
+					this.setState({ error: err.response.data });
 				});
 		}
 	};
