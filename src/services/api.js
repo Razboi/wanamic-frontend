@@ -392,7 +392,7 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	sharePost: ( postId, shareComment, privacyRange, alerts ) =>
+	sharePost: ( postId, shareComment, privacyRange, alerts, mentions, hashtags ) =>
 		axios({
 			method: "post",
 			data: {
@@ -400,7 +400,9 @@ export default {
 				postId: postId,
 				description: shareComment,
 				privacyRange: privacyRange,
-				alerts: alerts
+				alerts: alerts,
+				mentions: mentions,
+				hashtags: hashtags
 			},
 			url: "/posts/share/"
 		})

@@ -10,7 +10,7 @@ import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -135,8 +135,6 @@ class MediaOptions extends Component {
 	}
 
 	submitLink = async( description, link, privacyRange, alerts ) => {
-		var i;
-
 		if ( !link ) {
 			return;
 		}
@@ -152,11 +150,8 @@ class MediaOptions extends Component {
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
 			if ( res.mentionsNotifications ) {
-				const notifLength = res.mentionsNotifications.length;
-				for ( i = 0; i < notifLength; i++ ) {
-					this.props.socket.emit(
-						"sendNotification", res.mentionsNotifications[ i ]
-					);
+				for ( const notification of res.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
 				}
 			}
 		} catch ( err ) {
@@ -206,7 +201,6 @@ class MediaOptions extends Component {
 	}
 
 	shareTextPost = async( userInput, privacyRange, alerts ) => {
-		var i;
 		if ( userInput ) {
 			const { mentions, hashtags } = await extract(
 				userInput, { symbol: false, type: "all" }
@@ -222,11 +216,8 @@ class MediaOptions extends Component {
 						this.props.switchMediaOptions();
 						this.props.toggleMediaButton();
 						if ( res.mentionsNotifications ) {
-							const notifLength = res.mentionsNotifications.length;
-							for ( i = 0; i < notifLength; i++ ) {
-								this.props.socket.emit(
-									"sendNotification", res.mentionsNotifications[ i ]
-								);
+							for ( const notification of res.mentionsNotifications ) {
+								this.props.socket.emit( "sendNotification", notification );
 							}
 						}
 					}

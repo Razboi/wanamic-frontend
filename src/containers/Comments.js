@@ -10,7 +10,7 @@ import {
 	addToComments, updateComment
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 import InputTrigger from "react-input-trigger";
 import Suggestions from "../components/Suggestions";
 import InfiniteScroll from "react-infinite-scroller";

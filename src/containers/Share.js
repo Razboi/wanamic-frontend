@@ -10,6 +10,7 @@ import refreshToken from "../utils/refreshToken";
 import MediaStep3 from "../components/MediaStep3";
 import InputTrigger from "react-input-trigger";
 import Suggestions from "../components/Suggestions";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -269,11 +270,17 @@ class Share extends Component {
 		const {
 				description, privacyRange, checkNsfw, checkSpoiler
 			} = this.state,
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+
+			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler },
+
+			{ mentions, hashtags } = await extract(
+				description, { symbol: false, type: "all" }
+			);
 
 		try {
 			response = await api.sharePost(
-				this.props.postToShare._id, description, privacyRange, alerts
+				this.props.postToShare._id, description, privacyRange, alerts,
+				mentions, hashtags
 			);
 		} catch ( err ) {
 			console.log( err );
@@ -286,6 +293,11 @@ class Share extends Component {
 			this.props.addPost( response.data.newPost );
 			this.props.updatePost( response.data.postToShare );
 			this.props.switchShare( undefined );
+			if ( response.mentionsNotifications ) {
+				for ( const notification of response.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
+				}
+			}
 		}
 	}
 
@@ -398,6 +410,7 @@ class Share extends Component {
 Share.propTypes = {
 	postToShare: PropTypes.object.isRequired,
 	switchShare: PropTypes.func.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 const

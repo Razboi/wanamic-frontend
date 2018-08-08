@@ -195,7 +195,7 @@ class Home extends Component {
 							<Comments
 								socket={this.props.socket}
 							/>}
-						{displayShare && <Share />}
+						{displayShare && <Share socket={this.props.socket} />}
 					</PostDetailsDimmer>
 				}
 				<InfiniteScroll

@@ -11,7 +11,7 @@ import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import AlertsFilter from "../components/AlertsFilter";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -284,7 +284,7 @@ class Post extends Component {
 								{post.content}
 							</UserContent>
 							{post.sharedPost &&
-								<SharedPost post={post.sharedPost} />}
+								<SharedPost postId={post.sharedPost} />}
 						</ContentWrapper>
 
 						{ !this.props.fakeOptions &&

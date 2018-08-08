@@ -13,7 +13,7 @@ import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`

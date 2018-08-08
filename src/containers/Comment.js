@@ -6,7 +6,7 @@ import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 
 var userPicture;
 

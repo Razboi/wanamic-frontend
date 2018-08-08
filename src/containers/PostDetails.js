@@ -138,7 +138,7 @@ class PostDetails extends Component {
 			/>;
 		}
 		if ( this.props.displayShare ) {
-			return <Share />;
+			return <Share socket={this.props.socket} />;
 		}
 		// empty obj
 		if ( Object.keys( post ).length === 0 && post.constructor === Object ) {
