@@ -1,14 +1,19 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 
 const UserRoute = ({ authenticated, component: Component, ...rest }) => (
 	<Route
 		{...rest}
 		render={props =>
-			authenticated ? <Component {...props} /> : <Redirect to="/login" />}
+			authenticated ?
+				localStorage.getItem( "NU" ) ?
+					<Redirect to="/welcome" />
+					:
+					<Component socket={rest.socket} {...props} />
+				:
+				<Redirect to="/login" />}
 	/>
 );
 
@@ -23,4 +28,4 @@ function mapStateToProps( state ) {
 	};
 };
 
-export default withRouter( connect( mapStateToProps )( UserRoute ));
+export default connect( mapStateToProps )( UserRoute );

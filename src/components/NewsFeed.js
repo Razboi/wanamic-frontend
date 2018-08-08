@@ -1,39 +1,58 @@
 import React, { Component } from "react";
 import Post from "../containers/Post";
+import MediaPost from "../containers/MediaPost";
 import styled from "styled-components";
-import Infinite from "react-infinite";
+import PropTypes from "prop-types";
 
 const
-	Wrapper = styled( Infinite )`
-	padding: 6px;
-`;
+	Wrapper = styled.div`
+		height: 100%;
+		@media (max-width: 420px) {
+			width: 100%;
+		}
+		@media (min-width: 600px) {
+			width: 600px;
+			padding-top: 1rem;
+		}
+	`;
 
 class NewsFeed extends Component {
-
+	goToProfile = user => {
+		if ( this.props.history ) {
+			this.props.history.push( "/" + user.username );
+		}
+	}
 	render() {
 		return (
-			<Wrapper
-				useWindowAsScrollContainer
-				infiniteLoadBeginEdgeOffset={150}
-				elementHeight={119.42}
-				onInfiniteLoad={this.props.getNewsFeed}
-			>
-
+			<Wrapper>
 				{this.props.posts.map(( post, index ) =>
-					<Post
-						key={index}
-						index={index}
-						id={post._id}
-						author={post.author}
-						content={post.content}
-						date={post.createdAt}
-						getNewsFeed={this.props.getNewsFeed}
-						updatePost={this.props.updatePost}
-					/>
+					post.media ?
+						<MediaPost
+							newsFeed
+							key={index}
+							index={index}
+							post={post}
+							socket={this.props.socket}
+							goToProfile={() => this.goToProfile( post.author )}
+						/>
+						:
+						<Post
+							key={index}
+							index={index}
+							post={post}
+							socket={this.props.socket}
+							goToProfile={() => this.goToProfile( post.author )}
+						/>
 				)}
 			</Wrapper>
 		);
 	}
 }
+
+NewsFeed.propTypes = {
+	posts: PropTypes.array.isRequired,
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object,
+};
 
 export default NewsFeed;

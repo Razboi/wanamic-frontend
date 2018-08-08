@@ -3,33 +3,38 @@ import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { expect } from "chai";
 import { shallow } from "enzyme";
-import HomePage from "./HomePage";
+import Home from "./Home";
 import configureStore from "redux-mock-store";
-import createBrowserHistory from "history/createBrowserHistory";
 import sinon from "sinon";
 
 const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
-describe( "<Homepage/>", () => {
+describe( "<Home/>", () => {
 	var
 		wrapper,
+		socketSpy = sinon.spy(),
 		store;
 
 	beforeEach(() => {
-		store = mockStore();
+		store = mockStore({
+			posts: [],
+			notifications: { displayNotifications: false },
+			conversations: { displayMessages: false }
+		});
 		wrapper = shallow(
-			<HomePage
+			<Home
+				socket={{ emit: socketSpy, on: socketSpy }}
 				store={store}
 			/>
 		).dive();
 	});
 
-	it( "Checks that <HomePage/> renders", () => {
+	it( "Checks that <Home/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 3 );
+		expect( wrapper.children().children()).to.have.length( 2 );
 	});
 });

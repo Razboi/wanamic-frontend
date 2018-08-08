@@ -13,24 +13,42 @@ export const
 	// save it to localStorage and dispatch userLoggedIn action
 	login = credentials => dispatch =>
 		api.login( credentials ).then( data => {
-			if ( data.token && data.username ) {
+			if ( data && data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
+				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "fullname", data.fullname );
+				if ( data.profileImage ) {
+					localStorage.setItem( "uimg", data.profileImage );
+				}
+				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());
 			}
-		}).catch( err => console.log( err )),
+		}).catch( err => {
+			throw err;
+		}),
 
 	signup = credentials => dispatch =>
 		api.signup( credentials ).then( data => {
-			if ( data.token && data.username ) {
+			if ( data && data.token && data.username ) {
 				localStorage.setItem( "token", data.token );
+				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "uimg", data.profileImage );
+				localStorage.setItem( "id", data.id );
+				localStorage.setItem( "NU", true );
 				dispatch( userLoggedIn());
 			}
-		}).catch( err => console.log( err )),
+		}).catch( err => {
+			throw err;
+		}),
 
 	logout = () => dispatch => {
 		localStorage.removeItem( "token" );
+		localStorage.removeItem( "refreshToken" );
 		localStorage.removeItem( "username" );
+		localStorage.removeItem( "fullname" );
+		localStorage.removeItem( "uimg" );
+		localStorage.removeItem( "id" );
 		dispatch( userLoggedOut());
 	};

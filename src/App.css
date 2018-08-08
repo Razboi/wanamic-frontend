@@ -1,0 +1,103 @@
+body {
+	font-family: 'Lora', serif !important;
+}
+
+body ::-webkit-scrollbar {
+	display: none !important;
+	width: 0 !important;
+}
+
+input {
+	font-family: inherit !important;
+}
+
+textarea {
+	font-family: inherit !important;
+	resize: none !important;
+}
+
+.mediaPostDescription {
+	color: #FFF !important;
+	align-self: center;
+}
+
+.mediaPostDescription::placeholder {
+	color: #EEE !important;
+}
+
+.mediaPostDescription:focus {
+	outline: none !important;
+}
+
+@media (max-height: 500px) {
+	.mediaPostDescription {
+		align-self: flex-start;
+		margin-top: 1rem;
+	}
+}
+
+#SharePostInput {
+	color: #FFF !important;
+	align-self: center !important;
+}
+
+#SharePostInput::placeholder {
+	color: #EEE !important;
+}
+
+#SharePostInput:focus {
+	outline: none !important;
+}
+
+.commentsTextarea::placeholder {
+	color: #333;
+}
+
+.commentsTextarea:focus {
+	outline: none !important;
+}
+
+.commentsTextarea {
+	color: #111;
+	border-top: 1px solid rgba(0,0,0,0.15);
+	border-width: 1px 0 0 0;
+}
+
+#ShareBoxInput {
+	color: #111;
+	font-family: inherit;
+	resize: none;
+	font-size: 1rem;
+	min-height: 65px;
+}
+
+#ShareBoxInput::placeholder {
+	color: #333;
+}
+
+@media (min-width: 960px) {
+	#NavbarSmallScreenOption {
+		display: none;
+	}
+}
+
+.ui.label {
+	background-color: rgb(133, 217, 191) !important;
+	border-color: rgb(133, 217, 191) !important;
+	color: #fff !important;
+}
+
+#ShareLinkTextarea {
+	color: #111;
+	padding: 0.5rem 1rem;
+}
+
+#ShareLinkTextarea::placeholder {
+	color: #333;
+}
+
+@media (min-width: 420px) {
+	#ShareLinkTextarea {
+		min-height: 120px;
+	}
+}

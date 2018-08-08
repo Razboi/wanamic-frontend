@@ -5,21 +5,22 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import Post from "./Post";
 import sinon from "sinon";
+import configureStore from "redux-mock-store";
 
+const mockStore = configureStore();
 Enzyme.configure({ adapter: new Adapter() });
 
 describe( "<Post/>", () => {
 	var
+		store = mockStore({}),
 		wrapper;
 
-	wrapper = shallow( <Post /> );
+	wrapper = shallow(
+		<Post likedBy={[]} comments={[]} sharedBy={[]} store={store} />
+	);
 
 
 	it( "Checks that <Post/> renders", () => {
 		expect( wrapper ).to.have.length( 1 );
-	});
-
-	it( "Checks that every postDropdown option renders", () => {
-		expect( wrapper.find( ".postDropdown" ).children()).to.have.length( 2 );
 	});
 });
