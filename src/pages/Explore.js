@@ -204,6 +204,7 @@ class ExplorePage extends Component {
 			scrollingDown: false
 		};
 		this.throttledScroll = _.throttle( this.handleScroll, 500 );
+		this.postsLimit = window.innerWidth > 1000 ? 30 : 10;
 	}
 
 	componentDidMount() {
@@ -229,12 +230,15 @@ class ExplorePage extends Component {
 	}
 
 	refreshPosts = async() => {
-		const posts = await api.exploreContent( 0 );
+		const posts = await api.exploreContent( 0, this.postsLimit );
 		if ( posts === "jwt expired" ) {
 			await refreshToken();
 			this.refreshPosts();
-		} else if ( posts.data ) {
+		} else if ( posts && posts.data ) {
 			this.props.setPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === this.postsLimit
+			});
 		}
 	}
 
@@ -328,16 +332,16 @@ class ExplorePage extends Component {
 
 	getPosts = () => {
 		if ( this.state.hasMore ) {
-			api.exploreContent( this.state.skip )
+			api.exploreContent( this.state.skip, this.postsLimit )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
 							.then(() => this.getPosts())
 							.catch( err => console.log( err ));
-					} else if ( res.data ) {
+					} else if ( res && res.data ) {
 						this.props.addToPosts( res.data, true );
 						this.setState({
-							hasMore: res.data.length > 10,
+							hasMore: res.data.length === this.postsLimit,
 							skip: this.state.skip + 1
 						});
 					}

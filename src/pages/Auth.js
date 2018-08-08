@@ -185,8 +185,8 @@ class AuthPage extends Component {
 			return;
 		}
 		try {
-			await api.resetPassword( this.state.email );
 			this.setState({ error: undefined });
+			await api.resetPassword( this.state.email );
 		} catch ( err ) {
 			console.log( err );
 			this.setState({ error: err.response.data });

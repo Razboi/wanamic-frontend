@@ -121,12 +121,20 @@ class PasswordReset extends Component {
 			return;
 		}
 		try {
+			this.setState({ error: "" });
 			await api.setNewPassword(
 				this.props.match.params.token, this.state.password );
-			this.setState({ error: "" });
 			this.props.history.push( "/login" );
 		} catch ( err ) {
 			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				this.setState({
+					error: "This password reset request has expired. " +
+						"Please request another password reset and use it " +
+						"before an hour."
+				});
+				return;
+			}
 			this.setState({ error: err.response.data });
 		}
 	}

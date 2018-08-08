@@ -305,10 +305,10 @@ export default {
 				throw err;
 			}),
 
-	exploreContent: skip =>
+	exploreContent: ( skip, limit ) =>
 		axios({
 			method: "get",
-			url: "/posts/explore/" + skip
+			url: `/posts/explore/${skip}/${limit}`
 		})
 			.then( res => res )
 			.catch( err => console.log( err )),
