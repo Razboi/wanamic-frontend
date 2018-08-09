@@ -28,11 +28,16 @@ import { withRouter } from "react-router-dom";
 
 var socket = {};
 
+let API_URL = process.env.REACT_APP_STAGE === "dev" ?
+	"http://localhost:8000"
+	:
+	"http://18.213.60.35";
+
 
 class App extends Component {
 	componentDidMount() {
 		if ( this.props.authenticated ) {
-			socket = io( "http://localhost:8000" );
+			socket = io( API_URL );
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
@@ -41,7 +46,7 @@ class App extends Component {
 
 	componentDidUpdate( prevProps ) {
 		if ( !prevProps.authenticated && this.props.authenticated ) {
-			socket = io( "http://localhost:8000" );
+			socket = io( API_URL );
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
