@@ -192,6 +192,7 @@ class NavBar extends Component {
 			profileImage,
 			chatNotifications = 0;
 		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
 			username = localStorage.getItem( "username" ),
 			fullname = localStorage.getItem( "fullname" );
 		try {
@@ -200,11 +201,15 @@ class NavBar extends Component {
 					chatNotifications++;
 				}
 			}
-			if ( localStorage.getItem( "uimg" ) !== "undefined" ) {
-				profileImage = require( "../images/" +
-				localStorage.getItem( "uimg" ));
-			} else {
+
+			if ( !localStorage.getItem( "uimg" ) ||
+			localStorage.getItem( "uimg" ) === "undefined" ) {
 				profileImage = require( "../images/defaultUser.png" );
+			} else {
+				process.env.REACT_APP_STAGE === "dev" ?
+					profileImage = require( `../images/${localStorage.getItem( "uimg" )}` )
+					:
+					profileImage = s3Bucket + localStorage.getItem( "uimg" );
 			}
 		} catch ( err ) {
 			console.log( err );

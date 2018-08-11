@@ -88,12 +88,17 @@ class SocialCircleList extends Component {
 
 	setFriendsImages = async() => {
 		var images = [];
+		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
 		for ( const friend of this.props.socialCircle ) {
 			try {
-				await friend.profileImage ?
-					images.push( require( "../images/" + friend.profileImage ))
-					:
+				if ( friend.profileImage ) {
+					process.env.REACT_APP_STAGE === "dev" ?
+						images.push( require( "../images/" + friend.profileImage ))
+						:
+						images.push( s3Bucket + friend.profileImage );
+				} else {
 					images.push( require( "../images/defaultUser.png" ));
+				}
 			} catch ( err ) {
 				console.log( err );
 			}

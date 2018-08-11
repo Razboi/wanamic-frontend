@@ -129,12 +129,18 @@ const
 class Conversation extends Component {
 
 	setUserImage = () => {
-		const { conversation } = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ conversation } = this.props;
 		try {
-			conversation.target.profileImage ?
-				userImage = require( "../images/" + conversation.target.profileImage )
-				:
+			if ( conversation.target.profileImage ) {
+				process.env.REACT_APP_STAGE === "dev" ?
+					userImage = require( "../images/" + conversation.target.profileImage )
+					:
+					userImage = s3Bucket + conversation.target.profileImage;
+			} else {
 				userImage = require( "../images/defaultUser.png" );
+			}
 		} catch ( err ) {
 			console.log( err );
 		}

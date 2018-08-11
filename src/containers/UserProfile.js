@@ -33,6 +33,7 @@ const
 		display: flex;
 		flex-direction: column;
 		background: rgb(230, 240, 236);
+		padding-bottom: 300px;
 		@media (max-width: 1100px) {
 			::-webkit-scrollbar {
 			display: none !important;
@@ -89,6 +90,7 @@ const
 			justify-content: flex-start;
 			align-items: flex-start;
 			margin: 0 auto;
+			padding: 0 5px;
 			position: relative;
 		}
 		@media (min-width: 600px) {
@@ -357,16 +359,24 @@ class UserProfile extends Component {
 	}
 
 	setImages() {
-		const { user } = this.state;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ user } = this.state;
 
 		try {
 			if ( user.headerImage ) {
-				backgroundImg = require( "../images/" + user.headerImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					backgroundImg = require( "../images/" + user.headerImage )
+					:
+					backgroundImg = s3Bucket + user.headerImage;
 			} else {
 				backgroundImg = require( "../images/defaultbg.png" );
 			}
 			if ( user.profileImage ) {
-				profileImg = require( "../images/" + user.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					profileImg = require( "../images/" + user.profileImage )
+					:
+					profileImg = s3Bucket + user.profileImage;
 			} else {
 				profileImg = require( "../images/defaultUser.png" );
 			}

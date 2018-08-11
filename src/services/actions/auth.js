@@ -34,6 +34,7 @@ export const
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "fullname", data.fullname );
 				localStorage.setItem( "uimg", data.profileImage );
 				localStorage.setItem( "id", data.id );
 				localStorage.setItem( "NU", true );

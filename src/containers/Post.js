@@ -106,7 +106,6 @@ const
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
-var userPicture;
 
 class Post extends Component {
 	constructor() {
@@ -227,10 +226,16 @@ class Post extends Component {
 	}
 
 	render() {
-		const { post } = this.props;
+		let userPicture;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ post } = this.props;
 		try {
 			if ( post.author.profileImage ) {
-				userPicture = require( "../images/" + post.author.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					userPicture = require( "../images/" + post.author.profileImage )
+					:
+					userPicture = s3Bucket + post.author.profileImage;
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}

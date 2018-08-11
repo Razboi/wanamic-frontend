@@ -87,6 +87,10 @@ textarea {
 	color: #fff !important;
 }
 
+.ui.floating.label {
+	z-index: 4 !important;
+}
+
 #ShareLinkTextarea {
 	color: #111;
 	padding: 0.5rem 1rem;

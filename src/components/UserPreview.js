@@ -61,21 +61,31 @@ const
 
 class UserPreview extends Component {
 	render() {
-		const {
-			user, handleFollow, handleUnfollow, handleUnfriend,
-			alreadyFollowing, alreadyFriends, handleClick
-		} = this.props;
+		let userImage;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ user, handleFollow, handleUnfollow, handleUnfriend,
+				alreadyFollowing, alreadyFriends, handleClick } = this.props;
+
+		try {
+			if ( user.profileImage ) {
+				process.env.REACT_APP_STAGE === "dev" ?
+					userImage = require( "../images/" + user.profileImage )
+					:
+					userImage = s3Bucket + user.profileImage;
+			} else {
+				userImage = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
 			<Wrapper>
 				<UserInfo onClick={() =>
 					handleClick && handleClick( user.username )}>
 					<UserImg
 						circular
-						src={user.profileImage ?
-							require( "../images/" + user.profileImage )
-							:
-							require( "../images/defaultUser.png" )
-						}
+						src={userImage}
 					/>
 					<TextInfo>
 						<MatchFullname>{user.fullname}</MatchFullname>

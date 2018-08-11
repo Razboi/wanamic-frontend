@@ -47,8 +47,6 @@ const
 		transform: scale(${props => props.blurFilter ? "1.3" : "1"});
 	`;
 
-var
-	mediaPicture;
 
 class ExplorePost extends Component {
 	constructor() {
@@ -81,11 +79,16 @@ class ExplorePost extends Component {
 	}
 
 	render() {
-		const { post } = this.props;
+		let mediaPicture;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ post } = this.props;
 		try {
 			if ( post.picture ) {
-				mediaPicture =
-					require( "../images/" + post.mediaContent.image );
+				process.env.REACT_APP_STAGE === "dev" ?
+					mediaPicture = require( "../images/" + post.mediaContent.image )
+					:
+					mediaPicture = s3Bucket + post.mediaContent.image;
 			}
 		} catch ( err ) {
 			console.log( err );

@@ -138,10 +138,15 @@ class Comment extends Component {
 	};
 
 	render() {
-		const { comment } = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ comment } = this.props;
 		try {
 			if ( comment.author.profileImage ) {
-				userPicture = require( "../images/" + comment.author.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					userPicture = require( "../images/" + comment.author.profileImage )
+					:
+					userPicture = s3Bucket + comment.author.profileImage;
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}

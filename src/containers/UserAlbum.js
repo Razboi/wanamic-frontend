@@ -77,6 +77,7 @@ class UserAlbum extends Component {
 	}
 
 	render() {
+		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
 		return (
 			<Wrapper>
 				{this.props.posts.length > 0 ?
@@ -88,7 +89,10 @@ class UserAlbum extends Component {
 								rightImg={( index + 1 ) % 3 === 0}
 							>
 								<UserPicture
-									src={require( "../images/" + post.mediaContent.image )}
+									src={process.env.REACT_APP_STAGE === "dev" ?
+										require( "../images/" + post.mediaContent.image )
+										:
+										s3Bucket + post.mediaContent.image}
 								/>
 							</PictureWrapper>
 						)}

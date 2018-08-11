@@ -11,6 +11,7 @@ import api from "../services/api";
 const
 	Wrapper = styled.div`
 		height: 100vh;
+		background: rgba(0,0,0,0.55);
 		display: grid;
 	`,
 	BackgroundImage = styled.div`
@@ -76,8 +77,7 @@ class AuthPage extends Component {
 			this.props.login( credentials )
 				.then(() => this.props.history.push( "/" ))
 				.catch( err => {
-					if ( err.response.status === 401 ) {
-						console.log( "here" );
+					if ( err.response.data === "jwt expired" ) {
 						if ( this.state.loginAttempts >= 3 ) {
 							this.blockLogin();
 							return;

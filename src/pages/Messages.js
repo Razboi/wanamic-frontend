@@ -415,11 +415,11 @@ class Messages extends Component {
 	}
 
 	render() {
-		const {
-			conversations, selectedConversation, newConversation,
-			largeScreen, profilePage, displayPopup, hideSidebar,
-			onHome
-		} = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ conversations, selectedConversation, newConversation,
+				largeScreen, profilePage, displayPopup, hideSidebar,
+				onHome } = this.props;
 		if ( this.props.displayConversation && !largeScreen ) {
 			return (
 				<Conversation
@@ -476,7 +476,10 @@ class Messages extends Component {
 												<UserImg
 													circular
 													src={chat.target.profileImage ?
-														require( "../images/" + chat.target.profileImage )
+														process.env.REACT_APP_STAGE === "dev" ?
+															require( "../images/" + chat.target.profileImage )
+															:
+															s3Bucket + chat.target.profileImage
 														:
 														require( "../images/defaultUser.png" )
 													}
@@ -572,7 +575,10 @@ class Messages extends Component {
 												<UserImg
 													circular
 													src={chat.target.profileImage ?
-														require( "../images/" + chat.target.profileImage )
+														process.env.REACT_APP_STAGE === "dev" ?
+															require( "../images/" + chat.target.profileImage )
+															:
+															s3Bucket + chat.target.profileImage
 														:
 														require( "../images/defaultUser.png" )
 													}
@@ -634,7 +640,10 @@ class Messages extends Component {
 									<UserImg
 										circular
 										src={chat.target.profileImage ?
-											require( "../images/" + chat.target.profileImage )
+											process.env.REACT_APP_STAGE === "dev" ?
+												require( "../images/" + chat.target.profileImage )
+												:
+												s3Bucket + chat.target.profileImage
 											:
 											require( "../images/defaultUser.png" )
 										}

@@ -156,7 +156,7 @@ class MediaOptions extends Component {
 			}
 		} catch ( err ) {
 			console.log( err );
-			if ( err.response.status === 401 ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.submitLink( description, link, privacyRange, alerts );
 				return;
@@ -296,7 +296,7 @@ class MediaOptions extends Component {
 				}
 			}
 		} catch ( err ) {
-			if ( err.response.status === 401 ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.submitPicture( description, privacyRange, alerts );
 				return;

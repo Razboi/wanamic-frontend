@@ -24,6 +24,7 @@ const
 		height: 100%;
 		min-height: 100vh;
 		width: 100%;
+		padding-bottom: 300px;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 				display: none !important;

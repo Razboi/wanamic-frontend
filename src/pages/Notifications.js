@@ -268,6 +268,7 @@ class Notifications extends Component {
 	}
 
 	render() {
+		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
 		if ( this.props.displayComments && !this.props.isPopup ) {
 			return (
 				<Comments socket={this.props.socket} />
@@ -309,7 +310,10 @@ class Notifications extends Component {
 										onClick={() => this.handleDetails( notification, index )}
 										circular
 										src={notification.author.profileImage ?
-											require( "../images/" + notification.author.profileImage )
+											process.env.REACT_APP_STAGE === "dev" ?
+												require( "../images/" + notification.author.profileImage )
+												:
+												s3Bucket + notification.author.profileImage
 											:
 											require( "../images/defaultUser.png" )
 										}
@@ -330,8 +334,10 @@ class Notifications extends Component {
 											src={notification.externalImg ?
 												notification.mediaImg
 												:
-												require( "../images/" + notification.mediaImg )
-											}
+												process.env.REACT_APP_STAGE === "dev" ?
+													require( "../images/" + notification.mediaImg )
+													:
+													s3Bucket + notification.mediaImg}
 										/>
 									}
 									<NotificationButton
