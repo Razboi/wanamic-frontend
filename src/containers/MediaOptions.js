@@ -11,6 +11,7 @@ import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import extract from "../utils/extractMentionsHashtags";
+import compressImage from "../utils/compressImage";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -38,22 +39,20 @@ const
 	`,
 	MediaButtons = styled.div`
 		display: flex;
-		justify-content: space-between;
 		align-self: center;
 		z-index: 1;
 		@media (min-height: 575px) {
 			flex-direction: column;
-			height: 70%;
 		}
-		@media (max-width: 450px) and (max-height: 575px) {
+		@media (min-height: 800px) {
+			height: 80%;
+			justify-content: space-evenly;
+		}
+		@media (max-width: 490px) and (max-height: 575px) {
 			flex-wrap: wrap;
 			width: 50%;
 			justify-content: space-around;
 			height: 60%;
-    	align-content: space-between;
-		}
-		@media (min-width: 450px) and (max-height: 575px) {
-			width: 70%;
 		}
 	`,
 	MediaOption = styled.div`
@@ -64,6 +63,11 @@ const
 		justify-content: center;
 		border: 1px solid #fff;
 		border-radius: 100%;
+		background: rgba(0,0,0,0.8);
+		margin: 3px;
+		@media (min-height: 575px) {
+			margin: 5px;
+		}
 		:hover {
 			cursor: pointer;
 		}
@@ -90,6 +94,19 @@ const
 	`,
 	StyledSearchMedia = styled( SearchMedia )`
 		z-index: 2;
+	`,
+	LoaderDimmer = styled.div`
+		position: fixed;
+		left: 0;
+		top: 0;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.85);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 
@@ -104,7 +121,8 @@ class MediaOptions extends Component {
 			sharePicture: false,
 			mediaType: "",
 			mediaData: {},
-			error: undefined
+			error: undefined,
+			loader: false
 		};
 	}
 
@@ -246,21 +264,32 @@ class MediaOptions extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file ).then( compressedImg => {
+				this.setState({
+					mediaData: {
+						imageFile: compressedImg,
+						image: URL.createObjectURL( compressedImg )
+					},
+					sharePicture: true,
+					error: ""
+				});
+				this.setState({ loader: false });
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			return;
+		} else {
+			this.setState({
+				mediaData: {
+					imageFile: file,
+					image: URL.createObjectURL( file )
+				},
+				sharePicture: true,
+				error: ""
+			});
 		}
-
 		this.props.toggleMediaButton();
-		this.setState({
-			mediaData: {
-				imageFile: file,
-				image: URL.createObjectURL( file )
-			},
-			sharePicture: true,
-			error: ""
-		});
 	}
 
 	submitPicture = async( description, privacyRange, alerts ) => {
@@ -271,7 +300,6 @@ class MediaOptions extends Component {
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
 			);
-
 		if ( !mediaData.imageFile ) {
 			return;
 		}
@@ -290,7 +318,7 @@ class MediaOptions extends Component {
 			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
-			if ( res.mentionsNotifications ) {
+			if ( res.mentionsNotifications && res.mentionsNotifications.length > 0 ) {
 				for ( const notification of res.mentionsNotifications ) {
 					this.props.socket.emit( "sendNotification", notification );
 				}
@@ -304,6 +332,10 @@ class MediaOptions extends Component {
 			this.setState({ error: err.response.data, sharePicture: false });
 			this.props.toggleMediaButton();
 		}
+	}
+
+	_crop() {
+		console.log( this.refs.cropper.getCroppedCanvas().toDataURL());
 	}
 
 	render() {
@@ -371,6 +403,11 @@ class MediaOptions extends Component {
 		}
 		return (
 			<MediaOptionsWrapper>
+				{this.state.loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 				{this.state.error &&
 					<ErrorMessage warning>
 						<Message.Header>{this.state.error}</Message.Header>

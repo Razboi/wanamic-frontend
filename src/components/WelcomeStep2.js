@@ -82,6 +82,19 @@ const
 		top: 30px;
 		left: 10px;
 	`,
+	LoaderDimmer = styled.div`
+		position: fixed;
+		left: 0;
+		top: 0;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 
@@ -99,6 +112,11 @@ class Step2 extends Component {
 		}
 		return (
 			<Wrapper>
+				{this.props.loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 				{this.props.error &&
 					<StyledMessage negative>
 						<Message.Header>{this.props.error}</Message.Header>
@@ -165,7 +183,8 @@ Step2.propTypes = {
 	handleDelete: PropTypes.func.isRequired,
 	handleAddition: PropTypes.func.isRequired,
 	hobbies: PropTypes.array.isRequired,
-	imagePreview: PropTypes.string
+	imagePreview: PropTypes.string,
+	loader: PropTypes.bool
 };
 
 export default Step2;

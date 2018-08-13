@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Dropdown, Modal, Form, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "./Suggestions";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
@@ -88,7 +88,8 @@ class DropdownOptions extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			const
 				{ updatedContent, startPosition, currentSelection } = this.state,

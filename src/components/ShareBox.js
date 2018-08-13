@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Form, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import MediaStep3 from "./MediaStep3";
 import Suggestions from "./Suggestions";
 
@@ -107,7 +107,8 @@ class ShareBox extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			const
 				{ userInput, startPosition, currentSelection } = this.state,

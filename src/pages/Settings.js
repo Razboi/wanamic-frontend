@@ -14,6 +14,7 @@ import PasswordSettings from "../components/PasswordSettings";
 import EmailSettings from "../components/EmailSettings";
 import DeleteAccount from "../components/DeleteAccount";
 import ContentSettings from "../components/ContentSettings";
+import compressImage from "../utils/compressImage";
 
 const
 	Wrapper = styled.div`
@@ -41,6 +42,7 @@ const
 				"opt";
 		}
 		@media (min-width: 760px) {
+			position: relative;
 			width: 90%;
 			max-width: 1000px;
 			margin: 0 auto;
@@ -81,6 +83,17 @@ const
 		font-size: 1.15rem !important;
 		margin: 0 0 0 auto !important;
 		color: rgba(0, 0, 0, .5);
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class SettingsPage extends Component {
@@ -92,7 +105,7 @@ class SettingsPage extends Component {
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
 			checkedCategories: [], error: "", categoriesChanged: false,
-			country: "", region: "", birthday: "", gender: ""
+			country: "", region: "", birthday: "", gender: "", loader: false
 		};
 	}
 
@@ -126,6 +139,7 @@ class SettingsPage extends Component {
 	handleFileChange = e => {
 		const
 			file = e.target.files[ 0 ],
+			target = e.target.name,
 			fileExt = file && file.name.split( "." ).pop();
 
 		if ( !file ) {
@@ -145,16 +159,21 @@ class SettingsPage extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file, target === "headerImage" ).then( compressedImg => {
+				this.setState({
+					[ target ]: compressedImg,
+					loader: false
+				});
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			this.resetError();
-			return;
+		} else {
+			this.setState({
+				[ e.target.name ]: file
+			});
 		}
-
-		this.setState({
-			[ e.target.name ]: file
-		});
 	}
 
 	handleChange = e =>
@@ -395,6 +414,7 @@ class SettingsPage extends Component {
 					region={this.state.region}
 					gender={this.state.gender}
 					error={this.state.error}
+					loader={this.state.loader}
 				/>
 			);
 		}
@@ -451,6 +471,11 @@ class SettingsPage extends Component {
 				<NavBar socket={this.props.socket} />
 				<OutsideClickHandler onClick={this.hideNotifications}>
 					<Page onClick={this.hidePopups}>
+						{this.state.loader &&
+							<LoaderDimmer>
+								<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+							</LoaderDimmer>
+						}
 						<Options>
 							<Option
 								active={this.state.tab === 1}

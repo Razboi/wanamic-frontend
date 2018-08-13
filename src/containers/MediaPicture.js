@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import MediaStep2 from "../components/MediaStep2";
 import MediaStep3 from "../components/MediaStep3";
 
-
 class MediaPicture extends Component {
 	constructor() {
 		super();
@@ -26,7 +25,7 @@ class MediaPicture extends Component {
 
 	nextStep = description => {
 		this.setState({
-			step: this.state.step + 1,
+			step: 2,
 			description: description
 		});
 	}
@@ -57,8 +56,8 @@ class MediaPicture extends Component {
 				spoiler: checkSpoiler,
 				spoilerDescription: spoilerDescription
 			};
-
 		this.props.submitPicture( description, privacyRange, alerts );
+		return;
 	}
 
 	handleChange = e => {

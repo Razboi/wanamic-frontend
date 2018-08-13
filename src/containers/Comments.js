@@ -11,7 +11,7 @@ import {
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
 import extract from "../utils/extractMentionsHashtags";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "../components/Suggestions";
 import InfiniteScroll from "react-infinite-scroller";
 

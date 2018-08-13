@@ -8,7 +8,7 @@ import { addPost, switchShare, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import MediaStep3 from "../components/MediaStep3";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "../components/Suggestions";
 import extract from "../utils/extractMentionsHashtags";
 

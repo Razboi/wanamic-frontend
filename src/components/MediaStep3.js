@@ -83,8 +83,8 @@ const
 	`,
 	PrivacySlider = styled.div`
 		background: ${props => props.range === 2 &&
-			"linear-gradient(to right, #134f7c 50%, rgba(0,0,0,0.75) 50%) !important" };
-		background: ${props => props.range === 3 && "#134f7c !important"};
+			"linear-gradient(to right, rgb(73,157,131) 50%, rgba(0,0,0,0.75) 50%) !important" };
+		background: ${props => props.range === 3 && "rgb(73,157,131) !important"};
 		background: rgba(0,0,0,0.75);
 		border-radius: 25px;
 		align-self: center;
@@ -99,6 +99,8 @@ const
 	`,
 	PrivacyButton = styled( Button )`
 		margin: 0px !important;
+		background: rgb(133, 217, 191) !important
+		color: ${props => props.active ? "#fff" : "#000"} !important;
 	`,
 	SliderHeader = styled.h4`
 		text-align: center;
@@ -160,22 +162,22 @@ class MediaStep3 extends Component {
 						</SliderHeader>
 						<PrivacySlider range={this.props.privacyRange}>
 							<PrivacyButton
-								primary
+								active={this.props.privacyRange >= 1}
 								circular
 								icon="users"
 								size="huge"
 								onClick={() => this.props.setPrivacyRange( 1 )}
 							/>
 							<PrivacyButton
+								active={this.props.privacyRange >= 2}
 								className="privacyButton2"
-								primary={this.props.privacyRange >= 2 && true}
 								circular
 								icon="binoculars"
 								size="huge"
 								onClick={() => this.props.setPrivacyRange( 2 )}
 							/>
 							<PrivacyButton
-								primary={this.props.privacyRange === 3 && true}
+								active={this.props.privacyRange === 3}
 								circular
 								icon="globe"
 								size="huge"

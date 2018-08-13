@@ -15,6 +15,9 @@ const
 		grid-template-areas:
 			"header"
 			"form";
+		@media (max-width: 420px) {
+			grid-template-rows: 30% 70%;
+		}
 	`,
 	HeaderContainer = styled.div`
 		grid-area: header;
@@ -239,7 +242,7 @@ LoginForm.propTypes = {
 	forgotPassword: PropTypes.bool.isRequired,
 	toggleForgotPassword: PropTypes.func.isRequired,
 	resetPassword: PropTypes.func.isRequired,
-	error: PropTypes.string.isRequired
+	error: PropTypes.string
 };
 
 export default LoginForm;

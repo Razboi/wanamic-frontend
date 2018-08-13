@@ -15,6 +15,9 @@ const
 		grid-template-areas:
 			"header"
 			"form";
+		@media (max-width: 420px) {
+			grid-template-rows: 30% 70%;
+		}
 	`,
 	HeaderContainer = styled.div`
 		grid-area: header;
@@ -122,6 +125,9 @@ const
 		font-size: 1rem;
 		@media(min-width: 420px) {
 			font-size: 1.05rem;
+		}
+		@media(max-width: 420px) {
+			margin-top: 1rem;
 		}
 	`,
 	ErrorMessage = styled( Message )`

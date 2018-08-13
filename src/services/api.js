@@ -3,7 +3,7 @@ import axios from "axios";
 let API_URL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://localhost:8081"
 	:
-	"http://18.213.60.35";
+	"https://api.wanamic.com";
 
 export default {
 	login: credentials =>

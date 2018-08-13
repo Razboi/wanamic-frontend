@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "./Suggestions";
 
 const
@@ -142,7 +142,8 @@ class MediaStep2 extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
@@ -269,6 +270,7 @@ class MediaStep2 extends Component {
 							onCancel={metaData => this.toggleSuggestions( metaData ) }
 							onType={metaData => this.handleMentionInput( metaData ) }
 							endTrigger={endHandler => this.endHandler = endHandler }
+							inputdata={this.state.description}
 						>
 							<textarea
 								id="mediaStep2Input"
@@ -312,7 +314,7 @@ MediaStep2.propTypes = {
 	prevStep: PropTypes.func.isRequired,
 	nextStep: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
-	socialCircle: PropTypes.array.isRequired,
+	socialCircle: PropTypes.array.isRequired
 };
 
 export default MediaStep2;

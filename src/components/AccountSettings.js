@@ -10,6 +10,7 @@ const
 		height: 100vh;
 		width: 100%;
 		@media (max-width: 760px) {
+			position: relative;
 			display: ${props => props.largeScreen && "none"} !important;
 			grid-area: main;
 			display: grid;
@@ -108,12 +109,28 @@ const
 	Gender = styled.div`
 		margin-bottom: 2rem;
 	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 class AccountSettings extends Component {
 	render() {
 		return (
 			<Wrapper largeScreen={this.props.largeScreen}>
+				{this.props.loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 				<HeaderWrapper>
 					<BackArrow
 						name="arrow left"
@@ -241,7 +258,8 @@ AccountSettings.propTypes = {
 	largeScreen: PropTypes.bool,
 	region: PropTypes.string,
 	country: PropTypes.string,
-	gender: PropTypes.string
+	gender: PropTypes.string,
+	loader: PropTypes.bool
 };
 
 export default AccountSettings;

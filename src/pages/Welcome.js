@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import compressImage from "../utils/compressImage";
 
 const
 	Wrapper = styled.div`
@@ -25,7 +26,8 @@ class WelcomePage extends Component {
 			checkedCategories: [],
 			toFollow: [],
 			matchedUsers: [],
-			error: ""
+			error: "",
+			loader: false
 		};
 	}
 
@@ -36,6 +38,7 @@ class WelcomePage extends Component {
 	handleFileChange = e => {
 		const
 			file = e.target.files[ 0 ],
+			target = e.target.name,
 			fileExt = file && file.name.split( "." ).pop();
 
 		if ( !file ) {
@@ -54,17 +57,24 @@ class WelcomePage extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file, target === "headerImage" ).then( compressedImg => {
+				this.setState({
+					[ target ]: compressedImg,
+					loader: false,
+					imagePreview: URL.createObjectURL( compressedImg )
+				});
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			return;
+		} else {
+			this.setState({
+				[ e.target.name ]: file,
+				imagePreview: URL.createObjectURL( file ),
+				error: ""
+			});
 		}
-
-		this.setState({
-			[ e.target.name ]: file,
-			imagePreview: URL.createObjectURL( file ),
-			error: ""
-		});
 	}
 
 	handleDelete = i => {
@@ -184,6 +194,7 @@ class WelcomePage extends Component {
 						handleAddition={this.handleAddition}
 						error={this.state.error}
 						imagePreview={this.state.imagePreview}
+						loader={this.state.loader}
 					/>
 				}
 
