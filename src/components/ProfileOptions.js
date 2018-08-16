@@ -29,6 +29,7 @@ const
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0;
 		position: relative;
 	`,
@@ -67,11 +68,11 @@ class ProfileOptions extends Component {
 			return (
 				<Options>
 					<Option onClick={this.props.unFriend}>
-						<OptionImage image={require( "../images/minus.png" )} />
+						<OptionImage image={require( "../images/minus.svg" )} />
 						<OptionText>Unfriend</OptionText>
 					</Option>
 					<Option onClick={this.props.startChat}>
-						<OptionImage image={require( "../images/send.png" )} />
+						<OptionImage image={require( "../images/send.svg" )} />
 						<OptionText>Message</OptionText>
 					</Option>
 				</Options>
@@ -81,12 +82,12 @@ class ProfileOptions extends Component {
 			return (
 				<Options>
 					<Option onClick={this.props.unFollow}>
-						<OptionImage image={require( "../images/minus.png" )} />
+						<OptionImage image={require( "../images/minus.svg" )} />
 						<OptionText>Unfollow</OptionText>
 					</Option>
 					{this.props.userRequested ?
 						<Option>
-							<OptionImage image={require( "../images/sandclock.png" )} />
+							<OptionImage image={require( "../images/sandclock.svg" )} />
 							<OptionText>Request Sent</OptionText>
 						</Option>
 						:
@@ -102,12 +103,12 @@ class ProfileOptions extends Component {
 							</RequestMessage>
 							:
 							<Option onClick={this.props.addFriend}>
-								<OptionImage image={require( "../images/diamond.png" )} />
+								<OptionImage image={require( "../images/diamond.svg" )} />
 								<OptionText>Add Friend</OptionText>
 							</Option>
 					}
 					<Option onClick={this.props.startChat}>
-						<OptionImage image={require( "../images/send.png" )} />
+						<OptionImage image={require( "../images/send.svg" )} />
 						<OptionText>Message</OptionText>
 					</Option>
 				</Options>
@@ -117,14 +118,14 @@ class ProfileOptions extends Component {
 			<Options>
 				{user.username === localStorage.getItem( "username" ) ?
 					<Option onClick={this.props.goToUserSettings}>
-						<OptionImage image={require( "../images/pen.png" )} />
+						<OptionImage image={require( "../images/pen.svg" )} />
 						<OptionText>Update profile</OptionText>
 					</Option>
 					:
 					<React.Fragment>
 						{this.props.userRequested ?
 							<Option>
-								<OptionImage image={require( "../images/sandclock.png" )} />
+								<OptionImage image={require( "../images/sandclock.svg" )} />
 								<OptionText>Request Sent</OptionText>
 							</Option>
 							:
@@ -142,16 +143,16 @@ class ProfileOptions extends Component {
 								</RequestMessage>
 								:
 								<Option onClick={this.props.addFriend}>
-									<OptionImage image={require( "../images/diamond.png" )} />
+									<OptionImage image={require( "../images/diamond.svg" )} />
 									<OptionText>Add Friend</OptionText>
 								</Option>
 						}
 						<Option onClick={this.props.follow}>
-							<OptionImage image={require( "../images/binoculars.png" )} />
+							<OptionImage image={require( "../images/binoculars.svg" )} />
 							<OptionText>Follow</OptionText>
 						</Option>
 						<Option onClick={this.props.startChat}>
-							<OptionImage image={require( "../images/send.png" )} />
+							<OptionImage image={require( "../images/send.svg" )} />
 							<OptionText>Message</OptionText>
 						</Option>
 					</React.Fragment>

@@ -60,6 +60,7 @@ const
 		position: relative;
 		transform: ${props => props.active ? "rotate(45deg)" : "none"};
 		transition: transform 0.5s;
+		background-size: 100%;
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
@@ -174,7 +175,7 @@ class Home extends Component {
 		} = this.props;
 
 		try {
-			plusImage = require( "../images/plus.png" );
+			plusImage = require( "../images/plus.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}

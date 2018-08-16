@@ -114,6 +114,7 @@ const
 		background-repeat: no-repeat;
 		margin: 0;
 		position: relative;
+		background-size: 100%;
 		@media (max-width: 420px) {
 			height: 24px;
 			width: 24px;
@@ -422,25 +423,14 @@ class ExplorePage extends Component {
 			contentImage;
 		const { displayPostDetails, displayComments } = this.props;
 		try {
-			if ( window.innerWidth > 420 ) {
-				connectImage = !this.state.content ?
-					require( "../images/big_connect_color.png" )
-					:
-					require( "../images/big_connect.png" );
-				contentImage = this.state.content ?
-					require( "../images/big_content_color.png" )
-					:
-					require( "../images/big_content.png" );
-			} else {
-				connectImage = !this.state.content ?
-					require( "../images/connect_color.png" )
-					:
-					require( "../images/connect.png" );
-				contentImage = this.state.content ?
-					require( "../images/content_color.png" )
-					:
-					require( "../images/content.png" );
-			}
+			connectImage = !this.state.content ?
+				require( "../images/network_color.svg" )
+				:
+				require( "../images/network.svg" );
+			contentImage = this.state.content ?
+				require( "../images/grid_color.svg" )
+				:
+				require( "../images/grid.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}

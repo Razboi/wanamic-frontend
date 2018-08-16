@@ -49,11 +49,12 @@ const
 		}
 	`,
 	AlertImage = styled.span`
-		height: ${window.innerWidth > 420 ? "64px" : "32px"};;
-		width: ${window.innerWidth > 420 ? "64px" : "32px"};;
+		height: 64px;
+		width: 64px;
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0;
 	`;
 
@@ -65,9 +66,9 @@ class AlertsFilter extends Component {
 					<Warning>
 						<AlertImage
 							image={window.innerWidth > 420 ?
-								require( "../images/plus_18.png" )
+								require( "../images/plus_18.svg" )
 								:
-								require( "../images/plus_18_small.png" )}
+								require( "../images/plus_18.svg" )}
 						/>
 						<StyledHeader>
 							Mature content
@@ -90,9 +91,9 @@ class AlertsFilter extends Component {
 					<Warning>
 						<AlertImage
 							image={window.innerWidth > 420 ?
-								require( "../images/warning.png" )
+								require( "../images/warning.svg" )
 								:
-								require( "../images/warning_small.png" )}
+								require( "../images/warning.svg" )}
 						/>
 						<StyledHeader>
 							Spoilers

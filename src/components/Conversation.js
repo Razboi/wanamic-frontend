@@ -11,13 +11,11 @@ var userImage;
 
 const
 	ConversationWrapper = styled.div`
-		overflow: hidden;
-		position: fixed;
-		bottom: 0;
-		left: 0;
+		overflow-y: auto;
+		position: absolute;
 		height: 100vh;
 		width: 100%;
-		z-index: 4;
+		z-index: 20;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
@@ -73,7 +71,7 @@ const
 		flex-direction: row;
 		align-items: center;
 		box-shadow: 0 1px 2px #555;
-		z-index: 2;
+		z-index: 4;
 		padding: 10px;
 	`,
 	CloseIcon = styled( Icon )`

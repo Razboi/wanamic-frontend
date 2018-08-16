@@ -54,7 +54,7 @@ const
 	`,
 	Options = styled.div`
 		grid-area: opt;
-		padding: 1rem !important;
+		padding: 1rem 1rem 0 1rem !important;
 		::-webkit-scrollbar {
 			display: none !important;
 		}

@@ -20,17 +20,23 @@ const
 		display: flex;
 		z-index: 2;
 		width: 100%;
-		height: 7%;
 		align-self: flex-start;
 		align-items: center;
 		justify-content: space-between;
 		padding: 0px 10px;
 		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		i {
+			font-size: 1.5rem !important;
+		}
+		@media (max-width: 420px) {
+			height: 55px;
+			padding: 0px 20px;
+		}
 		@media (min-width: 420px) {
+			height: 80px;
 			padding: 0px 40px;
 			i {
-				font-size: 1.5rem !important;
 				:hover {
 					cursor: pointer !important;
 				}
@@ -44,8 +50,9 @@ const
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
+		font-size: 1.2rem;
 		@media (min-width: 420px) {
-			font-size: 1.1rem;
+			font-size: 1.3rem;
 		}
 	`,
 	Box = styled( Form )`

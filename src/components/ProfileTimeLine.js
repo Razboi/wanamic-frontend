@@ -18,6 +18,9 @@ const
 			background: none;
 			margin: 0 auto;
 		}
+		@media (min-width: 1100px) {
+			padding: 0 5px;
+		}
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		height: 100%;

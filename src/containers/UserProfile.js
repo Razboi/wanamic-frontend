@@ -74,6 +74,7 @@ const
 		position: relative;
 		transform: ${props => props.active ? "rotate(45deg)" : "none"};
 		transition: transform 0.5s;
+		background-size: 100%;
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
@@ -90,7 +91,6 @@ const
 			justify-content: flex-start;
 			align-items: flex-start;
 			margin: 0 auto;
-			padding: 0 5px;
 			position: relative;
 		}
 		@media (min-width: 600px) {
@@ -120,10 +120,10 @@ const
 		}
 	`,
 	UserInfoBackground = styled.div`
-		height: 180px;
+		height: 250px;
 		background-image: url(${props => props.backgroundImg});
 		background-size: cover;
-		filter: brightness(85%);
+		background-position: center;
 		@media (min-width: 420px) and (max-width: 600px) {
 			height: 400px;
 		}
@@ -142,6 +142,12 @@ const
 			width: 200px;
 			height: 200px;
 			box-shadow: 0px 3px 8px rgba(0, 0, 0, .25);
+		}
+		@media (max-width: 420px) {
+			margin-top: -5rem;
+		}
+		@media (min-width: 420px) and (max-width: 1100px) {
+			margin-top: -9rem;
 		}
 	`,
 	Fullname = styled.h2`
@@ -254,6 +260,7 @@ const
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0 0.5rem 0 0;
 	`,
 	PostDetailsDimmer = styled.div`
@@ -559,7 +566,7 @@ class UserProfile extends Component {
 		} = this.props;
 
 		try {
-			plusImage = require( "../images/plus.png" );
+			plusImage = require( "../images/plus.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -642,7 +649,7 @@ class UserProfile extends Component {
 									<Username>@{user.username}</Username>
 									<LikesCount>
 										<HeartImage
-											image={require( "../images/small_heart.png" )}
+											image={require( "../images/heart.svg" )}
 										/>
 										{user.totalLikes}
 									</LikesCount>
@@ -704,7 +711,7 @@ class UserProfile extends Component {
 									<Username>@{user.username}</Username>
 									<LikesCount>
 										<HeartImage
-											image={require( "../images/small_heart.png" )}
+											image={require( "../images/heart.svg" )}
 										/>
 										{user.totalLikes}
 									</LikesCount>

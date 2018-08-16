@@ -41,14 +41,14 @@ const
 		display: flex;
 		align-self: center;
 		z-index: 1;
-		@media (min-height: 575px) {
+		@media (min-height: 600px) {
 			flex-direction: column;
 		}
 		@media (min-height: 800px) {
 			height: 80%;
 			justify-content: space-evenly;
 		}
-		@media (max-width: 490px) and (max-height: 575px) {
+		@media (max-width: 490px) and (max-height: 600px) {
 			flex-wrap: wrap;
 			width: 50%;
 			justify-content: space-around;
@@ -80,6 +80,8 @@ const
 		background-repeat: no-repeat;
 		margin: 0;
 		position: relative;
+		background-size: 100%;
+}
 	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;
@@ -340,13 +342,13 @@ class MediaOptions extends Component {
 
 	render() {
 		try {
-			this.bookIcon = require( "../images/book.png" );
-			this.musicIcon = require( "../images/music.png" );
-			this.popcornIcon = require( "../images/popcorn.png" );
-			this.monitorIcon = require( "../images/monitor.png" );
-			this.cameraIcon = require( "../images/camera.png" );
-			this.linkIcon = require( "../images/link.png" );
-			this.pencilIcon = require( "../images/pencil.png" );
+			this.bookIcon = require( "../images/book.svg" );
+			this.musicIcon = require( "../images/music.svg" );
+			this.popcornIcon = require( "../images/movies.svg" );
+			this.monitorIcon = require( "../images/monitor.svg" );
+			this.cameraIcon = require( "../images/camera.svg" );
+			this.linkIcon = require( "../images/link.svg" );
+			this.pencilIcon = require( "../images/state.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}

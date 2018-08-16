@@ -2,8 +2,8 @@ import ImageCompressor from "image-compressor.js";
 
 const compressImage = async( image, isHeader ) => {
 	let
-		width = isHeader ? 2000 : 600,
-		height = isHeader ? 2000 : 1100,
+		maxWidth = isHeader ? 2000 : 600,
+		maxHeight = isHeader ? 2000 : 1100,
 		result = { size: image.size },
 		scaledImg,
 		quality = .9;
@@ -11,7 +11,7 @@ const compressImage = async( image, isHeader ) => {
 	try {
 		const imageCompressor = new ImageCompressor();
 		scaledImg = await imageCompressor.compress( image, {
-			width: width, height: height, checkOrientation: false });
+			maxWidth: maxWidth, maxHeight: maxHeight, checkOrientation: false });
 
 		if ( scaledImg.size > 1010000 ) {
 			while ( quality > 0.1 && result.size > 1010000 ) {

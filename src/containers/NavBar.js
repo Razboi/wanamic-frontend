@@ -72,6 +72,7 @@ const
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0;
 		position: relative;
 		:hover {
@@ -223,9 +224,9 @@ class NavBar extends Component {
 					<NavOption onClick={this.handleHome} >
 						<NavImage
 							image={this.props.location.pathname === "/" ?
-								require( "../images/home_color.png" )
+								require( "../images/home_color.svg" )
 								:
-								require( "../images/home.png" )
+								require( "../images/home.svg" )
 							}
 						/>
 					</NavOption>
@@ -233,9 +234,9 @@ class NavBar extends Component {
 					<NavOption onClick={this.handleExplore}>
 						<NavImage
 							image={this.props.location.pathname === "/explore" ?
-								require( "../images/explore_color.png" )
+								require( "../images/search_color.svg" )
 								:
-								require( "../images/explore.png" )
+								require( "../images/search.svg" )
 							}
 						/>
 					</NavOption>
@@ -246,9 +247,9 @@ class NavBar extends Component {
 							image={this.props.location.pathname === "/notifications"
 							|| this.props.displayNotifications
 								?
-								require( "../images/bell_color.png" )
+								require( "../images/bell_color.svg" )
 								:
-								require( "../images/bell.png" )
+								require( "../images/bell.svg" )
 							}
 						>
 							{this.props.newNotifications > 0 &&
@@ -268,9 +269,9 @@ class NavBar extends Component {
 							onClick={this.handleMessages}
 							image={this.props.location.pathname === "/messages"
 							|| this.props.displayMessages ?
-								require( "../images/chat_color.png" )
+								require( "../images/chat_color.svg" )
 								:
-								require( "../images/chat.png" )
+								require( "../images/chat.svg" )
 							}
 						>
 							{chatNotifications > 0 &&
@@ -299,13 +300,13 @@ class NavBar extends Component {
 					<RightOptions>
 						<Scores>
 							<NavImage
-								image={require( "../images/heart.png" )}
+								image={require( "../images/heart.svg" )}
 							/>
 							<Count>{this.props.totalLikes} likes</Count>
 						</Scores>
 						<Scores>
 							<NavImage
-								image={require( "../images/visibility.png" )}
+								image={require( "../images/visibility.svg" )}
 							/>
 							<Count>{this.props.totalViews} views</Count>
 						</Scores>
@@ -347,13 +348,13 @@ class NavBar extends Component {
 								<Dropdown.Divider />
 								<Scores>
 									<NavImage
-										image={require( "../images/heart.png" )}
+										image={require( "../images/heart.svg" )}
 									/>
 									<Count>{this.props.totalLikes} likes</Count>
 								</Scores>
 								<Scores>
 									<NavImage
-										image={require( "../images/visibility.png" )}
+										image={require( "../images/visibility.svg" )}
 									/>
 									<Count>{this.props.totalViews} views</Count>
 								</Scores>

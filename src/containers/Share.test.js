@@ -28,6 +28,6 @@ describe( "<Share/>", () => {
 	});
 
 	it( "Checks that every children renders", () => {
-		expect( wrapper.children()).to.have.length( 2 );
+		expect( wrapper.children()).to.have.length( 3 );
 	});
 });

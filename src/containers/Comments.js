@@ -19,25 +19,24 @@ const
 	Wrapper = styled.div`
 		z-index: 20;
 		position: absolute;
-		overflow-y: scroll;
+		overflow-y: auto;
 		background: #fff;
 		display: grid;
 		height: 100vh;
 		width: 100%;
-		grid-template-rows: 10% 80% 10%;
+		grid-template-rows: 55px auto 75px;
 		grid-template-columns: 100%;
 		grid-template-areas:
 			"hea"
 			"com"
 			"inp";
+		@media (min-height: 420px) {
+			grid-template-rows: 80px auto 80px;
+		}
 		@media (min-width: 760px) and (min-height: 600px) {
 			width: 600px;
 			height: 600px;
 			border-radius: 2px;
-			grid-template-rows: 10% 76% 14%;
-		}
-		@media (max-height: 500px) {
-			grid-template-rows: 14% 70% 16%;
 		}
 		::-webkit-scrollbar {
 			display: none !important;
@@ -54,6 +53,19 @@ const
 		padding-left: 10px;
 		box-shadow: 0 1px 2px #555;
 		z-index: 4;
+		i {
+			font-size: 1.5rem !important;
+		}
+		@media (max-width: 420px) {
+			padding: 0px 20px;
+		}
+		@media (min-width: 420px) {
+			i {
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	CommentsWrapper = styled.div`
 		grid-area: com;

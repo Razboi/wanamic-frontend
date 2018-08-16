@@ -5,9 +5,10 @@ import styled from "styled-components";
 
 const
 	Wrapper = styled.div`
-		overflow: hidden;
+		overflow-y: auto;
 		position: ${props => props.onShare ? "absolute" : "fixed"};
-		height: 100vh;
+		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		z-index: 3;
 	`,
@@ -18,26 +19,26 @@ const
 		background: ${props => props.whiteTheme ? "#fff" : "none" };
 		position: absolute;
 		z-index: 4;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 7% 33% 60%;
-		grid-template-areas:
-			"he"
-			"so"
-			"al"
+		display: flex;
+		flex-direction: column;
 	`,
 	HeaderWrapper = styled.div`
-		grid-area: he;
 		display: flex;
 		z-index: 2;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0px 10px;
 		box-shadow: 0 1px 2px #111;
+		i {
+			font-size: 1.5rem !important;
+		}
+		@media (max-width: 420px) {
+			height: 55px;
+			padding: 0px 20px;
+		}
 		@media (min-width: 420px) {
+			height: 80px;
 			padding: 0px 40px;
 			i {
-				font-size: 1.5rem !important;
 				:hover {
 					cursor: pointer !important;
 				}
@@ -51,22 +52,30 @@ const
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
+		font-size: 1.2rem !important;
 		@media (min-width: 420px) {
-			font-size: 1.1rem !important;
+			font-size: 1.3rem;
 		}
 	`,
 	ShareOptions = styled.div`
-		grid-area: so;
 		align-self: center;
-		padding: 10px;
 		display: flex;
 		flex-direction: column;
+		width: 100%;
+		justify-content: center;
+		height: 150px;
+		@media (min-height: 420px) {
+			height: 200px;
+		}
 	`,
 	AlertsWrapper = styled.div`
-		grid-area: al;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		margin-top: 1rem;
+	`,
+	AlertsTitle = styled.h4`
+		font-size: 1.2rem !important;
 	`,
 	Alerts = styled.div`
 		display: flex;
@@ -105,6 +114,7 @@ const
 	SliderHeader = styled.h4`
 		text-align: center;
 		align-self: center;
+		font-size: 1.2rem !important;
 	`,
 	SelectedMediaBackground = styled.div`
 		height: 100vh;
@@ -146,7 +156,7 @@ class MediaStep3 extends Component {
 							name="arrow left"
 							onClick={this.props.prevStep}
 						/>
-						<HeaderTxt>Share with</HeaderTxt>
+						<HeaderTxt>Privacy options</HeaderTxt>
 						<Icon
 							className="nextIcon"
 							name="check"
@@ -186,7 +196,7 @@ class MediaStep3 extends Component {
 						</PrivacySlider>
 					</ShareOptions>
 					<AlertsWrapper>
-						<h4>Alerts</h4>
+						<AlertsTitle>Alerts</AlertsTitle>
 						<Alerts>
 							<AlertCheck>
 								<Checkbox name="checkNsfw" onChange={this.props.handleCheck}/>
