@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		height: 100%;
-		@media (max-width: 420px) {
+		@media (max-width: 600px) {
 			width: 100%;
 		}
 		@media (min-width: 600px) {

@@ -23,13 +23,14 @@ const
 		width: 100%;
 		display: flex;
 		flex-direction: column;
+		@media (max-width: 760px) {
+			top: 0;
+			bottom: 0;
+		}
 		@media (min-width: 760px) and (min-height: 700px) {
 			height: 700px;
 			width: 600px;
 			border-radius: 2px;
-		}
-		@media (max-width: 760px) and (max-height: 700px) {
-			min-height: 100vh;
 		}
 		::-webkit-scrollbar {
 			display: block !important;

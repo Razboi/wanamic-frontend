@@ -29,11 +29,9 @@ textarea {
 	outline: none !important;
 }
 
-@media (max-height: 500px) {
-	.mediaPostDescription {
-		align-self: flex-start;
-		margin-top: 1rem;
-	}
+.mediaPostDescription {
+	align-self: flex-start;
+	margin-top: 2rem;
 }
 
 #SharePostInput {

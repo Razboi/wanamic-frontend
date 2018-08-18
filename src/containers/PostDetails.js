@@ -12,22 +12,21 @@ import Share from "../containers/Share";
 const
 	Wrapper = styled.div`
 		width: 100%;
-		position: fixed;
+		position: absolute;
 		z-index: 20;
-		overflow-y: auto !important;
-		::-webkit-scrollbar {
-			display: block !important;
-			width: 10px !important;
-			background: #fff;
-		}
+		overflow-y: auto;
 		@media (max-width: 760px) {
 			background: #fff;
-			min-height: 100vh;
 			height: 100%;
 		}
 		@media (min-width: 760px) {
 			width: 600px;
 			max-height: 90%;
+			::-webkit-scrollbar {
+				display: block !important;
+				width: 10px !important;
+				background: #fff;
+			}
 		}
 	`,
 	HeaderWrapper = styled.div`

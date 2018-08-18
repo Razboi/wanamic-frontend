@@ -19,7 +19,7 @@ import _ from "lodash";
 
 const
 	Wrapper = styled.div`
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: 100%;
 		width: 100%;
 		@media (max-width: 420px) {
@@ -42,10 +42,10 @@ const
 			"h"
 			"c";
 		@media (max-width: 420px) {
-			grid-template-rows: 49.33px auto;
+			grid-template-rows: 49.33px 1fr;
 		}
 		@media (min-width: 420px) {
-			grid-template-rows: 80px auto;
+			grid-template-rows: 80px 1fr;
 		}
 	`,
 	Header = styled.div`
@@ -172,8 +172,8 @@ const
 	`,
 	PostDetailsDimmer = styled.div`
 		position: fixed;
-		height: 100vh;
-		width: 100vw;
+		height: 100%;
+		width: 100%;
 		z-index: 5;
 		background: rgba(0,0,0,0.6);
 		display: flex;

@@ -54,6 +54,16 @@ const
 			justify-content: space-around;
 			height: 60%;
 		}
+		@media (max-width: 490px) and (max-height: 410px) {
+			align-self: flex-start;
+			margin-top: 1rem;
+		}
+		@media (max-width: 490px) and (max-height: 350px) {
+			align-self: flex-start;
+			margin-top: 1rem;
+			width: 100%;
+			justify-content: center;
+		}
 	`,
 	MediaOption = styled.div`
 		height: 60px;

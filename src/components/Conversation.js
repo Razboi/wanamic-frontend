@@ -11,15 +11,16 @@ var userImage;
 
 const
 	ConversationWrapper = styled.div`
-		overflow-y: auto;
 		position: absolute;
-		height: 100vh;
+		top: 0;
+		bottom: 0;
+		height: 100%;
 		width: 100%;
 		z-index: 20;
 		background: #fff;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 57px auto 52px;
+		grid-template-rows: 57px 1fr 52px;
 		grid-template-areas:
 			"hea"
 			"mes"
@@ -125,6 +126,14 @@ const
 
 
 class Conversation extends Component {
+
+	componentDidMount() {
+		window.onpopstate = () => this.handlePopstate();
+	}
+
+	handlePopstate = () => {
+		this.props.back();
+	}
 
 	setUserImage = () => {
 		const

@@ -19,24 +19,25 @@ const
 	Wrapper = styled.div`
 		z-index: 20;
 		position: absolute;
-		overflow-y: auto;
 		background: #fff;
 		display: grid;
-		height: 100vh;
+		height: 100%;
 		width: 100%;
-		grid-template-rows: 55px auto 75px;
+		grid-template-rows: 55px 1fr 55px;
 		grid-template-columns: 100%;
 		grid-template-areas:
 			"hea"
 			"com"
 			"inp";
-		@media (min-height: 420px) {
-			grid-template-rows: 80px auto 80px;
+		@media (max-width: 760px) {
+			top: 0;
+			bottom: 0;
 		}
 		@media (min-width: 760px) and (min-height: 600px) {
 			width: 600px;
 			height: 600px;
 			border-radius: 2px;
+			grid-template-rows: 65px 1fr 80px;
 		}
 		::-webkit-scrollbar {
 			display: none !important;
@@ -69,8 +70,10 @@ const
 	`,
 	CommentsWrapper = styled.div`
 		grid-area: com;
+		display: flex;
+		flex-direction: column;
 		z-index: 3;
-		overflow-y: scroll;
+		overflow-y: auto;
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 				display: none !important;
@@ -78,12 +81,11 @@ const
 		}
 	`,
 	InputTriggerStyles = {
-		width: "100%",
-		height: "100%",
 		gridArea: "inp",
 	},
 	StyledTextArea = {
 		width: "100%",
+		height: "100%",
 		fontFamily: "inherit",
 		resize: "none",
 		padding: "0.5rem"
