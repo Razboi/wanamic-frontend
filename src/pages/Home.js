@@ -79,6 +79,7 @@ const
 	OutsideClickHandler = styled.div`
 		width: 100%;
 		height: 100%;
+		min-height: 100vh;
 	`,
 	HomeContent = styled.section`
 		max-width: 1140px;

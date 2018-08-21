@@ -12,8 +12,8 @@ var userImage;
 const
 	ConversationWrapper = styled.div`
 		position: absolute;
-		top: 0;
 		bottom: 0;
+		left: 0;
 		height: 100%;
 		width: 100%;
 		z-index: 20;
@@ -25,12 +25,15 @@ const
 			"hea"
 			"mes"
 			"inp";
+		@media (max-width: 760px) {
+			top: 0;
+			min-height: 100vh;
+		}
 		@media (min-width: 760px) {
 			height: 350px;
 			width: 300px;
 			position: fixed;
 			left: 20px;
-			bottom: 0px;
 			border: 1px solid rgba(0,0,0,.066);
 		}
 	`,

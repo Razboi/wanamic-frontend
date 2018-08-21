@@ -28,6 +28,70 @@ export default {
 				throw err;
 			}),
 
+	batcaveAuth: password =>
+		axios({
+			method: "post",
+			url: API_URL + "/auth/batcaveAuth",
+			data: { password: password, token: localStorage.getItem( "token" ) }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	batcaveData: () =>
+		axios({
+			method: "post",
+			url: API_URL + "/admin/adminData",
+			data: { token: localStorage.getItem( "token" ) }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	removeTicket: ticketId =>
+		axios({
+			method: "delete",
+			url: API_URL + "/admin/removeTicket",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	deleteObject: ticketId =>
+		axios({
+			method: "delete",
+			url: API_URL + "/admin/deleteObject",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	banUser: ticketId =>
+		axios({
+			method: "post",
+			url: API_URL + "/admin/banUser",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
 	resetPassword: email =>
 		axios({
 			method: "post",
@@ -57,7 +121,9 @@ export default {
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	refreshToken: () =>
 		axios({
@@ -66,7 +132,9 @@ export default {
 			data: { refreshToken: localStorage.getItem( "refreshToken" ) }
 		})
 			.then( res => res.data )
-			.catch( err => err ),
+			.catch( err => {
+				throw err;
+			}),
 
 	createPost: ( userInput, mentions, hashtags, privacyRange, alerts ) =>
 		axios({
@@ -164,6 +232,36 @@ export default {
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
+
+	reportPost: ( postId, content ) =>
+		axios({
+			method: "post",
+			url: API_URL + "/posts/report",
+			data: {
+				token: localStorage.getItem( "token" ),
+				postId: postId,
+				content: content
+			}
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	reportComment: ( commentId, content ) =>
+		axios({
+			method: "post",
+			url: API_URL + "/comments/report",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				content: content
+			}
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 
 	getUserInfo: username =>
 		axios({
@@ -391,11 +489,22 @@ export default {
 	getPostComments: ( postId, skip ) =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), postId: postId },
+			data: { postId: postId },
 			url: API_URL + "/comments/retrieve/" + skip
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
+
+	getComment: commentId =>
+		axios({
+			method: "post",
+			data: { commentId: commentId },
+			url: API_URL + "/comments/getComment/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 
 	sharePost: ( postId, shareComment, privacyRange, alerts, mentions, hashtags ) =>
 		axios({
@@ -434,7 +543,9 @@ export default {
 			url: API_URL + "/posts/getPost/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	checkNotifications: () =>
 		axios({

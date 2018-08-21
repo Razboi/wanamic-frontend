@@ -91,7 +91,7 @@ const
 		color: rgba(0,0,0,0.45) !important;
 	`,
 	Content = styled.p`
-		color: #222;
+		color: ${props => props.alert ? "red" : "#222"};
 		margin-bottom: 0px;
 		font-size: 15px;
 	`,
@@ -304,8 +304,12 @@ class Notifications extends Component {
 					<div>
 						{this.props.notifications.map(( notification, index ) =>
 							notification.author &&
-							<React.Fragment key={index}>
-								<Notification>
+								notification.alert ?
+								<Notification key={index}>
+									<Content alert>{notification.content}</Content>
+								</Notification>
+								:
+								<Notification key={index}>
 									<NotificationImg
 										onClick={() => this.handleDetails( notification, index )}
 										circular
@@ -353,7 +357,6 @@ class Notifications extends Component {
 											this.unFriend( notification.author )}
 									/>
 								</Notification>
-							</React.Fragment>
 						)}
 					</div>}
 				</StyledInfiniteScroll>

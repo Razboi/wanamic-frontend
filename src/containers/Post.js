@@ -180,6 +180,21 @@ class Post extends Component {
 		}
 	};
 
+	handleReport = async reportContent => {
+		if ( !reportContent ) {
+			return;
+		}
+		try {
+			await api.reportPost( this.props.post._id, reportContent );
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.handleReport();
+			}
+		}
+	}
+
 	handleLike = retry => {
 		if ( !retry ) {
 			this.setState({
@@ -272,6 +287,7 @@ class Post extends Component {
 							currentContent={post.content}
 							handleUpdate={this.handleUpdate}
 							handleDelete={this.handleDelete}
+							handleReport={this.handleReport}
 						/>
 					}
 				</PostHeader>

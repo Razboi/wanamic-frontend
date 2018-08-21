@@ -139,3 +139,7 @@ textarea {
 		transform: rotate(360deg);
 	}
 }
+
+.TicketsTable {
+	width: 100%;
+}

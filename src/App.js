@@ -10,6 +10,7 @@ import Welcome from "./pages/Welcome";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
+import Batcave from "./pages/Batcave";
 import PasswordReset from "./pages/PasswordReset";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
@@ -85,25 +86,22 @@ class App extends Component {
 				selectedConversation, displayConversation
 			} = this.props;
 
-			if ( this.props.location.pathname === "/messages"
-			|| window.innerWidth > 420 ) {
-				for ( const [ i, conversation ] of conversations.entries()) {
-					if ( conversation.target.username === message.author.username ) {
-						updateConversation( message, i );
-						incrementChatNewMessages( i );
+			for ( const [ i, conversation ] of conversations.entries()) {
+				if ( conversation.target.username === message.author.username ) {
+					updateConversation( message, i );
+					incrementChatNewMessages( i );
 
-						if ( conversations[ selectedConversation ].target.username
-							=== message.author.username && displayConversation ) {
-							this.clearChatNotifications(
-								conversations[ selectedConversation ]);
-						}
-						return;
+					if ( conversations[ selectedConversation ].target.username
+						=== message.author.username && displayConversation ) {
+						this.clearChatNotifications(
+							conversations[ selectedConversation ]);
 					}
+					return;
 				}
-				const newConversation = await api.getConversation(
-					message.author.username );
-				addConversation( newConversation.data );
 			}
+			const newConversation = await api.getConversation(
+				message.author.username );
+			addConversation( newConversation.data );
 		});
 	}
 
@@ -157,6 +155,7 @@ class App extends Component {
 					<GuestRoute
 						path="/reset_password/:token" component={PasswordReset}
 					/>
+					<UserRoute path="/batcave" component={Batcave} socket={socket} />
 					<UserRoute path="/:username" component={Profile} socket={socket} />
 				</Switch>
 			</div>

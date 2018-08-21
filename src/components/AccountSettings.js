@@ -227,6 +227,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleFileChange}
 							label="Profile Image"
 							type="file"
+							accept="image/*"
 						/>
 						<FormInput
 							className="headerImageInput"
@@ -234,6 +235,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleFileChange}
 							label="Header Image"
 							type="file"
+							accept="image/*"
 						/>
 					</Form>
 					<SaveButton content="Save" onClick={this.props.updateUserInfo} />

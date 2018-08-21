@@ -137,6 +137,21 @@ class Comment extends Component {
 		}
 	};
 
+	handleReport = async reportContent => {
+		if ( !reportContent ) {
+			return;
+		}
+		try {
+			await api.reportComment( this.props.comment._id, reportContent );
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.handleReport();
+			}
+		}
+	}
+
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
@@ -169,16 +184,15 @@ class Comment extends Component {
 						</DateTime>
 					</HeaderInfo>
 
-					{ !this.props.fakeOptions &&
-						<DropdownOptions
-							style={StyledOptions}
-							author={comment.author}
-							currentContent={comment.content}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-							handleChange={this.handleChange}
-						/>
-					}
+					<DropdownOptions
+						style={StyledOptions}
+						author={comment.author}
+						currentContent={comment.content}
+						handleUpdate={this.handleUpdate}
+						handleDelete={this.handleDelete}
+						handleChange={this.handleChange}
+						handleReport={this.handleReport}
+					/>
 				</CommentHeader>
 				<Content>{this.state.content}</Content>
 

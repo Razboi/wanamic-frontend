@@ -453,7 +453,7 @@ class MediaOptions extends Component {
 							<OptionImage image={this.cameraIcon} />
 						</MediaOption>
 						<PictureUploadInput type="file" name="picture" id="pictureInput"
-							onChange={this.handlePicture}
+							accept="image/*" onChange={this.handlePicture}
 						/>
 					</PictureUploadWrapper>
 

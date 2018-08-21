@@ -22,6 +22,15 @@ const
 		justify-content: center;
 		align-items: center;
 	`,
+	ReportModal = styled( Modal )`
+		margin: 2rem auto 0 auto !important;
+	`,
+	ReportForm = styled( Form )`
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	`,
 	TriggerStyle = {
 		width: "90%"
 	},
@@ -31,6 +40,12 @@ const
 		width: "100%"
 	},
 	UpdateButton = styled( Button )`
+		background: rgb(133, 217, 191) !important;
+		border-radius: 2px !important;
+		font-family: inherit !important;
+		margin-top: 1rem !important;
+	`,
+	ReportButton = styled( Button )`
 		background: rgb(133, 217, 191) !important;
 		border-radius: 2px !important;
 		font-family: inherit !important;
@@ -70,7 +85,9 @@ class DropdownOptions extends Component {
 			suggestionsLeft: undefined,
 			mentionInput: "",
 			currentSelection: 0,
-			startPosition: undefined
+			startPosition: undefined,
+			report: false,
+			reportContent: ""
 		};
 	}
 
@@ -180,18 +197,31 @@ class DropdownOptions extends Component {
 		}
 	}
 
-	displayModal = () => {
-		this.getSocialCircle();
-		this.toggleModal();
+	displayModal = report => {
+		if ( report ) {
+			this.setState({ report: true });
+		} else {
+			this.getSocialCircle();
+			this.toggleModal();
+		}
 	}
 
 	toggleModal = () => {
-		this.setState( state => ({ openModal: !state.openModal }));
+		if ( this.state.report ) {
+			this.setState( state => ({ report: !state.report }));
+		} else {
+			this.setState( state => ({ openModal: !state.openModal }));
+		}
 	}
 
 	handleUpdate = () => {
 		this.toggleModal();
 		this.props.handleUpdate( this.state.updatedContent );
+	}
+
+	handleReport = () => {
+		this.toggleModal();
+		this.props.handleReport( this.state.reportContent );
 	}
 
 	handleChange = e => {
@@ -260,9 +290,35 @@ class DropdownOptions extends Component {
 					</Dropdown.Menu>
 					:
 					<Dropdown.Menu className="postDropdown">
-						<Dropdown.Item
-							text="Report"
-						/>
+						<ReportModal
+							open={this.state.report}
+							onClose={this.toggleModal}
+							trigger={
+								<Dropdown.Item
+									text="Report"
+									onClick={() => this.displayModal( true )}
+								/>}
+						>
+							<Modal.Content>
+								<ReportForm>
+									<textarea
+										style={TextAreaStyle}
+										name="reportContent"
+										maxLength="500"
+										autoFocus
+										rows="4"
+										value={this.state.reportContent}
+										onChange={this.handleChange}
+										onKeyDown={this.handleKeyPress}
+									/>
+									<ReportButton
+										primary
+										content="Report"
+										onClick={this.handleReport}
+									/>
+								</ReportForm>
+							</Modal.Content>
+						</ReportModal>
 					</Dropdown.Menu>
 				}
 			</StyledDropdown>
@@ -274,6 +330,7 @@ DropdownOptions.propTypes = {
 	author: PropTypes.object.isRequired,
 	handleDelete: PropTypes.func.isRequired,
 	handleUpdate: PropTypes.func.isRequired,
+	handleReport: PropTypes.func.isRequired,
 	currentContent: PropTypes.string.isRequired
 };
 

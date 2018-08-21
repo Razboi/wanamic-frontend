@@ -131,8 +131,9 @@ const
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		font-size: 1.9rem;
+		font-size: 2.05rem;
     font-family: inherit;
+		font-style: italic;
     color: #111 !important;
 		@media (max-width: 960px) {
 			display: none;
@@ -186,6 +187,12 @@ class NavBar extends Component {
 	handleLogout = () => {
 		this.props.socket.disconnect();
 		this.props.logout();
+	}
+
+	goToBatcave = () => {
+		if ( this.props.location.pathname !== "/batcave" ) {
+			this.props.history.push( "/batcave" );
+		}
 	}
 
 	render() {
@@ -294,7 +301,7 @@ class NavBar extends Component {
 					</NavOption>
 
 					<Logo href="localhost:3000">
-						Wanamic
+						wanamic
 					</Logo>
 
 					<RightOptions>
@@ -330,6 +337,11 @@ class NavBar extends Component {
 									text="Settings"
 									onClick={this.goToSettings}
 								/>
+								{localStorage.getItem( "ia" ) === "true" &&
+								<StyledDropdownItem
+									text="Batcave"
+									onClick={this.goToBatcave}
+								/>}
 							</Dropdown.Menu>
 						</Dropdown>
 					</RightOptions>
@@ -367,6 +379,11 @@ class NavBar extends Component {
 									text="Settings"
 									onClick={this.goToSettings}
 								/>
+								{localStorage.getItem( "ia" ) === "true" &&
+								<StyledDropdownItem
+									text="Batcave"
+									onClick={this.goToBatcave}
+								/>}
 							</Dropdown.Menu>
 						</Dropdown>
 					</NavOption>

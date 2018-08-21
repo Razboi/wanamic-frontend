@@ -158,6 +158,7 @@ class Step2 extends Component {
 							onChange={this.props.handleFileChange}
 							label="Profile image"
 							type="file"
+							accept="image/*"
 						/>
 						<PreviewImage circular src={previewImage} />
 					</ImageInputWrapper>
