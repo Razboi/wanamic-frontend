@@ -27,7 +27,6 @@ const
 			"inp";
 		@media (max-width: 760px) {
 			top: 0;
-			min-height: 100vh;
 		}
 		@media (min-width: 760px) {
 			height: 350px;

@@ -30,7 +30,8 @@ const
 		}
 	`,
 	HeaderLogo = styled.span`
-		font-size: 3rem;
+		font-style: italic;
+		font-size: 3.5rem;
 		color: #fff;
 	`,
 	Subheader = styled.span`
@@ -173,7 +174,7 @@ class LoginForm extends Component {
 			<Wrapper>
 
 				<HeaderContainer className="formHeader">
-					<HeaderLogo>Wanamic</HeaderLogo>
+					<HeaderLogo>wanamic</HeaderLogo>
 					<Subheader>
 						Find people and content relative to your interests and hobbies.
 					</Subheader>

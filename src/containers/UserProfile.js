@@ -318,14 +318,11 @@ class UserProfile extends Component {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.user !== prevState.user ) {
+		if ( this.state.user !== prevState.user || this.props.username !== prevProps.username ) {
 			this.refreshTimeline();
 			this.setImages();
-			window.scrollTo( 0, 0 );
-		} else if ( this.props.username !== prevProps.username ) {
-			this.getUserInfo();
-			this.refreshTimeline();
 			this.checkPendingRequest();
+			window.scrollTo( 0, 0 );
 		}
 	}
 

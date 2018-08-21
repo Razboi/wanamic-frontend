@@ -399,6 +399,9 @@ class Messages extends Component {
 		if ( this.props.profilePage && this.props.messageTarget ) {
 			this.props.startChat( undefined );
 		}
+		if ( this.props.newConversation ) {
+			this.props.setupNewConversation( undefined );
+		}
 	}
 
 	handleSpam = () => {

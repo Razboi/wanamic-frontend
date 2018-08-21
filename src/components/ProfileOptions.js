@@ -93,7 +93,9 @@ class ProfileOptions extends Component {
 						:
 						this.props.targetRequested ?
 							<RequestMessage>
-								<RequestHeader>{user.fullname} sent you a friend request.</RequestHeader>
+								<RequestHeader>
+									{user.fullname} sent you a friend request.
+								</RequestHeader>
 								<RequestButton
 									onClick={this.props.acceptRequest}
 									content="Accept request"
