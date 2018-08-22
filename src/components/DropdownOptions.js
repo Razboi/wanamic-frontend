@@ -197,8 +197,8 @@ class DropdownOptions extends Component {
 		}
 	}
 
-	displayModal = report => {
-		if ( report ) {
+	displayModal = type => {
+		if ( type === "report" ) {
 			this.setState({ report: true });
 		} else {
 			this.getSocialCircle();
@@ -296,7 +296,7 @@ class DropdownOptions extends Component {
 							trigger={
 								<Dropdown.Item
 									text="Report"
-									onClick={() => this.displayModal( true )}
+									onClick={() => this.displayModal( "report" )}
 								/>}
 						>
 							<Modal.Content>

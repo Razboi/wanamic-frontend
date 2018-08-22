@@ -281,7 +281,26 @@ const
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		padding-top: 49.33px;
 	`,
-	Page = styled.div``;
+	Page = styled.div``,
+	RequestMessage = styled.div`
+		position: absolute;
+		top: 49.33px;
+		left: 0px;
+		background: rgba(0,0,0,0.60);
+		width: 100%;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		font-family: inherit !important;
+	`,
+	RequestButton = styled( Button )`
+		font-family: inherit !important;
+		background: rgb(133, 217, 191) !important;
+		border-radius: 2px !important;
+	`;
 
 
 class UserProfile extends Component {
@@ -603,7 +622,6 @@ class UserProfile extends Component {
 						{displayShare && <Share />}
 					</PostDetailsDimmer>
 				}
-
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -637,6 +655,16 @@ class UserProfile extends Component {
 							messageTarget={this.state.messageTarget}
 							startChat={this.startChat}
 						/>
+						{this.state.targetRequested &&
+							<RequestMessage>
+								<h4>{user.fullname} sent you a friend request.</h4>
+								<RequestButton
+									onClick={this.acceptRequest}
+									content="Accept request"
+									size="tiny"
+									primary
+								/>
+							</RequestMessage>}
 						<Page onClick={this.hidePopups}>
 							<UserInfoBackground backgroundImg={backgroundImg} />
 							<UserInfoWrapper>
@@ -664,7 +692,6 @@ class UserProfile extends Component {
 										addFriend={this.addFriend}
 										unFriend={this.unFriend}
 										unFollow={this.unFollow}
-										acceptRequest={this.acceptRequest}
 										goToUserSettings={this.props.goToUserSettings}
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
@@ -726,7 +753,6 @@ class UserProfile extends Component {
 										addFriend={this.addFriend}
 										unFriend={this.unFriend}
 										unFollow={this.unFollow}
-										acceptRequest={this.acceptRequest}
 										goToUserSettings={this.props.goToUserSettings}
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}

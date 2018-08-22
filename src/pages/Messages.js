@@ -435,9 +435,11 @@ class Messages extends Component {
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
 					handleDeleteChat={this.handleDeleteChat}
+					handleSendMessage={this.handleSendMessage}
 					back={this.backToOpenConversations}
 					messageInput={this.state.messageInput}
 					spam={this.state.spam}
+					history={this.props.history}
 				/>
 			);
 		}
@@ -550,9 +552,11 @@ class Messages extends Component {
 								handleKeyPress={this.handleKeyPress}
 								handleChange={this.handleChange}
 								handleDeleteChat={this.handleDeleteChat}
+								handleSendMessage={this.handleSendMessage}
 								back={this.backToOpenConversations}
 								messageInput={this.state.messageInput}
 								spam={this.state.spam}
+								history={this.props.history}
 							/>
 					}
 

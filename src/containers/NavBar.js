@@ -297,6 +297,7 @@ class NavBar extends Component {
 							messageTarget={this.props.messageTarget}
 							profilePage={this.props.profilePage}
 							startChat={this.props.startChat}
+							history={this.props.history}
 						/>
 					</NavOption>
 

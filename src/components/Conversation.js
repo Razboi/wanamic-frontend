@@ -48,22 +48,31 @@ const
 			width: 5px !important;
 		}
 	`,
-	StyledInput = styled( Input )`
+	InputWrapper = styled.div`
 		grid-area: inp;
-		padding: 2px 5px 5px 5px;
+		display: flex;
+		align-items: center;
+		border-radius: 25px !important;
+		border: 1px solid rgba(0,0,0,0.233) !important;
+		margin: 2px 5px 5px 5px;
+		padding: 5px;
+	`,
+	StyledInput = styled( Input )`
 		background: none !important;
+		width: 100%;
 		input {
 			height: 44px !important;
-			border-radius: 25px !important;
 			font-family: inherit !important;
 			color: #222 !important;
-			border: 1px solid rgba(0,0,0,0.3) !important;
+			border: none !important;
+			background: none !important;
+			padding: none;
 		}
 		input::placeholder {
 			color: #444 !important;
 		}
 		input:focus {
-			border: 1px solid rgba(0,0,0,0.3) !important;
+			border: none !important;
 		}
 	`,
 	HeaderWrapper = styled.div`
@@ -88,6 +97,9 @@ const
 	UserInfo = styled.div`
 		display: flex;
 		align-items: center;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	FriendImg = styled( Image )`
 		width: 35px !important;
@@ -124,6 +136,27 @@ const
 		bottom: -100px;
 		z-index: 2;
 		word-break: break-word;
+	`,
+	SendButton = styled.div`
+		height: 45px;
+		width: 45px;
+		border-radius: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		:hover {
+			cursor: pointer;
+		}
+	`,
+	SendButtonImage = styled.span`
+		height: 26px;
+		width: 26px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		margin: 0;
+		position: relative;
+		background-size: 100%;
 	`;
 
 
@@ -164,7 +197,8 @@ class Conversation extends Component {
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
-					<UserInfo>
+					<UserInfo onClick={() =>
+						this.props.history.push( `/${conversation.target.username}` )}>
 						<FriendImg
 							circular
 							src={userImage}
@@ -210,15 +244,20 @@ class Conversation extends Component {
 					)}
 				</MessagesWrapper>
 
-				<StyledInput
-					maxLength="2200"
-					autoFocus
-					name="messageInput"
-					value={messageInput}
-					placeholder={"Write to @" + conversation.target.username}
-					onChange={handleChange}
-					onKeyPress={handleKeyPress}
-				/>
+				<InputWrapper>
+					<StyledInput
+						maxLength="2200"
+						autoFocus
+						name="messageInput"
+						value={messageInput}
+						placeholder={"Write to @" + conversation.target.username}
+						onChange={handleChange}
+						onKeyPress={handleKeyPress}
+					/>
+					<SendButton onClick={this.props.handleSendMessage}>
+						<SendButtonImage image={require( "../images/send.svg" )} />
+					</SendButton>
+				</InputWrapper>
 			</ConversationWrapper>
 		);
 	}
@@ -233,6 +272,8 @@ Conversation.propTypes = {
 	back: PropTypes.func.isRequired,
 	messageInput: PropTypes.string.isRequired,
 	spam: PropTypes.bool.isRequired,
+	history: PropTypes.object.isRequired,
+	handleSendMessage: PropTypes.func.isRequired
 };
 
 
