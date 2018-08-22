@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
+		position: relative;
 		height: 100vh;
 		width: 100%;
 		margin-top: 1rem;
@@ -54,9 +55,27 @@ const
 		align-items: center;
 		justify-content: center;
 		padding: 1rem;
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 400px;
+		width: 100%;
+		z-index: 5;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class UserAlbum extends Component {
+	constructor() {
+		super();
+		this.state = {
+			loader: false
+		};
+	}
 
 	componentDidMount() {
 		this.getAlbum();
@@ -64,12 +83,14 @@ class UserAlbum extends Component {
 
 	getAlbum = async() => {
 		try {
+			this.setState({ loader: true });
 			const album = await api.getUserAlbum( this.props.username );
 			if ( album === "jwt expired" ) {
 				await refreshToken();
 				this.getAlbum();
 			} else if ( album.data ) {
 				this.props.setPosts( album.data, false, true );
+				this.setState({ loader: false });
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -78,6 +99,15 @@ class UserAlbum extends Component {
 
 	render() {
 		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
+		if ( this.state.loader ) {
+			return (
+				<Wrapper>
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				</Wrapper>
+			);
+		}
 		return (
 			<Wrapper>
 				{this.props.posts.length > 0 ?

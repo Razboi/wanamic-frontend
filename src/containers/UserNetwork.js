@@ -28,6 +28,7 @@ const
 		justify-content: space-around;
 		padding: 1rem 0;
 		border-bottom: 1px solid #bec2c9;
+		position: relative;
 	`,
 	TabOption = styled.div`
 		display: flex;
@@ -44,6 +45,19 @@ const
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0,0,0,0.4);
 	`;
 
 class UserNetwork extends Component {
@@ -52,7 +66,8 @@ class UserNetwork extends Component {
 		this.state = {
 			network: { friends: [], followers: [], following: [] },
 			tab: 0,
-			requesterNetwork: {}
+			requesterNetwork: {},
+			loader: false
 		};
 	}
 	componentDidMount() {
@@ -60,6 +75,7 @@ class UserNetwork extends Component {
 	}
 	getNetwork = async() => {
 		try {
+			this.setState({ loader: true });
 			const network = await api.getUserNetwork( this.props.username );
 			if ( network === "jwt expired" ) {
 				await refreshToken();
@@ -67,7 +83,8 @@ class UserNetwork extends Component {
 			} else if ( network.data ) {
 				this.setState({
 					network: network.data.user,
-					requesterNetwork: network.data.requester
+					requesterNetwork: network.data.requester,
+					loader: false
 				});
 			}
 		} catch ( err ) {
@@ -144,6 +161,11 @@ class UserNetwork extends Component {
 		return (
 			<Wrapper>
 				<Tabs>
+					{this.state.loader &&
+						<LoaderDimmer>
+							<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+						</LoaderDimmer>
+					}
 					<TabOption
 						onClick={() => this.setTab( 0 )}
 						selected={tab === 0}

@@ -39,19 +39,20 @@ const
 		}
 	`,
 	HeaderWrapper = styled.div`
-		height: 55px;
-		min-height: 55px;
 		display: flex;
+		z-index: 2;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0px 20px;
 		box-shadow: 0 1px 2px #111;
 		i {
 			font-size: 1.5rem !important;
 		}
+		@media (max-width: 420px) {
+			height: 55px;
+			padding: 0px 20px;
+		}
 		@media (min-width: 420px) {
 			height: 80px;
-			min-height: 80px;
 			padding: 0px 40px;
 			i {
 				:hover {

@@ -9,7 +9,6 @@ const
 		min-height: 100vh;
 		height: 100%;
 		width: 100%;
-		background: #eee;
 		overflow: hidden;
 		margin-top: 1rem;
 		font-size: 1.05rem;
@@ -38,13 +37,29 @@ const
 	`,
 	InfoContent = styled.span`
 		color: rgba( 0,0,0,0.6 );
+	`,
+	Info = styled.div`
+		position: relative;
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class UserInformation extends Component {
 	constructor() {
 		super();
 		this.state = {
-			userInformation: {}
+			userInformation: {},
+			loader: false
 		};
 	}
 	componentDidMount() {
@@ -53,12 +68,16 @@ class UserInformation extends Component {
 
 	getUserInformation = async() => {
 		try {
+			this.setState({ loader: true });
 			const info = await api.getUserInfo( this.props.username );
 			if ( info === "jwt expired" ) {
 				await refreshToken();
 				this.getUserInformation();
 			} else if ( info.data ) {
-				this.setState({ userInformation: info.data });
+				this.setState({
+					userInformation: info.data,
+					loader: false
+				});
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -69,44 +88,51 @@ class UserInformation extends Component {
 		const { userInformation } = this.state;
 		return (
 			<Wrapper>
-				<InfoSegment>
-					<InfoLabel>Fullname</InfoLabel>
-					<InfoContent>{userInformation.fullname}</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Username</InfoLabel>
-					<InfoContent>@{userInformation.username}</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Description</InfoLabel>
-					<InfoContent>{userInformation.description}</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Hobbies</InfoLabel>
-					<InfoContent>
-						{userInformation.hobbies &&
-						userInformation.hobbies.map( hobbie => hobbie + ", " )}
-					</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Country</InfoLabel>
-					<InfoContent>{userInformation.country}</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Region</InfoLabel>
-					<InfoContent>{userInformation.region}</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Birthday</InfoLabel>
-					<InfoContent>
-						{userInformation.birthday &&
-						userInformation.birthday.split( "T" )[ 0 ]}
-					</InfoContent>
-				</InfoSegment>
-				<InfoSegment>
-					<InfoLabel>Gender</InfoLabel>
-					<InfoContent>{userInformation.gender}</InfoContent>
-				</InfoSegment>
+				<Info>
+					{this.state.loader &&
+						<LoaderDimmer>
+							<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+						</LoaderDimmer>
+					}
+					<InfoSegment>
+						<InfoLabel>Fullname</InfoLabel>
+						<InfoContent>{userInformation.fullname}</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Username</InfoLabel>
+						<InfoContent>@{userInformation.username}</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Description</InfoLabel>
+						<InfoContent>{userInformation.description}</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Hobbies</InfoLabel>
+						<InfoContent>
+							{userInformation.hobbies &&
+							userInformation.hobbies.map( hobbie => hobbie + ", " )}
+						</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Country</InfoLabel>
+						<InfoContent>{userInformation.country}</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Region</InfoLabel>
+						<InfoContent>{userInformation.region}</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Birthday</InfoLabel>
+						<InfoContent>
+							{userInformation.birthday &&
+							userInformation.birthday.split( "T" )[ 0 ]}
+						</InfoContent>
+					</InfoSegment>
+					<InfoSegment>
+						<InfoLabel>Gender</InfoLabel>
+						<InfoContent>{userInformation.gender}</InfoContent>
+					</InfoSegment>
+				</Info>
 			</Wrapper>
 		);
 	}

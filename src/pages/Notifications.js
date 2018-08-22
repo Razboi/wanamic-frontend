@@ -110,6 +110,18 @@ const
 	OutsideClickHandler = styled.div`
 		width: 100%;
 		height: 100%;
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class Notifications extends Component {
@@ -122,7 +134,8 @@ class Notifications extends Component {
 			alreadyFollowing: [],
 			network: undefined,
 			skip: 0,
-			hasMore: true
+			hasMore: true,
+			loader: false
 		};
 	}
 
@@ -247,6 +260,7 @@ class Notifications extends Component {
 	getNotifications = async() => {
 		if ( this.state.hasMore ) {
 			try {
+				this.setState({ loader: true });
 				const res = await api.getNotifications( this.state.skip );
 				if ( res === "jwt expired" ) {
 					await refreshToken();
@@ -258,7 +272,8 @@ class Notifications extends Component {
 						this.props.addToNotifications( res.data.notifications );
 					this.setState({
 						hasMore: res.data.notifications.length === 10,
-						skip: this.state.skip + 1
+						skip: this.state.skip + 1,
+						loader: false
 					});
 				}
 			} catch ( err ) {
@@ -302,6 +317,11 @@ class Notifications extends Component {
 					<Header>Notifications</Header>
 					{this.state.network &&
 					<div>
+						{this.state.loader &&
+							<LoaderDimmer>
+								<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+							</LoaderDimmer>
+						}
 						{this.props.notifications.map(( notification, index ) =>
 							notification.author &&
 								notification.alert ?
