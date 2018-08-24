@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		z-index: 3;
-		height: 100%;
 		display: ${props => props.showSuggestions ? "flex" : "none"};
 		flex-direction: column;
 		flex-grow: 1;

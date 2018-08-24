@@ -48,7 +48,7 @@ textarea {
 }
 
 .commentsTextarea::placeholder {
-	color: #333;
+	color: #ddd;
 }
 
 .commentsTextarea:focus {
@@ -56,9 +56,10 @@ textarea {
 }
 
 .commentsTextarea {
-	color: #111;
+	color: #fff;
 	border-top: 1px solid rgba(0,0,0,0.15);
 	border-width: 1px 0 0 0;
+	background: rgba(0,0,0,0.85);
 }
 
 #ShareBoxInput {

@@ -7,11 +7,9 @@ import PostOptions from "./PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
-import { deletePost, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import AlertsFilter from "../components/AlertsFilter";
-import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -138,63 +136,6 @@ class Post extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleDelete = async() => {
-		try {
-			const res = await api.deletePost( this.props.post._id );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleDelete();
-			} else if ( res.data ) {
-				if ( res.data.updatedOriginalPost ) {
-					this.props.updatePost( res.data.updatedOriginalPost );
-				}
-				this.props.deletePost( this.props.post._id );
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	};
-
-	handleUpdate = async updatedContent => {
-		if (( !updatedContent && !this.props.post.content )
-			|| this.props.post.content === updatedContent ) {
-			return;
-		}
-		try {
-			const
-				{ mentions, hashtags } = await extract(
-					updatedContent, { symbol: false, type: "all" }),
-				res = await api.updatePost(
-					this.props.post._id, updatedContent, mentions, hashtags );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleUpdate();
-			} else {
-				this.props.updatePost( res.data.updatedPost );
-				for ( const notification of res.data.mentionsNotifications ) {
-					this.props.socket.emit( "sendNotification", notification );
-				}
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	};
-
-	handleReport = async reportContent => {
-		if ( !reportContent ) {
-			return;
-		}
-		try {
-			await api.reportPost( this.props.post._id, reportContent );
-		} catch ( err ) {
-			console.log( err );
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.handleReport();
-			}
-		}
-	}
-
 	handleLike = retry => {
 		if ( !retry ) {
 			this.setState({
@@ -283,11 +224,8 @@ class Post extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={post.author}
-							currentContent={post.content}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-							handleReport={this.handleReport}
+							post={post}
+							socket={this.props.socket}
 						/>
 					}
 				</PostHeader>
@@ -339,13 +277,6 @@ Post.propTypes = {
 
 const
 	mapStateToProps = state => ({
-	}),
-
-	mapDispatchToProps = dispatch => ({
-		deletePost: postId =>
-			dispatch( deletePost( postId )),
-		updatePost: post =>
-			dispatch( updatePost( post ))
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( Post );
+export default connect( mapStateToProps )( Post );

@@ -33,10 +33,6 @@ const
 		overflow: visible !important;
 		width: 30px !important;
 		height: 30px !important;
-		@media (min-width: 420px) {
-			width: 35px !important;
-			height: 35px !important;
-		}
 	`,
 	AuthorFullname = styled.span`
 		font-size: 1.05rem !important;

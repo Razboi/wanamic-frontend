@@ -30,7 +30,7 @@ import { withRouter } from "react-router-dom";
 var socket = {};
 
 let API_URL = process.env.REACT_APP_STAGE === "dev" ?
-	"http://localhost:8081"
+	"http://192.168.1.15:8081"
 	:
 	"https://api.wanamic.com";
 

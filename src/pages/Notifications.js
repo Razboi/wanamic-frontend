@@ -7,7 +7,6 @@ import moment from "moment";
 import PostDetails from "../containers/PostDetails";
 import Comments from "../containers/Comments";
 import api from "../services/api";
-import { switchComments } from "../services/actions/posts";
 import {
 	checkNotifications, addToNotifications, setNotifications
 } from "../services/actions/notifications";
@@ -164,9 +163,6 @@ class Notifications extends Component {
 		switch ( true ) {
 		case notification.follow || notification.friendRequest:
 			this.props.history.push( "/" + notification.author.username );
-			break;
-		case notification.comment:
-			this.props.switchComments( notification.object );
 			break;
 		default:
 			this.setState({ postId: notification.object, displayDetails: true });
@@ -387,7 +383,6 @@ class Notifications extends Component {
 
 Notifications.propTypes = {
 	notifications: PropTypes.array.isRequired,
-	switchComments: PropTypes.func.isRequired,
 	checkNotifications: PropTypes.func.isRequired,
 	socket: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
@@ -401,7 +396,6 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id ) => dispatch( switchComments( id )),
 		checkNotifications: () => dispatch( checkNotifications()),
 		setNotifications: notif => dispatch( setNotifications( notif )),
 		addToNotifications: notif => dispatch( addToNotifications( notif ))

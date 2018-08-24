@@ -8,9 +8,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import PostDetails from "../containers/PostDetails";
-import Comments from "../containers/Comments";
-import {
-	setPosts, addToPosts, switchPostDetails, switchComments
+import { setPosts, addToPosts, switchPostDetails
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
@@ -199,7 +197,6 @@ class ExplorePage extends Component {
 			hasMore: true,
 			content: true,
 			user: {},
-			selectedPost: {},
 			search: "",
 			searching: false,
 			scrollingDown: false
@@ -351,10 +348,7 @@ class ExplorePage extends Component {
 	}
 
 	displayPostDetails = post => {
-		this.setState({
-			selectedPost: post
-		});
-		this.props.switchPostDetails();
+		this.props.switchPostDetails( post );
 	}
 
 	hidePostDetails = () => {
@@ -411,9 +405,6 @@ class ExplorePage extends Component {
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
-		if ( this.props.displayComments ) {
-			this.props.switchComments();
-		}
 	}
 
 
@@ -421,7 +412,7 @@ class ExplorePage extends Component {
 		var
 			connectImage,
 			contentImage;
-		const { displayPostDetails, displayComments } = this.props;
+		const { displayPostDetails } = this.props;
 		try {
 			connectImage = !this.state.content ?
 				require( "../images/network_color.svg" )
@@ -450,21 +441,15 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper className="exploreMainWrapper">
-				{( displayPostDetails || displayComments ) &&
+				{ displayPostDetails &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
-						{displayPostDetails &&
-							<PostDetails
-								post={this.props.posts[ this.state.selectedPost ]}
-								switchDetails={this.hidePostDetails}
-								socket={this.props.socket}
-								index={this.state.selectedPost}
-								history={this.props.history}
-							/>}
-						{displayComments && !displayPostDetails &&
-							<Comments
-								socket={this.props.socket}
-							/>}
+						<PostDetails
+							switchDetails={this.hidePostDetails}
+							socket={this.props.socket}
+							index={this.state.selectedPost}
+							history={this.props.history}
+						/>
 					</PostDetailsDimmer>
 				}
 
@@ -540,7 +525,6 @@ const
 		posts: state.posts.explore,
 		displayPostDetails: state.posts.displayPostDetails,
 		displayMessages: state.conversations.displayMessages,
-		displayComments: state.posts.displayComments,
 		displayNotifications: state.notifications.displayNotifications
 	}),
 
@@ -549,10 +533,9 @@ const
 			dispatch( setPosts( posts, onExplore )),
 		addToPosts: ( posts, onExplore ) =>
 			dispatch( addToPosts( posts, onExplore )),
-		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: () => dispatch( switchMessages()),
-		switchComments: () => dispatch( switchComments()),
+		switchMessages: () => dispatch( switchMessages())
 	});
 
 

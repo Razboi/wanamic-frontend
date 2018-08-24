@@ -6,14 +6,11 @@ import PostOptions from "./PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
-import {
-	deletePost, updatePost, switchPostDetails
-} from "../services/actions/posts";
+import { switchPostDetails } from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
 import refreshToken from "../utils/refreshToken";
-import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -174,67 +171,16 @@ class MediaPost extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleDelete = () => {
-		api.deletePost( this.props.post._id )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleDelete())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.deletePost( this.props.post._id );
-				}
-			}).catch( err => console.log( err ));
-	};
-
-	handleUpdate = async updatedContent => {
-		if (( !updatedContent && !this.props.post.content )
-			|| this.props.post.content === updatedContent ) {
-			return;
-		}
-		try {
-			const
-				{ mentions, hashtags } = await extract(
-					updatedContent, { symbol: false, type: "all" }),
-				res = await api.updatePost(
-					this.props.post._id, updatedContent, mentions, hashtags );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleUpdate();
-			} else {
-				this.props.updatePost( res.data.updatedPost );
-				for ( const notification of res.data.mentionsNotifications ) {
-					this.props.socket.emit( "sendNotification", notification );
-				}
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	};
-
-	handleReport = async reportContent => {
-		if ( !reportContent ) {
-			return;
-		}
-		try {
-			await api.reportPost( this.props.post._id, reportContent );
-		} catch ( err ) {
-			console.log( err );
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.handleReport();
-			}
-		}
-	}
-
 	handleLike = retry => {
+		const { post } = this.props;
 		if ( !retry ) {
-			this.setState({
-				likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
-			});
+			let updatedPost = post;
+			updatedPost.likedBy = [
+				localStorage.getItem( "username" ), ...updatedPost.likedBy ];
+			this.props.updatePost( updatedPost );
 		}
 
-		api.likePost( this.props.post._id )
+		api.likePost( post._id )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -247,15 +193,15 @@ class MediaPost extends Component {
 	}
 
 	handleDislike = retry => {
-		var	newLikedBy;
+		const { post } = this.props;
 		if ( !retry ) {
-			newLikedBy = this.state.likedBy;
-			const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
-			newLikedBy.splice( index, 1 );
-			this.setState({ likedBy: newLikedBy });
+			let updatedPost = post;
+			const index = post.likedBy.indexOf( localStorage.getItem( "username" ));
+			updatedPost.likedBy.splice( index, 1 );
+			this.props.updatePost( updatedPost );
 		}
 
-		api.dislikePost( this.props.post._id )
+		api.dislikePost( post._id )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -270,9 +216,7 @@ class MediaPost extends Component {
 	}
 
 	displayPostDetails = () => {
-		if ( this.props.newsFeed && !this.props.post.picture ) {
-			this.props.switchPostDetails( this.props.index );
-		}
+		this.props.switchPostDetails( this.props.post );
 	}
 
 	hidePostDetails = () => {
@@ -312,7 +256,7 @@ class MediaPost extends Component {
 				noBorder={this.props.fakeOptions || this.props.details
 					? 1 : 0}
 			>
-				<PostHeader className="mediaPostHeader">
+				<PostHeader>
 					<AuthorImg
 						circular
 						src={userPicture}
@@ -333,11 +277,8 @@ class MediaPost extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							author={post.author}
-							currentContent={post.content}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-							handleReport={this.handleReport}
+							post={post}
+							socket={this.props.socket}
 						/>
 					}
 				</PostHeader>
@@ -382,13 +323,9 @@ class MediaPost extends Component {
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
-								numLiked={this.state.likedBy.length}
 								numComments={post.comments.length}
 								numShared={post.sharedBy.length}
 								id={post._id}
-								liked={
-									this.state.likedBy.includes( localStorage.getItem( "username" ))
-								}
 							/>
 						}
 
@@ -421,9 +358,7 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		deletePost: postId => dispatch( deletePost( postId )),
-		updatePost: post => dispatch( updatePost( post )),
-		switchPostDetails: index => dispatch( switchPostDetails( index ))
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );

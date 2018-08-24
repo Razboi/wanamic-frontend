@@ -23,10 +23,6 @@ const
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		@media (max-width: 760px) {
-			top: 0;
-			bottom: 0;
-		}
 		@media (min-width: 760px) and (min-height: 700px) {
 			height: 700px;
 			width: 600px;
@@ -49,10 +45,12 @@ const
 		}
 		@media (max-width: 420px) {
 			height: 55px;
+			min-height: 55px;
 			padding: 0px 20px;
 		}
 		@media (min-width: 420px) {
 			height: 80px;
+			min-height: 80px;
 			padding: 0px 40px;
 			i {
 				:hover {
@@ -137,6 +135,7 @@ class Share extends Component {
 			startPosition: undefined
 		};
 		this.scrollAlreadyBlocked = false;
+		this.previousHref = undefined;
 	}
 
 	componentDidMount() {
@@ -144,6 +143,9 @@ class Share extends Component {
 			this.scrollAlreadyBlocked = true
 			:
 			document.body.style.overflowY = "hidden";
+		this.previousHref = window.location.href;
+		window.history.pushState( null, null, "/share" );
+		window.onpopstate = () => this.handlePopstate();
 		this.getSocialCircle();
 	}
 
@@ -151,6 +153,12 @@ class Share extends Component {
 		if ( !this.scrollAlreadyBlocked ) {
 			document.body.style.overflowY = "auto";
 		}
+		window.history.pushState( null, null, this.previousHref );
+		window.onpopstate = () => {};
+	}
+
+	handlePopstate = () => {
+		this.props.switchShare();
 	}
 
 	getSocialCircle = () => {

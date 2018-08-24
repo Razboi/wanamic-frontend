@@ -216,6 +216,9 @@ class SettingsPage extends Component {
 			if ( res.data.newUsername ) {
 				localStorage.setItem( "username", res.data.newUsername );
 			}
+			if ( res.data.newUsername || res.data.newImage ) {
+				window.location.reload();
+			}
 			this.backToMain();
 		} catch ( err ) {
 			console.log( err );

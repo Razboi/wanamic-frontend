@@ -1,7 +1,7 @@
 import axios from "axios";
 
 let API_URL = process.env.REACT_APP_STAGE === "dev" ?
-	"http://localhost:8081"
+	"http://192.168.1.15:8081"
 	:
 	"https://api.wanamic.com";
 
@@ -207,7 +207,7 @@ export default {
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => err.response.data ),
 
 	deletePost: postId =>
 		axios({
@@ -216,7 +216,9 @@ export default {
 			data: { postId: postId, token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updatePost: ( postId, newContent, mentions, hashtags ) =>
 		axios({
@@ -231,7 +233,9 @@ export default {
 			}
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	reportPost: ( postId, content ) =>
 		axios({

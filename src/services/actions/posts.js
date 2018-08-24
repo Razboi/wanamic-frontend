@@ -81,12 +81,7 @@ export const
 		post: post
 	}),
 
-	switchComments = ( id ) => ({
-		type: SWITCH_COMMENTS,
-		postDetailsId: id
-	}),
-
-	switchPostDetails = index => ({
+	switchPostDetails = post => ({
 		type: SWITCH_POST_DETAILS,
-		index: index
+		post: post
 	});

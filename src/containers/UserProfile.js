@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import {
-	switchPostDetails, setPosts, switchComments, switchShare, addToPosts,
+	switchPostDetails, setPosts, switchShare, addToPosts,
 	switchMediaOptions
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
@@ -337,10 +337,14 @@ class UserProfile extends Component {
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
-		if ( this.state.user !== prevState.user || this.props.username !== prevProps.username ) {
-			this.refreshTimeline();
+		if ( this.state.user !== prevState.user ) {
 			this.setImages();
+			this.refreshTimeline();
+			window.scrollTo( 0, 0 );
+		} else if ( this.props.username !== prevProps.username ) {
+			this.getUserInfo();
 			this.checkPendingRequest();
+			this.refreshTimeline();
 			window.scrollTo( 0, 0 );
 		}
 	}
@@ -403,6 +407,7 @@ class UserProfile extends Component {
 			} else {
 				profileImg = require( "../images/defaultUser.png" );
 			}
+			console.log( user.profileImage, profileImg );
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -551,9 +556,6 @@ class UserProfile extends Component {
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
-		if ( this.props.displayComments ) {
-			this.props.switchComments();
-		}
 		if ( this.props.displayShare ) {
 			this.props.switchShare();
 		}
@@ -572,6 +574,7 @@ class UserProfile extends Component {
 	}
 
 	render() {
+		console.log( this.state.user );
 		var
 			ownProfile = this.props.username === localStorage.getItem( "username" ),
 			plusImage;
@@ -825,10 +828,9 @@ const
 		addToPosts: ( posts, onExplore, onProfile ) =>
 			dispatch( addToPosts( posts, onExplore, onProfile )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchMessages: () => dispatch( switchMessages()),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchComments: () => dispatch( switchComments()),
 		switchShare: () => dispatch( switchShare())
 	});
 

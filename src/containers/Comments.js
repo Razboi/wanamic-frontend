@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, Message } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
-	switchComments, setComments, addComment, deleteComment, updatePost,
+	setComments, addComment, deleteComment, updatePost,
 	addToComments, updateComment
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
@@ -17,56 +17,21 @@ import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
-		z-index: 20;
+		grid-area: comments;
 		position: absolute;
+		height: 100%;
 		background: #fff;
 		display: grid;
-		height: 100%;
 		width: 100%;
-		grid-template-rows: 55px 1fr 55px;
+		grid-template-rows: 1fr 55px;
 		grid-template-columns: 100%;
 		grid-template-areas:
-			"hea"
 			"com"
 			"inp";
-		@media (max-width: 760px) {
-			top: 0;
-			bottom: 0;
-		}
-		@media (min-width: 760px) and (min-height: 600px) {
-			width: 600px;
-			height: 600px;
-			border-radius: 2px;
-			grid-template-rows: 65px 1fr 80px;
-		}
-		::-webkit-scrollbar {
-			display: none !important;
-		};
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
 		width: 100%;
-	`,
-	HeaderWrapper = styled.div`
-		grid-area: hea;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-		box-shadow: 0 1px 2px #555;
-		z-index: 4;
-		i {
-			font-size: 1.5rem !important;
-		}
-		@media (max-width: 420px) {
-			padding: 0px 20px;
-		}
-		@media (min-width: 420px) {
-			i {
-				:hover {
-					cursor: pointer !important;
-				}
-			}
-		}
 	`,
 	CommentsWrapper = styled.div`
 		grid-area: com;
@@ -74,9 +39,10 @@ const
 		flex-direction: column;
 		z-index: 3;
 		overflow-y: auto;
-		@media (max-width: 420px) {
+		@media (min-width: 420px) {
 			::-webkit-scrollbar {
-				display: none !important;
+				display: block !important;
+				width: 6px !important;
 			}
 		}
 	`,
@@ -90,20 +56,18 @@ const
 		resize: "none",
 		padding: "0.5rem"
 	},
-	HeaderTxt = styled.span`
-		margin-left: 15px;
-		font-weight: bold;
-		font-size: 16px;
-	`,
 	SuggestionsWrapper = styled.div`
 		grid-area: com;
 		z-index: 3;
 		visibility: ${props => props.showSuggestions ? "visible" : "hidden"};
+		background: #fff;
 	`,
 	SpamWarning = styled( Message )`
 		position: fixed !important;
-		left: 5px;
-		right: 5px;
+		top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
 		z-index: 2;
 		word-break: break-word;
 	`,
@@ -119,6 +83,18 @@ const
 		justify-content: center;
 		font-size: 1rem;
 		font-weight: 600;
+	`,
+	Description = styled.div`
+		width: 100%;
+	`,
+	Content = styled.p`
+		padding: 1.5rem 1rem;
+	`,
+	DescriptionAuthor = styled.span`
+		font-weight: bold;
+		font-size: 1rem;
+		word-break: break-all;
+		padding-right: 7px;
 	`;
 
 
@@ -139,23 +115,15 @@ class Comments extends Component {
 			sentComments: 0,
 			spam: false
 		};
-		this.scrollAlreadyBlocked = false;
 		this.interval = setInterval( this.resetCommentsLimit, 30000 );
 	}
 
 	componentDidMount() {
-		document.body.style.overflowY === "hidden" ?
-			this.scrollAlreadyBlocked = true
-			:
-			document.body.style.overflowY = "hidden";
 		this.getInitialComments();
 		this.getSocialCircle();
 	}
 
 	componentWillUnmount() {
-		if ( !this.scrollAlreadyBlocked ) {
-			document.body.style.overflowY = "auto";
-		}
 		clearInterval( this.interval );
 	}
 
@@ -164,7 +132,7 @@ class Comments extends Component {
 	}
 
 	getInitialComments = () => {
-		api.getPostComments( this.props.postId, 0 )
+		api.getPostComments( this.props.postDetails._id, 0 )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -180,7 +148,7 @@ class Comments extends Component {
 		if ( this.state.hasMore ) {
 			try {
 				const res = await api.getPostComments(
-					this.props.postId, this.state.skip );
+					this.props.postDetails._id, this.state.skip );
 				if ( res === "jwt expired" ) {
 					await refreshToken();
 					this.getComments();
@@ -268,7 +236,7 @@ class Comments extends Component {
 			this.handleSpam();
 		} else {
 			const mentions = extract( comment, { symbol: false });
-			api.createComment( comment, this.props.postId, mentions )
+			api.createComment( comment, this.props.postDetails._id, mentions )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
@@ -372,7 +340,7 @@ class Comments extends Component {
 
 	render() {
 		const
-			{ comments } = this.props,
+			{ comments, postDetails } = this.props,
 			placeholder = "Comment as @" + localStorage.getItem( "username" );
 
 		if ( !comments ) {
@@ -384,12 +352,17 @@ class Comments extends Component {
 		}
 		return (
 			<Wrapper>
-				<HeaderWrapper>
-					<Icon name="arrow left" onClick={() => this.props.switchComments()} />
-					<HeaderTxt>Comments</HeaderTxt>
-				</HeaderWrapper>
-
-				<CommentsWrapper className="commentsWrapper">
+				<CommentsWrapper>
+					{postDetails.content &&
+						<Description>
+							<Content>
+								<DescriptionAuthor>
+									@{postDetails.author.username}
+								</DescriptionAuthor>
+								{postDetails.content}
+							</Content>
+						</Description>
+					}
 					<StyledInfiniteScroll
 						pageStart={this.state.skip}
 						hasMore={this.state.hasMore}
@@ -456,9 +429,7 @@ class Comments extends Component {
 
 Comments.propTypes = {
 	socket: PropTypes.object.isRequired,
-	switchComments: PropTypes.func.isRequired,
 	setComments: PropTypes.func.isRequired,
-	postId: PropTypes.string.isRequired,
 	newsfeed: PropTypes.array.isRequired,
 	comments: PropTypes.array,
 	onExplore: PropTypes.bool
@@ -466,13 +437,13 @@ Comments.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		postId: state.posts.postDetailsId,
+		postDetails: state.posts.postDetails,
 		newsfeed: state.posts.newsfeed,
-		comments: state.posts.comments
+		comments: state.posts.comments,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id ) => dispatch( switchComments( id )),
 		setComments: comments => dispatch( setComments( comments )),
 		addToComments: comments => dispatch( addToComments( comments )),
 		addComment: comment => dispatch( addComment( comment )),

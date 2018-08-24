@@ -6,6 +6,7 @@ import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "./Suggestions";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
+import postLogic from "../utils/postLogic";
 
 const
 	StyledDropdown = styled( Dropdown )`
@@ -55,6 +56,7 @@ const
 		display: ${props => !props.showSuggestions && "none"};
 		z-index: 3;
 		border: 1px solid rgba(0,0,0,0.1);
+		background: #fff;
 		@media (min-width: 420px) {
 			position: absolute;
 			grid-area: none;
@@ -78,7 +80,7 @@ class DropdownOptions extends Component {
 		super();
 		this.state = {
 			socialCircle: [],
-			updatedContent: props.currentContent,
+			updatedContent: props.post.content,
 			openModal: false,
 			showSuggestions: false,
 			suggestionsTop: undefined,
@@ -215,13 +217,15 @@ class DropdownOptions extends Component {
 	}
 
 	handleUpdate = () => {
+		const { post, socket } = this.props;
 		this.toggleModal();
-		this.props.handleUpdate( this.state.updatedContent );
+		postLogic.updatePost( post, this.state.updatedContent, socket );
 	}
 
 	handleReport = () => {
 		this.toggleModal();
-		this.props.handleReport( this.state.reportContent );
+		postLogic.reportPost(
+			this.state.reportContent, this.props.post._id );
 	}
 
 	handleChange = e => {
@@ -231,7 +235,7 @@ class DropdownOptions extends Component {
 	render() {
 		return (
 			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
-				{ localStorage.getItem( "id" ) === this.props.author._id ?
+				{ localStorage.getItem( "id" ) === this.props.post.author._id ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal
 							open={this.state.openModal}
@@ -285,7 +289,8 @@ class DropdownOptions extends Component {
 						<Dropdown.Item
 							className="postDeleteOption"
 							text="Delete"
-							onClick={this.props.handleDelete}
+							onClick={() =>
+								postLogic.deletePost( this.props.post._id )}
 						/>
 					</Dropdown.Menu>
 					:
@@ -327,11 +332,8 @@ class DropdownOptions extends Component {
 }
 
 DropdownOptions.propTypes = {
-	author: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired,
-	handleUpdate: PropTypes.func.isRequired,
-	handleReport: PropTypes.func.isRequired,
-	currentContent: PropTypes.string.isRequired
+	post: PropTypes.object.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
 export default DropdownOptions;

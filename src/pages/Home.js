@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import {
 	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails,
-	switchComments, switchShare
+	switchShare
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
@@ -12,7 +12,6 @@ import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
-import Comments from "../containers/Comments";
 import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
@@ -156,9 +155,6 @@ class Home extends Component {
 		if ( this.props.displayPostDetails ) {
 			this.props.switchPostDetails();
 		}
-		if ( this.props.displayComments ) {
-			this.props.switchComments();
-		}
 		if ( this.props.displayShare ) {
 			this.props.switchShare();
 		}
@@ -171,8 +167,7 @@ class Home extends Component {
 	render() {
 		var plusImage;
 		const {
-			newsfeed, postDetailsIndex, displayPostDetails, displayComments,
-			displayShare
+			newsfeed, displayPostDetails, displayShare
 		} = this.props;
 
 		try {
@@ -183,20 +178,14 @@ class Home extends Component {
 
 		return (
 			<Wrapper>
-				{( displayPostDetails || displayComments || displayShare ) &&
+				{( displayPostDetails || displayShare ) &&
 					<PostDetailsDimmer>
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&
 							<PostDetails
-								post={newsfeed[ postDetailsIndex ]}
 								switchDetails={this.hidePostDetails}
 								socket={this.props.socket}
-								index={postDetailsIndex}
 								history={this.props.history}
-							/>}
-						{displayComments &&
-							<Comments
-								socket={this.props.socket}
 							/>}
 						{displayShare && <Share socket={this.props.socket} />}
 					</PostDetailsDimmer>
@@ -255,10 +244,8 @@ const
 	mapStateToProps = state => ({
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
-		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
-		postDetailsIndex: state.posts.postDetailsIndex,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages
 	}),
@@ -268,10 +255,9 @@ const
 		addToPosts: posts => dispatch( addToPosts( posts )),
 		addPost: post => dispatch( addPost( post )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		switchPostDetails: () => dispatch( switchPostDetails()),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchNotifications: () => dispatch( switchNotifications()),
 		switchMessages: () => dispatch( switchMessages()),
-		switchComments: () => dispatch( switchComments()),
 		switchShare: () => dispatch( switchShare())
 	});
 

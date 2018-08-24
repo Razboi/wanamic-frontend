@@ -63,7 +63,7 @@ class ExploreContent extends Component {
 					<PostWrapper key={index}>
 						<ExplorePost
 							post={post}
-							handleClick={() => this.props.displayPostDetails( index )}
+							handleClick={() => this.props.displayPostDetails( post )}
 						/>
 					</PostWrapper>
 				)}

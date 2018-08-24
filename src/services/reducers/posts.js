@@ -5,11 +5,9 @@ const initialState = {
 	profilePosts: [],
 	comments: [],
 	mediaOptions: false,
-	displayComments: false,
 	displayShare: false,
 	displayPostDetails: false,
-	postDetailsId: undefined,
-	postDetailsIndex: undefined,
+	postDetails: {},
 	postToShare: {}
 };
 
@@ -131,18 +129,11 @@ export default function posts( state = initialState, action = {}) {
 			postToShare: action.post
 		};
 
-	case "SWITCH_COMMENTS":
-		return {
-			...state,
-			displayComments: !state.displayComments,
-			postDetailsId: action.postDetailsId
-		};
-
 	case "SWITCH_POST_DETAILS":
 		return {
 			...state,
 			displayPostDetails: !state.displayPostDetails,
-			postDetailsIndex: action.index
+			postDetails: action.post
 		};
 
 	default:
