@@ -46,13 +46,9 @@ const
 	`,
 	AuthorImg = styled( Image )`
 		overflow: visible !important;
-		width: 30px !important;
-		height: 30px !important;
+		width: 40px !important;
+		height: 40px !important;
 		margin: 0 !important;
-		@media (min-width: 420px) {
-			width: 35px !important;
-			height: 35px !important;
-		}
 		:hover {
 			cursor: pointer;
 		}
@@ -171,6 +167,12 @@ class MediaPost extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
+	goToProfile = user => {
+		if ( this.props.history ) {
+			this.props.history.push( "/" + user.username );
+		}
+	}
+
 	handleLike = retry => {
 		const { post } = this.props;
 		if ( !retry ) {
@@ -260,9 +262,9 @@ class MediaPost extends Component {
 					<AuthorImg
 						circular
 						src={userPicture}
-						onClick={this.props.goToProfile}
+						onClick={() => this.goToProfile( post.author )}
 					/>
-					<HeaderInfo onClick={this.props.goToProfile}>
+					<HeaderInfo onClick={() => this.goToProfile( post.author )}>
 						<AuthorFullname className="postAuthor">
 							{post.author.fullname}
 							<AuthorUsername>
@@ -277,7 +279,7 @@ class MediaPost extends Component {
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}
-							post={post}
+							postOrComment={post}
 							socket={this.props.socket}
 						/>
 					}
@@ -348,7 +350,7 @@ MediaPost.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
-	goToProfile: PropTypes.func,
+	history: PropTypes.object,
 	newsFeed: PropTypes.bool,
 	details: PropTypes.bool
 };

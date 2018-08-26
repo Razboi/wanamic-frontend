@@ -13,6 +13,19 @@ const
 		align-items: center;
 		flex-direction: column;
 		overflow: hidden;
+		background: #111;
+		@media (max-width: 620px) {
+			min-height: auto;
+		}
+	`,
+	ItunesMedia = styled.div`
+		min-width: 750px;
+		min-height: 350px;
+		display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+		z-index: 2;
 	`,
 	ItunesImage = styled( Image )`
 		height: 30px;
@@ -28,7 +41,6 @@ const
 		color: #fff;
 	`,
 	PostMediaBackground = styled.div`
-		z-index: -1;
 		width: 100%;
 		height: 100%;
 		position: absolute;
@@ -37,24 +49,25 @@ const
 		filter: blur(17px) brightness(90%);
 		transform: scale(1.066);
 	`,
+	LinkMedia = styled.div`
+		position: relative;
+		height: 0;
+		width: 100%;
+		padding-bottom: 56%;
+	`,
 	LinkPreviewImage = styled( Image )`
-		grid-area: img;
 		position: absolute !important;
 		width: 100%;
 		height: 100%;
 		top: 0;
 		left: 0;
-		border-radius: ${props => props.explore ? "8px" : "0"};
-		filter: ${props => props.explore && "brightness( 85% )"};
 	`,
 	LinkPreviewIframe = styled.iframe`
-		grid-area: img;
 		position: absolute;
 		width: 100%;
 		height: 100%;
 		top: 0;
 		left: 0;
-		border-radius: ${props => props.explore ? "8px" : "0"};
 		border: none;
 	`;
 
@@ -82,16 +95,18 @@ class PostDetailsMedia extends Component {
 		if ( post.link ) {
 			return (
 				<PostMedia>
-					{post.linkContent.embeddedUrl ?
-						<LinkPreviewIframe
-							src={post.linkContent.embeddedUrl}
-							frameborder="0"
-							allow="autoplay; encrypted-media"
-							allowfullscreen="allowfullscreen"
-						/>
-						:
-						<LinkPreviewImage src={post.linkContent.image} />
-					}
+					<LinkMedia>
+						{post.linkContent.embeddedUrl ?
+							<LinkPreviewIframe
+								src={post.linkContent.embeddedUrl}
+								frameBorder="0"
+								allow="autoplay; encrypted-media"
+								allowFullScreen="allowfullscreen"
+							/>
+							:
+							<LinkPreviewImage src={post.linkContent.image} />
+						}
+					</LinkMedia>
 				</PostMedia>
 			);
 		}
@@ -105,13 +120,13 @@ class PostDetailsMedia extends Component {
 				{post.picture ?
 					<MediaImage src={this.mediaPicture} />
 					:
-					<React.Fragment>
+					<ItunesMedia>
 						<a href={post.mediaContent.url} target="_blank">
 							<ItunesImage src={require( "../images/itunes.svg" )} />
 						</a>
 						<MediaTitle>{post.mediaContent.title}</MediaTitle>
 						<MediaImage src={post.mediaContent.image} />
-					</React.Fragment>
+					</ItunesMedia>
 				}
 			</PostMedia>
 		);

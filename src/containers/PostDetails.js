@@ -8,61 +8,120 @@ import Comments from "../containers/Comments";
 import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PostDetailsMedia from "../components/PostDetailsMedia";
-import { switchShare } from "../services/actions/posts";
+import { switchShare, updatePost, switchPostDetails
+} from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
+		position: fixed;
+		height: 100%;
+    overflow-y: auto;
 		width: 100%;
-		max-width: 950px;
-		position: absolute;
-		z-index: 20;
-		background: #fff;
-		@media (max-width: 760px) {
-			background: #fff;
+		display: grid;
+		@media (max-width: 420px) {
+			background: rgba(0,0,0,0.65);
 			height: 100%;
 		}
+		opacity: ${props => props.displayShare && "0"};
+		transition: opacity 0.1s linear;
 	`,
-	Main = styled.div`
-		display: grid;
-		grid-template-columns: 70% 30%;
-		grid-template-areas: "media sidebar";
-		width: 100%;
-	`,
-	PostSidebar = styled.div`
-		grid-area: sidebar;
+	TextPost = styled.div`
+		position: relative;
+		width: 90%;
+		height: 85%;
+		border-radius: 2px;
+		margin: 3rem auto;
 		background: #fff;
 		display: grid;
 		grid-template-rows: auto 1fr;
 		grid-template-areas:
 		"header"
 		"comments";
+		@media (max-width: 420px) {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+		}
+		@media (min-width: 620px) {
+			width: 620px;
+		}
 	`,
-	StyledIcon = styled( Icon )`
+	Main = styled.div`
+		position: relative;
+		max-width: 90%;
+		width: ${props => props.video && "100%"};
+		margin: 3rem auto;
+		display: grid;
+		grid-template-columns: auto minmax(285px, 350px);
+		grid-template-rows: auto 1fr;
+		grid-template-areas:
+			"media header"
+			"media comments";
+		z-index: 10;
+		background: #fff;
+		@media (max-width: 760px) {
+			grid-template-areas: "header" "media" "options" "sidebar";
+			grid-template-columns: 100%;
+			grid-template-rows: auto auto auto minmax(285px, 1fr);
+		}
+		@media (max-width: 420px) {
+			max-width: none;
+			width: 100%;
+			margin: 0;
+		}
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
+		position: absolute;
+		@media (max-width: 760px) {
+			display: none;
+		}
+	`,
+	CloseIcon = styled( Icon )`
 		color: #fff;
 		position: fixed;
-		top: 20px;
-		right: 20px;
+		top: 15px;
+		right: 15px;
 		font-size: 2rem !important;
+		z-index: 2;
 		:hover {
 			cursor: pointer;
+		}
+		@media (min-width: 760px) {
+			display: ${props => props.headericon && "none"} !important;
+		}
+		@media (max-width: 760px) {
+			display: ${props => !props.headericon && "none"} !important;
+			position: static;
+			font-size: 1rem !important;
 		}
 	`,
 	NullPostWarning = styled.div`
 		z-index: 20;
-		position: absolute;
+		position: fixed;
 		background: #fff;
-		width: 300px;
-		height: 200px;
+		width: 100%;
+		max-width: 500px;
+		height: 100%;
+		max-height: 500px;
 		border-radius: 2px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 1rem;
 		font-weight: 600;
+		i {
+			color: #111;
+			font-size: 1.6rem !important;
+			position: absolute;
+		}
 	`,
 	PostHeader = styled( Header )`
 		grid-area: header;
+		position: relative;
 		background: rgba(0,0,0,0.85);
 		min-height: 60px;
 		display: flex;
@@ -74,6 +133,7 @@ const
 	`,
 	CommentsWrapper = styled.div`
 		position: relative;
+		overflow: hidden;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
@@ -85,22 +145,13 @@ const
 	`,
 	AuthorImg = styled( Image )`
 		overflow: visible !important;
-		width: 30px !important;
-		height: 30px !important;
+		width: 40px !important;
+		height: 40px !important;
 		margin: 0 !important;
-		@media (min-width: 420px) {
-			width: 40px !important;
-			height: 40px !important;
-		}
 		:hover {
 			cursor: pointer;
 		}
 	`,
-	StyledOptions = {
-		position: "absolute",
-		right: "1rem",
-		top: "1rem",
-	},
 	AuthorFullname = styled.span`
 		font-size: 1.05rem !important;
 		color: #fff !important;
@@ -120,26 +171,55 @@ const
 		font-size: 1rem !important;
 		color: rgba(255,255,255,0.45) !important;
 	`,
+	HeaderOptions = styled.div`
+		margin-left: auto;
+		i {
+			color: #555 !important;
+			font-size: 1.4rem !important;
+		}
+	`,
 	Options = styled.div`
 		position: absolute;
 		display: flex;
 		bottom: -30px;
     right: 0px;
+		@media (max-width: 760px) {
+			position: static;
+			grid-area: options;
+			padding: 1rem 10px;
+			align-items: center;
+		}
+	`,
+	TextPostOptions = styled.div`
+		position: absolute;
+		display: flex;
+		bottom: -30px;
+    right: 0px;
+		div {
+			color: #fff !important;
+		}
+		@media (max-width: 760px) {
+			bottom: 1rem;
+		}
 	`,
 	Option = styled.div`
 		:hover {
 			cursor: pointer;
 		}
 		color: #fff;
-		margin: 0 5px;
+		@media (max-width: 760px) {
+			color: #111;
+		}
+		margin: 0 10px;
 	`;
 
 class PostDetails extends Component {
 	constructor() {
 		super();
 		this.state = {
-			post: {},
-			displayComments: false
+			post: undefined,
+			nullPost: false,
+			hiddeCommentInput: true
 		};
 		this.previousHref = undefined;
 		this.userPicture = undefined;
@@ -150,10 +230,10 @@ class PostDetails extends Component {
 		this.previousHref = window.location.href;
 		window.history.pushState( null, null, "/post" );
 		window.onpopstate = e => this.handlePopstate( e );
-		if ( !this.props.post ) {
+		if ( !this.props.postDetails ) {
 			this.getPost();
 		} else {
-			this.setState({ post: this.props.post });
+			this.setState({ post: this.props.postDetails });
 		}
 	}
 
@@ -165,33 +245,51 @@ class PostDetails extends Component {
 
 	componentWillUnmount() {
 		document.body.style.overflowY = "auto";
-		window.history.pushState( null, null, this.previousHref );
 		window.onpopstate = () => {};
 	}
 
 	handlePopstate = e => {
 		e.preventDefault();
-		this.props.switchDetails();
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+			window.history.pushState( null, null, "/post" );
+		} else {
+			this.props.switchPostDetails();
+		}
 	}
 
 	getPost = async() => {
 		var post;
 		try {
-			post = await api.getPost( this.props.postDetails._id );
+			post = await api.getPost( this.props.postId );
+			if ( !post.data ) {
+				this.setState({ nullPost: true });
+			} else {
+				this.setState({ post: post.data });
+			}
 		} catch ( err ) {
 			console.log( err );
+			this.setState({ nullPost: true });
 		}
-		this.setState({ post: post.data });
 	}
 
 	handleBack = () => {
-		this.props.switchDetails();
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		} else {
+			this.props.switchPostDetails();
+			window.history.pushState( null, null, this.previousHref );
+		}
 	}
 
-	goToProfile = async user => {
+	handleShare = () => {
+		this.props.switchShare( this.state.post );
+	}
+
+	goToProfile = async() => {
 		if ( this.props.history ) {
 			await this.handleBack();
-			this.props.history.push( "/" + user.username );
+			this.props.history.push( "/" + this.state.post.author.username );
 		}
 	}
 
@@ -236,10 +334,35 @@ class PostDetails extends Component {
 			}).catch( err => console.log( err ));
 	}
 
+	toggleCommentInput = () => {
+		this.setState( state => ({ hiddeCommentInput: !state.hiddeCommentInput }));
+	}
+
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
 			{ post } = this.state;
+		if ( this.state.nullPost ) {
+			return (
+				<React.Fragment>
+					<CloseIcon name="close" onClick={this.handleBack} />
+					<OutsideClickHandler onClick={this.handleBack} />
+					<NullPostWarning>
+						<span>This post has been removed</span>
+						<CloseIcon
+							headericon="true"
+							name="close"
+							onClick={this.handleBack}
+						/>
+					</NullPostWarning>
+				</React.Fragment>
+			);
+		}
+		// empty obj
+		if ( !post && !this.state.nullPost ) {
+			return null;
+		}
+
 		try {
 			if ( post.author && post.author.profileImage ) {
 				process.env.REACT_APP_STAGE === "dev" ?
@@ -252,30 +375,20 @@ class PostDetails extends Component {
 		} catch ( err ) {
 			console.log( err );
 		}
-		// empty obj
-		if ( Object.keys( post ).length === 0 && post.constructor === Object ) {
-			return null;
-		}
-		if ( !post ) {
+		if ( post.media ) {
 			return (
-				<NullPostWarning>
-					<span>This post doesn't exist</span>
-				</NullPostWarning>
-			);
-		}
-		return (
-			<Wrapper>
-				<StyledIcon name="close" onClick={this.handleBack} />
-				<Main>
-					<PostDetailsMedia post={post} />
-					<PostSidebar>
+				<Wrapper displayShare={this.props.displayShare}>
+					<CloseIcon name="close" onClick={this.handleBack} />
+					<OutsideClickHandler onClick={this.handleBack} />
+					<Main video={post.link && post.linkContent.embeddedUrl}>
+						<PostDetailsMedia post={post} />
 						<PostHeader>
 							<AuthorImg
 								circular
 								src={this.userPicture}
-								onClick={this.props.goToProfile}
+								onClick={this.goToProfile}
 							/>
-							<HeaderInfo onClick={this.props.goToProfile}>
+							<HeaderInfo onClick={this.goToProfile}>
 								<AuthorFullname className="postAuthor">
 									{post.author.fullname}
 									<AuthorUsername>
@@ -287,23 +400,107 @@ class PostDetails extends Component {
 								</DateTime>
 							</HeaderInfo>
 
-							{ !this.props.fakeOptions &&
+							<HeaderOptions>
+								{ !this.props.fakeOptions &&
 								<DropdownOptions
-									style={StyledOptions}
-									post={post}
+									postOrComment={post}
 									socket={this.props.socket}
 								/>
-							}
+								}
+								<CloseIcon headericon="true" name="close" onClick={this.handleBack} />
+							</HeaderOptions>
 						</PostHeader>
 
 						<CommentsWrapper>
 							<Comments
 								onExplore={this.props.onExplore}
 								socket={this.props.socket}
+								hiddeCommentInput={this.state.hiddeCommentInput}
 							/>
 						</CommentsWrapper>
-					</PostSidebar>
-					<Options>
+						<Options>
+							{post.likedBy.includes( localStorage.getItem( "username" )) ?
+								<Option onClick={() => this.handleDislike()} >
+									<Icon
+										name="heart"
+										color="red"
+										size="large"
+									/>
+									<b>{post.likedBy.length}</b>
+								</Option>
+								:
+								<Option onClick={() => this.handleLike()} >
+									<Icon
+										name="empty heart"
+										size="large"
+									/>
+									<b>{post.likedBy.length}</b>
+								</Option>
+							}
+							<Option
+								onClick={this.toggleCommentInput}
+								id="smallDetailsCommentOption"
+							>
+								<Icon
+									name="comment outline"
+									size="large"
+								/>
+								<b>{post.comments.length}</b>
+							</Option>
+							<Option onClick={this.handleShare} >
+								<Icon
+									name="share"
+									size="large"
+								/>
+								<b>{post.sharedBy.length}</b>
+							</Option>
+						</Options>
+					</Main>
+				</Wrapper>
+			);
+		}
+		return (
+			<Wrapper displayShare={this.props.displayShare}>
+				<CloseIcon name="close" onClick={this.handleBack} />
+				<OutsideClickHandler onClick={this.handleBack} />
+				<TextPost>
+					<PostHeader>
+						<AuthorImg
+							circular
+							src={this.userPicture}
+							onClick={this.goToProfile}
+						/>
+						<HeaderInfo onClick={this.goToProfile}>
+							<AuthorFullname className="postAuthor">
+								{post.author.fullname}
+								<AuthorUsername>
+									@{post.author.username}
+								</AuthorUsername>
+							</AuthorFullname>
+							<DateTime className="postDate">
+								{moment( post.createdAt ).fromNow()}
+							</DateTime>
+						</HeaderInfo>
+
+						<HeaderOptions>
+							{ !this.props.fakeOptions &&
+								<DropdownOptions
+									postOrComment={post}
+									socket={this.props.socket}
+								/>
+							}
+							<CloseIcon headericon="true" name="close" onClick={this.handleBack} />
+						</HeaderOptions>
+					</PostHeader>
+
+					<CommentsWrapper>
+						<Comments
+							onExplore={this.props.onExplore}
+							socket={this.props.socket}
+							TextPost
+						/>
+					</CommentsWrapper>
+					<TextPostOptions>
 						{post.likedBy.includes( localStorage.getItem( "username" )) ?
 							<Option className="dislikeOption"
 								onClick={() => this.handleDislike()}
@@ -335,8 +532,8 @@ class PostDetails extends Component {
 							/>
 							<b>{post.sharedBy.length}</b>
 						</Option>
-					</Options>
-				</Main>
+					</TextPostOptions>
+				</TextPost>
 			</Wrapper>
 		);
 	}
@@ -358,7 +555,9 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchShare: post => dispatch( switchShare( post ))
+		switchShare: post => dispatch( switchShare( post )),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		updatePost: post => dispatch( updatePost( post )),
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( PostDetails );

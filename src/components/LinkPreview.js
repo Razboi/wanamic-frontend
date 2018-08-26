@@ -9,7 +9,7 @@ const
 		height: auto;
 		grid-template-columns: 100%;
 		grid-row-gap: ${props => props.explore ? "0" : "7px"};
-		grid-template-rows: 50% 50%;
+		grid-template-rows: 1fr auto;
 		grid-template-areas:
 			"img"
 			"txt"
@@ -48,22 +48,17 @@ const
 	`,
 	LinkPreviewText = styled.div`
 		grid-area: txt;
-		padding: 10px;
+		padding: 5px 10px;
 		display: grid;
 		grid-template-columns: 100%;
-		grid-template-rows: 25% 65% 10%;
+		grid-template-rows: 50% 50%;
 		grid-template-areas:
 			"head"
-			"desc"
 			"host"
 	`,
 	LinkPreviewHeader = styled.h4`
 		grid-area: head;
-	`,
-	LinkPreviewDescription = styled.p`
-		grid-area: desc;
-		color: #000;
-		font-size: 13px;
+		margin-bottom: 5px;
 	`,
 	LinkPreviewHostname = styled.span`
 		grid-area: host;
@@ -127,27 +122,20 @@ class LinkPreview extends Component {
 					>
 						{this.props.linkContent.embeddedUrl ?
 							<LinkPreviewIframe
-								className="linkPreviewIframe"
 								src={this.props.linkContent.embeddedUrl}
-								frameborder="0"
+								frameBorder="0"
 								allow="autoplay; encrypted-media"
-								allowfullscreen="allowfullscreen"
+								allowFullScreen="allowfullscreen"
 							/>
 							:
-							<LinkPreviewImage
-								className="linkPreviewImage"
-								src={this.props.linkContent.image}
-							/>
+							<LinkPreviewImage src={this.props.linkContent.image} />
 						}
 					</LinkMedia>
 
-					<LinkPreviewText className="linkPreviewText">
+					<LinkPreviewText>
 						<LinkPreviewHeader>
 							{this.props.linkContent.title}
 						</LinkPreviewHeader>
-						<LinkPreviewDescription>
-							{this.props.linkContent.description}
-						</LinkPreviewDescription>
 						<LinkPreviewHostname>
 							{this.props.linkContent.hostname}
 						</LinkPreviewHostname>

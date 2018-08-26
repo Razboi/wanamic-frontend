@@ -7,7 +7,7 @@ import api from "../services/api";
 
 const
 	Wrapper = styled.div`
-		border: 1px solid rgba(0,0,0,0.266);
+		border: 1px solid rgba(0,0,0,0.1);
 	`;
 
 class SharedPost extends Component {
@@ -50,19 +50,23 @@ class SharedPost extends Component {
 						post={this.state.post}
 						fakeOptions={true}
 						onShare
+						history={this.props.history}
 					/>
 					:
 					<Post
 						post={this.state.post}
 						fakeOptions={true}
-					/>}
+						history={this.props.history}
+					/>
+				}
 			</Wrapper>
 		);
 	}
 }
 
 SharedPost.propTypes = {
-	postId: PropTypes.object.isRequired
+	post: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 export default SharedPost;

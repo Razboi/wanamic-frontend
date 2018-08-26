@@ -143,9 +143,11 @@ class Share extends Component {
 			this.scrollAlreadyBlocked = true
 			:
 			document.body.style.overflowY = "hidden";
-		this.previousHref = window.location.href;
-		window.history.pushState( null, null, "/share" );
-		window.onpopstate = () => this.handlePopstate();
+		if ( !this.props.displayPostDetails ) {
+			this.previousHref = window.location.href;
+			window.history.pushState( null, null, "/share" );
+			window.onpopstate = e => this.handlePopstate( e );
+		}
 		this.getSocialCircle();
 	}
 
@@ -153,11 +155,13 @@ class Share extends Component {
 		if ( !this.scrollAlreadyBlocked ) {
 			document.body.style.overflowY = "auto";
 		}
-		window.history.pushState( null, null, this.previousHref );
-		window.onpopstate = () => {};
+		if ( !this.props.displayPostDetails ) {
+			window.history.pushState( null, null, this.previousHref );
+		}
 	}
 
-	handlePopstate = () => {
+	handlePopstate = e => {
+		e.preventDefault();
 		this.props.switchShare();
 	}
 
@@ -351,7 +355,7 @@ class Share extends Component {
 					<Icon
 						className="backIcon"
 						name="arrow left"
-						onClick={() => this.props.switchShare( undefined )}
+						onClick={() => this.props.switchShare()}
 					/>
 					<HeaderTxt>Share</HeaderTxt>
 					<Icon
@@ -373,7 +377,6 @@ class Share extends Component {
 							id="SharePostInput"
 							maxLength="2200"
 							style={UserContentInput}
-							autoFocus
 							name="description"
 							value={this.state.description}
 							placeholder="Share your opinion, tag @users and add #hashtags..."
@@ -400,6 +403,7 @@ class Share extends Component {
 				<ShareMain>
 					<PostToShare>
 						<SharedPost
+							history={this.props.history}
 							post={this.props.postToShare.sharedPost ?
 								this.props.postToShare.sharedPost
 								:
@@ -416,12 +420,14 @@ class Share extends Component {
 Share.propTypes = {
 	postToShare: PropTypes.object.isRequired,
 	switchShare: PropTypes.func.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 const
 	mapStateToProps = state => ({
-		postToShare: state.posts.postToShare
+		postToShare: state.posts.postToShare,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({

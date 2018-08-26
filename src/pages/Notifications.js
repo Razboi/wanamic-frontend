@@ -4,12 +4,11 @@ import { Image } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
-import PostDetails from "../containers/PostDetails";
-import Comments from "../containers/Comments";
 import api from "../services/api";
 import {
 	checkNotifications, addToNotifications, setNotifications
 } from "../services/actions/notifications";
+import { switchPostDetails } from "../services/actions/posts";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
 import NotificationButton from "../components/NotificationButton";
@@ -94,22 +93,6 @@ const
 		margin-bottom: 0px;
 		font-size: 15px;
 	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100vh;
-		width: 100vw;
-		bottom: 0;
-		right: 0;
-		z-index: 5;
-		background: rgba(0,0,0,0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
-	`,
 	LoaderDimmer = styled.div`
 		position: absolute;
 		left: 0;
@@ -165,8 +148,18 @@ class Notifications extends Component {
 			this.props.history.push( "/" + notification.author.username );
 			break;
 		default:
-			this.setState({ postId: notification.object, displayDetails: true });
+			this.getPost( notification.object );
 		}
+	}
+
+	getPost = async postId => {
+		let post;
+		try {
+			post = await api.getPost( postId );
+		} catch ( err ) {
+			console.log( err );
+		}
+		this.props.switchPostDetails( post.data );
 	}
 
 	checkNotifications = () => {
@@ -279,24 +272,11 @@ class Notifications extends Component {
 	}
 
 	render() {
-		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
-		if ( this.props.displayComments && !this.props.isPopup ) {
-			return (
-				<Comments socket={this.props.socket} />
-			);
-		}
-		if ( this.state.displayDetails ) {
-			return (
-				<PostDetailsDimmer>
-					<OutsideClickHandler onClick={this.switchDetails} />
-					<PostDetails
-						postId={this.state.postId}
-						switchDetails={this.switchDetails}
-						socket={this.props.socket}
-						history={this.props.history}
-					/>
-				</PostDetailsDimmer>
-			);
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ displayPostDetails, history } = this.props;
+		if ( displayPostDetails && history.location.pathname !== "/notifications" ) {
+			return null;
 		}
 		return (
 			<Wrapper>
@@ -392,13 +372,15 @@ Notifications.propTypes = {
 const
 	mapStateToProps = state => ({
 		notifications: state.notifications.allNotifications,
-		displayComments: state.posts.displayComments
+		displayComments: state.posts.displayComments,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		checkNotifications: () => dispatch( checkNotifications()),
 		setNotifications: notif => dispatch( setNotifications( notif )),
-		addToNotifications: notif => dispatch( addToNotifications( notif ))
+		addToNotifications: notif => dispatch( addToNotifications( notif )),
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
 export default withRouter(

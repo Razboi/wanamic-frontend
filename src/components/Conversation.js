@@ -11,7 +11,7 @@ var userImage;
 
 const
 	ConversationWrapper = styled.div`
-		position: absolute;
+		position: fixed;
 		bottom: 0;
 		left: 0;
 		height: 100%;
@@ -161,12 +161,27 @@ const
 
 
 class Conversation extends Component {
-
-	componentDidMount() {
-		window.onpopstate = () => this.handlePopstate();
+	constructor() {
+		super();
+		this.previousHref = window.location.href;
 	}
 
-	handlePopstate = () => {
+	componentDidMount() {
+		window.history.pushState( null, null, "/conversation" );
+		window.onpopstate = e => this.handlePopstate( e );
+	}
+
+	componentWillUnmount() {
+		window.onpopstate = () => {};
+	}
+
+	handlePopstate = e => {
+		e.preventDefault();
+		this.handleBack();
+	}
+
+	handleBack = () => {
+		window.history.pushState( null, null, this.previousHref );
 		this.props.back();
 	}
 
@@ -188,17 +203,21 @@ class Conversation extends Component {
 		}
 	}
 
+	goToProfile = () => {
+		this.handleBack();
+		this.props.history.push( `/${this.props.conversation.target.username}` );
+	}
+
 	render() {
 		const {
-			conversation, back, messageInput, handleChange,
+			conversation, messageInput, handleChange,
 			handleKeyPress, newConversation, spam
 		} = this.props;
 		this.setUserImage();
 		return (
 			<ConversationWrapper>
 				<HeaderWrapper newconversation={newConversation ? 1 : 0}>
-					<UserInfo onClick={() =>
-						this.props.history.push( `/${conversation.target.username}` )}>
+					<UserInfo onClick={this.goToProfile}>
 						<FriendImg
 							circular
 							src={userImage}
@@ -224,7 +243,7 @@ class Conversation extends Component {
 							</StyledDropdown>}
 						<CloseIcon
 							name="close"
-							onClick={back}
+							onClick={this.handleBack}
 						/>
 					</div>
 

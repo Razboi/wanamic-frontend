@@ -17,11 +17,6 @@ const
 	`;
 
 class NewsFeed extends Component {
-	goToProfile = user => {
-		if ( this.props.history ) {
-			this.props.history.push( "/" + user.username );
-		}
-	}
 	render() {
 		return (
 			<Wrapper>
@@ -33,7 +28,7 @@ class NewsFeed extends Component {
 							index={index}
 							post={post}
 							socket={this.props.socket}
-							goToProfile={() => this.goToProfile( post.author )}
+							history={this.props.history}
 						/>
 						:
 						<Post
@@ -41,7 +36,7 @@ class NewsFeed extends Component {
 							index={index}
 							post={post}
 							socket={this.props.socket}
-							goToProfile={() => this.goToProfile( post.author )}
+							history={this.props.history}
 						/>
 				)}
 			</Wrapper>
@@ -52,7 +47,7 @@ class NewsFeed extends Component {
 NewsFeed.propTypes = {
 	posts: PropTypes.array.isRequired,
 	socket: PropTypes.object.isRequired,
-	history: PropTypes.object,
+	history: PropTypes.object.isRequired,
 };
 
 export default NewsFeed;

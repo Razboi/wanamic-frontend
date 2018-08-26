@@ -115,7 +115,7 @@ class UserAlbum extends Component {
 						{this.props.posts.map(( post, index ) =>
 							<PictureWrapper
 								key={index}
-								onClick={() => this.props.switchPostDetails( index )}
+								onClick={() => this.props.switchPostDetails( post )}
 								rightImg={( index + 1 ) % 3 === 0}
 							>
 								<UserPicture

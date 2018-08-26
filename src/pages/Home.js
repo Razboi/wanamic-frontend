@@ -6,13 +6,11 @@ import {
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
-import PostDetails from "../containers/PostDetails";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
-import Share from "../containers/Share";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
@@ -64,16 +62,6 @@ const
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		padding-top: 49.33px;
-	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100%;
-		width: 100%;
-		z-index: 5;
-		background: rgba(0,0,0,0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	`,
 	OutsideClickHandler = styled.div`
 		width: 100%;
@@ -165,10 +153,7 @@ class Home extends Component {
 	}
 
 	render() {
-		var plusImage;
-		const {
-			newsfeed, displayPostDetails, displayShare
-		} = this.props;
+		let plusImage;
 
 		try {
 			plusImage = require( "../images/plus.svg" );
@@ -178,18 +163,6 @@ class Home extends Component {
 
 		return (
 			<Wrapper>
-				{( displayPostDetails || displayShare ) &&
-					<PostDetailsDimmer>
-						<OutsideClickHandler onClick={this.hidePopups} />
-						{displayPostDetails &&
-							<PostDetails
-								switchDetails={this.hidePostDetails}
-								socket={this.props.socket}
-								history={this.props.history}
-							/>}
-						{displayShare && <Share socket={this.props.socket} />}
-					</PostDetailsDimmer>
-				}
 				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -221,7 +194,7 @@ class Home extends Component {
 						<OutsideClickHandler onClick={this.hidePopups}>
 							<HomeContent>
 								<NewsFeed
-									posts={newsfeed}
+									posts={this.props.newsfeed}
 									socket={this.props.socket}
 									history={this.props.history}
 								/>
@@ -244,10 +217,8 @@ const
 	mapStateToProps = state => ({
 		newsfeed: state.posts.newsfeed,
 		mediaOptions: state.posts.mediaOptions,
-		displayShare: state.posts.displayShare,
-		displayPostDetails: state.posts.displayPostDetails,
+		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		displayMessages: state.conversations.displayMessages
 	}),
 
 	mapDispatchToProps = dispatch => ({

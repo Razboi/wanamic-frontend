@@ -6,7 +6,7 @@ import Comment from "./Comment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
-	setComments, addComment, deleteComment, updatePost,
+	setComments, addComment, updatePost,
 	addToComments, updateComment
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
@@ -18,36 +18,35 @@ import InfiniteScroll from "react-infinite-scroller";
 const
 	Wrapper = styled.div`
 		grid-area: comments;
-		position: absolute;
-		height: 100%;
 		background: #fff;
 		display: grid;
+		position: absolute;
+    height: 100%;
 		width: 100%;
-		grid-template-rows: 1fr 55px;
+		grid-template-rows: 1fr auto;
 		grid-template-columns: 100%;
 		grid-template-areas:
-			"com"
-			"inp";
+			"comments"
+			"input";
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
-		height: 100%;
 		width: 100%;
+		padding: ${props => props.textpost && "0 3rem"};
 	`,
 	CommentsWrapper = styled.div`
-		grid-area: com;
+		grid-area: comments;
 		display: flex;
 		flex-direction: column;
 		z-index: 3;
 		overflow-y: auto;
-		@media (min-width: 420px) {
-			::-webkit-scrollbar {
-				display: block !important;
-				width: 6px !important;
-			}
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 6px !important;
 		}
 	`,
 	InputTriggerStyles = {
-		gridArea: "inp",
+		gridArea: "input",
+		height: "55px"
 	},
 	StyledTextArea = {
 		width: "100%",
@@ -57,7 +56,7 @@ const
 		padding: "0.5rem"
 	},
 	SuggestionsWrapper = styled.div`
-		grid-area: com;
+		grid-area: comments;
 		z-index: 3;
 		visibility: ${props => props.showSuggestions ? "visible" : "hidden"};
 		background: #fff;
@@ -86,21 +85,22 @@ const
 	`,
 	Description = styled.div`
 		width: 100%;
+		font-size: ${props => props.TextPost && "1.5rem"};
 	`,
 	Content = styled.p`
-		padding: 1.5rem 1rem;
+		padding: ${props => props.TextPost ? "2rem 1rem" : "1.5rem 1rem"};
 	`,
 	DescriptionAuthor = styled.span`
 		font-weight: bold;
-		font-size: 1rem;
+		font-size: ${props => props.TextPost && "1.3rem"};
 		word-break: break-all;
 		padding-right: 7px;
 	`;
 
 
 class Comments extends Component {
-	constructor() {
-		super();
+	constructor( props ) {
+		super( props );
 		this.state = {
 			comment: "",
 			socialCircle: [],
@@ -116,6 +116,7 @@ class Comments extends Component {
 			spam: false
 		};
 		this.interval = setInterval( this.resetCommentsLimit, 30000 );
+		this.commentInput = React.createRef();
 	}
 
 	componentDidMount() {
@@ -125,6 +126,12 @@ class Comments extends Component {
 
 	componentWillUnmount() {
 		clearInterval( this.interval );
+	}
+
+	componentDidUpdate( prevProps ) {
+		if ( prevProps.hiddeCommentInput && !this.props.hiddeCommentInput ) {
+			this.commentInput.focus();
+		}
 	}
 
 	resetCommentsLimit = () => {
@@ -140,6 +147,9 @@ class Comments extends Component {
 						.catch( err => console.log( err ));
 				} else {
 					this.props.setComments( res.data );
+					this.setState({
+						hasMore: res.data.length === 10
+					});
 				}
 			}).catch( err => console.log( err ));
 	}
@@ -155,7 +165,7 @@ class Comments extends Component {
 				} else if ( res.data ) {
 					this.props.addToComments( res.data );
 					this.setState({
-						hasMore: res.data.length > 10,
+						hasMore: res.data.length === 10,
 						skip: this.state.skip + 1
 					});
 				}
@@ -272,18 +282,6 @@ class Comments extends Component {
 		}, 10000 );
 	}
 
-	handleDelete = ( commentIndex, updatedPost ) => {
-		this.props.deleteComment( commentIndex );
-		this.props.updatePost(
-			updatedPost,
-			this.props.onExplore
-		);
-	};
-
-	handleUpdate = comment => {
-		this.props.updateComment( comment );
-	}
-
 	handleReply = target => {
 		this.setState({ comment: "@" + target.username + " " });
 	}
@@ -354,9 +352,9 @@ class Comments extends Component {
 			<Wrapper>
 				<CommentsWrapper>
 					{postDetails.content &&
-						<Description>
-							<Content>
-								<DescriptionAuthor>
+						<Description TextPost={this.props.TextPost}>
+							<Content TextPost={this.props.TextPost}>
+								<DescriptionAuthor TextPost={this.props.TextPost}>
 									@{postDetails.author.username}
 								</DescriptionAuthor>
 								{postDetails.content}
@@ -369,6 +367,7 @@ class Comments extends Component {
 						loadMore={this.getComments}
 						initialLoad={false}
 						useWindow={false}
+						textpost={this.props.TextPost ? 1 : 0}
 					>
 						{this.state.spam &&
 							<SpamWarning warning>
@@ -385,7 +384,6 @@ class Comments extends Component {
 								index={index}
 								comment={comment}
 								handleUpdate={this.handleUpdate}
-								handleDelete={this.handleDelete}
 								handleReply={() => this.handleReply( comment.author )}
 								socket={this.props.socket}
 							/>
@@ -400,10 +398,12 @@ class Comments extends Component {
 					onCancel={metaData => this.toggleSuggestions( metaData ) }
 					onType={metaData => this.handleMentionInput( metaData ) }
 					endTrigger={endHandler => this.endHandler = endHandler }
+					className={this.props.hiddeCommentInput ?
+						"hiddenCommentInput" : undefined}
 				>
 					<textarea
-						autoFocus
 						maxLength="2200"
+						id={this.props.TextPost && "textPostCommentInput"}
 						className="commentsTextarea"
 						style={StyledTextArea}
 						name="comment"
@@ -411,6 +411,7 @@ class Comments extends Component {
 						placeholder={placeholder}
 						onChange={this.handleChange}
 						onKeyDown={this.handleKeyPress}
+						ref={input => this.commentInput = input}
 					/>
 				</InputTrigger>
 				<SuggestionsWrapper showSuggestions={this.state.showSuggestions}>
@@ -432,7 +433,10 @@ Comments.propTypes = {
 	setComments: PropTypes.func.isRequired,
 	newsfeed: PropTypes.array.isRequired,
 	comments: PropTypes.array,
-	onExplore: PropTypes.bool
+	onExplore: PropTypes.bool,
+	TextPost: PropTypes.bool,
+	forwardRef: PropTypes.object,
+	hiddeCommentInput: PropTypes.bool
 };
 
 const
@@ -447,7 +451,6 @@ const
 		setComments: comments => dispatch( setComments( comments )),
 		addToComments: comments => dispatch( addToComments( comments )),
 		addComment: comment => dispatch( addComment( comment )),
-		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
 		updateComment: comment => dispatch( updateComment( comment )),
 		updatePost: ( post, onExplore ) =>
 			dispatch( updatePost( post, onExplore ))

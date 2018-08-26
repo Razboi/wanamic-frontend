@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import {
-	switchPostDetails, setPosts, switchShare, addToPosts,
-	switchMediaOptions
+import { 	setPosts, addToPosts, switchMediaOptions
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
 import { switchNotifications } from "../services/actions/notifications";
@@ -11,9 +9,6 @@ import api from "../services/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import Comments from "../containers/Comments";
-import Share from "../containers/Share";
-import PostDetails from "../containers/PostDetails";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
 import ProfileTimeLine from "../components/ProfileTimeLine";
@@ -263,20 +258,6 @@ const
 		background-size: 100%;
 		margin: 0 0.5rem 0 0;
 	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100vh;
-		width: 100vw;
-		z-index: 5;
-		background: rgba(0,0,0,0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
-	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		padding-top: 49.33px;
@@ -407,7 +388,6 @@ class UserProfile extends Component {
 			} else {
 				profileImg = require( "../images/defaultUser.png" );
 			}
-			console.log( user.profileImage, profileImg );
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -553,12 +533,6 @@ class UserProfile extends Component {
 		if ( this.props.displayMessages ) {
 			this.props.switchMessages();
 		}
-		if ( this.props.displayPostDetails ) {
-			this.props.switchPostDetails();
-		}
-		if ( this.props.displayShare ) {
-			this.props.switchShare();
-		}
 	}
 
 	toggleTab = tab => {
@@ -574,15 +548,9 @@ class UserProfile extends Component {
 	}
 
 	render() {
-		console.log( this.state.user );
 		var
 			ownProfile = this.props.username === localStorage.getItem( "username" ),
 			plusImage;
-
-		const {
-			postDetailsIndex, displayPostDetails, displayComments,
-			displayShare, profilePosts, albumPosts
-		} = this.props;
 
 		try {
 			plusImage = require( "../images/plus.svg" );
@@ -603,28 +571,6 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
-				{( displayPostDetails || displayComments || displayShare ) &&
-					<PostDetailsDimmer>
-						<OutsideClickHandler onClick={this.hidePopups} />
-						{displayPostDetails &&
-							<PostDetails
-								post={this.state.tab === "Album" ?
-									albumPosts[ postDetailsIndex ]
-									:
-									profilePosts[ postDetailsIndex ]
-								}
-								switchDetails={this.props.switchPostDetails}
-								socket={this.props.socket}
-								index={postDetailsIndex}
-								history={this.props.history}
-							/>}
-						{displayComments &&
-							<Comments
-								socket={this.props.socket}
-							/>}
-						{displayShare && <Share />}
-					</PostDetailsDimmer>
-				}
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -814,12 +760,7 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare,
-		displayPostDetails: state.posts.displayPostDetails,
-		postDetailsIndex: state.posts.postDetailsIndex,
-		profilePosts: state.posts.profilePosts,
-		albumPosts: state.posts.album
+		profilePosts: state.posts.profilePosts
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -828,10 +769,8 @@ const
 		addToPosts: ( posts, onExplore, onProfile ) =>
 			dispatch( addToPosts( posts, onExplore, onProfile )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchMessages: () => dispatch( switchMessages()),
-		switchNotifications: () => dispatch( switchNotifications()),
-		switchShare: () => dispatch( switchShare())
+		switchNotifications: () => dispatch( switchNotifications())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

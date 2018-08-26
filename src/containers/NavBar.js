@@ -7,8 +7,11 @@ import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
+import { switchPostDetails, switchShare } from "../services/actions/posts";
 import Notifications from "../pages/Notifications";
 import Messages from "../pages/Messages";
+import Share from "../containers/Share";
+import PostDetails from "../containers/PostDetails";
 
 const
 	Wrapper = styled.div`
@@ -80,8 +83,8 @@ const
 		}
 	`,
 	ProfileImg = styled( Image )`
-		width: 30px !important;
-		height: 30px !important;
+		width: 33px !important;
+		height: 33px !important;
 	`,
 	DropdownFullname = styled.h4`
 		margin: 0 !important;
@@ -122,6 +125,7 @@ const
 	`,
 	RightOptions = styled.div`
 		display: flex;
+		align-items: center;
 		margin-left: auto;
 		@media (max-width: 960px) {
 			display: none;
@@ -138,10 +142,29 @@ const
 		@media (max-width: 960px) {
 			display: none;
 		}
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
 	`;
 
 
 class NavBar extends Component {
+	componentWillUnmount() {
+		this.hidePopups();
+	}
+
 	handleHome = () => {
 		if ( this.props.location.pathname !== "/" ) {
 			this.props.history.push( "/" );
@@ -195,6 +218,21 @@ class NavBar extends Component {
 		}
 	}
 
+	hidePopups = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
+		if ( this.props.displayPostDetails ) {
+			this.props.switchPostDetails();
+		}
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		}
+	}
+
 	render() {
 		var
 			profileImage,
@@ -222,11 +260,26 @@ class NavBar extends Component {
 		} catch ( err ) {
 			console.log( err );
 		}
+		const { displayPostDetails, displayShare } = this.props;
 		return (
 			<Wrapper
 				hide={this.props.hide}
 				hideOnLargeScreen={this.props.hideOnLargeScreen}
 			>
+				{( displayPostDetails || displayShare ) &&
+					<PostDetailsDimmer>
+						<OutsideClickHandler onClick={this.hidePopups} />
+						{displayPostDetails &&
+							<PostDetails
+								switchDetails={this.hidePostDetails}
+								socket={this.props.socket}
+								history={this.props.history}
+							/>}
+						{displayShare &&
+							<Share socket={this.props.socket} history={this.props.history}
+							/>}
+					</PostDetailsDimmer>
+				}
 				<Options>
 					<NavOption onClick={this.handleHome} >
 						<NavImage
@@ -410,13 +463,17 @@ const
 		totalViews: state.user.totalViews,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages,
-		allConversations: state.conversations.allConversations
+		allConversations: state.conversations.allConversations,
+		displayShare: state.posts.displayShare,
+		displayPostDetails: state.posts.displayPostDetails,
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		logout: () => dispatch( logout()),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: () => dispatch( switchMessages())
+		switchMessages: () => dispatch( switchMessages()),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		switchShare: () => dispatch( switchShare())
 	});
 
 export default withRouter(

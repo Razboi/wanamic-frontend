@@ -7,6 +7,7 @@ import Suggestions from "./Suggestions";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
 import postLogic from "../utils/postLogic";
+import commentLogic from "../utils/commentLogic";
 
 const
 	StyledDropdown = styled( Dropdown )`
@@ -80,7 +81,7 @@ class DropdownOptions extends Component {
 		super();
 		this.state = {
 			socialCircle: [],
-			updatedContent: props.post.content,
+			updatedContent: props.postOrComment.content,
 			openModal: false,
 			showSuggestions: false,
 			suggestionsTop: undefined,
@@ -217,15 +218,34 @@ class DropdownOptions extends Component {
 	}
 
 	handleUpdate = () => {
-		const { post, socket } = this.props;
+		const { postOrComment, socket } = this.props;
 		this.toggleModal();
-		postLogic.updatePost( post, this.state.updatedContent, socket );
+		if ( postOrComment.post ) {
+			commentLogic.updateComment(
+				postOrComment, this.state.updatedContent, socket );
+		} else {
+			postLogic.updatePost(
+				postOrComment, this.state.updatedContent, socket );
+		}
+	}
+
+	handleDelete = () => {
+		if ( this.props.postOrComment.post ) {
+			commentLogic.deleteComment( this.props.postOrComment );
+		} else {
+			postLogic.deletePost( this.props.postOrComment._id );
+		}
 	}
 
 	handleReport = () => {
 		this.toggleModal();
-		postLogic.reportPost(
-			this.state.reportContent, this.props.post._id );
+		if ( this.props.postOrComment.post ) {
+			postLogic.reportPost(
+				this.state.reportContent, this.props.postOrComment._id );
+		} else {
+			commentLogic.reportComment(
+				this.state.reportContent, this.props.postOrComment._id );
+		}
 	}
 
 	handleChange = e => {
@@ -235,7 +255,7 @@ class DropdownOptions extends Component {
 	render() {
 		return (
 			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
-				{ localStorage.getItem( "id" ) === this.props.post.author._id ?
+				{ localStorage.getItem( "id" ) === this.props.postOrComment.author._id ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal
 							open={this.state.openModal}
@@ -289,8 +309,7 @@ class DropdownOptions extends Component {
 						<Dropdown.Item
 							className="postDeleteOption"
 							text="Delete"
-							onClick={() =>
-								postLogic.deletePost( this.props.post._id )}
+							onClick={this.handleDelete}
 						/>
 					</Dropdown.Menu>
 					:
@@ -332,7 +351,7 @@ class DropdownOptions extends Component {
 }
 
 DropdownOptions.propTypes = {
-	post: PropTypes.object.isRequired,
+	postOrComment: PropTypes.object.isRequired,
 	socket: PropTypes.object.isRequired
 };
 

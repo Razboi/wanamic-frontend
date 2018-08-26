@@ -17,13 +17,25 @@ const
 		}
 	`,
 	HeaderWrapper = styled.div`
-		height: 49.33px;
 		display: flex;
 		align-items: center;
-		padding-left: 10px;
-		border-bottom: 1px solid rgba(0, 0, 0, .5);
+		padding-left: 0 10px;
+		box-shadow: 0 1px 2px #111;
+		height: 55px;
+		min-height: 55px;
+		padding: 0px 20px;
+		color: #222;
+		i {
+			font-size: 1.5rem !important;
+			color: #222;
+		}
 		@media (min-width: 420px) {
-			border: none;
+			box-shadow: none;
+			i {
+				:hover {
+					cursor: pointer !important;
+				}
+			}
 		}
 	`,
 	HeaderTxt = styled.span`
@@ -80,10 +92,27 @@ class SocialCircleList extends Component {
 		this.state = {
 			socialCircleImages: []
 		};
+		this.previousHref = window.location.href;
 	}
 
 	componentDidMount() {
+		window.history.pushState( null, null, "/socialCircle" );
+		window.onpopstate = e => this.handlePopstate( e );
 		this.setFriendsImages();
+	}
+
+	componentWillUnmount() {
+		window.onpopstate = () => {};
+	}
+
+	handlePopstate = e => {
+		e.preventDefault();
+		this.handleBack();
+	}
+
+	handleBack = () => {
+		window.history.pushState( null, null, this.previousHref );
+		this.props.back();
 	}
 
 	setFriendsImages = async() => {
@@ -112,7 +141,7 @@ class SocialCircleList extends Component {
 				<HeaderWrapper>
 					<Icon
 						name="arrow left"
-						onClick={this.props.back}
+						onClick={this.handleBack}
 						className="arrowBack"
 					/>
 					<HeaderTxt>Social Circle</HeaderTxt>

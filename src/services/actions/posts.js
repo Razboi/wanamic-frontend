@@ -67,9 +67,9 @@ export const
 		comment: comment
 	}),
 
-	deleteComment = commentIndex => ({
+	deleteComment = commentId => ({
 		type: DELETE_COMMENT,
-		commentIndex: commentIndex
+		commentId: commentId
 	}),
 
 	switchMediaOptions = () => ({

@@ -7,7 +7,6 @@ import ExploreContent from "../components/ExploreContent";
 import InfiniteScroll from "react-infinite-scroller";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
-import PostDetails from "../containers/PostDetails";
 import { setPosts, addToPosts, switchPostDetails
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
@@ -167,20 +166,6 @@ const
 			align-items: center;
 			bottom: ${props => props.hide ? "-54px" : "25px"};
 		}
-	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100%;
-		width: 100%;
-		z-index: 5;
-		background: rgba(0,0,0,0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
 	`;
 
 var lastScrollPosition = 0;
@@ -402,9 +387,6 @@ class ExplorePage extends Component {
 		if ( this.props.displayMessages ) {
 			this.props.switchMessages();
 		}
-		if ( this.props.displayPostDetails ) {
-			this.props.switchPostDetails();
-		}
 	}
 
 
@@ -412,7 +394,6 @@ class ExplorePage extends Component {
 		var
 			connectImage,
 			contentImage;
-		const { displayPostDetails } = this.props;
 		try {
 			connectImage = !this.state.content ?
 				require( "../images/network_color.svg" )
@@ -441,18 +422,6 @@ class ExplorePage extends Component {
 		}
 		return (
 			<Wrapper className="exploreMainWrapper">
-				{ displayPostDetails &&
-					<PostDetailsDimmer>
-						<OutsideClickHandler onClick={this.hidePopups} />
-						<PostDetails
-							switchDetails={this.hidePostDetails}
-							socket={this.props.socket}
-							index={this.state.selectedPost}
-							history={this.props.history}
-						/>
-					</PostDetailsDimmer>
-				}
-
 				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -523,7 +492,6 @@ class ExplorePage extends Component {
 const
 	mapStateToProps = state => ({
 		posts: state.posts.explore,
-		displayPostDetails: state.posts.displayPostDetails,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications
 	}),

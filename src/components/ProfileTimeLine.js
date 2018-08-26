@@ -77,6 +77,7 @@ class ProfileTimeline extends Component {
 						<StyledNewsFeed
 							posts={this.props.profilePosts}
 							socket={this.props.socket}
+							history={this.props.history}
 						/>
 					</UserPostsWrapper>
 					:

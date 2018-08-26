@@ -6,7 +6,6 @@ import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import extract from "../utils/extractMentionsHashtags";
 
 var userPicture;
 
@@ -31,8 +30,8 @@ const
 	`,
 	AuthorImg = styled( Image )`
 		overflow: visible !important;
-		width: 30px !important;
-		height: 30px !important;
+		width: 40px !important;
+		height: 40px !important;
 	`,
 	AuthorFullname = styled.span`
 		font-size: 1.05rem !important;
@@ -95,44 +94,6 @@ class Comment extends Component {
 		};
 	}
 
-	handleDelete = () => {
-		api.deleteComment( this.props.comment._id, this.props.comment.post )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleDelete())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.handleDelete( this.props.index, res.data );
-				}
-			}).catch( err => console.log( err ));
-	};
-
-	handleUpdate = async updatedContent => {
-		if ( !updatedContent || !this.state.content === updatedContent ) {
-			return;
-		}
-		try {
-			const
-				mentions = await extract(
-					updatedContent, { symbol: false }),
-				res = await api.updateComment(
-					this.props.comment._id, updatedContent, mentions );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleUpdate();
-			} else {
-				this.setState({ content: updatedContent });
-				this.props.handleUpdate( res.data.updatedComment );
-				for ( const notification of res.data.mentionsNotifications ) {
-					this.props.socket.emit( "sendNotification", notification );
-				}
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	};
-
 	handleReport = async reportContent => {
 		if ( !reportContent ) {
 			return;
@@ -182,12 +143,8 @@ class Comment extends Component {
 
 					<DropdownOptions
 						style={StyledOptions}
-						author={comment.author}
-						currentContent={comment.content}
-						handleUpdate={this.handleUpdate}
-						handleDelete={this.handleDelete}
-						handleChange={this.handleChange}
-						handleReport={this.handleReport}
+						postOrComment={comment}
+						socket={this.props.socket}
 					/>
 				</CommentHeader>
 				<Content>{this.state.content}</Content>
@@ -204,8 +161,6 @@ class Comment extends Component {
 
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired,
-	handleUpdate: PropTypes.func.isRequired,
 	handleReply: PropTypes.func.isRequired,
 	socket: PropTypes.object.isRequired
 };

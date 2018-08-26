@@ -474,7 +474,9 @@ export default {
 			url: API_URL + "/comments/delete/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updateComment: ( commentId, newContent, mentions, hashtags ) =>
 		axios({
@@ -488,7 +490,9 @@ export default {
 			url: API_URL + "/comments/update/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getPostComments: ( postId, skip ) =>
 		axios({

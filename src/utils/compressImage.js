@@ -2,7 +2,7 @@ import ImageCompressor from "image-compressor.js";
 
 const compressImage = async( image, isHeader ) => {
 	let
-		maxWidth = isHeader ? 2000 : 600,
+		maxWidth = isHeader ? 2000 : 1100,
 		maxHeight = isHeader ? 2000 : 1100,
 		result = { size: image.size },
 		scaledImg,

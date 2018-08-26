@@ -103,8 +103,8 @@ export default function posts( state = initialState, action = {}) {
 	case "DELETE_COMMENT":
 		return {
 			...state,
-			comments: state.comments.filter(( comment, index ) => {
-				return index !== action.commentIndex;
+			comments: state.comments.filter( comment => {
+				return comment._id !== action.commentId;
 			})
 		};
 
