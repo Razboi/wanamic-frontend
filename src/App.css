@@ -59,7 +59,7 @@ textarea {
 	color: #fff;
 	border-top: 1px solid rgba(0,0,0,0.15);
 	border-width: 1px 0 0 0;
-	background: rgba(0,0,0,0.85);
+	background: #292929;
 }
 
 @media (max-width: 620px) {
@@ -151,7 +151,7 @@ textarea {
 	width: 100%;
 }
 
-@media (min-width: 620px) {
+@media (min-width: 760px) {
 	#smallDetailsCommentOption {
 		display: none;
 	}
@@ -161,7 +161,7 @@ textarea {
 	margin-right: auto;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 760px) {
 	.hiddenCommentInput {
 		display: none;
 	}

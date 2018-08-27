@@ -55,13 +55,6 @@ const
 		width: 100%;
 		padding-bottom: 56%;
 	`,
-	LinkPreviewImage = styled( Image )`
-		position: absolute !important;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-	`,
 	LinkPreviewIframe = styled.iframe`
 		position: absolute;
 		width: 100%;
@@ -95,18 +88,21 @@ class PostDetailsMedia extends Component {
 		if ( post.link ) {
 			return (
 				<PostMedia>
-					<LinkMedia>
-						{post.linkContent.embeddedUrl ?
+					{post.linkContent.embeddedUrl ?
+						<LinkMedia>
 							<LinkPreviewIframe
 								src={post.linkContent.embeddedUrl}
 								frameBorder="0"
 								allow="autoplay; encrypted-media"
 								allowFullScreen="allowfullscreen"
 							/>
-							:
-							<LinkPreviewImage src={post.linkContent.image} />
-						}
-					</LinkMedia>
+						</LinkMedia>
+						:
+						<React.Fragment>
+							<PostMediaBackground background={post.linkContent.image} />
+							<MediaImage src={post.linkContent.image} />
+						</React.Fragment>
+					}
 				</PostMedia>
 			);
 		}

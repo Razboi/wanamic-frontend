@@ -51,10 +51,10 @@ const
 		position: relative;
 		max-width: 90%;
 		width: ${props => props.video && "100%"};
-		margin: 3rem auto;
+		margin: auto;
 		display: grid;
 		grid-template-columns: auto minmax(285px, 350px);
-		grid-template-rows: auto 1fr;
+		grid-template-rows: 68px max-content;
 		grid-template-areas:
 			"media header"
 			"media comments";
@@ -63,7 +63,8 @@ const
 		@media (max-width: 760px) {
 			grid-template-areas: "header" "media" "options" "sidebar";
 			grid-template-columns: 100%;
-			grid-template-rows: auto auto auto minmax(285px, 1fr);
+			grid-template-rows: 68px auto auto auto;
+			margin: 3rem auto;
 		}
 		@media (max-width: 420px) {
 			max-width: none;
@@ -74,17 +75,16 @@ const
 	OutsideClickHandler = styled.div`
 		width: 100%;
 		height: 100%;
-		min-height: 100vh;
-		position: absolute;
-		@media (max-width: 760px) {
+		position: fixed;
+		@media (max-width: 420px) {
 			display: none;
 		}
 	`,
 	CloseIcon = styled( Icon )`
 		color: #fff;
 		position: fixed;
-		top: 15px;
-		right: 15px;
+		top: 10px;
+		right: 10px;
 		font-size: 2rem !important;
 		z-index: 2;
 		:hover {
@@ -122,7 +122,7 @@ const
 	PostHeader = styled( Header )`
 		grid-area: header;
 		position: relative;
-		background: rgba(0,0,0,0.85);
+		background: #292929;
 		min-height: 60px;
 		display: flex;
 		flex-direction: row;
@@ -416,6 +416,7 @@ class PostDetails extends Component {
 								onExplore={this.props.onExplore}
 								socket={this.props.socket}
 								hiddeCommentInput={this.state.hiddeCommentInput}
+								toggleCommentInput={this.toggleCommentInput}
 							/>
 						</CommentsWrapper>
 						<Options>

@@ -247,7 +247,7 @@ class Notifications extends Component {
 	}
 
 	getNotifications = async() => {
-		if ( this.state.hasMore ) {
+		if ( this.state.hasMore && !this.state.loader ) {
 			try {
 				this.setState({ loader: true });
 				const res = await api.getNotifications( this.state.skip );

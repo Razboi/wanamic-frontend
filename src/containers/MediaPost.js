@@ -297,6 +297,7 @@ class MediaPost extends Component {
 							<LinkPreview
 								linkContent={post.linkContent}
 								details={this.props.details}
+								displayPostDetails={this.displayPostDetails}
 							/>
 							:
 							<PostMediaContent onClick={this.displayPostDetails}>

@@ -20,7 +20,6 @@ const
 		grid-area: comments;
 		background: #fff;
 		display: grid;
-		position: absolute;
     height: 100%;
 		width: 100%;
 		grid-template-rows: 1fr auto;
@@ -28,6 +27,9 @@ const
 		grid-template-areas:
 			"comments"
 			"input";
+		@media (min-width: 760px) {
+			position: absolute;
+		}
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		width: 100%;
@@ -42,6 +44,9 @@ const
 		::-webkit-scrollbar {
 			display: block !important;
 			width: 6px !important;
+		}
+		@media (max-width: 760px) {
+			max-height: 300px;
 		}
 	`,
 	InputTriggerStyles = {
@@ -283,6 +288,9 @@ class Comments extends Component {
 	}
 
 	handleReply = target => {
+		if ( this.props.hiddeCommentInput ) {
+			this.props.toggleCommentInput();
+		}
 		this.setState({ comment: "@" + target.username + " " });
 	}
 

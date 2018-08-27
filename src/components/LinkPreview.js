@@ -112,37 +112,42 @@ class LinkPreview extends Component {
 			);
 		}
 		return (
-			<a href={this.props.linkContent.url} target="_blank">
-				<LinkPreviewWrapper
-					className="linkPreviewWrapper"
+			<LinkPreviewWrapper
+				className="linkPreviewWrapper"
+			>
+				<LinkMedia
+					video={this.props.linkContent.embeddedUrl}
+					details={this.props.details}
+					onClick={this.props.displayPostDetails}
 				>
-					<LinkMedia
-						video={this.props.linkContent.embeddedUrl}
-						details={this.props.details}
-					>
-						{this.props.linkContent.embeddedUrl ?
-							<LinkPreviewIframe
-								src={this.props.linkContent.embeddedUrl}
-								frameBorder="0"
-								allow="autoplay; encrypted-media"
-								allowFullScreen="allowfullscreen"
-							/>
-							:
-							<LinkPreviewImage src={this.props.linkContent.image} />
-						}
-					</LinkMedia>
+					{this.props.linkContent.embeddedUrl ?
+						<LinkPreviewIframe
+							src={this.props.linkContent.embeddedUrl}
+							frameBorder="0"
+							allow="autoplay; encrypted-media"
+							allowFullScreen="allowfullscreen"
+						/>
+						:
+						<LinkPreviewImage src={this.props.linkContent.image} />
+					}
+				</LinkMedia>
 
-					<LinkPreviewText>
+				<LinkPreviewText>
+					<a href={this.props.linkContent.url} target="_blank">
 						<LinkPreviewHeader>
 							{this.props.linkContent.title}
 						</LinkPreviewHeader>
+					</a>
+					<a
+						href={`https://${this.props.linkContent.hostname}`}
+						target="_blank"
+					>
 						<LinkPreviewHostname>
 							{this.props.linkContent.hostname}
 						</LinkPreviewHostname>
-					</LinkPreviewText>
-
-				</LinkPreviewWrapper>
-			</a>
+					</a>
+				</LinkPreviewText>
+			</LinkPreviewWrapper>
 		);
 	}
 }
@@ -150,7 +155,8 @@ class LinkPreview extends Component {
 LinkPreview.propTypes = {
 	linkContent: PropTypes.object.isRequired,
 	explore: PropTypes.bool,
-	details: PropTypes.bool
+	details: PropTypes.bool,
+	displayPostDetails: PropTypes.func.isRequired
 };
 
 export default LinkPreview;
