@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { Icon } from "semantic-ui-react";
 import { login, signup } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -10,9 +11,11 @@ import api from "../services/api";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		min-height: 100vh;
+		height: 100%;
 		background: rgba(0,0,0,0.55);
-		display: grid;
+		display: flex;
+		flex-direction: column;
 	`,
 	BackgroundImage = styled.div`
 		height: 100%;
@@ -36,6 +39,21 @@ const
 		:
 		"left top"};
 		};
+	`,
+	CookiesPopup = styled.div`
+		width: 100%;
+		background: rgba(0,0,0,0.5);
+		color: #ccc;
+		padding: 1rem;
+		text-align: center;
+		z-index: 3;
+	`,
+	ClosePopup = styled( Icon )`
+		margin-left: 15px !important;
+		color: #ccc !important;
+		:hover {
+			cursor: pointer;
+		}
 	`;
 
 var background;
@@ -50,9 +68,9 @@ class AuthPage extends Component {
 			signup: false,
 			signupStep: 1,
 			error: undefined,
-			loginAttempts: 0,
 			blockedLogin: false,
-			forgotPassword: false
+			forgotPassword: false,
+			showPopup: true
 		};
 	}
 
@@ -77,14 +95,9 @@ class AuthPage extends Component {
 			this.props.login( credentials )
 				.then(() => this.props.history.push( "/" ))
 				.catch( err => {
-					if ( err.response.data === "jwt expired" ) {
-						if ( this.state.loginAttempts >= 3 ) {
-							this.blockLogin();
-							return;
-						} else {
-							this.setState( state => ({
-								loginAttempts: state.loginAttempts + 1 }));
-						}
+					if ( err.response.status === 503 ) {
+						this.blockLogin();
+						return;
 					}
 					this.setState({ error: err.response.data });
 				});
@@ -94,16 +107,15 @@ class AuthPage extends Component {
 	blockLogin = () => {
 		this.setState({
 			error: "You have exceeded the login attempts limit. " +
-			"Please try again in 2 minutes.",
+			"Please try again in a minute.",
 			blockedLogin: true
 		});
 		setTimeout(() => {
 			this.setState({
 				error: "",
-				blockedLogin: false,
-				loginAttempts: 0
+				blockedLogin: false
 			});
-		}, 10000 );
+		}, 1000 * 60 );
 	}
 
 	handleSignup = () => {
@@ -193,6 +205,10 @@ class AuthPage extends Component {
 		}
 	}
 
+	closePopup = () => {
+		this.setState({ showPopup: false });
+	}
+
 	render() {
 		try {
 			background = require( "../images/stars.jpg" );
@@ -201,6 +217,12 @@ class AuthPage extends Component {
 		}
 		return (
 			<Wrapper>
+				{this.state.showPopup &&
+					<CookiesPopup>
+						We use cookies to provide the best possible experience. By navigating Wanamic, you agree to our use of cookies. <a href="/information/cookies">Cookies Policy</a>
+						<ClosePopup name="close" onClick={this.closePopup} />
+					</CookiesPopup>
+				}
 				<BackgroundImage
 					signup={this.state.signup}
 					signupStep={this.state.signupStep}

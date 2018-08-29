@@ -167,8 +167,10 @@ class Conversation extends Component {
 	}
 
 	componentDidMount() {
-		window.history.pushState( null, null, "/conversation" );
-		window.onpopstate = e => this.handlePopstate( e );
+		if ( window.innerWidth <= 760 ) {
+			window.history.pushState( null, null, "/conversation" );
+			window.onpopstate = e => this.handlePopstate( e );
+		}
 	}
 
 	componentWillUnmount() {

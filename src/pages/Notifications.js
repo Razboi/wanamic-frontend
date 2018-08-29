@@ -302,7 +302,9 @@ class Notifications extends Component {
 							notification.author &&
 								notification.alert ?
 								<Notification key={index}>
-									<Content alert>{notification.content}</Content>
+									<Content alert>
+										{notification.content} <a href="/information/content">Content Policy of Wanamic</a>
+									</Content>
 								</Notification>
 								:
 								<Notification key={index}>

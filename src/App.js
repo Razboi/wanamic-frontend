@@ -11,6 +11,7 @@ import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
 import Batcave from "./pages/Batcave";
+import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
 import GuestRoute from "./utils/routes/GuestRoute";
 import { Switch } from "react-router";
@@ -25,20 +26,29 @@ import { setupLikesViews } from "./services/actions/user";
 import { connect } from "react-redux";
 import api from "./services/api";
 import refreshToken from "./utils/refreshToken";
-import { withRouter } from "react-router-dom";
+import { withRouter, Route } from "react-router-dom";
+import ReactGA from "react-ga";
 
-var socket = {};
+ReactGA.initialize( "UA-72968417-3" );
+ReactGA.pageview( window.location.pathname );
 
-let API_URL = process.env.REACT_APP_STAGE === "dev" ?
+
+let apiURL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://192.168.1.15:8081"
 	:
 	"https://api.wanamic.com";
 
 
 class App extends Component {
+	constructor( props ) {
+		super( props );
+		this.socket = io( apiURL );
+		this.props.history.listen( location => {
+			ReactGA.pageview( window.location.pathname );
+		});
+	}
 	componentDidMount() {
 		if ( this.props.authenticated ) {
-			socket = io( API_URL );
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
@@ -47,7 +57,7 @@ class App extends Component {
 
 	componentDidUpdate( prevProps ) {
 		if ( !prevProps.authenticated && this.props.authenticated ) {
-			socket = io( API_URL );
+			this.socket = io( apiURL );
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
@@ -75,11 +85,11 @@ class App extends Component {
 			token: localStorage.getItem( "token" ),
 			username: localStorage.getItem( "username" )
 		};
-		socket.emit( "register", userData );
-		socket.on( "notifications", async notification => {
+		this.socket.emit( "register", userData );
+		this.socket.on( "notifications", async notification => {
 			this.props.addNotification( notification );
 		});
-		socket.on( "message", async message => {
+		this.socket.on( "message", async message => {
 			const {
 				conversations, addConversation,
 				updateConversation, incrementChatNewMessages,
@@ -139,24 +149,25 @@ class App extends Component {
 		return (
 			<div>
 				<Switch>
-					<UserRoute exact path="/" component={Home} socket={socket}/>
+					<UserRoute exact path="/" component={Home} socket={this.socket}/>
 					<GuestRoute path="/login" component={Auth} />
 					<UserRoute
-						path="/notifications" component={Notifications} socket={socket}
+						path="/notifications" component={Notifications} socket={this.socket}
 					/>
 					<UserRoute
-						path="/messages" component={Messages} socket={socket}
+						path="/messages" component={Messages} socket={this.socket}
 					/>
-					<UserRoute path="/settings" component={Settings} socket={socket}/>
-					<NewUserRoute path="/welcome" component={Welcome} socket={socket} />
+					<UserRoute path="/settings" component={Settings} socket={this.socket}/>
+					<NewUserRoute path="/welcome" component={Welcome} socket={this.socket} />
 					<UserRoute
-						path="/explore" component={Explore} socket={socket}
+						path="/explore" component={Explore} socket={this.socket}
 					/>
 					<GuestRoute
 						path="/reset_password/:token" component={PasswordReset}
 					/>
-					<UserRoute path="/batcave" component={Batcave} socket={socket} />
-					<UserRoute path="/:username" component={Profile} socket={socket} />
+					<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
+					<Route path="/information/:section" component={Information} />
+					<UserRoute exact path="/:username" component={Profile} socket={this.socket} />
 				</Switch>
 			</div>
 		);

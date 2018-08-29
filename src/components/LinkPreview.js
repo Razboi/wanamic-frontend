@@ -156,7 +156,7 @@ LinkPreview.propTypes = {
 	linkContent: PropTypes.object.isRequired,
 	explore: PropTypes.bool,
 	details: PropTypes.bool,
-	displayPostDetails: PropTypes.func.isRequired
+	displayPostDetails: PropTypes.func
 };
 
 export default LinkPreview;

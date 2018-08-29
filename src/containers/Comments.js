@@ -24,6 +24,7 @@ const
 		width: 100%;
 		grid-template-rows: 1fr auto;
 		grid-template-columns: 100%;
+		position: ${props => props.TextPost && "absolute"};
 		grid-template-areas:
 			"comments"
 			"input";
@@ -46,7 +47,7 @@ const
 			width: 6px !important;
 		}
 		@media (max-width: 760px) {
-			max-height: 300px;
+			max-height: ${props => !props.TextPost && "300px"};
 		}
 	`,
 	InputTriggerStyles = {
@@ -357,8 +358,8 @@ class Comments extends Component {
 			);
 		}
 		return (
-			<Wrapper>
-				<CommentsWrapper>
+			<Wrapper TextPost={this.props.TextPost}>
+				<CommentsWrapper TextPost={this.props.TextPost}>
 					{postDetails.content &&
 						<Description TextPost={this.props.TextPost}>
 							<Content TextPost={this.props.TextPost}>

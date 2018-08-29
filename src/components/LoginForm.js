@@ -8,6 +8,7 @@ const
 	Wrapper = styled.div`
 		display: grid;
 		z-index: 2;
+		min-height: 100vh;
 		height: 100%;
 		width: 100%;
 		grid-template-columns: 100%;

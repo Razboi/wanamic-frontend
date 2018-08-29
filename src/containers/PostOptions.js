@@ -46,7 +46,7 @@ class PostOptions extends Component {
 							name="empty heart"
 							size="large"
 						/>
-						<b>{this.props.numLiked}</b>
+						<b>{this.props.post.likedBy.length}</b>
 					</Option>
 				}
 
@@ -59,7 +59,7 @@ class PostOptions extends Component {
 						name="comment outline"
 						size="large"
 					/>
-					<b>{this.props.numComments}</b>
+					<b>{this.props.post.comments.length}</b>
 				</Option>
 
 				<Option className="shareOption"
@@ -69,7 +69,7 @@ class PostOptions extends Component {
 						name="share"
 						size="large"
 					/>
-					<b>{this.props.numShared}</b>
+					<b>{this.props.post.sharedBy.length}</b>
 				</Option>
 			</Wrapper>
 		);
@@ -78,8 +78,6 @@ class PostOptions extends Component {
 
 PostOptions.propTypes = {
 	fakeOptions: PropTypes.bool,
-	numComments: PropTypes.number.isRequired,
-	numShared: PropTypes.number.isRequired,
 	switchShare: PropTypes.func.isRequired,
 	handleLike: PropTypes.func.isRequired,
 	handleDislike: PropTypes.func.isRequired,

@@ -354,7 +354,7 @@ class NavBar extends Component {
 						/>
 					</NavOption>
 
-					<Logo href="localhost:3000">
+					<Logo href="/">
 						wanamic
 					</Logo>
 

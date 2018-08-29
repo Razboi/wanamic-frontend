@@ -173,7 +173,7 @@ class ExploreUsers extends Component {
 						className="interestsSearch"
 						icon="search"
 						name="hobbies"
-						placeholder="Try 'music' or 'fishing'"
+						placeholder="Try 'gaming' or 'fishing'"
 						onKeyPress={this.handleKeyPress}
 						onChange={this.props.handleChange}
 					/>

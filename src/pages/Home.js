@@ -69,10 +69,36 @@ const
 		min-height: 100vh;
 	`,
 	HomeContent = styled.section`
-		max-width: 1140px;
+		max-width: 1220px;
 		display: flex;
 		justify-content: center;
 		margin: 0 auto;
+	`,
+	Information = styled.div`
+		color: rgba(0,0,0,0.17);
+		width: 170px;
+		font-size: 12px;
+		position: absolute;
+		left: 0;
+		text-align: center;
+		@media (max-width: 1200px) {
+			display: none;
+		}
+	`,
+	InfoLinks = styled.ul`
+		display: flex;
+		padding: 0;
+    list-style: none;
+    justify-content: space-evenly;
+		a {
+			color: inherit;
+		}
+	`,
+	Copyright = styled.h4`
+		font-size: 12px;
+		font-family: inherit;
+		margin: 0;
+		font-weight: normal;
 	`;
 
 
@@ -193,6 +219,14 @@ class Home extends Component {
 
 						<OutsideClickHandler onClick={this.hidePopups}>
 							<HomeContent>
+								<Information>
+									<InfoLinks>
+										<li><a href="/information/privacy">Privacy</a></li>
+										<li><a href="/information/terms">Terms</a></li>
+										<li><a href="/information/contact">Contact</a></li>
+									</InfoLinks>
+									<Copyright>© 2018 WANAMIC</Copyright>
+								</Information>
 								<NewsFeed
 									posts={this.props.newsfeed}
 									socket={this.props.socket}

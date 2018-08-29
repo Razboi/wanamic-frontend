@@ -18,10 +18,14 @@ const
 		height: 100%;
     overflow-y: auto;
 		width: 100%;
+		top: 0px;
 		display: grid;
 		@media (max-width: 420px) {
 			background: rgba(0,0,0,0.65);
 			height: 100%;
+		}
+		@media (min-width: 420px) {
+			padding: 5rem 0;
 		}
 		opacity: ${props => props.displayShare && "0"};
 		transition: opacity 0.1s linear;

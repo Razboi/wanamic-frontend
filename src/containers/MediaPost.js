@@ -6,7 +6,7 @@ import PostOptions from "./PostOptions";
 import api from "../services/api";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
-import { switchPostDetails } from "../services/actions/posts";
+import { switchPostDetails, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
@@ -221,13 +221,6 @@ class MediaPost extends Component {
 		this.props.switchPostDetails( this.props.post );
 	}
 
-	hidePostDetails = () => {
-		this.setState({
-			selectedPost: 0
-		});
-		this.props.switchPostDetails();
-	}
-
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
@@ -326,8 +319,6 @@ class MediaPost extends Component {
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
-								numComments={post.comments.length}
-								numShared={post.sharedBy.length}
 								id={post._id}
 							/>
 						}
@@ -361,7 +352,8 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchPostDetails: post => dispatch( switchPostDetails( post ))
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		updatePost: post => dispatch( updatePost( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );

@@ -6,6 +6,7 @@ import moment from "moment";
 import PostOptions from "./PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
+import { switchPostDetails } from "../services/actions/posts";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
@@ -183,6 +184,10 @@ class Post extends Component {
 		this.setState({ [ type ]: false });
 	}
 
+	displayPostDetails = () => {
+		this.props.switchPostDetails( this.props.post );
+	}
+
 	render() {
 		let userPicture;
 		const
@@ -241,7 +246,7 @@ class Post extends Component {
 					/>
 					<Dimmer blurFilter={this.state.nsfw || this.state.spoiler}>
 						<ContentWrapper>
-							<UserContent className="postContent">
+							<UserContent onClick={this.displayPostDetails}>
 								{post.content}
 							</UserContent>
 							{post.sharedPost &&
@@ -257,13 +262,7 @@ class Post extends Component {
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
-								numLiked={this.state.likedBy.length}
-								numComments={post.comments.length}
-								numShared={post.sharedBy.length}
 								id={post._id}
-								liked={
-									this.state.likedBy.includes( localStorage.getItem( "username" ))
-								}
 							/>
 						}
 					</Dimmer>
@@ -282,6 +281,10 @@ Post.propTypes = {
 
 const
 	mapStateToProps = state => ({
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
-export default connect( mapStateToProps )( Post );
+export default connect( mapStateToProps, mapDispatchToProps )( Post );
