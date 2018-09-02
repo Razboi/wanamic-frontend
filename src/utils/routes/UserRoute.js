@@ -13,7 +13,7 @@ const UserRoute = ({ authenticated, component: Component, ...rest }) => (
 					:
 					<Component socket={rest.socket} {...props} />
 				:
-				<Redirect to="/login" />}
+				<Redirect to="/signup" />}
 	/>
 );
 

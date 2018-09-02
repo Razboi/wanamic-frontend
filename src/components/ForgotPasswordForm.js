@@ -112,14 +112,6 @@ class ForgotPasswordForm extends Component {
 	render() {
 		return (
 			<Wrapper>
-
-				<HeaderContainer>
-					<HeaderLogo>Wanamic</HeaderLogo>
-					<Subheader>
-						Find people and content relative to your interests and hobbies.
-					</Subheader>
-				</HeaderContainer>
-
 				<FormContainer id="AuthFormContainer">
 					{this.props.error &&
 						<ErrorMessage negative>

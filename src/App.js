@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
-import Auth from "./pages/Auth";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -30,9 +31,6 @@ import { withRouter, Route } from "react-router-dom";
 import ReactGA from "react-ga";
 
 ReactGA.initialize( "UA-72968417-3" );
-ReactGA.pageview( window.location.pathname );
-
-
 let apiURL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://192.168.1.15:8081"
 	:
@@ -48,6 +46,7 @@ class App extends Component {
 		});
 	}
 	componentDidMount() {
+		ReactGA.pageview( window.location.pathname );
 		if ( this.props.authenticated ) {
 			this.setupNotifications();
 			this.setupSockets();
@@ -150,7 +149,8 @@ class App extends Component {
 			<div>
 				<Switch>
 					<UserRoute exact path="/" component={Home} socket={this.socket}/>
-					<GuestRoute path="/login" component={Auth} />
+					<GuestRoute path="/signup" component={Signup} />
+					<GuestRoute path="/login" component={Login} />
 					<UserRoute
 						path="/notifications" component={Notifications} socket={this.socket}
 					/>

@@ -1,61 +1,25 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Form, Button, Message } from "semantic-ui-react";
-import Step1 from "./WelcomeStep1";
 import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		display: grid;
 		z-index: 2;
-		min-height: 100vh;
-		height: 100%;
-		width: 100%;
-		grid-template-columns: 100%;
-		grid-template-rows: 40% 60%;
-		grid-template-areas:
-			"header"
-			"form";
 		@media (max-width: 420px) {
-			grid-template-rows: 30% 70%;
-		}
-	`,
-	HeaderContainer = styled.div`
-		grid-area: header;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		@media (max-width: 420px) {
-			padding: 0 10px;
-		}
-	`,
-	HeaderLogo = styled.span`
-		font-style: italic;
-		font-size: 3.5rem;
-		color: #fff;
-	`,
-	Subheader = styled.span`
-		font-size: 1rem;
-		margin-top: 1.7rem;
-		color: #fff;
-		text-align: center;
-		@media (min-width: 420px) {
-			font-size: 1.2rem;
+			width: 90%;
 		}
 	`,
 	FormContainer = styled.div`
-		grid-area: form;
 		display: flex;
 		flex-direction: column;
 	`,
 	FormDimmer = styled.div`
-		background: rgba( 0, 0, 0, 0.4 );
+		background: rgba( 139,175,216,0.85 );
 		padding: 1.5rem;
-		border-radius: 3px;
+		border-radius: 6px;
 		margin: 0 auto;
 		@media (max-width: 420px) {
-			background: none;
 			width: 100%;
 		}
 	`,
@@ -113,11 +77,6 @@ const
 		color: #fff !important;
 		background: rgb(133, 217, 191) !important;
 	`,
-	PasswordInfo = styled.div`
-		margin-top: 2rem;
-		text-align: center;
-		color: #eee;
-	`,
 	LoginWrapper = styled.span`
 		display: flex;
 		align-items: center;
@@ -125,16 +84,12 @@ const
 		color: #eee;
 		margin: auto;
 		font-size: 1rem;
+		margin-top: 2rem;
 		@media(min-width: 420px) {
 			font-size: 1.05rem;
 		}
-		@media(max-width: 420px) {
-			margin-top: 1rem;
-		}
 	`,
 	ErrorMessage = styled( Message )`
-		position: fixed !important;
-		top: 0 !important;
 		width: 100% !important;
 		text-align: center !important;
 		border-radius: 0px !important;
@@ -159,77 +114,54 @@ class SignupForm extends Component {
 	}
 
 	render() {
-		if ( this.props.step === 2 ) {
-			return (
-				<Step1
-					error={this.props.error}
-					handleChange={this.props.handleChange}
-					handleSignup={this.props.handleSignup}
-				/>
-			);
-		} else {
-			return (
-				<Wrapper>
+		return (
+			<Wrapper>
+				<FormContainer id="AuthFormContainer">
+					{this.props.error &&
+						<ErrorMessage negative>
+							<Message.Header>{this.props.error}</Message.Header>
+						</ErrorMessage>
+					}
 
-					<HeaderContainer className="formHeader">
-						<HeaderLogo>wanamic</HeaderLogo>
-						<Subheader>
-							Find people and content relative to your interests and hobbies.
-						</Subheader>
-					</HeaderContainer>
+					<FormDimmer>
+						<StyledForm id="AuthForm">
+							<EmailInput
+								className="emailInput"
+								placeholder="Email address"
+								name="email"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.email}
+								icon="mail"
+								iconPosition="left"
+							/>
+							<PasswordInput
+								className="passwordInput"
+								placeholder="Password"
+								type="password"
+								name="password"
+								onChange={this.props.handleChange}
+								onKeyPress={this.handleKeyPress}
+								value={this.props.password}
+								icon="lock"
+								iconPosition="left"
+							/>
 
-					<FormContainer id="AuthFormContainer">
-						{this.props.error &&
-							<ErrorMessage negative>
-								<Message.Header>{this.props.error}</Message.Header>
-							</ErrorMessage>
-						}
+							<SignupButton
+								type="button"
+								className="signupButton"
+								content="SIGN UP"
+								onClick={this.props.handleSignupNext}
+							/>
+						</StyledForm>
 
-						<FormDimmer>
-							<StyledForm id="AuthForm">
-								<EmailInput
-									autoFocus
-									className="emailInput"
-									placeholder="Email address"
-									name="email"
-									onChange={this.props.handleChange}
-									onKeyPress={this.handleKeyPress}
-									value={this.props.email}
-									icon="mail"
-									iconPosition="left"
-								/>
-								<PasswordInput
-									className="passwordInput"
-									placeholder="Password *"
-									type="password"
-									name="password"
-									onChange={this.props.handleChange}
-									onKeyPress={this.handleKeyPress}
-									value={this.props.password}
-									icon="lock"
-									iconPosition="left"
-								/>
-
-								<SignupButton
-									type="button"
-									className="signupButton"
-									content="Sign Up"
-									onClick={this.props.handleSignupNext}
-								/>
-
-							</StyledForm>
-							<PasswordInfo>
-								* At least 8 characters containing one or more letters and numbers.
-							</PasswordInfo>
-						</FormDimmer>
-
-						<LoginWrapper className="swapLink" onClick={this.props.swapForm}>
+						<LoginWrapper onClick={this.props.swapForm}>
 							Already have an account? <Login>Sign In</Login>
 						</LoginWrapper>
-					</FormContainer>
-				</Wrapper>
-			);
-		}
+					</FormDimmer>
+				</FormContainer>
+			</Wrapper>
+		);
 	}
 }
 

@@ -168,7 +168,7 @@ const
 		}
 	`;
 
-var lastScrollPosition = 0;
+
 class ExplorePage extends Component {
 	constructor() {
 		super();
@@ -186,6 +186,7 @@ class ExplorePage extends Component {
 			searching: false,
 			scrollingDown: false
 		};
+		this.lastScrollPosition = 0;
 		this.throttledScroll = _.throttle( this.handleScroll, 500 );
 		this.postsLimit = window.innerWidth > 1000 ? 30 : 10;
 	}
@@ -203,12 +204,12 @@ class ExplorePage extends Component {
 	handleScroll = e => {
 		const currentScrollPosition = window.pageYOffset;
 
-		if ( currentScrollPosition > lastScrollPosition + 20 ) {
+		if ( currentScrollPosition > this.lastScrollPosition + 20 ) {
 			this.setState({ scrollingDown: true });
-			lastScrollPosition = currentScrollPosition;
-		} else if ( currentScrollPosition < lastScrollPosition - 20 ) {
+			this.lastScrollPosition = currentScrollPosition;
+		} else if ( currentScrollPosition < this.lastScrollPosition - 20 ) {
 			this.setState({ scrollingDown: false });
-			lastScrollPosition = currentScrollPosition;
+			this.lastScrollPosition = currentScrollPosition;
 		}
 	}
 
