@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, Message } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import { signup } from "../services/actions/auth";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";

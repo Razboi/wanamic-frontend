@@ -15,29 +15,6 @@ const
 			"header"
 			"form";
 	`,
-	HeaderContainer = styled.div`
-		grid-area: header;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		@media (max-width: 420px) {
-			padding: 0 10px;
-		}
-	`,
-	HeaderLogo = styled.span`
-		font-size: 3rem;
-		color: #fff;
-	`,
-	Subheader = styled.span`
-		text-align: center;
-		font-size: 1rem;
-		margin-top: 1.7rem;
-		color: #fff;
-		@media (min-width: 420px) {
-			font-size: 1.2rem;
-		}
-	`,
 	FormContainer = styled.div`
 		grid-area: form;
 		display: flex;

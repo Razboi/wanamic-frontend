@@ -75,7 +75,8 @@ const
 	`,
 	DateTime = styled( Header.Subheader )`
 		font-size: 1rem !important;
-		color: rgba(0,0,0,0.45) !important;
+		color: rgba(0,0,0,0.85) !important;
+		font-weight: 200 !important;
 	`,
 	MediaTitle = styled.h4`
 		font-family: inherit !important;

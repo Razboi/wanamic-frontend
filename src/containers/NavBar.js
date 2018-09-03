@@ -135,10 +135,13 @@ const
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		font-size: 2.05rem;
-    font-family: inherit;
-		font-style: italic;
-    color: #111 !important;
+		z-index: 2;
+		height: 100%;
+		width: 40px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		background-size: 100%;
 		@media (max-width: 960px) {
 			display: none;
 		}
@@ -354,9 +357,7 @@ class NavBar extends Component {
 						/>
 					</NavOption>
 
-					<Logo href="/">
-						wanamic
-					</Logo>
+					<Logo href="/" image={require( "../images/wanamic-logo-name.svg" )} />
 
 					<RightOptions>
 						<Scores>

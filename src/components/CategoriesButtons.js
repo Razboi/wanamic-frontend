@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
+import { Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 
@@ -14,15 +14,42 @@ const
 			justify-content: center;
 		}
 	`,
-	CategoryButton = styled( Button )`
+	Category = styled.div`
 		margin: 0.5rem !important;
-		flex: 0 0 0%;
 		border-radius: 2px !important;
 		font-family: inherit !important;
-		border: ${props => props.active &&
-			"1px solid rgb(133, 217, 191)"} !important;
-		background: ${props => props.active && "#fff"} !important;
-		color: ${props => props.active && "rgb(133, 217, 191)"} !important;
+		height: 250px;
+		width: 250px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+		:hover {
+			cursor: pointer;
+		}
+	`,
+	CategoryBackground = styled.div`
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+		filter: brightness( 45% );
+		position: absolute;
+		height: 100%;
+		width: 100%;
+	`,
+	CategoryTitle = styled.span`
+		color: #fff;
+		font-weight: bold;
+		font-size: 1.55rem;
+		z-index: 2;
+	`,
+	CategoryCheck = styled( Icon )`
+		color: #fff;
+		font-weight: bold;
+		font-size: 2rem !important;
+		z-index: 2;
 	`;
 
 
@@ -40,12 +67,21 @@ class CategoriesButtons extends Component {
 		return (
 			<Categories className="categoriesWrapper">
 				{this.categories.map(( category, index ) =>
-					<CategoryButton
+					<Category
 						key={index}
 						onClick={() => this.props.handleCategoryClick( category )}
 						content={category}
 						active={this.props.checkedCategories.includes( category )}
-					/>
+					>
+						<CategoryBackground image={require( `../images/${category}.jpg` )} />
+						{this.props.checkedCategories.includes( category ) ?
+							<CategoryCheck name="check" />
+							:
+							<CategoryTitle>
+								{category}
+							</CategoryTitle>
+						}
+					</Category>
 				)}
 			</Categories>
 		);

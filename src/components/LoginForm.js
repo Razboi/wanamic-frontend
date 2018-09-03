@@ -101,8 +101,6 @@ const
 		}
 	`,
 	ErrorMessage = styled( Message )`
-		position: absolute !important;
-		top: 0 !important;
 		width: 100% !important;
 		text-align: center !important;
 		border-radius: 0px !important;

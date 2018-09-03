@@ -173,7 +173,8 @@ const
 	`,
 	DateTime = styled( Header.Subheader )`
 		font-size: 1rem !important;
-		color: rgba(255,255,255,0.45) !important;
+		color: rgba(255,255,255,0.85) !important;
+		font-weight: 200 !important;
 	`,
 	HeaderOptions = styled.div`
 		margin-left: auto;

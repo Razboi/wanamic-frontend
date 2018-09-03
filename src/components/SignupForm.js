@@ -116,7 +116,7 @@ class SignupForm extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<FormContainer id="AuthFormContainer">
+				<FormContainer>
 					{this.props.error &&
 						<ErrorMessage negative>
 							<Message.Header>{this.props.error}</Message.Header>

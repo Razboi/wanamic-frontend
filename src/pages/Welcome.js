@@ -185,7 +185,18 @@ class WelcomePage extends Component {
 			<Wrapper>
 				{ this.state.step === 1 &&
 					<Step2
+						categoriesNext={this.categoriesNext}
+						handleChange={this.handleChange}
+						toggle={this.toggle}
+						handleCategoryClick={this.handleCategoryClick}
+						checkedCategories={this.state.checkedCategories}
+					/>
+				}
+
+				{ this.state.step === 2 &&
+					<Step3
 						handleNext={this.finishStep2}
+						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
 						description={this.state.description}
@@ -195,17 +206,6 @@ class WelcomePage extends Component {
 						error={this.state.error}
 						imagePreview={this.state.imagePreview}
 						loader={this.state.loader}
-					/>
-				}
-
-				{ this.state.step === 2 &&
-					<Step3
-						categoriesNext={this.categoriesNext}
-						handlePrev={this.handlePrev}
-						handleChange={this.handleChange}
-						toggle={this.toggle}
-						handleCategoryClick={this.handleCategoryClick}
-						checkedCategories={this.state.checkedCategories}
 					/>
 				}
 

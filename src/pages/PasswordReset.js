@@ -142,7 +142,7 @@ class PasswordReset extends Component {
 	render() {
 		let background;
 		try {
-			background = require( "../images/stars.jpg" );
+			background = require( "../images/background3.jpg" );
 		} catch ( err ) {
 			console.log( err );
 		}

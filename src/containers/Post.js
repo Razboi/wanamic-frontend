@@ -73,8 +73,9 @@ const
 		word-break: break-word !important;
 	`,
 	DateTime = styled( Header.Subheader )`
-		color: rgba(0,0,0,0.45) !important;
+		color: rgba(0,0,0,0.85) !important;
 		font-size: 1rem !important;
+		font-weight: 200 !important;
 	`,
 	ContentWrapper = styled.div`
 		display: flex;
@@ -87,6 +88,9 @@ const
 		color: #222;
 		word-break: break-word;
 		font-size: 1rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	PostBody = styled.div`
 		position: relative;
