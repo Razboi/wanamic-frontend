@@ -100,7 +100,10 @@ class PostDetailsMedia extends Component {
 						:
 						<React.Fragment>
 							<PostMediaBackground background={post.linkContent.image} />
-							<MediaImage src={post.linkContent.image} />
+							<MediaImage
+								src={post.linkContent.type === "image" ?
+									post.linkContent.url : post.linkContent.image}
+							/>
 						</React.Fragment>
 					}
 				</PostMedia>

@@ -38,6 +38,9 @@ const
 		position: relative;
 		height: 0;
 		padding-bottom: 100%;
+		:hover {
+			cursor: pointer;
+		}
 		@media (min-width: 760px) {
 			padding-bottom: ${props => props.details ?
 		( props.video ? "50%" : "420px" ) : "100%"};
@@ -89,6 +92,7 @@ const
 
 class LinkPreview extends Component {
 	render() {
+		const { linkContent } = this.props;
 		if ( this.props.explore ) {
 			return (
 				<LinkPreviewWrapper
@@ -99,9 +103,10 @@ class LinkPreview extends Component {
 						<LinkPreviewImage
 							explore={this.props.explore ? 1 : 0}
 							className="linkPreviewImage"
-							src={this.props.linkContent.image}
+							src={linkContent.type === "image" ?
+								linkContent.url : linkContent.image}
 						/>
-						{this.props.linkContent.embeddedUrl ?
+						{linkContent.embeddedUrl ?
 							<PlayIcon name="video play" />
 							:
 							<LinkIcon name="linkify" />
@@ -116,37 +121,39 @@ class LinkPreview extends Component {
 				className="linkPreviewWrapper"
 			>
 				<LinkMedia
-					video={this.props.linkContent.embeddedUrl}
+					video={linkContent.embeddedUrl}
 					details={this.props.details}
 					onClick={this.props.displayPostDetails}
 				>
-					{this.props.linkContent.embeddedUrl ?
+					{linkContent.embeddedUrl ?
 						<LinkPreviewIframe
-							src={this.props.linkContent.embeddedUrl}
+							src={linkContent.embeddedUrl}
 							frameBorder="0"
 							allow="autoplay; encrypted-media"
 							allowFullScreen="allowfullscreen"
 						/>
 						:
-						<LinkPreviewImage src={this.props.linkContent.image} />
+						<LinkPreviewImage src={linkContent.type === "image" ?
+							linkContent.url : linkContent.image} />
 					}
 				</LinkMedia>
 
-				<LinkPreviewText>
-					<a href={this.props.linkContent.url} target="_blank">
-						<LinkPreviewHeader>
-							{this.props.linkContent.title}
-						</LinkPreviewHeader>
-					</a>
-					<a
-						href={`https://${this.props.linkContent.hostname}`}
-						target="_blank"
-					>
-						<LinkPreviewHostname>
-							{this.props.linkContent.hostname}
-						</LinkPreviewHostname>
-					</a>
-				</LinkPreviewText>
+				{linkContent.type !== "image" &&
+					<LinkPreviewText>
+						<a href={linkContent.url} target="_blank">
+							<LinkPreviewHeader>
+								{linkContent.title}
+							</LinkPreviewHeader>
+						</a>
+						<a
+							href={`https://${linkContent.hostname}`}
+							target="_blank"
+						>
+							<LinkPreviewHostname>
+								{linkContent.hostname}
+							</LinkPreviewHostname>
+						</a>
+					</LinkPreviewText>}
 			</LinkPreviewWrapper>
 		);
 	}

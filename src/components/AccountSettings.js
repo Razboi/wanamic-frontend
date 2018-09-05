@@ -79,6 +79,9 @@ const
 	`,
 	Hobbies = styled.div`
 		margin-bottom: 2rem;
+		.ReactTags__tags {
+			width: 100%;
+		}
 		.ReactTags__tag {
 			padding: 0.25rem;
 			border: 1px solid rgba( 0,0,0,0.4);
@@ -121,9 +124,26 @@ const
 		align-items: center;
 		justify-content: center;
 	`,
+	HobbiesInputWrapper = styled.div`
+		display: flex;
+		align-items: flex-end;
+	`,
+	AddButton = styled( Button )`
+		height: 38px;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 class AccountSettings extends Component {
+	handleTagChange = value => {
+		const fakeEvent = { target: { value: value, name: "tagInput" } };
+		this.props.handleChange( fakeEvent );
+	}
+
+	handleManualAddition = () => {
+		const { tagInput, handleAddition } = this.props;
+		handleAddition({ text: tagInput, id: tagInput });
+	}
+
 	render() {
 		return (
 			<Wrapper largeScreen={this.props.largeScreen}>
@@ -172,18 +192,25 @@ class AccountSettings extends Component {
 						/>
 						<Hobbies>
 							<CustomLabel>Hobbies and interests</CustomLabel>
-							<ReactTags
-								tags={this.props.hobbies}
-								handleDelete={this.props.handleDelete}
-								handleAddition={this.props.handleAddition}
-								delimiters={this.props.hobbies.length < 10 ?
-									[ KeyCodes.comma, KeyCodes.enter ]
-									:
-									[]}
-								placeholder="Add a new interest (with enter or comma)"
-								autofocus={false}
-								maxLength={17}
-							/>
+							<HobbiesInputWrapper>
+								<ReactTags
+									tags={this.props.hobbies}
+									handleDelete={this.props.handleDelete}
+									handleAddition={this.props.handleAddition}
+									handleInputChange={this.handleTagChange}
+									name="tagInput"
+									inputValue={this.props.tagInput}
+									delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
+									placeholder="Add a new interest"
+									autofocus={false}
+									maxLength={20}
+								/>
+								<AddButton
+									onClick={this.handleManualAddition}
+									content="Add"
+									primary
+								/>
+							</HobbiesInputWrapper>
 						</Hobbies>
 						<Location>
 							<CustomLabel>Location</CustomLabel>
@@ -262,7 +289,8 @@ AccountSettings.propTypes = {
 	region: PropTypes.string,
 	country: PropTypes.string,
 	gender: PropTypes.string,
-	loader: PropTypes.bool
+	loader: PropTypes.bool,
+	tagInput: PropTypes.string.isRequired
 };
 
 export default AccountSettings;

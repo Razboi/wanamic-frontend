@@ -221,29 +221,29 @@ class DropdownOptions extends Component {
 		const { postOrComment, socket } = this.props;
 		this.toggleModal();
 		if ( postOrComment.post ) {
-			commentLogic.updateComment(
+			commentLogic.update(
 				postOrComment, this.state.updatedContent, socket );
 		} else {
-			postLogic.updatePost(
+			postLogic.update(
 				postOrComment, this.state.updatedContent, socket );
 		}
 	}
 
 	handleDelete = () => {
 		if ( this.props.postOrComment.post ) {
-			commentLogic.deleteComment( this.props.postOrComment );
+			commentLogic.remove( this.props.postOrComment );
 		} else {
-			postLogic.deletePost( this.props.postOrComment._id );
+			postLogic.remove( this.props.postOrComment._id );
 		}
 	}
 
 	handleReport = () => {
 		this.toggleModal();
 		if ( this.props.postOrComment.post ) {
-			commentLogic.reportComment(
+			commentLogic.report(
 				this.state.reportContent, this.props.postOrComment._id );
 		} else {
-			postLogic.reportPost(
+			postLogic.report(
 				this.state.reportContent, this.props.postOrComment._id );
 		}
 	}

@@ -188,7 +188,7 @@ class ExplorePage extends Component {
 		};
 		this.lastScrollPosition = 0;
 		this.throttledScroll = _.throttle( this.handleScroll, 500 );
-		this.postsLimit = window.innerWidth > 1000 ? 30 : 10;
+		this.postsLimit = window.innerWidth > 1000 ? 40 : 10;
 	}
 
 	componentDidMount() {

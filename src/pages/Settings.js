@@ -105,7 +105,8 @@ class SettingsPage extends Component {
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
 			checkedCategories: [], error: "", categoriesChanged: false,
-			country: "", region: "", birthday: "", gender: "", loader: false
+			country: "", region: "", birthday: "", gender: "", loader: false,
+			tagInput: ""
 		};
 	}
 
@@ -176,8 +177,9 @@ class SettingsPage extends Component {
 		}
 	}
 
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value })
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	updateUserInfo = async() => {
 		var data = new FormData();
@@ -383,7 +385,7 @@ class SettingsPage extends Component {
 
 	handleAddition = hobbie => {
 		this.setState( state => ({
-			hobbies: [ ...state.hobbies, hobbie ]
+			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
 	}
 
@@ -418,6 +420,7 @@ class SettingsPage extends Component {
 					gender={this.state.gender}
 					error={this.state.error}
 					loader={this.state.loader}
+					tagInput={this.state.tagInput}
 				/>
 			);
 		}
@@ -530,6 +533,7 @@ class SettingsPage extends Component {
 								region={this.state.region}
 								gender={this.state.gender}
 								error={this.state.error}
+								tagInput={this.state.tagInput}
 							/>}
 						{this.state.tab === 2 && window.innerWidth > 760 &&
 							<ContentSettings

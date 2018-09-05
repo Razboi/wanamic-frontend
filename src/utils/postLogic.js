@@ -4,21 +4,21 @@ import store from "../index";
 import { deletePost, updatePost } from "../services/actions/posts";
 import extract from "../utils/extractMentionsHashtags";
 
-export default {
-	deletePost: async postId => {
+const
+	remove = async postId => {
 		try {
 			await api.deletePost( postId );
 			store.dispatch( deletePost( postId ));
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.deletePost( postId );
+				remove( postId );
 			} else {
 				console.log( err );
 			}
 		}
 	},
-	updatePost: async( post, updatedContent, socket ) => {
+	update = async( post, updatedContent, socket ) => {
 		if (( !updatedContent && !post.content )
 			|| post.content === updatedContent ) {
 			return;
@@ -36,13 +36,13 @@ export default {
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.updatePost( post, updatedContent, socket );
+				update( post, updatedContent, socket );
 			} else {
 				console.log( err );
 			}
 		}
 	},
-	reportPost: async( reportContent, postId ) => {
+	report = async( reportContent, postId ) => {
 		if ( !reportContent ) {
 			return;
 		}
@@ -51,10 +51,11 @@ export default {
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.reportPost();
+				report( reportContent, postId );
 			} else {
 				console.log( err );
 			}
 		}
-	}
-};
+	};
+
+export default { remove, update, report };

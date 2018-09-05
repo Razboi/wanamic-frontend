@@ -278,13 +278,10 @@ class Step3 extends Component {
 								handleInputChange={this.handleTagChange}
 								name="tagInput"
 								inputValue={this.props.tagInput}
-								delimiters={this.props.hobbies.length < 10 ?
-									[ KeyCodes.comma, KeyCodes.enter ]
-									:
-									[]}
+								delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
 								placeholder="Add a new interest"
 								autofocus={false}
-								maxLength={17}
+								maxLength={20}
 							/>
 							<AddButton
 								onClick={this.handleManualAddition}
