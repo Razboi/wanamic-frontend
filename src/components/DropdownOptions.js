@@ -240,10 +240,10 @@ class DropdownOptions extends Component {
 	handleReport = () => {
 		this.toggleModal();
 		if ( this.props.postOrComment.post ) {
-			postLogic.reportPost(
+			commentLogic.reportComment(
 				this.state.reportContent, this.props.postOrComment._id );
 		} else {
-			commentLogic.reportComment(
+			postLogic.reportPost(
 				this.state.reportContent, this.props.postOrComment._id );
 		}
 	}

@@ -166,3 +166,7 @@ textarea {
 		display: none;
 	}
 }
+
+.ReactTags__tagInputField {
+	text-align: center;
+}

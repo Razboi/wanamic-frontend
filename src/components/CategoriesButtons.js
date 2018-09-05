@@ -9,7 +9,7 @@ const
 		flex-wrap: wrap;
 		display: flex;
 		margin-bottom: 3rem;
-		justify-content: space-between;
+		justify-content: center;
 		@media (max-width: 350px) {
 			justify-content: center;
 		}

@@ -19,6 +19,7 @@ const
 	`,
 	BackgroundImage = styled.div`
 		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		position: absolute;
 		filter: brightness(35%);
@@ -113,7 +114,7 @@ class Login extends Component {
 				.then(() => this.props.history.push( "/" ))
 				.catch( err => {
 					console.log( err );
-					if ( err === "Network Error" ) {
+					if ( !err.response.status ) {
 						this.blockLogin();
 						return;
 					}

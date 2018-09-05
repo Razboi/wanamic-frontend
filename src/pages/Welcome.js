@@ -18,7 +18,6 @@ class WelcomePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			description: "",
 			hobbies: [],
 			userImage: null,
 			imagePreview: undefined,
@@ -27,13 +26,39 @@ class WelcomePage extends Component {
 			toFollow: [],
 			matchedUsers: [],
 			error: "",
-			loader: false
+			loader: false,
+			tagInput: "",
+			suggestions: []
+		};
+		this.hobbiesSuggestions = {
+			Art: [ "Drawing", "Painting", "Design", "Architecture", "Sculpture" ],
+			Gaming: [ "Fortnite", "PUB", "Grand Theft Auto V", "WOW", "Overwatch" ],
+			Technology: [ "Programming", "Hardware", "Gadgets", "Smartphones", "Cryptocurrency", "Artificial intelligence" ],
+			Science: [ "Physics", "Chemistry", "Astronomy", "Biology", "Medicine", "Computer Science", "Engineering" ],
+			Music: [ "Rock", "Pop", "HipHop", "Jazz", "Electronic", "Blues", "Classical", "Country" ],
+			Sports: [ "Football/Soccer", "Basketball", "Cricket", "Golf", "Tennis", "Hockey" ],
+			Books: [ "Science Fiction", "Mystery", "Horror", "Romance", "Thriller" ],
+			Cooking: [ "Gardening", "Asian food", "Indian food", "Mexican food" ],
+			Travel: [ "Europe", "Africa", "Asia", "Japan", "Spain" ],
+			Films: [ "Comedy", "Action films", "Drama", "Marvel", "DC" ],
+			Health: [ "Detox", "Smoothies", "Keto diet", "Vegetarian", "Vegan" ],
+			Fitness: [ "Gym", "Running", "Bodybuilding", "Calisthenics", "Crossfit" ],
+			Beauty: [ "Makeup", "Nail art", "Hairstyles" ],
+			Humor: [ "Memes", "Dark humor", "Improvisation", "Stand up comedy" ],
+			Business: [ "Startups", "Investing", "Stocks", "Economy", "Politics" ],
+			Photography: [ "Architectural photography", "Wildlife photography" ],
+			TV: [ "Game of thrones", "Westworld", "The walking dead", "Stranger things", "Atlanta" ],
+			Family: [ "Babies", "Weddings", "Parenting", "Religion", "Family travel" ],
+			Motor: [ "Motorcycles", "Cars", "EV", "Tesla", "Racing", "Harley-Davidson" ],
+			Pets: [ "Dogs", "Cats", "Pet training", "Birds", "Mice" ],
+			Fashion: [ "Vintage", "Urban style", "Bohemian", "Rocker" ]
 		};
 	}
 
 
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value })
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	handleFileChange = e => {
 		const
@@ -85,7 +110,7 @@ class WelcomePage extends Component {
 
 	handleAddition = hobbie => {
 		this.setState( state => ({
-			hobbies: [ ...state.hobbies, hobbie ]
+			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
 	}
 
@@ -121,14 +146,12 @@ class WelcomePage extends Component {
 		this.setState({ toFollow: usersToFollow });
 	}
 
-	finishStep2 = async() => {
+	finishStep3 = async() => {
 		var data = new FormData();
 		if ( this.state.userImage ) {
 			data.append( "userImage", this.state.userImage );
 		}
-		data.append( "description", this.state.description );
 		data.append( "token", localStorage.getItem( "token" ));
-
 		this.handleNext();
 		try {
 			const res = await api.setUserInfo( data );
@@ -140,23 +163,31 @@ class WelcomePage extends Component {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.finishStep2();
+				this.finishStep3();
 			}
 		}
 	}
 
 	categoriesNext = async() => {
+		var finalSuggestions = [];
 		try {
-			const res = await api.getInterestsMatches( this.state.checkedCategories );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.categoriesNext();
-			} else {
-				this.setState({ matchedUsers: res.data });
-				this.handleNext();
+			for ( const category of this.state.checkedCategories ) {
+				finalSuggestions.push( ...this.hobbiesSuggestions[ category ]);
 			}
+			const res = await api.getInterestsMatches( this.state.checkedCategories );
+			this.setState({
+				matchedUsers: res.data,
+				suggestions: finalSuggestions
+			});
+			this.handleNext();
 		} catch ( err ) {
 			console.log( err );
+			if ( err.response && err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.categoriesNext();
+				return;
+			}
+			this.setState({ error: err.response && err.response.data });
 		}
 	}
 
@@ -195,17 +226,18 @@ class WelcomePage extends Component {
 
 				{ this.state.step === 2 &&
 					<Step3
-						handleNext={this.finishStep2}
+						handleNext={this.finishStep3}
 						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
-						description={this.state.description}
 						hobbies={this.state.hobbies}
 						handleDelete={this.handleDelete}
 						handleAddition={this.handleAddition}
 						error={this.state.error}
 						imagePreview={this.state.imagePreview}
 						loader={this.state.loader}
+						tagInput={this.state.tagInput}
+						suggestions={this.state.suggestions}
 					/>
 				}
 

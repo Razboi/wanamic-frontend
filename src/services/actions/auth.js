@@ -21,6 +21,9 @@ export const
 				if ( data.profileImage ) {
 					localStorage.setItem( "uimg", data.profileImage );
 				}
+				if ( data.admin ) {
+					localStorage.setItem( "ai", true );
+				}
 				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());
 			}

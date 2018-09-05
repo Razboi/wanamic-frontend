@@ -7,6 +7,7 @@ import CategoriesButtons from "./CategoriesButtons";
 const
 	Wrapper = styled.div`
 		padding: 1rem;
+		position: relative;
 		@media (min-width: 420px) {
 			margin: 0 auto;
 		}

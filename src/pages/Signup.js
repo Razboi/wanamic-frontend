@@ -445,7 +445,7 @@ class Signup extends Component {
 								</BulletHeader>
 								<BulletDescription>
 									Watching a movie? Reading a book? Maybe listening to a great song? Share it!
-									Express yourself through our 7 types of post: text, image, url, music, books, movies and shows.
+									Express yourself through our 7 types of post: text, image, link, music, books, movies and shows.
 								</BulletDescription>
 							</BulletText>
 							<SmallScrollTaunt href="#4">

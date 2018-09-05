@@ -124,7 +124,7 @@ class SignupForm extends Component {
 					}
 
 					<FormDimmer>
-						<StyledForm id="AuthForm">
+						<StyledForm>
 							<EmailInput
 								className="emailInput"
 								placeholder="Email address"

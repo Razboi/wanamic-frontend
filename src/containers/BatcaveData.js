@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { Table, Checkbox, Button, Dropdown } from "semantic-ui-react";
+import { Table, Checkbox, Dropdown, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
-import PostDetails from "../containers/PostDetails";
-import Comment from "../containers/Comment";
+import PostDetails from "./PostDetails";
+import Comment from "./Comment";
+import { switchPostDetails } from "../services/actions/posts";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -49,10 +51,6 @@ const
 		align-items: center;
 		justify-content: center;
 	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
-	`,
 	Options = styled.div`
 		display: flex;
 		@media (max-width: 420px) {
@@ -77,11 +75,9 @@ class BatcaveData extends Component {
 		super();
 		this.state = {
 			data: undefined,
-			visualizedPost: {},
-			postDetails: false,
-			visualizedComment: {},
-			commentDetails: false,
-			selectedTicket: undefined
+			selectedTicket: undefined,
+			visualizedComment: undefined,
+			commentDetails: false
 		};
 	}
 
@@ -101,6 +97,7 @@ class BatcaveData extends Component {
 			}
 		}
 	}
+
 	visualize = ticket => {
 		if ( ticket.type === "post" ) {
 			this.visualizePost( ticket.object );
@@ -112,7 +109,7 @@ class BatcaveData extends Component {
 	visualizePost = async postId => {
 		try {
 			const res = await api.getPost( postId );
-			this.setState({ visualizedPost: res.data, postDetails: true });
+			this.props.switchPostDetails( res.data );
 		} catch ( err ) {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
@@ -133,10 +130,6 @@ class BatcaveData extends Component {
 				this.visualizeComment();
 			}
 		}
-	}
-
-	hideDetails = () => {
-		this.setState({ postDetails: false, commentDetails: false });
 	}
 
 	removeTicket = async() => {
@@ -202,16 +195,17 @@ class BatcaveData extends Component {
 		}
 	}
 
+	hideComments = () => {
+		this.setState({ commentDetails: false });
+	}
+
 	viewPost = () => {
 		this.setState({ commentDetails: false });
 		this.visualizePost( this.state.visualizedComment.post );
 	}
 
-
 	render() {
-		let {
-			data, postDetails, visualizedPost, visualizedComment, commentDetails
-		} = this.state;
+		let { data, commentDetails, visualizedComment } = this.state;
 		if ( !data ) {
 			return (
 				<Wrapper>
@@ -219,32 +213,23 @@ class BatcaveData extends Component {
 				</Wrapper>
 			);
 		}
+
 		return (
 			<Wrapper>
-				{( postDetails || commentDetails ) &&
+				{ commentDetails &&
+					<React.Fragment>
+						<ViewPostButton content="View post" onClick={this.viewPost} />
+						<CommentWrapper>
+							<Comment comment={visualizedComment} />
+						</CommentWrapper>
+					</React.Fragment>
+				}
+				{ this.props.displayPostDetails && !commentDetails &&
 					<PostDetailsDimmer>
-						<OutsideClickHandler onClick={this.hideDetails} />
-						{postDetails &&
 						<PostDetails
-							post={visualizedPost}
-							switchDetails={this.hideDetails}
 							socket={this.props.socket}
 							history={this.props.history}
-						/>}
-						{commentDetails &&
-							<React.Fragment>
-								<ViewPostButton content="View post" onClick={this.viewPost} />
-								<CommentWrapper>
-									<Comment
-										comment={visualizedComment}
-										handleDelete={() => {}}
-										handleUpdate={() => {}}
-										handleReply={() => {}}
-										socket={{}}
-									/>
-								</CommentWrapper>
-							</React.Fragment>
-						}
+						/>
 					</PostDetailsDimmer>
 				}
 				<Section className="usersCount">
@@ -326,4 +311,13 @@ BatcaveData.propTypes = {
 	socket: PropTypes.object.isRequired
 };
 
-export default BatcaveData;
+const
+	mapStateToProps = state => ({
+		displayPostDetails: state.posts.displayPostDetails
+	}),
+
+	mapDispatchToProps = dispatch => ({
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
+	});
+
+export default connect( mapStateToProps, mapDispatchToProps )( BatcaveData );

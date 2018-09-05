@@ -136,12 +136,15 @@ const
 		left: 50%;
 		transform: translateX(-50%);
 		z-index: 2;
-		height: 100%;
-		width: 40px;
+		height: 45px;
+		width: 153px;
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
 		background-size: 100%;
+		span {
+			font-weight: 400;
+		}
 		@media (max-width: 960px) {
 			display: none;
 		}
@@ -274,7 +277,6 @@ class NavBar extends Component {
 						<OutsideClickHandler onClick={this.hidePopups} />
 						{displayPostDetails &&
 							<PostDetails
-								switchDetails={this.hidePostDetails}
 								socket={this.props.socket}
 								history={this.props.history}
 							/>}
@@ -357,7 +359,7 @@ class NavBar extends Component {
 						/>
 					</NavOption>
 
-					<Logo href="/" image={require( "../images/wanamic-logo-name.svg" )} />
+					<Logo href="/" image={require( "../images/black-logo-lname.svg" )} />
 
 					<RightOptions>
 						<Scores>

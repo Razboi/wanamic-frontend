@@ -347,7 +347,9 @@ export default {
 			url: API_URL + "/user/match"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updateInterests: newInterests =>
 		axios({

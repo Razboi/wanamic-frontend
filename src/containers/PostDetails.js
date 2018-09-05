@@ -235,11 +235,7 @@ class PostDetails extends Component {
 		this.previousHref = window.location.href;
 		window.history.pushState( null, null, "/post" );
 		window.onpopstate = e => this.handlePopstate( e );
-		if ( !this.props.postDetails ) {
-			this.getPost();
-		} else {
-			this.setState({ post: this.props.postDetails });
-		}
+		this.setState({ post: this.props.postDetails });
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -546,17 +542,14 @@ class PostDetails extends Component {
 }
 
 PostDetails.propTypes = {
-	post: PropTypes.object,
 	socket: PropTypes.object.isRequired,
-	history: PropTypes.object.isRequired,
-	index: PropTypes.number
+	history: PropTypes.object.isRequired
 };
 
 const
 	mapStateToProps = state => ({
 		displayComments: state.posts.displayComments,
 		displayShare: state.posts.displayShare,
-		displayPostDetails: state.posts.displayPostDetails,
 		postDetails: state.posts.postDetails
 	}),
 

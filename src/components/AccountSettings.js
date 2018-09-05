@@ -7,7 +7,7 @@ import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		@media (max-width: 760px) {
 			position: relative;
@@ -35,6 +35,7 @@ const
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
+		height: 60px;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;

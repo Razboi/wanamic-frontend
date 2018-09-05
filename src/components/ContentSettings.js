@@ -6,14 +6,14 @@ import CategoriesButtons from "./CategoriesButtons";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		@media (max-width: 760px) {
 			display: ${props => props.largeScreen && "none"} !important;
 			grid-area: main;
 			display: grid;
 			grid-template-columns: 100%;
-			grid-template-rows: 9% 91%;
+			grid-template-rows: auto 1fr;
 			grid-template-areas:
 				"hea"
 				"opt";
@@ -25,6 +25,7 @@ const
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
+		height: 60px;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;

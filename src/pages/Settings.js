@@ -30,7 +30,7 @@ const
 		height: 100%;
 	`,
 	Page = styled.div`
-		height: 100vh;
+		height: 100%;
 		display: grid;
 		margin-top: 69.33px !important;
 		@media (max-width: 760px) {
@@ -45,7 +45,7 @@ const
 			position: relative;
 			width: 90%;
 			max-width: 1000px;
-			margin: 0 auto;
+			margin: 100px auto;
 			grid-template-columns: 20% 80%;
 			grid-template-rows: 100%;
 			grid-template-areas:
