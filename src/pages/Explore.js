@@ -195,6 +195,7 @@ class ExplorePage extends Component {
 		window.scrollTo( 0, 0 );
 		window.addEventListener( "scroll", this.throttledScroll );
 		this.refreshPosts();
+		document.title = "Explore";
 	}
 
 	componentWillUnmount() {

@@ -6,7 +6,7 @@ import moment from "moment";
 import PostOptions from "./PostOptions";
 import SharedPost from "../containers/SharedPost";
 import DropdownOptions from "../components/DropdownOptions";
-import { switchPostDetails } from "../services/actions/posts";
+import { switchPostDetails, updatePost } from "../services/actions/posts";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
@@ -144,16 +144,15 @@ class Post extends Component {
 	}
 
 	handleLike = retry => {
+		const { post } = this.props;
 		if ( !retry ) {
-			this.setState({
-				likedBy: [
-					...this.state.likedBy,
-					localStorage.getItem( "username" )
-				]
-			});
+			let updatedPost = post;
+			updatedPost.likedBy = [
+				localStorage.getItem( "username" ), ...updatedPost.likedBy ];
+			this.props.updatePost( updatedPost );
 		}
 
-		api.likePost( this.props.post._id )
+		api.likePost( post._id )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -166,12 +165,12 @@ class Post extends Component {
 	}
 
 	handleDislike = retry => {
-		var	newLikedBy;
+		const { post } = this.props;
 		if ( !retry ) {
-			newLikedBy = this.state.likedBy;
-			const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
-			newLikedBy.splice( index, 1 );
-			this.setState({ likedBy: newLikedBy });
+			let updatedPost = post;
+			const index = post.likedBy.indexOf( localStorage.getItem( "username" ));
+			updatedPost.likedBy.splice( index, 1 );
+			this.props.updatePost( updatedPost );
 		}
 
 		api.dislikePost( this.props.post._id )
@@ -288,7 +287,8 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchPostDetails: post => dispatch( switchPostDetails( post ))
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		updatePost: post => dispatch( updatePost( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Post );

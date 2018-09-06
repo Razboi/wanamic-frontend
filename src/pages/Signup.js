@@ -266,6 +266,7 @@ class Signup extends Component {
 	componentDidMount() {
 		this.props.history.push( "#1" );
 		this.setState({ activeSection: 0 });
+		document.title = "Wanamic - Find like-minded people from all around the world.";
 	}
 
 	handleChange = e =>
@@ -281,10 +282,9 @@ class Signup extends Component {
 			this.setState({ error: "Invalid email format" });
 			return;
 		}
-		if ( !/^[a-zA-Z\s]+$/.test( credentials.fullname ) ||
-			/[._]/.test( credentials.fullname )) {
+		if ( !credentials.fullname ) {
 			this.setState({
-				error: "Invalid fullname format. Letters and spaces only."
+				error: "Full name is required."
 			});
 			return;
 		}
@@ -292,7 +292,7 @@ class Signup extends Component {
 		if ( !/[\w]+$/.test( credentials.username )
 		|| /[\s.]/.test( credentials.username )) {
 			this.setState({
-				error: "Invalid username format. Alphanumeric and underscores only."
+				error: "Invalid username format. Alphanumeric characters only. No spaces."
 			});
 			return;
 		}

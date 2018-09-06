@@ -17,10 +17,12 @@ const
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
 		position: absolute !important;
-		width: 100%;
 		height: 100%;
 		top: 0;
 		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto !important;
 		border-radius: ${props => props.explore ? "8px" : "0"};
 		filter: ${props => props.explore && "brightness( 85% )"};
 	`,

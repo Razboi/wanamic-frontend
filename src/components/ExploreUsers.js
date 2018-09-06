@@ -155,9 +155,8 @@ class ExploreUsers extends Component {
 						Find users with similar interests or random ones.
 					</SugestedHeader>
 					<SugestedButton
-						className="sugestedButton"
 						primary
-						content="Sugested"
+						content="Suggested"
 						onClick={this.props.getSugested}
 					/>
 					<RandomButton

@@ -55,6 +55,9 @@ class WelcomePage extends Component {
 		};
 	}
 
+	componentDidMount() {
+		document.title = "Welcome";
+	}
 
 	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
@@ -109,6 +112,9 @@ class WelcomePage extends Component {
 	}
 
 	handleAddition = hobbie => {
+		if ( !hobbie.id.trim( "" )) {
+			return;
+		}
 		this.setState( state => ({
 			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
@@ -195,8 +201,8 @@ class WelcomePage extends Component {
 		try {
 			await api.updateInterests( this.state.checkedCategories );
 			const notifications = await api.setupFollow( this.state.toFollow );
-			for ( const index in notifications ) {
-				this.props.socket.emit( "sendNotification", notifications[ index ]);
+			for ( const notification of notifications.data ) {
+				this.props.socket.emit( "sendNotification", notification );
 			}
 			localStorage.removeItem( "NU" );
 			this.props.history.push( "/" );

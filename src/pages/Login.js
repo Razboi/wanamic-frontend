@@ -95,6 +95,10 @@ class Login extends Component {
 		};
 	}
 
+	componentDidMount() {
+		document.title = "Login";
+	}
+
 	handleChange = e =>
 		this.setState({ [ e.target.name ]: e.target.value })
 

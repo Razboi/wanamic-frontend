@@ -115,13 +115,19 @@ class SettingsPage extends Component {
 		if ( window.innerWidth > 760 ) {
 			this.setState({ tab: 1 });
 		}
+		document.title = "Settings";
 	}
 
 	getUserInfo = async() => {
+		var birthday;
 		const res = await api.getUserInfo( localStorage.getItem( "username" ));
 		var tagCompatibleHobbies = [];
 		for ( const hobbie of res.data.hobbies ) {
 			tagCompatibleHobbies.push({ text: hobbie, id: hobbie });
+		}
+
+		if ( res.data.birthday ) {
+			[ birthday ] = res.data.birthday.split( "T" );
 		}
 
 		this.setState({
@@ -131,7 +137,7 @@ class SettingsPage extends Component {
 			hobbies: tagCompatibleHobbies,
 			country: res.data.country,
 			region: res.data.region,
-			birthday: res.data.birthday,
+			birthday: birthday,
 			gender: res.data.gender,
 			checkedCategories: res.data.interests
 		});
@@ -384,6 +390,9 @@ class SettingsPage extends Component {
 	}
 
 	handleAddition = hobbie => {
+		if ( !hobbie.id.trim( "" )) {
+			return;
+		}
 		this.setState( state => ({
 			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
@@ -418,6 +427,7 @@ class SettingsPage extends Component {
 					country={this.state.country}
 					region={this.state.region}
 					gender={this.state.gender}
+					birthday={this.state.birthday}
 					error={this.state.error}
 					loader={this.state.loader}
 					tagInput={this.state.tagInput}
@@ -532,6 +542,7 @@ class SettingsPage extends Component {
 								country={this.state.country}
 								region={this.state.region}
 								gender={this.state.gender}
+								birthday={this.state.birthday}
 								error={this.state.error}
 								tagInput={this.state.tagInput}
 							/>}

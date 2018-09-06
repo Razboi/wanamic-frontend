@@ -282,6 +282,7 @@ class Step3 extends Component {
 								placeholder="Add a new interest"
 								autofocus={false}
 								maxLength={20}
+								allowDeleteFromEmptyInput={false}
 							/>
 							<AddButton
 								onClick={this.handleManualAddition}

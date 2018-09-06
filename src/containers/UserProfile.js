@@ -322,6 +322,7 @@ class UserProfile extends Component {
 			this.setImages();
 			this.refreshTimeline();
 			window.scrollTo( 0, 0 );
+			document.title = `${this.state.user.fullname} @${this.state.user.username}`;
 		} else if ( this.props.username !== prevProps.username ) {
 			this.getUserInfo();
 			this.checkPendingRequest();
@@ -347,6 +348,7 @@ class UserProfile extends Component {
 				}
 			}
 		}
+		document.title = `${this.state.user.fullname} @${this.state.user.username}`;
 	}
 
 	checkPendingRequest = async() => {
@@ -455,6 +457,7 @@ class UserProfile extends Component {
 			} else {
 				user.followers.push( localStorage.getItem( "id" ));
 				this.setState({ user: user });
+				console.log( "here", notification );
 				notification.data && this.props.socket.emit(
 					"sendNotification", notification.data );
 				this.refreshTimeline();

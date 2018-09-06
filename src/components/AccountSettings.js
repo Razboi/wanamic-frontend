@@ -204,6 +204,7 @@ class AccountSettings extends Component {
 									placeholder="Add a new interest"
 									autofocus={false}
 									maxLength={20}
+									allowDeleteFromEmptyInput={false}
 								/>
 								<AddButton
 									onClick={this.handleManualAddition}
@@ -233,6 +234,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleChange}
 							label="Birthday"
 							type="date"
+							value={this.props.birthday}
 						/>
 						<Gender>
 							<CustomLabel>Gender</CustomLabel>
@@ -289,6 +291,7 @@ AccountSettings.propTypes = {
 	region: PropTypes.string,
 	country: PropTypes.string,
 	gender: PropTypes.string,
+	birthday: PropTypes.string,
 	loader: PropTypes.bool,
 	tagInput: PropTypes.string.isRequired
 };
