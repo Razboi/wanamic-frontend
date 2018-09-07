@@ -21,11 +21,11 @@ const
 			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
 			width: 100%;
-			overflow: hidden;
+			overflow-y: auto;
 			position: absolute;
 			z-index: 3;
 			background: #fff;
-			padding-top: 49.33px;
+			padding: 49.33px 0;
 			::-webkit-scrollbar {
 				display: none !important;
 			}
@@ -35,25 +35,18 @@ const
 		}
 		@media (min-width: 1300px) {
 			display: ${props => props.hideSidebar && "none"};
-			height: 350px;
 			position: fixed;
 			right: 10px;
 			bottom: 0;
+			height: 350px;
 			width: 260px;
 			background: rgba( 255, 255, 255, 0.35 );
 			border-radius: 2px;
-			overflow-y: auto;
 			z-index: 2;
-			::-webkit-scrollbar {
-				display: block !important;
-				width: 10px !important;
-			}
 		}
 	`,
 	PopupWrapper = styled.div`
 		@media (min-width: 760px)  {
-			height: 400px;
-			width: 400px;
 			position: absolute;
 			bottom: -393px;
 			left: 0;
@@ -72,6 +65,12 @@ const
 			display: none;
 		}
 	`,
+	PopupConversations = styled.div`
+		height: 400px;
+		width: 400px;
+		overflow-y: auto;
+		padding-bottom: 4rem;
+	`,
 	PageHeader = styled.div`
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
 		text-align: center;
@@ -87,12 +86,31 @@ const
 			border-bottom: 0;
 		}
 	`,
+	ConversationsList = styled.div`
+	@media (max-width: 1300px) {
+		display: ${props => props.largeScreen && "none"};
+		height: 100%;
+		::-webkit-scrollbar {
+			display: none !important;
+		}
+	}
+	@media (min-width: 1300px) {
+		height: 100%;
+		overflow-y: auto;
+		padding-bottom: 4rem;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 10px !important;
+		}
+	}
+	`,
 	Buttons = styled.div`
 		display: flex;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		background: #fff;
+		border-top: 1px solid rgba(0,0,0,0.05);
 	`,
 	NewConversationButton = styled( Button )`
 		z-index: 3;
@@ -417,6 +435,7 @@ class Messages extends Component {
 		}
 	}
 
+
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
@@ -471,7 +490,7 @@ class Messages extends Component {
 								<React.Fragment>
 									<PageHeader>Conversations</PageHeader>
 
-									<div className="conversationsList">
+									<ConversationsList>
 										{this.props.conversations.map(( chat, index ) =>
 											<OpenConversation
 												key={index}
@@ -512,7 +531,7 @@ class Messages extends Component {
 												}
 											</OpenConversation>
 										)}
-									</div>
+									</ConversationsList>
 									<Buttons>
 										<HideButton
 											onClick={this.toggleChat}
@@ -572,7 +591,7 @@ class Messages extends Component {
 								<React.Fragment>
 									<PageHeader isPopup>Conversations</PageHeader>
 
-									<div className="conversationsList">
+									<PopupConversations>
 										{this.props.conversations.map(( chat, index ) =>
 											<OpenConversation
 												key={index}
@@ -613,7 +632,7 @@ class Messages extends Component {
 												}
 											</OpenConversation>
 										)}
-									</div>
+									</PopupConversations>
 									<Buttons>
 										<NewConversationButton
 											onClick={this.handleSocialCircle}

@@ -108,7 +108,7 @@ const
 		align-items: center;
 		z-index: 2;
 		width: 300px;
-		margin-top: -12rem;
+		margin-top: -10rem;
 		padding: 0 5px;
 		@media (max-width: 1100px) {
 			display: none;
@@ -128,14 +128,16 @@ const
 	`,
 	UserImage = styled.img`
 		z-index: 2;
-		width: 116px;
-		height: 116px;
+    height: auto;
+    width: auto;
+		max-height: 116px;
+    max-width: 116px;
 		border-radius: 4px;
 		border: 2px solid #fff;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 		@media (min-width: 420px) {
-			width: 200px;
-			height: 200px;
+			max-height: 200px;
+	    max-width: 200px;
 			box-shadow: 0px 3px 8px rgba(0, 0, 0, .25);
 		}
 		@media (max-width: 420px) {
@@ -322,7 +324,9 @@ class UserProfile extends Component {
 			this.setImages();
 			this.refreshTimeline();
 			window.scrollTo( 0, 0 );
-			document.title = `${this.state.user.fullname} @${this.state.user.username}`;
+			if ( this.state.user ) {
+				document.title = `${this.state.user.fullname} @${this.state.user.username}`;
+			}
 		} else if ( this.props.username !== prevProps.username ) {
 			this.getUserInfo();
 			this.checkPendingRequest();

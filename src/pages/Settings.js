@@ -146,18 +146,14 @@ class SettingsPage extends Component {
 	handleFileChange = e => {
 		const
 			file = e.target.files[ 0 ],
-			target = e.target.name,
-			fileExt = file && file.name.split( "." ).pop();
+			target = e.target.name;
 
 		if ( !file ) {
 			return;
 		}
 
 		if (( file.type !== "image/jpeg" && file.type !== "image/png"
-			&& file.type !== "image/jpg" && file.type !== "image/gif" )
-			||
-			( fileExt !== "jpeg" && fileExt !== "png"
-			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )) {
 			this.setState({
 				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
 			});
