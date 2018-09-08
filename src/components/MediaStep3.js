@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Button, Checkbox, Icon, Input } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Input, Dropdown } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { connect } from "react-redux";
 
 const
 	Wrapper = styled.div`
@@ -63,10 +64,18 @@ const
 		flex-direction: column;
 		width: 100%;
 		justify-content: center;
+		align-items: center;
 		height: 150px;
 		@media (min-height: 420px) {
 			height: 200px;
 		}
+	`,
+	Tabs = styled.div`
+		align-self: center;
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
 	`,
 	AlertsWrapper = styled.div`
 		display: flex;
@@ -74,7 +83,7 @@ const
 		align-items: center;
 		margin-top: 1rem;
 	`,
-	AlertsTitle = styled.h4`
+	Title = styled.h4`
 		font-size: 1.2rem !important;
 	`,
 	Alerts = styled.div`
@@ -89,32 +98,6 @@ const
 	AlertLabel = styled.b`
 		margin-left: 10px;
 		font-size: 16px;
-	`,
-	PrivacySlider = styled.div`
-		background: ${props => props.range === 2 &&
-			"linear-gradient(to right, rgb(73,157,131) 50%, rgba(0,0,0,0.75) 50%) !important" };
-		background: ${props => props.range === 3 && "rgb(73,157,131) !important"};
-		background: rgba(0,0,0,0.75);
-		border-radius: 25px;
-		align-self: center;
-		display: flex;
-		justify-content: space-between;
-		@media (max-width: 420px) {
-			width: 70%;
-		};
-		@media (min-width: 420px) {
-			width: 300px;
-		}
-	`,
-	PrivacyButton = styled( Button )`
-		margin: 0px !important;
-		background: rgb(133, 217, 191) !important
-		color: ${props => props.active ? "#fff" : "#000"} !important;
-	`,
-	SliderHeader = styled.h4`
-		text-align: center;
-		align-self: center;
-		font-size: 1.2rem !important;
 	`,
 	SelectedMediaBackground = styled.div`
 		height: 100vh;
@@ -142,11 +125,52 @@ const
 				color: #444 !important;
 			}
 		}
+	`,
+	Tab = styled( Button )`
+		background-color: ${props => props.primary && "rgb(133,217,191)"} !important;
 	`;
 
 
 class MediaStep3 extends Component {
+	constructor( props ) {
+		super( props );
+		this.state = {
+			feed: props.feed,
+			selectedClub: props.selectedClub
+		};
+	}
+
+	switchFeed = feed => {
+		this.setState({ feed: feed, selectedClub: undefined });
+	}
+
+	selectClub = club => {
+		this.setState({ feed: "club", selectedClub: club });
+	}
+
+	renderClub = ( club, index ) => {
+		return (
+			<Dropdown.Item
+				key={index}
+				text={club}
+				onClick={() => this.selectClub( club )}
+			/>
+		);
+	}
+
+	renderSubmit = () => {
+		const { feed, selectedClub } = this.state;
+		return (
+			<Icon
+				className="nextIcon"
+				name="check"
+				onClick={() => this.props.handleSubmit( feed, selectedClub )}
+			/>
+		);
+	}
+
 	render() {
+		let { selectedClub } = this.state;
 		return (
 			<Wrapper onShare={this.props.onShare}>
 				<Options whiteTheme={this.props.whiteTheme}>
@@ -157,46 +181,35 @@ class MediaStep3 extends Component {
 							onClick={this.props.prevStep}
 						/>
 						<HeaderTxt>Privacy options</HeaderTxt>
-						<Icon
-							className="nextIcon"
-							name="check"
-							onClick={this.props.handleSubmit}
-						/>
+						{this.renderSubmit()}
 					</HeaderWrapper>
 					<ShareOptions>
-						<SliderHeader>
-							{this.props.privacyRange === 1 && "Friends"}
-							{this.props.privacyRange === 2 && "Friends and Followers"}
-							{this.props.privacyRange === 3 &&
-								"Everybody (will be included in the explore page)"}
-						</SliderHeader>
-						<PrivacySlider range={this.props.privacyRange}>
-							<PrivacyButton
-								active={this.props.privacyRange >= 1}
-								circular
-								icon="users"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 1 )}
+						<Title>Share with</Title>
+						<Tabs>
+							<Tab
+								content="Global"
+								primary={this.state.feed === "global"}
+								onClick={() => this.switchFeed( "global" )}
 							/>
-							<PrivacyButton
-								active={this.props.privacyRange >= 2}
-								className="privacyButton2"
-								circular
-								icon="binoculars"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 2 )}
+							<Tab
+								content="Friends"
+								primary={this.state.feed === "friends"}
+								onClick={() => this.switchFeed( "friends" )}
 							/>
-							<PrivacyButton
-								active={this.props.privacyRange === 3}
-								circular
-								icon="globe"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 3 )}
+							<Tab
+								primary={this.state.feed === "club"}
+								content={
+									<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
+										<Dropdown.Menu>
+											{this.props.clubs.map( this.renderClub )}
+										</Dropdown.Menu>
+									</Dropdown>
+								}
 							/>
-						</PrivacySlider>
+						</Tabs>
 					</ShareOptions>
 					<AlertsWrapper>
-						<AlertsTitle>Alerts</AlertsTitle>
+						<Title>Alerts</Title>
 						<Alerts>
 							<AlertCheck>
 								<Checkbox name="checkNsfw" onChange={this.props.handleCheck}/>
@@ -232,8 +245,6 @@ class MediaStep3 extends Component {
 MediaStep3.propTypes = {
 	handleCheck: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	setPrivacyRange: PropTypes.func.isRequired,
-	privacyRange: PropTypes.number.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
@@ -242,4 +253,12 @@ MediaStep3.propTypes = {
 	onShare: PropTypes.bool
 };
 
-export default MediaStep3;
+
+const
+	mapStateToProps = state => ({
+		feed: state.posts.feed,
+		selectedClub: state.posts.selectedClub,
+		clubs: state.posts.clubs
+	});
+
+export default connect( mapStateToProps )( MediaStep3 );

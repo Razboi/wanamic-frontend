@@ -48,7 +48,7 @@ const
 	PopupWrapper = styled.div`
 		@media (min-width: 760px)  {
 			position: absolute;
-			bottom: -393px;
+			bottom: -425px;
 			left: 0;
 			background: #fff;
 			border-radius: 2px;
@@ -586,6 +586,7 @@ class Messages extends Component {
 									socialCircle={this.state.socialCircle}
 									handleNewConversation={this.handleNewConversation}
 									back={this.backToOpenConversations}
+									popup={true}
 								/>
 								:
 								<React.Fragment>

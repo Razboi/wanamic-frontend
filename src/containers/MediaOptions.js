@@ -230,28 +230,30 @@ class MediaOptions extends Component {
 		this.setState({ shareState: !this.state.shareState });
 	}
 
-	shareTextPost = async( userInput, privacyRange, alerts ) => {
+	shareTextPost = async( userInput, feed, selectedClub, alerts ) => {
 		if ( userInput ) {
 			const { mentions, hashtags } = await extract(
 				userInput, { symbol: false, type: "all" }
 			);
-			api.createPost( userInput, mentions, hashtags, privacyRange, alerts )
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.shareTextPost())
-							.catch( err => console.log( err ));
-					} else if ( res ) {
-						this.props.addPost( res.newPost, this.props.onProfile );
-						this.props.switchMediaOptions();
-						this.props.toggleMediaButton();
-						if ( res.mentionsNotifications ) {
-							for ( const notification of res.mentionsNotifications ) {
-								this.props.socket.emit( "sendNotification", notification );
-							}
-						}
+			try {
+				const res = await api.createPost(
+					userInput, mentions, hashtags, feed, selectedClub, alerts );
+				this.props.addPost( res.newPost, this.props.onProfile );
+				this.props.switchMediaOptions();
+				this.props.toggleMediaButton();
+				if ( res.mentionsNotifications ) {
+					for ( const notification of res.mentionsNotifications ) {
+						this.props.socket.emit( "sendNotification", notification );
 					}
-				}).catch( err => console.log( err ));
+				}
+			} catch ( err ) {
+				if ( err.response.data === "jwt expired" ) {
+					await refreshToken();
+					this.shareTextPost( userInput, feed, selectedClub, alerts );
+				} else {
+					console.log( err );
+				}
+			}
 		}
 	};
 

@@ -8,7 +8,10 @@ const initialState = {
 	displayShare: false,
 	displayPostDetails: false,
 	postDetails: {},
-	postToShare: {}
+	postToShare: {},
+	feed: "global",
+	selectedClub: undefined,
+	clubs: []
 };
 
 export default function posts( state = initialState, action = {}) {
@@ -134,6 +137,24 @@ export default function posts( state = initialState, action = {}) {
 			...state,
 			displayPostDetails: !state.displayPostDetails,
 			postDetails: action.post
+		};
+
+	case "SET_FEED":
+		return {
+			...state,
+			feed: action.feed
+		};
+
+	case "SET_CLUB":
+		return {
+			...state,
+			selectedClub: action.club
+		};
+
+	case "SET_CLUBS":
+		return {
+			...state,
+			clubs: action.clubs
 		};
 
 	default:

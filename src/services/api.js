@@ -136,7 +136,7 @@ export default {
 				throw err;
 			}),
 
-	createPost: ( userInput, mentions, hashtags, privacyRange, alerts ) =>
+	createPost: ( userInput, mentions, hashtags, feed, selectedClub, alerts ) =>
 		axios({
 			method: "post",
 			url: API_URL + "/posts/create",
@@ -145,12 +145,15 @@ export default {
 				userInput: userInput,
 				mentions: mentions,
 				hashtags: hashtags,
-				privacyRange: privacyRange,
+				feed: feed,
+				selectedClub: selectedClub,
 				alerts: alerts
 			}
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	createMediaPost: data =>
 		axios({
@@ -191,10 +194,10 @@ export default {
 				throw err;
 			}),
 
-	getNewsFeed: skip =>
+	friendsFeed: skip =>
 		axios({
 			method: "post",
-			url: API_URL + "/posts/newsfeed/" + skip,
+			url: API_URL + "/posts/friends/" + skip,
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
@@ -414,13 +417,15 @@ export default {
 				throw err;
 			}),
 
-	exploreContent: ( skip, limit ) =>
+	globalFeed: ( skip, limit ) =>
 		axios({
 			method: "get",
-			url: API_URL + `/posts/explore/${skip}/${limit}`
+			url: API_URL + `/posts/global/${skip}/${limit}`
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	searchContent: ( skip, search ) =>
 		axios({
@@ -750,6 +755,27 @@ export default {
 			method: "post",
 			data: { token: localStorage.getItem( "token" ) },
 			url: API_URL + "/user/getLikesAndViews/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	userClubs: () =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: API_URL + "/user/clubs/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	clubFeed: ( skip, club ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/posts/clubFeed/${club}/${skip}/`
 		})
 			.then( res => res )
 			.catch( err => {

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import {
 	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails,
-	switchShare
+	switchShare, setFeed, setClub, setClubs
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
@@ -106,7 +106,7 @@ class Home extends Component {
 	constructor() {
 		super();
 		this.state = {
-			skip: 1,
+			skip: 0,
 			hasMore: true,
 			mediaButton: true,
 			chat: true
@@ -115,41 +115,139 @@ class Home extends Component {
 
 	componentDidMount() {
 		window.scrollTo( 0, 0 );
-		this.refreshNewsFeed();
+		this.getGlobalFeed();
+		this.getUserClubs();
 		document.title = "Wanamic";
 	}
 
-	getNewsFeed = () => {
-		if ( this.state.hasMore ) {
-			api.getNewsFeed( this.state.skip )
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.getNewsFeed())
-							.catch( err => console.log( err ));
-					} else {
-						this.props.addToPosts( res.data );
-						this.setState({
-							hasMore: res.data.length === 10,
-							skip: this.state.skip + 1
-						});
-					}
-				}).catch( err => console.log( err ));
+	getUserClubs = async() => {
+		try {
+			const clubs = await api.userClubs();
+			this.props.setClubs( clubs.data );
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getUserClubs();
+			} else {
+				console.log( err );
+			}
 		}
 	}
 
-	refreshNewsFeed = () => {
-		api.getNewsFeed( 0 )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.refreshNewsFeed())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.props.setPosts( res.data );
-				}
-			})
-			.catch( err => console.log( err ));
+	getGlobalFeed = async() => {
+		try {
+			const posts = await api.globalFeed( this.state.skip, 10 );
+			this.props.addToPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip++
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getGlobalFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	getFriendsFeed = async() => {
+		try {
+			const posts = await api.friendsFeed( this.state.skip, 10 );
+			this.props.addToPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip++
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getFriendsFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	initGlobalFeed = async() => {
+		try {
+			const posts = await api.globalFeed( 0, 10 );
+			this.props.setPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === 10
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.initGlobalFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	initFriendsFeed = async() => {
+		try {
+			const posts = await api.friendsFeed( 0, 10 );
+			this.props.setPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === 10
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.initFriendsFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	initClubFeed = async( club ) => {
+		try {
+			const posts = await api.clubFeed( 0, club );
+			this.props.setPosts( posts.data, true );
+			this.setState({
+				hasMore: posts.data.length === 10
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.initClubFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	loadMore = () => {
+		switch ( this.props.feed ) {
+		case "global":
+			this.getGlobalFeed();
+			break;
+		case "friends":
+			this.getFriendsFeed();
+			break;
+		default:
+			this.getGlobalFeed();
+		}
+	}
+
+	initializeFeed = ( feed, club ) => {
+		switch ( feed ) {
+		case "global":
+			this.initGlobalFeed();
+			break;
+		case "friends":
+			this.initFriendsFeed();
+			break;
+		case "club":
+			this.initClubFeed( club );
+			break;
+		default:
+			this.initGlobalFeed();
+		}
 	}
 
 	toggleMediaButton = () => {
@@ -179,6 +277,19 @@ class Home extends Component {
 		this.setState( state => ({ chat: !state.chat }));
 	}
 
+	switchFeed = feed => {
+		this.props.setFeed( feed );
+		this.props.setClub( undefined );
+		this.setState({ skip: 0 });
+		this.initializeFeed( feed );
+	}
+
+	selectClub = club => {
+		this.props.setFeed( "club" );
+		this.props.setClub( club );
+		this.initializeFeed( "club", club );
+	}
+
 	render() {
 		let plusImage;
 
@@ -193,7 +304,7 @@ class Home extends Component {
 				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
-					loadMore={this.getNewsFeed}
+					loadMore={this.loadMore}
 					initialLoad={false}
 					useWindow={true}
 				>
@@ -232,6 +343,11 @@ class Home extends Component {
 									posts={this.props.newsfeed}
 									socket={this.props.socket}
 									history={this.props.history}
+									feed={this.props.feed}
+									switchFeed={this.switchFeed}
+									clubs={this.props.clubs}
+									selectedClub={this.props.selectedClub}
+									selectClub={this.selectClub}
 								/>
 							</HomeContent>
 						</OutsideClickHandler>
@@ -254,6 +370,9 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
+		feed: state.posts.feed,
+		selectedClub: state.posts.selectedClub,
+		clubs: state.posts.clubs
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -264,7 +383,10 @@ const
 		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchNotifications: () => dispatch( switchNotifications()),
 		switchMessages: () => dispatch( switchMessages()),
-		switchShare: () => dispatch( switchShare())
+		switchShare: () => dispatch( switchShare()),
+		setFeed: ( feed ) => dispatch( setFeed( feed )),
+		setClub: ( club ) => dispatch( setClub( club )),
+		setClubs: ( clubs ) => dispatch( setClubs( clubs ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Home );

@@ -5,15 +5,18 @@ import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
-		width: 100%;
-		position: absolute;
+		height: ${props => props.popup ? "400px" : "100%"};
+		width: ${props => props.popup ? "400px" : "100%"};
+		overflow-y: auto;
+		padding-bottom: 4rem;
 		z-index: 4;
-		background: #fff;
-		@media (min-width: 420px) {
-			height: 100%;
-			background: none;
-			top: 0;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
+		@media (max-width: 420px) {
+			height: 100vh;
+			width: 100%;
 		}
 	`,
 	HeaderWrapper = styled.div`
@@ -137,7 +140,7 @@ class SocialCircleList extends Component {
 
 	render() {
 		return (
-			<Wrapper>
+			<Wrapper popup={this.props.popup}>
 				<HeaderWrapper>
 					<Icon
 						name="arrow left"
@@ -172,7 +175,8 @@ class SocialCircleList extends Component {
 SocialCircleList.propTypes = {
 	socialCircle: PropTypes.array.isRequired,
 	handleNewConversation: PropTypes.func.isRequired,
-	back: PropTypes.func.isRequired
+	back: PropTypes.func.isRequired,
+	popup: PropTypes.bool,
 };
 
 
