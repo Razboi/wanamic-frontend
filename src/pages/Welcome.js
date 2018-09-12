@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import api from "../services/api";
 import Step2 from "../components/WelcomeStep2";
 import Step3 from "../components/WelcomeStep3";
-import Step4 from "../components/WelcomeStep4";
 import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -148,39 +147,13 @@ class WelcomePage extends Component {
 		this.setState({ toFollow: usersToFollow });
 	}
 
-	finishStep3 = async() => {
-		var data = new FormData();
-		if ( this.state.userImage ) {
-			data.append( "userImage", this.state.userImage );
-		}
-		data.append( "token", localStorage.getItem( "token" ));
-		this.handleNext();
-		try {
-			const res = await api.setUserInfo( data );
-			await api.setUserKw( this.state.hobbies );
-			if ( res.data.newImage ) {
-				localStorage.setItem( "uimg", res.data.newImage );
-			}
-		} catch ( err ) {
-			console.log( err );
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.finishStep3();
-			}
-		}
-	}
-
 	categoriesNext = async() => {
 		var finalSuggestions = [];
 		try {
 			for ( const category of this.state.checkedCategories ) {
 				finalSuggestions.push( ...this.hobbiesSuggestions[ category ]);
 			}
-			const res = await api.getInterestsMatches( this.state.checkedCategories );
-			this.setState({
-				matchedUsers: res.data,
-				suggestions: finalSuggestions
-			});
+			this.setState({ suggestions: finalSuggestions });
 			this.handleNext();
 		} catch ( err ) {
 			console.log( err );
@@ -195,11 +168,15 @@ class WelcomePage extends Component {
 
 	finish = async() => {
 		try {
-			await api.updateInterests( this.state.checkedCategories );
-			const notifications = await api.setupFollow( this.state.toFollow );
-			for ( const notification of notifications.data ) {
-				this.props.socket.emit( "sendNotification", notification );
+			if ( this.state.userImage ) {
+				let data = new FormData();
+				data.append( "userImage", this.state.userImage );
+				data.append( "token", localStorage.getItem( "token" ));
+				const res = await api.setUserInfo( data );
+				res.data.newImage && localStorage.setItem( "uimg", res.data.newImage );
 			}
+			await api.setUserKw( this.state.hobbies );
+			await api.updateInterests( this.state.checkedCategories );
 			localStorage.removeItem( "NU" );
 			this.props.history.push( "/" );
 		} catch ( err ) {
@@ -228,7 +205,7 @@ class WelcomePage extends Component {
 
 				{ this.state.step === 2 &&
 					<Step3
-						handleNext={this.finishStep3}
+						handleNext={this.finish}
 						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
 						handleFileChange={this.handleFileChange}
@@ -240,18 +217,6 @@ class WelcomePage extends Component {
 						loader={this.state.loader}
 						tagInput={this.state.tagInput}
 						suggestions={this.state.suggestions}
-					/>
-				}
-
-				{ this.state.step === 3 &&
-					<Step4
-						handlePrev={this.handlePrev}
-						handleChange={this.handleChange}
-						matchedUsers={this.state.matchedUsers}
-						handleFollow={this.handleFollow}
-						handleUnfollow={this.handleUnfollow}
-						finish={this.finish}
-						toFollow={this.state.toFollow}
 					/>
 				}
 

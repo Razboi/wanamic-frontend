@@ -62,7 +62,9 @@ class EditClubPopup extends Component {
 		this.state = {
 			title: props.title,
 			description: props.description,
-			error: ""
+			error: "",
+			successor: "",
+			afterGiveUp: false
 		};
 	}
 
@@ -97,7 +99,63 @@ class EditClubPopup extends Component {
 		}
 	}
 
+	giveUp = async() => {
+		try {
+			await api.giveUpPresidency( this.state.successor, this.props.clubId );
+			this.setState({ afterGiveUp: true });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.giveUp();
+				return;
+			}
+			if ( err.response.data === "Duplicated notification" ) {
+				this.setState({ error: "Already notified." });
+			}
+			if ( err.response.data === "User doesn't exist" ) {
+				this.setState({ error: "This user doesn't exist." });
+			}
+			console.log( err );
+		}
+	}
+
 	render() {
+		if ( this.props.giveUpForm ) {
+			return (
+				<Wrapper>
+					<CloseIcon name="close" onClick={this.props.toggleGiveUpForm} />
+					<ClubFormDimmer onClick={this.props.toggleGiveUpForm} />
+					<CreateClubForm>
+						{this.state.afterGiveUp ?
+							<p>A request has been sent to @{this.state.successor}. If the user accepts, you will be removed from the presidency.</p>
+							:
+							<React.Fragment>
+								<Form.Field>
+									<p>Enter the username of your successor.</p>
+									<input
+										placeholder="skankhunt42"
+										name="successor"
+										value={this.state.successor}
+										onChange={this.handleChange}
+										maxLength={20}
+									/>
+								</Form.Field>
+								<Button
+									content="Give Up"
+									color="red"
+									onClick={this.giveUp}
+								/>
+								{this.state.error &&
+									<Message negative>
+										<Message.Header>{this.state.error}</Message.Header>
+									</Message>
+								}
+							</React.Fragment>
+						}
+					</CreateClubForm>
+				</Wrapper>
+			);
+		}
 		return (
 			<Wrapper>
 				<CloseIcon name="close" onClick={this.props.switchForm} />
@@ -140,10 +198,12 @@ class EditClubPopup extends Component {
 
 EditClubPopup.propTypes = {
 	switchForm: PropTypes.func.isRequired,
+	toggleGiveUpForm: PropTypes.func.isRequired,
 	updateData: PropTypes.func.isRequired,
 	clubId: PropTypes.string,
 	title: PropTypes.string,
-	description: PropTypes.string
+	description: PropTypes.string,
+	giveUpForm: PropTypes.bool.isRequired
 };
 
 export default EditClubPopup;

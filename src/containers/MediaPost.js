@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Image } from "semantic-ui-react";
+import { Header, Image, Icon } from "semantic-ui-react";
 import moment from "moment";
 import PostOptions from "./PostOptions";
 import api from "../services/api";
@@ -33,13 +33,25 @@ const
 		flex-direction: row;
 		padding: 1rem !important;
 		margin: 0 !important;
-		align-items: center !important;
 		font-family: inherit !important;
 	`,
 	HeaderInfo = styled.div`
 		display: flex;
 		flex-direction: column;
-		margin: 0 2rem 0 0.5rem;
+		margin: 0 0 0 0.5rem;
+		:hover {
+			cursor: pointer;
+		}
+	`,
+	ClubInfo = styled.div`
+		display: flex;
+		a {
+			font-size: 1.1rem;
+			color: rgb(133,217,191);
+		}
+		i {
+			margin: 0 1rem !important;
+		}
 		:hover {
 			cursor: pointer;
 		}
@@ -270,6 +282,12 @@ class MediaPost extends Component {
 						</DateTime>
 					</HeaderInfo>
 
+					{post.club && post.club.name &&
+						<ClubInfo>
+							<Icon name="long arrow alternate right" />
+							<a href={`/c/${post.club.name}`}>c/{post.club.name}</a>
+						</ClubInfo>
+					}
 					{ !this.props.fakeOptions &&
 						<DropdownOptions
 							style={StyledOptions}

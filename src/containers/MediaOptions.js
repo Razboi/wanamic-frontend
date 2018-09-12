@@ -164,7 +164,7 @@ class MediaOptions extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	submitLink = async( description, link, privacyRange, alerts ) => {
+	submitLink = async( description, link, feed, selectedClub, alerts ) => {
 		if ( !link ) {
 			return;
 		}
@@ -174,7 +174,7 @@ class MediaOptions extends Component {
 
 		try {
 			const res = await api.createMediaLink( link, description,
-				mentions, hashtags, privacyRange, alerts );
+				mentions, hashtags, feed, selectedClub, alerts );
 
 			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
@@ -188,7 +188,7 @@ class MediaOptions extends Component {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.submitLink( description, link, privacyRange, alerts );
+				this.submitLink( description, link, feed, selectedClub, alerts );
 				return;
 			} else if ( err.response.status === 500 ) {
 				this.setState({
@@ -306,7 +306,7 @@ class MediaOptions extends Component {
 		this.props.toggleMediaButton();
 	}
 
-	submitPicture = async( description, privacyRange, alerts ) => {
+	submitPicture = async( description, feed, selectedClub, alerts ) => {
 		var
 			data = new FormData();
 		const
@@ -321,7 +321,8 @@ class MediaOptions extends Component {
 		data.append( "content", description );
 		data.append( "mentions", mentions );
 		data.append( "hashtags", hashtags );
-		data.append( "privacyRange", privacyRange );
+		data.append( "feed", feed );
+		data.append( "selectedClub", selectedClub );
 		data.append( "nsfw", alerts.nsfw );
 		data.append( "spoiler", alerts.spoiler );
 		data.append( "spoilerDescription", alerts.spoilerDescription );
@@ -340,7 +341,7 @@ class MediaOptions extends Component {
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.submitPicture( description, privacyRange, alerts );
+				this.submitPicture( description, feed, selectedClub, alerts );
 				return;
 			}
 			this.setState({ error: err.response.data, sharePicture: false });

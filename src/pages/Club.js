@@ -10,12 +10,12 @@ import { switchMessages } from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
+import ClubInformation from "../components/ClubInformation";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
-import EditClubPopup from "../containers/EditClubPopup";
 
 const
 	Wrapper = styled.div`
@@ -75,62 +75,6 @@ const
 		display: flex;
 		margin: 0 auto;
 	`,
-	ClubInformation = styled.div`
-		margin-top: 1rem;
-		margin-right: 10px;
-	`,
-	MainInfo = styled.div`
-		width: 300px;
-		padding: 1rem;
-		border-radius: 5px;
-		background: #fff;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		margin-bottom: 1rem;
-		div {
-			margin-bottom: 1rem;
-		}
-		h4 {
-			font-family: inherit;
-			color: #111;
-			margin-bottom: 0.2rem;
-		}
-		p {
-			color: #111;
-			font-weight: 200;
-			font-size: 1.01rem;
-		}
-	`,
-	InfoButton = styled( Button )`
-		background: ${props => props.primary ?
-		"rgb(133, 217, 191)" : "#fff"} !important;
-		border: ${props => !props.primary &&
-			"1px solid rgb(133, 217, 191)"} !important;
-		color: ${props => !props.primary && "rgb(133, 217, 191)"} !important;
-	`,
-	EditButton = styled( Button )`
-		margin-top: 1rem !important;
-	`,
-	SecondaryInfo = styled.div`
-		margin-top: 1rem;
-		width: 300px;
-		padding: 1rem;
-		border-radius: 5px;
-		background: #fff;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		h4 {
-			font-family: inherit;
-		}
-		a {
-			color: #222
-		}
-		span {
-			color: rgba(0,0,0,0.5);
-		}
-	`,
 	BannedWrapper = styled.div`
 		height: 100vh;
 		width: 100vw;
@@ -146,32 +90,73 @@ const
 		h4 {
 			font-family: inherit;
 		}
+	`,
+	NextButton = styled( Button )`
+		position: fixed;
+		bottom: 10px;
+		right: 10px;
+		background: rgba( 0,0,0,0.5 ) !important;
+		color: #fff !important;
+		z-index: 4;
+	`,
+	BackButton = styled( Button )`
+		position: fixed;
+		bottom: 10px;
+		left: 10px;
+		background: rgba( 0,0,0,0.5 ) !important;
+		color: #fff !important;
+		z-index: 4;
 	`;
 
 
 class Club extends Component {
-	constructor() {
-		super();
+	constructor( props ) {
+		super( props );
 		this.state = {
 			skip: 0,
 			hasMore: true,
 			mediaButton: true,
 			chat: true,
-			clubData: undefined,
-			editForm: false
+			clubData: props.clubData
 		};
 	}
 
 	componentDidMount() {
 		window.scrollTo( 0, 0 );
-		this.getClubData();
+		if ( this.props.explore ) {
+			this.setExploreClubData();
+		} else {
+			this.getClubData();
+		}
+	}
+
+	componentDidUpdate( prevProps, prevState ) {
+		if ( this.props.clubData !== prevProps.clubData ) {
+			this.setExploreClubData();
+			this.setState({ clubData: this.props.clubData });
+		}
+	}
+
+	setExploreClubData = async() => {
+		try {
+			document.title = "Explore: " + this.props.clubData.title;
+			this.props.setPosts( this.props.clubData.feed );
+			this.props.setFeed( "club" );
+			this.props.setClub( this.props.clubData.name );
+			this.setState({
+				hasMore: this.props.clubData.feed.length === 10,
+				skip: this.state.skip++
+			});
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	getClubData = async() => {
 		try {
 			const club = await api.getClub( this.props.match.params.club );
 			document.title = club.data.title;
-			this.props.addToPosts( club.data.feed );
+			this.props.setPosts( club.data.feed );
 			this.props.setFeed( "club" );
 			this.props.setClub( club.data.name );
 			this.setState({
@@ -251,53 +236,6 @@ class Club extends Component {
 		this.setState( state => ({ chat: !state.chat }));
 	}
 
-	exitClub = async() => {
-		try {
-			if ( this.state.clubData.president._id === localStorage.getItem( "id" )) {
-				return;
-			}
-			const updatedMembers = await api.exitClub( this.state.clubData._id );
-			let updatedClubData = this.state.clubData;
-			updatedClubData.members = updatedMembers.data;
-			this.setState({ clubData: updatedClubData });
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.exitClub();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	joinClub = async() => {
-		try {
-			const updatedMembers = await api.joinClub( this.state.clubData._id );
-			let updatedClubData = this.state.clubData;
-			updatedClubData.members = updatedMembers.data;
-			this.setState({ clubData: updatedClubData });
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.joinClub();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	toggleEditForm = () => {
-		this.setState( state => ({ editForm: !state.editForm }));
-	}
-
-	updateData = ( title, description ) => {
-		let updatedData = this.state.clubData;
-		updatedData.title = title;
-		updatedData.description = description;
-		this.setState({ clubData: updatedData });
-		this.toggleEditForm();
-	}
-
 	render() {
 		let
 			{ clubData } = this.state,
@@ -313,7 +251,8 @@ class Club extends Component {
 			return null;
 		}
 
-		if ( clubData.bannedUsers.includes( localStorage.getItem( "id" ))) {
+		if ( clubData.bannedUsers &&
+			clubData.bannedUsers.includes( localStorage.getItem( "id" ))) {
 			return (
 				<BannedWrapper>
 					<BannedMessage>
@@ -325,19 +264,10 @@ class Club extends Component {
 
 		return (
 			<Wrapper>
-				{this.state.editForm &&
-					<EditClubPopup
-						clubId={clubData._id}
-						title={clubData.title}
-						description={clubData.description}
-						switchForm={this.toggleEditForm}
-						updateData={this.updateData}
-					/>
-				}
 				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
-					loadMore={this.loadMore}
+					loadMore={this.getClubFeed}
 					initialLoad={false}
 					useWindow={true}
 				>
@@ -364,39 +294,13 @@ class Club extends Component {
 
 						<OutsideClickHandler onClick={this.hidePopups}>
 							<ClubContent>
-								<ClubInformation>
-									<MainInfo>
-										<h4>{clubData.title}</h4>
-										<p>{clubData.description}</p>
-										{clubData.members &&
-											clubData.members.includes( localStorage.getItem( "id" )) ?
-											<InfoButton
-												secondary
-												content="ALREADY MEMBER"
-												onClick={this.exitClub}
-											/>
-											:
-											<InfoButton
-												primary
-												content="JOIN"
-												onClick={this.joinClub}
-											/>
-										}
-										{clubData.president._id === localStorage.getItem( "id" ) &&
-										<EditButton
-											content="Edit Information"
-											onClick={this.toggleEditForm}
-										/>
-										}
-									</MainInfo>
-									<SecondaryInfo>
-										<h4>Club president</h4>
-										<a href={`/${clubData.president.username}`}>
-											{clubData.president.fullname}
-											<span>@{clubData.president.username}</span>
-										</a>
-									</SecondaryInfo>
-								</ClubInformation>
+								<ClubInformation
+									clubData={clubData}
+									toggleEditForm={this.toggleEditForm}
+									toggleGiveUpForm={this.toggleGiveUpForm}
+									joinClub={this.joinClub}
+									exitClub={this.exitClub}
+								/>
 								<NewsFeed
 									clubAdmin={clubData.president._id === localStorage.getItem( "id" )}
 									posts={this.props.feedPosts}
@@ -409,6 +313,22 @@ class Club extends Component {
 									selectClub={this.selectClub}
 									hideTabs
 								/>
+								{this.props.displayButtons &&
+									<React.Fragment>
+										<NextButton
+											circular
+											icon="angle double right"
+											size="large"
+											onClick={this.props.next}
+										/>
+										<BackButton
+											circular
+											icon="close"
+											size="large"
+											onClick={this.props.back}
+										/>
+									</React.Fragment>
+								}
 							</ClubContent>
 						</OutsideClickHandler>
 					</MediaDimmer>
@@ -421,7 +341,10 @@ class Club extends Component {
 
 Club.propTypes = {
 	history: PropTypes.object.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	clubData: PropTypes.object,
+	displayButtons: PropTypes.bool,
+	explore: PropTypes.bool
 };
 
 const

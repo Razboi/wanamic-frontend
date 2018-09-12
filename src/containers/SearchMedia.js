@@ -272,12 +272,12 @@ class SearchMedia extends Component {
 		this.setState({ step: this.state.step - 1 });
 	}
 
-	handleSubmit = async() => {
+	handleSubmit = async( feed, selectedClub ) => {
 		var
 			i,
 			finalData = this.state.mediaData;
 		const
-			{ description, privacyRange, checkNsfw, checkSpoiler,
+			{ description, checkNsfw, checkSpoiler,
 				spoilerDescription } = this.state,
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
@@ -285,7 +285,8 @@ class SearchMedia extends Component {
 		finalData.mentions = mentions;
 		finalData.hashtags = hashtags;
 		finalData.content = description;
-		finalData.privacyRange = privacyRange;
+		finalData.feed = feed;
+		finalData.selectedClub = selectedClub;
 		finalData.alerts = {
 			nsfw: checkNsfw,
 			spoiler: checkSpoiler,

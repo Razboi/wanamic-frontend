@@ -164,7 +164,7 @@ export default {
 			.then( res => res.data )
 			.catch( err => err.response.data ),
 
-	createMediaLink: ( link, description, mentions, hashtags, privacyRange, alerts ) =>
+	createMediaLink: ( link, description, mentions, hashtags, feed, selectedClub, alerts ) =>
 		axios({
 			method: "post",
 			url: API_URL + "/posts/mediaLink",
@@ -174,8 +174,9 @@ export default {
 				description: description,
 				mentions: mentions,
 				hashtags: hashtags,
-				privacyRange: privacyRange,
-				alerts: alerts
+				alerts: alerts,
+				feed: feed,
+				selectedClub: selectedClub
 			}
 		})
 			.then( res => res.data )
@@ -208,11 +209,16 @@ export default {
 	getTimeline: ( skip, username ) =>
 		axios({
 			method: "post",
-			url: API_URL + "/posts/" + username + "/" + skip,
-			data: { token: localStorage.getItem( "token" ) }
+			url: `${API_URL}/posts/timeline/${skip}`,
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username
+			}
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	deletePost: postId =>
 		axios({
@@ -902,6 +908,55 @@ export default {
 				clubName: clubName
 			},
 			url: `${API_URL}/clubs/banUser/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	giveUpPresidency: ( username, clubId ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username,
+				clubId: clubId
+			},
+			url: `${API_URL}/clubs/requestSuccessor/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	acceptPresidency: ( clubName ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubName: clubName
+			},
+			url: `${API_URL}/clubs/acceptPresidency/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	randomClub: () =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/randomClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	searchClub: ( clubName ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/search/${clubName}`
 		})
 			.then( res => res )
 			.catch( err => {

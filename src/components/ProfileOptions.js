@@ -55,32 +55,6 @@ class ProfileOptions extends Component {
 				</Options>
 			);
 		}
-		if ( user.followers.includes( localStorage.getItem( "id" ))) {
-			return (
-				<Options>
-					<Option onClick={this.props.unFollow}>
-						<OptionImage image={require( "../images/minus.svg" )} />
-						<OptionText>Unfollow</OptionText>
-					</Option>
-					{this.props.userRequested ?
-						<Option>
-							<OptionImage image={require( "../images/sandclock.svg" )} />
-							<OptionText>Request Sent</OptionText>
-						</Option>
-						:
-						!this.props.targetRequested &&
-						<Option onClick={this.props.addFriend}>
-							<OptionImage image={require( "../images/diamond.svg" )} />
-							<OptionText>Add Friend</OptionText>
-						</Option>
-					}
-					<Option onClick={this.props.startChat}>
-						<OptionImage image={require( "../images/send.svg" )} />
-						<OptionText>Message</OptionText>
-					</Option>
-				</Options>
-			);
-		}
 		return (
 			<Options>
 				{user.username === localStorage.getItem( "username" ) ?
@@ -102,10 +76,6 @@ class ProfileOptions extends Component {
 								<OptionText>Add Friend</OptionText>
 							</Option>
 						}
-						<Option onClick={this.props.follow}>
-							<OptionImage image={require( "../images/binoculars.svg" )} />
-							<OptionText>Follow</OptionText>
-						</Option>
 						<Option onClick={this.props.startChat}>
 							<OptionImage image={require( "../images/send.svg" )} />
 							<OptionText>Message</OptionText>
@@ -120,9 +90,7 @@ class ProfileOptions extends Component {
 ProfileOptions.propTypes = {
 	user: PropTypes.object.isRequired,
 	addFriend: PropTypes.func.isRequired,
-	follow: PropTypes.func.isRequired,
 	unFriend: PropTypes.func.isRequired,
-	unFollow: PropTypes.func.isRequired,
 	startChat: PropTypes.func.isRequired,
 	requested: PropTypes.bool
 };

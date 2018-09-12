@@ -231,9 +231,9 @@ class ShareLink extends Component {
 		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
-	handleSubmit = () => {
+	handleSubmit = ( feed, selectedClub ) => {
 		const {
-				description, link, privacyRange, checkNsfw, checkSpoiler,
+				description, link, checkNsfw, checkSpoiler,
 				spoilerDescription
 			} = this.state,
 			alerts = {
@@ -241,7 +241,7 @@ class ShareLink extends Component {
 				spoiler: checkSpoiler,
 				spoilerDescription: spoilerDescription
 			};
-		this.props.submitLink( description, link, privacyRange, alerts );
+		this.props.submitLink( description, link, feed, selectedClub, alerts );
 	}
 
 	render() {

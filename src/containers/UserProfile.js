@@ -405,18 +405,18 @@ class UserProfile extends Component {
 				const posts = await api.getTimeline(
 					this.state.skip, this.props.username
 				);
-				if ( posts === "jwt expired" ) {
+				this.props.addToPosts( posts.data, false, true );
+				this.setState({
+					hasMore: posts.data.length === 10,
+					skip: this.state.skip + 1
+				});
+			} catch ( err ) {
+				if ( err.response.data === "jwt expired" ) {
 					await refreshToken();
 					this.getTimeline();
-				} else if ( posts.data ) {
-					this.props.addToPosts( posts.data, false, true );
-					this.setState({
-						hasMore: posts.data.length === 10,
-						skip: this.state.skip + 1
-					});
+				} else {
+					console.log( err );
 				}
-			} catch ( err ) {
-				console.log( err );
 			}
 		}
 	}

@@ -78,6 +78,7 @@ class ProfileTimeline extends Component {
 							posts={this.props.profilePosts}
 							socket={this.props.socket}
 							history={this.props.history}
+							hideTabs
 						/>
 					</UserPostsWrapper>
 					:

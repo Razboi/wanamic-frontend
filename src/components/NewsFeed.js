@@ -70,7 +70,6 @@ class NewsFeed extends Component {
 							post={post}
 							socket={this.props.socket}
 							history={this.props.history}
-							clubAdmin={this.props.clubAdmin}
 						/>
 						:
 						<Post
@@ -79,7 +78,6 @@ class NewsFeed extends Component {
 							post={post}
 							socket={this.props.socket}
 							history={this.props.history}
-							clubAdmin={this.props.clubAdmin}
 						/>
 				)}
 			</Wrapper>
@@ -91,11 +89,11 @@ NewsFeed.propTypes = {
 	posts: PropTypes.array.isRequired,
 	socket: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
-	feed: PropTypes.string.isRequired,
-	switchFeed: PropTypes.func.isRequired,
-	clubs: PropTypes.array.isRequired,
+	feed: PropTypes.string,
+	switchFeed: PropTypes.func,
+	clubs: PropTypes.array,
 	selectedClub: PropTypes.string,
-	selectClub: PropTypes.func.isRequired,
+	selectClub: PropTypes.func,
 	clubAdmin: PropTypes.bool
 };
 

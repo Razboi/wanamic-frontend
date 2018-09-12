@@ -10,6 +10,7 @@ import { switchMessages } from "../services/actions/conversations";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
+import ClubInformation from "../components/ClubInformation";
 import api from "../services/api";
 import InfiniteScroll from "react-infinite-scroller";
 import MediaOptions from "../containers/MediaOptions";
@@ -74,6 +75,9 @@ const
 		max-width: 1220px;
 		display: flex;
 		margin: 0 auto;
+		@media (max-width: 900px) {
+			justify-content: center;
+		}
 	`,
 	Information = styled.div`
 		color: rgba(0,0,0,0.17);
@@ -88,6 +92,9 @@ const
 	Clubs = styled.div`
 		margin-top: 50px;
 		margin-right: 10px;
+		@media (max-width: 900px) {
+			display: none;
+		}
 	`,
 	ClubSuggestions = styled.div`
 		width: 300px;
@@ -98,6 +105,7 @@ const
 		flex-direction: column;
 		justify-content: center;
 		margin-bottom: 1rem;
+		word-break: break-word;
 		div {
 			margin-bottom: 1rem;
 		}
@@ -161,7 +169,8 @@ class Home extends Component {
 			mediaButton: true,
 			chat: true,
 			clubForm: false,
-			clubSuggestions: []
+			clubSuggestions: [],
+			clubData: {}
 		};
 	}
 
@@ -206,7 +215,7 @@ class Home extends Component {
 	getGlobalFeed = async() => {
 		try {
 			const posts = await api.globalFeed( this.state.skip, 10 );
-			this.props.addToPosts( posts.data, true );
+			this.props.setPosts( posts.data, true );
 			this.setState({
 				hasMore: posts.data.length === 10,
 				skip: this.state.skip++
@@ -357,6 +366,7 @@ class Home extends Component {
 		this.props.setFeed( "club" );
 		this.props.setClub( club.name );
 		this.initializeFeed( "club", club.name );
+		this.setState({ clubData: club });
 	}
 
 	switchCreateForm = () => {
@@ -376,7 +386,9 @@ class Home extends Component {
 	}
 
 	render() {
-		let plusImage;
+		let
+			{ clubData } = this.state,
+			plusImage;
 
 		try {
 			plusImage = require( "../images/plus.svg" );
@@ -417,18 +429,30 @@ class Home extends Component {
 						<OutsideClickHandler onClick={this.hidePopups}>
 							<HomeContent>
 								<Clubs>
-									<ClubSuggestions>
-										<h3>Random club suggestions</h3>
-										{this.state.clubSuggestions.map( this.renderClubSuggestions )}
-									</ClubSuggestions>
+									{this.props.feed === "club" ?
+										<ClubInformation
+											clubData={clubData}
+											toggleEditForm={this.toggleEditForm}
+											toggleGiveUpForm={this.toggleGiveUpForm}
+											joinClub={this.joinClub}
+											exitClub={this.exitClub}
+										/>
+										:
+										<React.Fragment>
+											<ClubSuggestions>
+												<h3>Random club suggestions</h3>
+												{this.state.clubSuggestions.map( this.renderClubSuggestions )}
+											</ClubSuggestions>
+											<CreateClub>
+												<CreateClubTitle>Create and preside a club</CreateClubTitle>
+												<CreateClubDescription>
+													Haven't found a club for your hobbie? You can create it so other users with the same hobbie can join.
+												</CreateClubDescription>
+												<Button content="Create" onClick={this.switchCreateForm} />
+											</CreateClub>
+										</React.Fragment>
+									}
 
-									<CreateClub>
-										<CreateClubTitle>Create and preside a club</CreateClubTitle>
-										<CreateClubDescription>
-											Haven't found a club for your hobbie? You can create it so other users with the same hobbie can join.
-										</CreateClubDescription>
-										<Button content="Create" onClick={this.switchCreateForm} />
-									</CreateClub>
 									{this.state.clubForm &&
 										<CreateClubPopup switchCreateForm={this.switchCreateForm} />
 									}

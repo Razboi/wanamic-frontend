@@ -158,15 +158,12 @@ class MediaStep3 extends Component {
 		);
 	}
 
-	renderSubmit = () => {
+	submit = () => {
 		const { feed, selectedClub } = this.state;
-		return (
-			<Icon
-				className="nextIcon"
-				name="check"
-				onClick={() => this.props.handleSubmit( feed, selectedClub )}
-			/>
-		);
+		if ( feed !== "global" && feed !== "club" ) {
+			return;
+		}
+		this.props.handleSubmit( feed, selectedClub );
 	}
 
 	render() {
@@ -181,7 +178,11 @@ class MediaStep3 extends Component {
 							onClick={this.props.prevStep}
 						/>
 						<HeaderTxt>Privacy options</HeaderTxt>
-						{this.renderSubmit()}
+						<Icon
+							className="nextIcon"
+							name="check"
+							onClick={this.submit}
+						/>
 					</HeaderWrapper>
 					<ShareOptions>
 						<Title>Share with</Title>
@@ -190,11 +191,6 @@ class MediaStep3 extends Component {
 								content="Global"
 								primary={this.state.feed === "global"}
 								onClick={() => this.switchFeed( "global" )}
-							/>
-							<Tab
-								content="Home"
-								primary={this.state.feed === "home"}
-								onClick={() => this.switchFeed( "home" )}
 							/>
 							<Tab
 								primary={this.state.feed === "club"}
