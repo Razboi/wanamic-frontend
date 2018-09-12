@@ -3,7 +3,7 @@ import { Button } from "semantic-ui-react";
 import styled from "styled-components";
 import {
 	setPosts, addToPosts, switchMediaOptions, addPost, switchPostDetails,
-	switchShare, setFeed, setClub, setClubs
+	switchShare, setFeed, setClub
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
@@ -15,7 +15,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
-import CreateClubPopup from "../containers/CreateClubPopup";
+import EditClubPopup from "../containers/EditClubPopup";
 
 const
 	Wrapper = styled.div`
@@ -70,26 +70,16 @@ const
 		height: 100%;
 		min-height: 100vh;
 	`,
-	HomeContent = styled.section`
+	ClubContent = styled.section`
 		max-width: 1220px;
 		display: flex;
 		margin: 0 auto;
 	`,
-	Information = styled.div`
-		color: rgba(0,0,0,0.17);
-		width: 170px;
-		font-size: 12px;
-		text-align: center;
-		margin: auto;
-		@media (max-width: 1200px) {
-			display: none;
-		}
-	`,
-	Clubs = styled.div`
-		margin-top: 50px;
+	ClubInformation = styled.div`
+		margin-top: 1rem;
 		margin-right: 10px;
 	`,
-	ClubSuggestions = styled.div`
+	MainInfo = styled.div`
 		width: 300px;
 		padding: 1rem;
 		border-radius: 5px;
@@ -101,14 +91,10 @@ const
 		div {
 			margin-bottom: 1rem;
 		}
-		h4,h3 {
+		h4 {
 			font-family: inherit;
 			color: #111;
 			margin-bottom: 0.2rem;
-		}
-		h3 {
-			margin-bottom: 1rem;
-			font-weight: 200;
 		}
 		p {
 			color: #111;
@@ -116,43 +102,54 @@ const
 			font-size: 1.01rem;
 		}
 	`,
-	CreateClub = styled.div`
+	InfoButton = styled( Button )`
+		background: ${props => props.primary ?
+		"rgb(133, 217, 191)" : "#fff"} !important;
+		border: ${props => !props.primary &&
+			"1px solid rgb(133, 217, 191)"} !important;
+		color: ${props => !props.primary && "rgb(133, 217, 191)"} !important;
+	`,
+	EditButton = styled( Button )`
+		margin-top: 1rem !important;
+	`,
+	SecondaryInfo = styled.div`
+		margin-top: 1rem;
 		width: 300px;
 		padding: 1rem;
 		border-radius: 5px;
 		background: #fff;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		justify-content: center;
-	`,
-	CreateClubTitle = styled.h4`
-		font-family: inherit;
-		color: #111;
-	`,
-	CreateClubDescription = styled.p`
-		color: #111;
-		font-weight: 200;
-		font-size: 1.01rem;
-	`,
-	InfoLinks = styled.ul`
-		display: flex;
-		padding: 0;
-    list-style: none;
-    justify-content: space-evenly;
+		h4 {
+			font-family: inherit;
+		}
 		a {
-			color: inherit;
+			color: #222
+		}
+		span {
+			color: rgba(0,0,0,0.5);
 		}
 	`,
-	Copyright = styled.h4`
-		font-size: 12px;
-		font-family: inherit;
-		margin: 0;
-		font-weight: normal;
+	BannedWrapper = styled.div`
+		height: 100vh;
+		width: 100vw;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgb(230, 240, 236);
+	`,
+	BannedMessage = styled.div`
+		background: #fff;
+		border-radius: 5px;
+		padding: 1rem;
+		h4 {
+			font-family: inherit;
+		}
 	`;
 
 
-class Home extends Component {
+class Club extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -160,50 +157,39 @@ class Home extends Component {
 			hasMore: true,
 			mediaButton: true,
 			chat: true,
-			clubForm: false,
-			clubSuggestions: []
+			clubData: undefined,
+			editForm: false
 		};
 	}
 
 	componentDidMount() {
 		window.scrollTo( 0, 0 );
-		this.getGlobalFeed();
-		this.getUserClubs();
-		this.getClubSuggestions();
-		this.props.setFeed( "global" );
-		this.props.setClub( undefined );
-		document.title = "Wanamic";
+		this.getClubData();
 	}
 
-	getClubSuggestions = async() => {
+	getClubData = async() => {
 		try {
-			const clubs = await api.clubSuggestions();
-			this.setState({ clubSuggestions: clubs.data });
+			const club = await api.getClub( this.props.match.params.club );
+			document.title = club.data.title;
+			this.props.addToPosts( club.data.feed );
+			this.props.setFeed( "club" );
+			this.props.setClub( club.data.name );
+			this.setState({
+				hasMore: club.data.feed.length === 10,
+				skip: this.state.skip++,
+				clubData: club.data
+			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.getClubSuggestions();
+				this.getClubData();
 			} else {
 				console.log( err );
 			}
 		}
 	}
 
-	getUserClubs = async() => {
-		try {
-			const clubs = await api.userClubs();
-			this.props.setClubs( clubs.data );
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.getUserClubs();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	getGlobalFeed = async() => {
+	getClubFeed = async() => {
 		try {
 			const posts = await api.globalFeed( this.state.skip, 10 );
 			this.props.addToPosts( posts.data, true );
@@ -214,59 +200,7 @@ class Home extends Component {
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.getGlobalFeed();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	getHomeFeed = async() => {
-		try {
-			const posts = await api.homeFeed( this.state.skip, 10 );
-			this.props.addToPosts( posts.data, true );
-			this.setState({
-				hasMore: posts.data.length === 10,
-				skip: this.state.skip++
-			});
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.getHomeFeed();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	initGlobalFeed = async() => {
-		try {
-			const posts = await api.globalFeed( 0, 10 );
-			this.props.setPosts( posts.data, true );
-			this.setState({
-				hasMore: posts.data.length === 10
-			});
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.initGlobalFeed();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	initHomeFeed = async() => {
-		try {
-			const posts = await api.homeFeed( 0, 10 );
-			this.props.setPosts( posts.data, true );
-			this.setState({
-				hasMore: posts.data.length === 10
-			});
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.initHomeFeed();
+				this.getClubFeed();
 			} else {
 				console.log( err );
 			}
@@ -287,35 +221,6 @@ class Home extends Component {
 			} else {
 				console.log( err );
 			}
-		}
-	}
-
-	loadMore = () => {
-		switch ( this.props.feed ) {
-		case "global":
-			this.getGlobalFeed();
-			break;
-		case "home":
-			this.getHomeFeed();
-			break;
-		default:
-			this.getGlobalFeed();
-		}
-	}
-
-	initializeFeed = ( feed, club ) => {
-		switch ( feed ) {
-		case "global":
-			this.initGlobalFeed();
-			break;
-		case "home":
-			this.initHomeFeed();
-			break;
-		case "club":
-			this.initClubFeed( club );
-			break;
-		default:
-			this.initGlobalFeed();
 		}
 	}
 
@@ -346,37 +251,57 @@ class Home extends Component {
 		this.setState( state => ({ chat: !state.chat }));
 	}
 
-	switchFeed = feed => {
-		this.props.setFeed( feed );
-		this.props.setClub( undefined );
-		this.setState({ skip: 0 });
-		this.initializeFeed( feed );
+	exitClub = async() => {
+		try {
+			if ( this.state.clubData.president._id === localStorage.getItem( "id" )) {
+				return;
+			}
+			const updatedMembers = await api.exitClub( this.state.clubData._id );
+			let updatedClubData = this.state.clubData;
+			updatedClubData.members = updatedMembers.data;
+			this.setState({ clubData: updatedClubData });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.exitClub();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
-	selectClub = club => {
-		this.props.setFeed( "club" );
-		this.props.setClub( club.name );
-		this.initializeFeed( "club", club.name );
+	joinClub = async() => {
+		try {
+			const updatedMembers = await api.joinClub( this.state.clubData._id );
+			let updatedClubData = this.state.clubData;
+			updatedClubData.members = updatedMembers.data;
+			this.setState({ clubData: updatedClubData });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.joinClub();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
-	switchCreateForm = () => {
-		this.setState( state => ({ clubForm: !state.clubForm }));
+	toggleEditForm = () => {
+		this.setState( state => ({ editForm: !state.editForm }));
 	}
 
-
-	renderClubSuggestions = ( club, index ) => {
-		return (
-			<div key={index}>
-				<a href={`/c/${club.name}`}>
-					<h4>{club.title}</h4>
-					<p>{club.description}</p>
-				</a>
-			</div>
-		);
+	updateData = ( title, description ) => {
+		let updatedData = this.state.clubData;
+		updatedData.title = title;
+		updatedData.description = description;
+		this.setState({ clubData: updatedData });
+		this.toggleEditForm();
 	}
 
 	render() {
-		let plusImage;
+		let
+			{ clubData } = this.state,
+			plusImage;
 
 		try {
 			plusImage = require( "../images/plus.svg" );
@@ -384,8 +309,31 @@ class Home extends Component {
 			console.log( err );
 		}
 
+		if ( !clubData ) {
+			return null;
+		}
+
+		if ( clubData.bannedUsers.includes( localStorage.getItem( "id" ))) {
+			return (
+				<BannedWrapper>
+					<BannedMessage>
+						<h4>You are banned from this club.</h4>
+					</BannedMessage>
+				</BannedWrapper>
+			);
+		}
+
 		return (
 			<Wrapper>
+				{this.state.editForm &&
+					<EditClubPopup
+						clubId={clubData._id}
+						title={clubData.title}
+						description={clubData.description}
+						switchForm={this.toggleEditForm}
+						updateData={this.updateData}
+					/>
+				}
 				<InfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -415,33 +363,42 @@ class Home extends Component {
 						<NavBar socket={this.props.socket}/>
 
 						<OutsideClickHandler onClick={this.hidePopups}>
-							<HomeContent>
-								<Clubs>
-									<ClubSuggestions>
-										<h3>Random club suggestions</h3>
-										{this.state.clubSuggestions.map( this.renderClubSuggestions )}
-									</ClubSuggestions>
-
-									<CreateClub>
-										<CreateClubTitle>Create and preside a club</CreateClubTitle>
-										<CreateClubDescription>
-											Haven't found a club for your hobbie? You can create it so other users with the same hobbie can join.
-										</CreateClubDescription>
-										<Button content="Create" onClick={this.switchCreateForm} />
-									</CreateClub>
-									{this.state.clubForm &&
-										<CreateClubPopup switchCreateForm={this.switchCreateForm} />
-									}
-									<Information>
-										<InfoLinks>
-											<li><a href="/information/privacy">Privacy</a></li>
-											<li><a href="/information/terms">Terms</a></li>
-											<li><a href="/information/contact">Contact</a></li>
-										</InfoLinks>
-										<Copyright>© 2018 WANAMIC</Copyright>
-									</Information>
-								</Clubs>
+							<ClubContent>
+								<ClubInformation>
+									<MainInfo>
+										<h4>{clubData.title}</h4>
+										<p>{clubData.description}</p>
+										{clubData.members &&
+											clubData.members.includes( localStorage.getItem( "id" )) ?
+											<InfoButton
+												secondary
+												content="ALREADY MEMBER"
+												onClick={this.exitClub}
+											/>
+											:
+											<InfoButton
+												primary
+												content="JOIN"
+												onClick={this.joinClub}
+											/>
+										}
+										{clubData.president._id === localStorage.getItem( "id" ) &&
+										<EditButton
+											content="Edit Information"
+											onClick={this.toggleEditForm}
+										/>
+										}
+									</MainInfo>
+									<SecondaryInfo>
+										<h4>Club president</h4>
+										<a href={`/${clubData.president.username}`}>
+											{clubData.president.fullname}
+											<span>@{clubData.president.username}</span>
+										</a>
+									</SecondaryInfo>
+								</ClubInformation>
 								<NewsFeed
+									clubAdmin={clubData.president._id === localStorage.getItem( "id" )}
 									posts={this.props.feedPosts}
 									socket={this.props.socket}
 									history={this.props.history}
@@ -450,8 +407,9 @@ class Home extends Component {
 									clubs={this.props.clubs}
 									selectedClub={this.props.selectedClub}
 									selectClub={this.selectClub}
+									hideTabs
 								/>
-							</HomeContent>
+							</ClubContent>
 						</OutsideClickHandler>
 					</MediaDimmer>
 
@@ -461,7 +419,7 @@ class Home extends Component {
 	}
 }
 
-Home.propTypes = {
+Club.propTypes = {
 	history: PropTypes.object.isRequired,
 	socket: PropTypes.object.isRequired
 };
@@ -472,9 +430,6 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		feed: state.posts.feed,
-		selectedClub: state.posts.selectedClub,
-		clubs: state.posts.clubs
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -487,8 +442,7 @@ const
 		switchMessages: () => dispatch( switchMessages()),
 		switchShare: () => dispatch( switchShare()),
 		setFeed: ( feed ) => dispatch( setFeed( feed )),
-		setClub: ( club ) => dispatch( setClub( club )),
-		setClubs: ( clubs ) => dispatch( setClubs( clubs ))
+		setClub: ( club ) => dispatch( setClub( club ))
 	});
 
-export default connect( mapStateToProps, mapDispatchToProps )( Home );
+export default connect( mapStateToProps, mapDispatchToProps )( Club );

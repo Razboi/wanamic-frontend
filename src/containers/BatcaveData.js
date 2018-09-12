@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Table, Checkbox, Dropdown, Button } from "semantic-ui-react";
+import {
+	Table, Checkbox, Dropdown, Button, Form
+} from "semantic-ui-react";
 import styled from "styled-components";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
@@ -61,6 +63,9 @@ const
 	`,
 	CommentWrapper = styled.div`
 		position: absolute;
+		top: 0;
+		bottom: 0;
+		margin: auto;
 		background: #fff;
 		padding: 1rem;
 	`,
@@ -68,6 +73,34 @@ const
 		position: fixed;
 		top: 1rem;
 		right: 1rem;
+	`,
+	ClubWrapper = styled.div`
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		height: 100%;
+		width: 100%;
+		max-height: 400px;
+		max-width: 400px;
+		margin: auto;
+		background: #fff;
+		padding: 1rem;
+		display: flex;
+    flex-direction: column;
+		overflow-y: auto;
+		z-index: 5;
+		h2, h4 {
+			font-family: inherit;
+		}
+		p {
+			word-break: break-word;
+		}
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
+	`,
+	FeedbackForm = styled( Form )`
 	`;
 
 class BatcaveData extends Component {
@@ -77,7 +110,11 @@ class BatcaveData extends Component {
 			data: undefined,
 			selectedTicket: undefined,
 			visualizedComment: undefined,
-			commentDetails: false
+			visualizedClubRequest: undefined,
+			commentDetails: false,
+			clubDetails: false,
+			rejectForm: false,
+			feedback: ""
 		};
 	}
 
@@ -99,10 +136,19 @@ class BatcaveData extends Component {
 	}
 
 	visualize = ticket => {
-		if ( ticket.type === "post" ) {
+		this.setState({ selectedTicket: ticket._id });
+		switch ( true ) {
+		case ticket.type === "post":
 			this.visualizePost( ticket.object );
-		} else {
+			break;
+		case ticket.type === "comment":
 			this.visualizeComment( ticket.object );
+			break;
+		case ticket.clubRequest:
+			this.visualizeClubRequest( ticket.clubName );
+			break;
+		default:
+			this.visualizePost( ticket.object );
 		}
 	}
 
@@ -132,18 +178,30 @@ class BatcaveData extends Component {
 		}
 	}
 
+	visualizeClubRequest = async clubId => {
+		try {
+			const res = await api.getClub( clubId );
+			this.setState({
+				visualizedClubRequest: res.data,
+				clubDetails: true
+			});
+		} catch ( err ) {
+			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.visualizeClubRequest();
+			}
+		}
+	}
+
 	removeTicket = async() => {
-		let { data, selectedTicket } = this.state;
+		let { selectedTicket } = this.state;
 		if ( !selectedTicket ) {
 			return;
 		}
 		try {
 			await api.removeTicket( selectedTicket );
-			let updatedTickets = data.tickets.filter( ticket => {
-				return ticket._id !== selectedTicket;
-			});
-			data.tickets = updatedTickets;
-			this.setState({ data: data, selectedTicket: undefined });
+			this.deleteSelectedTicket();
 		} catch ( err ) {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
@@ -154,17 +212,13 @@ class BatcaveData extends Component {
 	}
 
 	deleteObject = async() => {
-		let { data, selectedTicket } = this.state;
+		let { selectedTicket } = this.state;
 		if ( !selectedTicket ) {
 			return;
 		}
 		try {
 			await api.deleteObject( selectedTicket );
-			let updatedTickets = data.tickets.filter( ticket => {
-				return ticket._id !== selectedTicket;
-			});
-			data.tickets = updatedTickets;
-			this.setState({ data: data, selectedTicket: undefined });
+			this.deleteSelectedTicket();
 		} catch ( err ) {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
@@ -175,17 +229,13 @@ class BatcaveData extends Component {
 	}
 
 	banUser = async() => {
-		let { data, selectedTicket } = this.state;
+		let { selectedTicket } = this.state;
 		if ( !selectedTicket ) {
 			return;
 		}
 		try {
 			await api.banUser( selectedTicket );
-			let updatedTickets = data.tickets.filter( ticket => {
-				return ticket._id !== selectedTicket;
-			});
-			data.tickets = updatedTickets;
-			this.setState({ data: data, selectedTicket: undefined });
+			this.deleteSelectedTicket();
 		} catch ( err ) {
 			console.log( err );
 			if ( err.response.data === "jwt expired" ) {
@@ -195,8 +245,8 @@ class BatcaveData extends Component {
 		}
 	}
 
-	hideComments = () => {
-		this.setState({ commentDetails: false });
+	hidePopups = () => {
+		this.setState({ clubDetails: false, rejectForm: false });
 	}
 
 	viewPost = () => {
@@ -204,8 +254,63 @@ class BatcaveData extends Component {
 		this.visualizePost( this.state.visualizedComment.post );
 	}
 
+	handleApprove = async() => {
+		const { visualizedClubRequest } = this.state;
+		try {
+			await api.approveClub( visualizedClubRequest._id );
+			this.deleteSelectedTicket();
+			this.hidePopups();
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.handleApprove();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	deleteSelectedTicket = () => {
+		const { selectedTicket, data } = this.state;
+		let updatedTickets = data.tickets.filter( ticket => {
+			return ticket._id !== selectedTicket;
+		});
+		data.tickets = updatedTickets;
+		this.setState({ data: data, selectedTicket: undefined });
+	}
+
+	handleRejectForm = () => {
+		this.setState({ rejectForm: true });
+	}
+
+	reject = async() => {
+		const { visualizedClubRequest, feedback } = this.state;
+		if ( !feedback ) {
+			return;
+		}
+		try {
+			await api.rejectClub( visualizedClubRequest._id, feedback );
+			this.deleteSelectedTicket();
+			this.hidePopups();
+			this.setState({ rejectForm: false });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.reject();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
+
 	render() {
-		let { data, commentDetails, visualizedComment } = this.state;
+		let {
+			data, commentDetails, visualizedComment, clubDetails, visualizedClubRequest
+		} = this.state;
 		if ( !data ) {
 			return (
 				<Wrapper>
@@ -216,7 +321,50 @@ class BatcaveData extends Component {
 
 		return (
 			<Wrapper>
-				{ commentDetails &&
+				{ clubDetails &&
+					<React.Fragment>
+						<PostDetailsDimmer onClick={this.hidePopups} />
+						<ClubWrapper>
+							{this.state.rejectForm ?
+								<FeedbackForm>
+									<textarea
+										name="feedback"
+										onChange={this.handleChange}
+										value={this.state.feedback}
+									/>
+									<Button
+										content="REJECT"
+										color="red"
+										onClick={this.reject}
+									/>
+								</FeedbackForm>
+								:
+								<div>
+									<h2>Club Request</h2>
+									<h4>name:</h4>
+									<p>{visualizedClubRequest.name}</p>
+									<h4>title:</h4>
+									<p>{visualizedClubRequest.title}</p>
+									<h4>description:</h4>
+									<p>{visualizedClubRequest.description}</p>
+									<div>
+										<Button
+											content="Approve"
+											primary
+											onClick={this.handleApprove}
+										/>
+										<Button
+											content="Reject"
+											secondary
+											onClick={this.handleRejectForm}
+										/>
+									</div>
+								</div>
+							}
+						</ClubWrapper>
+					</React.Fragment>
+				}
+				{ commentDetails && !clubDetails &&
 					<React.Fragment>
 						<ViewPostButton content="View post" onClick={this.viewPost} />
 						<CommentWrapper>
@@ -224,7 +372,7 @@ class BatcaveData extends Component {
 						</CommentWrapper>
 					</React.Fragment>
 				}
-				{ this.props.displayPostDetails && !commentDetails &&
+				{ this.props.displayPostDetails && !commentDetails && !clubDetails &&
 					<PostDetailsDimmer>
 						<PostDetails
 							socket={this.props.socket}

@@ -1,5 +1,5 @@
 const initialState = {
-	newsfeed: [],
+	feedPosts: [],
 	explore: [],
 	album: [],
 	profilePosts: [],
@@ -24,7 +24,7 @@ export default function posts( state = initialState, action = {}) {
 		} else if ( action.onProfile ) {
 			return { ...state, profilePosts: action.posts };
 		} else {
-			return { ...state, newsfeed: action.posts };
+			return { ...state, feedPosts: action.posts };
 		}
 
 	case "ADD_TO_POSTS":
@@ -33,20 +33,23 @@ export default function posts( state = initialState, action = {}) {
 		} else if ( action.onProfile ) {
 			return { ...state, profilePosts: [ ...state.profilePosts, ...action.posts ] };
 		} else {
-			return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
+			return { ...state, feedPosts: [ ...state.feedPosts, ...action.posts ] };
 		}
 
 	case "ADD_POST":
+		if ( state.feed !== action.post.feed ) {
+			return state;
+		}
 		if ( action.onProfile ) {
 			return { ...state, profilePosts: [ action.post, ...state.profilePosts ] };
 		} else {
-			return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };
+			return { ...state, feedPosts: [ action.post, ...state.feedPosts ] };
 		}
 
 	case "DELETE_POST":
 		return {
 			...state,
-			newsfeed: state.newsfeed.filter( post => {
+			feedPosts: state.feedPosts.filter( post => {
 				return post._id !== action.postId;
 			}),
 			album: state.album.filter( post => {
@@ -92,7 +95,7 @@ export default function posts( state = initialState, action = {}) {
 				}
 				return post;
 			}),
-			newsfeed: state.newsfeed.map( post => {
+			feedPosts: state.feedPosts.map( post => {
 				if ( post._id === action.post._id ) {
 					return { ...post, ...action.post };
 				}

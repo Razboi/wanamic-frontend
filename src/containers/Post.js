@@ -17,13 +17,12 @@ const
 		overflow: hidden;
 		position: relative;
 		@media (min-width: 420px) {
-			border: 1px solid rgba(0, 0, 0, .1);
-			margin-bottom: 1rem;
+			border-bottom: ${props => !props.noBorder && "1px solid rgba(0, 0, 0, .1)"};
+			margin-bottom: ${props => !props.noBorder && "1rem"};
 			background: #fff;
 		}
 		@media (max-width: 420px) {
-			border-bottom: ${props => props.noBorder ?
-		"0" : "1px solid rgba(0, 0, 0, .1)"};
+
 		}
 	`,
 	PostHeader = styled( Header )`
@@ -236,6 +235,7 @@ class Post extends Component {
 							style={StyledOptions}
 							postOrComment={post}
 							socket={this.props.socket}
+							clubAdmin={this.props.clubAdmin}
 						/>
 					}
 				</PostHeader>
@@ -280,6 +280,7 @@ Post.propTypes = {
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
 	history: PropTypes.object,
+	clubAdmin: PropTypes.bool
 };
 
 const

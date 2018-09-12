@@ -275,6 +275,7 @@ class MediaPost extends Component {
 							style={StyledOptions}
 							postOrComment={post}
 							socket={this.props.socket}
+							clubAdmin={this.props.clubAdmin}
 						/>
 					}
 				</PostHeader>
@@ -345,7 +346,8 @@ MediaPost.propTypes = {
 	socket: PropTypes.object,
 	history: PropTypes.object,
 	newsFeed: PropTypes.bool,
-	details: PropTypes.bool
+	details: PropTypes.bool,
+	clubAdmin: PropTypes.bool
 };
 
 const

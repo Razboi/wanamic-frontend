@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
 import Batcave from "./pages/Batcave";
+import Club from "./pages/Club";
 import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
 import GuestRoute from "./utils/routes/GuestRoute";
@@ -166,6 +167,7 @@ class App extends Component {
 						path="/reset_password/:token" component={PasswordReset}
 					/>
 					<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
+					<UserRoute path="/c/:club" component={Club} socket={this.socket} />
 					<Route path="/information/:section" component={Information} />
 					<UserRoute exact path="/:username" component={Profile} socket={this.socket} />
 				</Switch>

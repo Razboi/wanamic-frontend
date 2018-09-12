@@ -7,7 +7,6 @@ import SharedPost from "./SharedPost";
 import { addPost, switchShare, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
-import MediaStep3 from "../components/MediaStep3";
 import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "../components/Suggestions";
 import extract from "../utils/extractMentionsHashtags";
@@ -122,10 +121,6 @@ class Share extends Component {
 		this.state = {
 			description: "",
 			step: 1,
-			privacyRange: 1,
-			checkNsfw: false,
-			checkSpoiler: false,
-			spoilerDescription: "",
 			socialCircle: [],
 			showSuggestions: false,
 			suggestionsTop: undefined,
@@ -279,11 +274,7 @@ class Share extends Component {
 
 	handleShare = async() => {
 		var response;
-		const {
-				description, privacyRange, checkNsfw, checkSpoiler
-			} = this.state,
-
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler },
+		const { description } = this.state,
 
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
@@ -291,8 +282,7 @@ class Share extends Component {
 
 		try {
 			response = await api.sharePost(
-				this.props.postToShare._id, description, privacyRange, alerts,
-				mentions, hashtags
+				this.props.postToShare._id, description, mentions, hashtags
 			);
 		} catch ( err ) {
 			console.log( err );
@@ -313,42 +303,7 @@ class Share extends Component {
 		}
 	}
 
-	nextStep = () => {
-		this.setState({ step: this.state.step + 1 });
-	}
-
-	prevStep = () => {
-		if ( this.state.step !== 1 ) {
-			this.setState({ step: this.state.step - 1 });
-		}
-	}
-
-	setPrivacyRange = range => {
-		this.setState({ privacyRange: range });
-	}
-
-	handleCheck = ( e, semanticUiProps ) => {
-		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
-	}
-
 	render() {
-		if ( this.state.step === 2 ) {
-			return (
-				<Wrapper>
-					<MediaStep3
-						handleCheck={this.handleCheck}
-						setPrivacyRange={this.setPrivacyRange}
-						prevStep={this.prevStep}
-						handleSubmit={this.handleShare}
-						mediaData={{}}
-						privacyRange={this.state.privacyRange}
-						spoilers={this.state.checkSpoiler}
-						handleChange={this.handleChange}
-						onShare
-					/>
-				</Wrapper>
-			);
-		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -357,11 +312,11 @@ class Share extends Component {
 						name="arrow left"
 						onClick={() => this.props.switchShare()}
 					/>
-					<HeaderTxt>Share</HeaderTxt>
+					<HeaderTxt>Share with Friends</HeaderTxt>
 					<Icon
 						className="nextIcon"
 						name="check"
-						onClick={this.nextStep}
+						onClick={this.handleShare}
 					/>
 				</HeaderWrapper>
 				<InputWrapper>

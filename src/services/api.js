@@ -194,14 +194,16 @@ export default {
 				throw err;
 			}),
 
-	friendsFeed: skip =>
+	homeFeed: skip =>
 		axios({
 			method: "post",
-			url: API_URL + "/posts/friends/" + skip,
+			url: API_URL + "/posts/home/" + skip,
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getTimeline: ( skip, username ) =>
 		axios({
@@ -772,10 +774,134 @@ export default {
 				throw err;
 			}),
 
+	createClubRequest: ( name, title, description ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				name: name,
+				title: title,
+				description: description
+			},
+			url: API_URL + "/clubs/requestCreation/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
 	clubFeed: ( skip, club ) =>
 		axios({
 			method: "get",
-			url: `${API_URL}/posts/clubFeed/${club}/${skip}/`
+			url: `${API_URL}/posts/clubFeed/${club}/${skip}`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getClub: ( club ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/getClub/${club}/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	approveClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/approveCreation/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	rejectClub: ( clubID, feedback ) =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID,
+				feedback: feedback
+			},
+			url: `${API_URL}/clubs/rejectCreation/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	exitClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/exitClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	joinClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/joinClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	clubSuggestions: () =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/suggestions/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	updateClub: ( clubId, title, description ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubId: clubId,
+				title: title,
+				description: description
+			},
+			url: `${API_URL}/clubs/update/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	banFromClub: ( targetId, clubName ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetId: targetId,
+				clubName: clubName
+			},
+			url: `${API_URL}/clubs/banUser/`
 		})
 			.then( res => res )
 			.catch( err => {

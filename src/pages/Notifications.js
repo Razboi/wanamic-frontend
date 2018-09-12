@@ -300,10 +300,14 @@ class Notifications extends Component {
 						}
 						{this.props.notifications.map(( notification, index ) =>
 							notification.author &&
-								notification.alert ?
+								( notification.alert || notification.clubRequestResponse ) ?
 								<Notification key={index}>
 									<Content alert>
-										{notification.content} <a href="/information/content">Content Policy of Wanamic</a>
+										{notification.content}
+										{notification.alert &&
+											<a href="/information/content">Content Policy of Wanamic</a> }
+										{notification.clubName &&
+											<a href={`/c/${notification.clubName}`}> Club Page</a> }
 									</Content>
 								</Notification>
 								:

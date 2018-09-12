@@ -28,7 +28,7 @@ class NewsFeed extends Component {
 		return (
 			<Dropdown.Item
 				key={index}
-				text={club}
+				text={club.name}
 				onClick={() => this.props.selectClub( club )}
 			/>
 		);
@@ -37,28 +37,30 @@ class NewsFeed extends Component {
 		let { selectedClub } = this.props;
 		return (
 			<Wrapper>
-				<FeedSelectors>
-					<Tab
-						content="Global"
-						primary={this.props.feed === "global"}
-						onClick={() => this.props.switchFeed( "global" )}
-					/>
-					<Tab
-						content="Friends"
-						primary={this.props.feed === "friends"}
-						onClick={() => this.props.switchFeed( "friends" )}
-					/>
-					<Tab
-						primary={this.props.feed === "club"}
-						content={
-							<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
-								<Dropdown.Menu>
-									{this.props.clubs.map( this.renderClub )}
-								</Dropdown.Menu>
-							</Dropdown>
-						}
-					/>
-				</FeedSelectors>
+				{ !this.props.hideTabs &&
+					<FeedSelectors>
+						<Tab
+							content="Global"
+							primary={this.props.feed === "global"}
+							onClick={() => this.props.switchFeed( "global" )}
+						/>
+						<Tab
+							content="Home"
+							primary={this.props.feed === "home"}
+							onClick={() => this.props.switchFeed( "home" )}
+						/>
+						<Tab
+							primary={this.props.feed === "club"}
+							content={
+								<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
+									<Dropdown.Menu>
+										{this.props.clubs.map( this.renderClub )}
+									</Dropdown.Menu>
+								</Dropdown>
+							}
+						/>
+					</FeedSelectors>
+				}
 				{this.props.posts.map(( post, index ) =>
 					post.media ?
 						<MediaPost
@@ -68,6 +70,7 @@ class NewsFeed extends Component {
 							post={post}
 							socket={this.props.socket}
 							history={this.props.history}
+							clubAdmin={this.props.clubAdmin}
 						/>
 						:
 						<Post
@@ -76,6 +79,7 @@ class NewsFeed extends Component {
 							post={post}
 							socket={this.props.socket}
 							history={this.props.history}
+							clubAdmin={this.props.clubAdmin}
 						/>
 				)}
 			</Wrapper>
@@ -90,8 +94,9 @@ NewsFeed.propTypes = {
 	feed: PropTypes.string.isRequired,
 	switchFeed: PropTypes.func.isRequired,
 	clubs: PropTypes.array.isRequired,
-	selectedClub: PropTypes.string.isRequired,
-	selectClub: PropTypes.func.isRequired
+	selectedClub: PropTypes.string,
+	selectClub: PropTypes.func.isRequired,
+	clubAdmin: PropTypes.bool
 };
 
 export default NewsFeed;

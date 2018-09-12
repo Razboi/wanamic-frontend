@@ -145,14 +145,14 @@ class MediaStep3 extends Component {
 	}
 
 	selectClub = club => {
-		this.setState({ feed: "club", selectedClub: club });
+		this.setState({ feed: "club", selectedClub: club.name });
 	}
 
 	renderClub = ( club, index ) => {
 		return (
 			<Dropdown.Item
 				key={index}
-				text={club}
+				text={club.name}
 				onClick={() => this.selectClub( club )}
 			/>
 		);
@@ -192,9 +192,9 @@ class MediaStep3 extends Component {
 								onClick={() => this.switchFeed( "global" )}
 							/>
 							<Tab
-								content="Friends"
-								primary={this.state.feed === "friends"}
-								onClick={() => this.switchFeed( "friends" )}
+								content="Home"
+								primary={this.state.feed === "home"}
+								onClick={() => this.switchFeed( "home" )}
 							/>
 							<Tab
 								primary={this.state.feed === "club"}
