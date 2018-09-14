@@ -89,7 +89,7 @@ class UserAlbum extends Component {
 				await refreshToken();
 				this.getAlbum();
 			} else if ( album.data ) {
-				this.props.setPosts( album.data, false, true );
+				this.props.setPosts( album.data, true );
 				this.setState({ loader: false });
 			}
 		} catch ( err ) {

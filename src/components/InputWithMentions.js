@@ -160,7 +160,6 @@ class MentionsInput extends Component {
 
 MentionsInput.propTypes = {
 	textareaProps: PropTypes.object.isRequired,
-	value: PropTypes.string.isRequired,
 	socialCircle: PropTypes.array.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	setUserInput: PropTypes.func.isRequired

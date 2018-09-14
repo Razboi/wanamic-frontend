@@ -10,6 +10,8 @@ const
 		height: 100%;
 		@media (max-width: 600px) {
 			width: 100%;
+			background: #fff;
+			margin-top: 1rem;
 		}
 		@media (min-width: 600px) {
 			width: 600px;
@@ -17,10 +19,18 @@ const
 		}
 	`,
 	FeedSelectors = styled.div`
-
+		background: rgb(230, 240, 236);
 	`,
 	Tab = styled( Button )`
 		background-color: ${props => props.primary && "rgb(133,217,191)"} !important;
+	`,
+	ClubsList = styled( Dropdown.Menu )`
+		max-height: 300px;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`;
 
 class NewsFeed extends Component {
@@ -53,9 +63,9 @@ class NewsFeed extends Component {
 							primary={this.props.feed === "club"}
 							content={
 								<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
-									<Dropdown.Menu>
+									<ClubsList>
 										{this.props.clubs.map( this.renderClub )}
-									</Dropdown.Menu>
+									</ClubsList>
 								</Dropdown>
 							}
 						/>

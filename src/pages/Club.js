@@ -145,7 +145,7 @@ class Club extends Component {
 			this.props.setClub( this.props.clubData.name );
 			this.setState({
 				hasMore: this.props.clubData.feed.length === 10,
-				skip: this.state.skip++
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			console.log( err );
@@ -161,7 +161,7 @@ class Club extends Component {
 			this.props.setClub( club.data.name );
 			this.setState({
 				hasMore: club.data.feed.length === 10,
-				skip: this.state.skip++,
+				skip: this.state.skip + 1,
 				clubData: club.data
 			});
 		} catch ( err ) {
@@ -176,33 +176,17 @@ class Club extends Component {
 
 	getClubFeed = async() => {
 		try {
-			const posts = await api.globalFeed( this.state.skip, 10 );
+			const posts = await api.clubFeed(
+				this.state.skip, this.state.clubData.name );
 			this.props.addToPosts( posts.data, true );
 			this.setState({
 				hasMore: posts.data.length === 10,
-				skip: this.state.skip++
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.getClubFeed();
-			} else {
-				console.log( err );
-			}
-		}
-	}
-
-	initClubFeed = async( club ) => {
-		try {
-			const posts = await api.clubFeed( 0, club );
-			this.props.setPosts( posts.data, true );
-			this.setState({
-				hasMore: posts.data.length === 10
-			});
-		} catch ( err ) {
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.initClubFeed( club );
 			} else {
 				console.log( err );
 			}

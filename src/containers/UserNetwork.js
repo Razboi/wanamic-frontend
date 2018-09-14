@@ -78,31 +78,13 @@ class UserNetwork extends Component {
 		}
 	}
 
-	handleUnfriend = async( username, id ) => {
-		var requesterNetwork = this.state.requesterNetwork;
-		try {
-			const response = await api.deleteFriend( username );
-			if ( response === "jwt expired" ) {
-				await refreshToken();
-				this.handleUnfriend();
-			} else {
-				const indexOfUnfriend = requesterNetwork.friends.indexOf(
-					id );
-				requesterNetwork.friends.splice( indexOfUnfriend, 1 );
-				this.setState({ requesterNetwork: requesterNetwork });
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
 	handleUserPreviewClick = username => {
 		this.props.toggleTab();
 		this.props.history.push( "/" + username );
 	}
 
 	render() {
-		const { requesterNetwork, network, loader } = this.state;
+		const { network, loader } = this.state;
 		if ( network.friends.length === 0 && !loader ) {
 			return (
 				<Wrapper>
@@ -126,9 +108,6 @@ class UserNetwork extends Component {
 							handleClick={this.handleUserPreviewClick}
 							key={index}
 							user={user}
-							handleUnfriend={this.handleUnfriend}
-							alreadyFriends={
-								requesterNetwork.friends.includes( user._id )}
 						/>
 					)}
 				</UsersWrapper>

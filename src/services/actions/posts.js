@@ -19,25 +19,20 @@ export const
 	SET_CLUBS = "SET_CLUBS",
 
 
-	setPosts = ( posts, onExplore, onAlbum, onProfile ) => ({
+	setPosts = ( posts, onAlbum ) => ({
 		type: SET_POSTS,
 		posts: posts,
-		onExplore: onExplore,
-		onAlbum: onAlbum,
-		onProfile: onProfile
+		onAlbum: onAlbum
 	}),
 
-	addToPosts = ( posts, onExplore, onProfile ) => ({
+	addToPosts = ( posts ) => ({
 		type: ADD_TO_POSTS,
-		posts: posts,
-		onExplore: onExplore,
-		onProfile: onProfile
+		posts: posts
 	}),
 
-	addPost = ( post, onProfile ) => ({
+	addPost = ( post ) => ({
 		type: ADD_POST,
-		post: post,
-		onProfile: onProfile
+		post: post
 	}),
 
 	deletePost = postId => ({

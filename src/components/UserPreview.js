@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Image } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import FollowButtonComponent from "./FollowButton";
 
 const
 	Wrapper = styled.div`
@@ -64,8 +63,7 @@ class UserPreview extends Component {
 		let userImage;
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
-			{ user, handleFollow, handleUnfollow, handleUnfriend,
-				alreadyFollowing, alreadyFriends, handleClick } = this.props;
+			{ user, handleClick } = this.props;
 
 		try {
 			if ( user.profileImage ) {
@@ -100,16 +98,6 @@ class UserPreview extends Component {
 						</Hobbie>
 					)}
 				</Hobbies>
-				{localStorage.getItem( "username" ) !== user.username &&
-				<FollowButtonComponent
-					user={user}
-					handleFollow={handleFollow}
-					handleUnfollow={handleUnfollow}
-					handleUnfriend={handleUnfriend}
-					alreadyFollowing={alreadyFollowing}
-					alreadyFriends={alreadyFriends}
-				/>
-				}
 			</Wrapper>
 		);
 	}
@@ -117,11 +105,6 @@ class UserPreview extends Component {
 
 UserPreview.propTypes = {
 	user: PropTypes.object.isRequired,
-	handleFollow: PropTypes.func.isRequired,
-	handleUnfollow: PropTypes.func.isRequired,
-	handleUnfriend: PropTypes.func,
-	alreadyFollowing: PropTypes.bool,
-	alreadyFriends: PropTypes.bool,
 	handleClick: PropTypes.func
 };
 

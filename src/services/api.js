@@ -313,7 +313,9 @@ export default {
 			url: API_URL + "/friends/add"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	deleteFriend: username =>
 		axios({
@@ -325,31 +327,9 @@ export default {
 			url: API_URL + "/friends/delete"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
-
-	followUser: username =>
-		axios({
-			method: "post",
-			data: {
-				token: localStorage.getItem( "token" ),
-				targetUsername: username
-			},
-			url: API_URL + "/followers/follow"
-		})
-			.then( res => res )
-			.catch( err => err.response.data ),
-
-	unfollowUser: username =>
-		axios({
-			method: "delete",
-			data: {
-				token: localStorage.getItem( "token" ),
-				targetUsername: username
-			},
-			url: API_URL + "/followers/unfollow"
-		})
-			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getInterestsMatches: data =>
 		axios({

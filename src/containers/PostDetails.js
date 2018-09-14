@@ -416,6 +416,7 @@ class PostDetails extends Component {
 							<Comments
 								onExplore={this.props.onExplore}
 								socket={this.props.socket}
+								history={this.props.history}
 								hiddeCommentInput={this.state.hiddeCommentInput}
 								toggleCommentInput={this.toggleCommentInput}
 							/>
@@ -499,6 +500,7 @@ class PostDetails extends Component {
 						<Comments
 							onExplore={this.props.onExplore}
 							socket={this.props.socket}
+							history={this.props.history}
 							TextPost
 						/>
 					</CommentsWrapper>

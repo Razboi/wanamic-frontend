@@ -16,18 +16,19 @@ const
 	Wrapper = styled.div`
 		overflow: hidden;
 		position: relative;
+		border-bottom: ${props => props.noBorder ?
+		"0" : "1px solid rgba(0, 0, 0, .1)"};
 		@media (min-width: 420px) {
-			border-bottom: ${props => !props.noBorder && "1px solid rgba(0, 0, 0, .1)"};
 			margin-bottom: ${props => !props.noBorder && "1rem"};
 			background: #fff;
-		}
-		@media (max-width: 420px) {
-
+			border-bottom-left-radius: 2px;
+			border-bottom-right-radius: 2px;
 		}
 	`,
 	PostHeader = styled( Header )`
 		min-height: 60px;
 		display: flex;
+		flex-wrap: wrap;
 		flex-direction: row;
 		padding: 1rem !important;
 		margin: 0 !important;
@@ -43,6 +44,7 @@ const
 	`,
 	ClubInfo = styled.div`
 		display: flex;
+		margin-right: 25px;
 		a {
 			font-size: 1.1rem;
 			color: rgb(133,217,191);
@@ -52,6 +54,9 @@ const
 		}
 		:hover {
 			cursor: pointer;
+		}
+		@media (max-width: 420px) {
+			margin-right: 100%;
 		}
 	`,
 	AuthorImg = styled( Image )`

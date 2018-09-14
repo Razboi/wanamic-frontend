@@ -3,6 +3,8 @@ import { Button, Checkbox, Icon, Input, Dropdown } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import api from "../services/api";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -128,6 +130,14 @@ const
 	`,
 	Tab = styled( Button )`
 		background-color: ${props => props.primary && "rgb(133,217,191)"} !important;
+	`,
+	ClubsList = styled( Dropdown.Menu )`
+		max-height: 300px;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`;
 
 
@@ -136,8 +146,27 @@ class MediaStep3 extends Component {
 		super( props );
 		this.state = {
 			feed: props.feed,
-			selectedClub: props.selectedClub
+			selectedClub: props.selectedClub,
+			clubs: []
 		};
+	}
+
+	componentDidMount() {
+		this.getUserClubs();
+	}
+
+	getUserClubs = async() => {
+		try {
+			const clubs = await api.userClubs();
+			this.setState({ clubs: clubs.data });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getUserClubs();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	switchFeed = feed => {
@@ -167,7 +196,7 @@ class MediaStep3 extends Component {
 	}
 
 	render() {
-		let { selectedClub } = this.state;
+		let { selectedClub, feed } = this.state;
 		return (
 			<Wrapper onShare={this.props.onShare}>
 				<Options whiteTheme={this.props.whiteTheme}>
@@ -187,21 +216,27 @@ class MediaStep3 extends Component {
 					<ShareOptions>
 						<Title>Share with</Title>
 						<Tabs>
-							<Tab
-								content="Global"
-								primary={this.state.feed === "global"}
-								onClick={() => this.switchFeed( "global" )}
-							/>
-							<Tab
-								primary={this.state.feed === "club"}
-								content={
-									<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
-										<Dropdown.Menu>
-											{this.props.clubs.map( this.renderClub )}
-										</Dropdown.Menu>
-									</Dropdown>
-								}
-							/>
+							{selectedClub && feed === "club" ?
+								<Tab primary content={selectedClub} />
+								:
+								<React.Fragment>
+									<Tab
+										content="Global"
+										primary={feed === "global"}
+										onClick={() => this.switchFeed( "global" )}
+									/>
+									<Tab
+										primary={feed === "club"}
+										content={
+											<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
+												<ClubsList>
+													{this.state.clubs.map( this.renderClub )}
+												</ClubsList>
+											</Dropdown>
+										}
+									/>
+								</React.Fragment>
+							}
 						</Tabs>
 					</ShareOptions>
 					<AlertsWrapper>
@@ -253,8 +288,7 @@ MediaStep3.propTypes = {
 const
 	mapStateToProps = state => ({
 		feed: state.posts.feed,
-		selectedClub: state.posts.selectedClub,
-		clubs: state.posts.clubs
+		selectedClub: state.posts.selectedClub
 	});
 
 export default connect( mapStateToProps )( MediaStep3 );

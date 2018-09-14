@@ -234,7 +234,6 @@ class ExplorePage extends Component {
 		if ( this.state.renderProfile ) {
 			return (
 				<Profile
-					className="exploreProfile"
 					user={this.state.user}
 					backToMenu={this.backToMenu}
 					next={this.nextUser}

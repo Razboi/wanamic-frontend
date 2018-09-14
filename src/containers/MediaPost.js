@@ -30,6 +30,7 @@ const
 	PostHeader = styled( Header )`
 		min-height: 60px;
 		display: flex;
+		flex-wrap: wrap;
 		flex-direction: row;
 		padding: 1rem !important;
 		margin: 0 !important;

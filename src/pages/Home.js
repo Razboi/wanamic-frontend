@@ -25,14 +25,12 @@ const
 		min-height: 100vh;
 		width: 100%;
 		padding-bottom: 300px;
+		background: rgb(230, 240, 236);
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 				display: none !important;
 			}
 		};
-		@media (min-width: 420px) {
-			background: rgb(230, 240, 236);
-		}
 	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
@@ -176,7 +174,7 @@ class Home extends Component {
 
 	componentDidMount() {
 		window.scrollTo( 0, 0 );
-		this.getGlobalFeed();
+		this.initGlobalFeed();
 		this.getUserClubs();
 		this.getClubSuggestions();
 		this.props.setFeed( "global" );
@@ -215,10 +213,10 @@ class Home extends Component {
 	getGlobalFeed = async() => {
 		try {
 			const posts = await api.globalFeed( this.state.skip, 10 );
-			this.props.setPosts( posts.data, true );
+			this.props.addToPosts( posts.data );
 			this.setState({
 				hasMore: posts.data.length === 10,
-				skip: this.state.skip++
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
@@ -233,10 +231,10 @@ class Home extends Component {
 	getHomeFeed = async() => {
 		try {
 			const posts = await api.homeFeed( this.state.skip, 10 );
-			this.props.addToPosts( posts.data, true );
+			this.props.addToPosts( posts.data );
 			this.setState({
 				hasMore: posts.data.length === 10,
-				skip: this.state.skip++
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
@@ -248,12 +246,32 @@ class Home extends Component {
 		}
 	}
 
+	getClubFeed = async() => {
+		try {
+			const posts = await api.clubFeed(
+				this.state.skip, this.props.selectedClub );
+			this.props.addToPosts( posts.data );
+			this.setState({
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip + 1
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getClubFeed();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
 	initGlobalFeed = async() => {
 		try {
 			const posts = await api.globalFeed( 0, 10 );
-			this.props.setPosts( posts.data, true );
+			this.props.setPosts( posts.data );
 			this.setState({
-				hasMore: posts.data.length === 10
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
@@ -268,9 +286,10 @@ class Home extends Component {
 	initHomeFeed = async() => {
 		try {
 			const posts = await api.homeFeed( 0, 10 );
-			this.props.setPosts( posts.data, true );
+			this.props.setPosts( posts.data );
 			this.setState({
-				hasMore: posts.data.length === 10
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
@@ -285,9 +304,10 @@ class Home extends Component {
 	initClubFeed = async( club ) => {
 		try {
 			const posts = await api.clubFeed( 0, club );
-			this.props.setPosts( posts.data, true );
+			this.props.setPosts( posts.data );
 			this.setState({
-				hasMore: posts.data.length === 10
+				hasMore: posts.data.length === 10,
+				skip: this.state.skip + 1
 			});
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
@@ -300,12 +320,18 @@ class Home extends Component {
 	}
 
 	loadMore = () => {
+		if ( !this.state.hasMore ) {
+			return;
+		}
 		switch ( this.props.feed ) {
 		case "global":
 			this.getGlobalFeed();
 			break;
 		case "home":
 			this.getHomeFeed();
+			break;
+		case "club":
+			this.getClubFeed();
 			break;
 		default:
 			this.getGlobalFeed();
@@ -363,10 +389,10 @@ class Home extends Component {
 	}
 
 	selectClub = club => {
+		this.setState({ clubData: club, skip: 0 });
 		this.props.setFeed( "club" );
 		this.props.setClub( club.name );
 		this.initializeFeed( "club", club.name );
-		this.setState({ clubData: club });
 	}
 
 	switchCreateForm = () => {
