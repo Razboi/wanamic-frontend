@@ -9,6 +9,7 @@ const
 		width: 100%;
 		margin-top: 1rem;
 		padding: 2rem;
+		overflow: hidden;
 		h1 {
 			font-family: inherit;
 			text-align: center;

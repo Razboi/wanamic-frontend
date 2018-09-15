@@ -17,6 +17,7 @@ import MediaOptions from "../containers/MediaOptions";
 import NavBar from "../containers/NavBar";
 import refreshToken from "../utils/refreshToken";
 import CreateClubPopup from "../containers/CreateClubPopup";
+import UserPreview from "../components/UserPreview";
 
 const
 	Wrapper = styled.div`
@@ -83,9 +84,6 @@ const
 		font-size: 12px;
 		text-align: center;
 		margin: auto;
-		@media (max-width: 1200px) {
-			display: none;
-		}
 	`,
 	Clubs = styled.div`
 		margin-top: 50px;
@@ -155,6 +153,36 @@ const
 		font-family: inherit;
 		margin: 0;
 		font-weight: normal;
+	`,
+	UserExposition = styled.div`
+		margin-top: 50px;
+		margin-left: 10px;
+		@media (max-width: 900px) {
+			display: none;
+		}
+	`,
+	RandomUser = styled.div`
+		width: 300px;
+		padding: 1rem;
+		border-radius: 5px;
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		h2 {
+			font-size: 1.28571429rem;
+			margin-bottom: 1rem;
+			font-weight: 200;
+			font-family: inherit;
+			color: #111;
+		}
+		h3 {
+			font-family: inherit;
+		}
+		button {
+			font-family: inherit !important;
+		}
 	`;
 
 
@@ -168,7 +196,8 @@ class Home extends Component {
 			chat: true,
 			clubForm: false,
 			clubSuggestions: [],
-			clubData: {}
+			clubData: {},
+			randomUser: {}
 		};
 	}
 
@@ -177,9 +206,24 @@ class Home extends Component {
 		this.initGlobalFeed();
 		this.getUserClubs();
 		this.getClubSuggestions();
+		this.getRandomUser();
 		this.props.setFeed( "global" );
 		this.props.setClub( undefined );
 		document.title = "Wanamic";
+	}
+
+	getRandomUser = async() => {
+		try {
+			const res = await api.getRandom( true );
+			this.setState({ randomUser: res.data });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getRandomUser();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	getClubSuggestions = async() => {
@@ -399,6 +443,9 @@ class Home extends Component {
 		this.setState( state => ({ clubForm: !state.clubForm }));
 	}
 
+	handleUserPreviewClick = () => {
+		this.props.history.push( "/" + this.state.randomUser.username );
+	}
 
 	renderClubSuggestions = ( club, index ) => {
 		return (
@@ -474,7 +521,11 @@ class Home extends Component {
 												<CreateClubDescription>
 													Haven't found a club for your hobbie? You can create it so other users with the same hobbie can join.
 												</CreateClubDescription>
-												<Button content="Create" onClick={this.switchCreateForm} />
+												<Button
+													primary
+													content="Create"
+													onClick={this.switchCreateForm}
+												/>
 											</CreateClub>
 										</React.Fragment>
 									}
@@ -501,6 +552,21 @@ class Home extends Component {
 									selectedClub={this.props.selectedClub}
 									selectClub={this.selectClub}
 								/>
+								<UserExposition>
+									<RandomUser>
+										<h2>Random user exposition</h2>
+										<UserPreview
+											user={this.state.randomUser}
+											handleClick={this.handleUserPreviewClick}
+											exposition
+										/>
+										<Button
+											primary
+											content="View profile"
+											onClick={this.handleUserPreviewClick}
+										/>
+									</RandomUser>
+								</UserExposition>
 							</HomeContent>
 						</OutsideClickHandler>
 					</MediaDimmer>

@@ -32,6 +32,8 @@
   "scripts": {
     "start": "REACT_APP_STAGE=dev react-scripts start",
     "build": "react-scripts build",
+		"predeploy:testing": "REACT_APP_STAGE=testing npm run build",
+    "deploy:testing": "aws s3 sync build/ s3://testing-wanamic.com",
     "predeploy:prod": "REACT_APP_STAGE=production npm run build",
     "deploy": "aws s3 sync build/ s3://wanamic.com",
     "test": "react-scripts test --env=jsdom",

@@ -3,7 +3,10 @@ import axios from "axios";
 let API_URL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://192.168.1.15:8081"
 	:
-	"https://api.wanamic.com";
+	process.env.REACT_APP_STAGE === "testing" ?
+		"http://testing.wanamic.com"
+		:
+		"https://api.wanamic.com";
 
 export default {
 	login: credentials =>
@@ -372,10 +375,13 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	getRandom: () =>
+	getRandom: ( exposition ) =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ) },
+			data: {
+				token: localStorage.getItem( "token" ),
+				exposition: exposition
+			},
 			url: API_URL + "/user/randomUser"
 		})
 			.then( res => res )

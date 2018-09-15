@@ -35,7 +35,10 @@ ReactGA.initialize( "UA-72968417-3" );
 let apiURL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://192.168.1.15:8081"
 	:
-	"https://api.wanamic.com";
+	process.env.REACT_APP_STAGE === "testing" ?
+		"http://testing.wanamic.com"
+		:
+		"https://api.wanamic.com";
 
 
 class App extends Component {

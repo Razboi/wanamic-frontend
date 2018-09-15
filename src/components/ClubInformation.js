@@ -10,6 +10,9 @@ const
 	Wrapper = styled.div`
 		margin-top: 1rem;
 		margin-right: 10px;
+		@media (max-width: 900px) {
+			margin-right: 0px;
+		}
 	`,
 	MainInfo = styled.div`
 		width: 300px;

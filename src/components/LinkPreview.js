@@ -17,7 +17,7 @@ const
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
 		position: absolute !important;
-		height: 100%;
+		height: auto;
 		top: 0;
 		left: 0;
 		right: 0;

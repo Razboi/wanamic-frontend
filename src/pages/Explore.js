@@ -93,21 +93,23 @@ class ExplorePage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
-	getRandomUser = () => {
-		api.getRandom()
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.getRandomUser())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.setState({
-						user: res.data,
-						renderProfile: true,
-						typeOfSearch: "random"
-					});
-				}
-			}).catch( err => console.log( err ));
+
+	getRandomUser = async() => {
+		try {
+			const res = await api.getRandom();
+			this.setState({
+				user: res.data,
+				renderProfile: true,
+				typeOfSearch: "random"
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getRandomUser();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	matchHobbies = () => {

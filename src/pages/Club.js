@@ -24,14 +24,12 @@ const
 		min-height: 100vh;
 		width: 100%;
 		padding-bottom: 300px;
+		background: rgb(230, 240, 236);
 		@media (max-width: 420px) {
 			::-webkit-scrollbar {
 				display: none !important;
 			}
 		};
-		@media (min-width: 420px) {
-			background: rgb(230, 240, 236);
-		}
 	`,
 	ShareMediaButton = styled.div`
 		position: fixed;
@@ -74,6 +72,10 @@ const
 		max-width: 1220px;
 		display: flex;
 		margin: 0 auto;
+		@media (max-width: 900px) {
+			flex-direction: column;
+			align-items: center;
+		}
 	`,
 	BannedWrapper = styled.div`
 		height: 100vh;
