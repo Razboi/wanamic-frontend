@@ -6,7 +6,6 @@ import moment from "moment";
 import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
 
 var userPicture;
 
@@ -28,15 +27,14 @@ const
 		display: flex;
 		flex-direction: column;
 		margin: 0 2rem 0 0.5rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorImg = styled( Image )`
 		overflow: visible !important;
-		width: 30px !important;
-		height: 30px !important;
-		@media (min-width: 420px) {
-			width: 35px !important;
-			height: 35px !important;
-		}
+		width: 40px !important;
+		height: 40px !important;
 	`,
 	AuthorFullname = styled.span`
 		font-size: 1.05rem !important;
@@ -99,49 +97,37 @@ class Comment extends Component {
 		};
 	}
 
-	handleDelete = () => {
-		api.deleteComment( this.props.comment._id, this.props.comment.post )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleDelete())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.handleDelete( this.props.index, res.data );
-				}
-			}).catch( err => console.log( err ));
-	};
-
-	handleUpdate = async updatedContent => {
-		if ( !updatedContent || !this.state.content === updatedContent ) {
+	handleReport = async reportContent => {
+		if ( !reportContent ) {
 			return;
 		}
 		try {
-			const
-				mentions = await extract(
-					updatedContent, { symbol: false }),
-				res = await api.updateComment(
-					this.props.comment._id, updatedContent, mentions );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleUpdate();
-			} else {
-				this.setState({ content: updatedContent });
-				this.props.handleUpdate( res.data.updatedComment );
-				for ( const notification of res.data.mentionsNotifications ) {
-					this.props.socket.emit( "sendNotification", notification );
-				}
-			}
+			await api.reportComment( this.props.comment._id, reportContent );
 		} catch ( err ) {
 			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.handleReport();
+			}
 		}
-	};
+	}
+
+	goToProfile = user => {
+		if ( this.props.history ) {
+			this.props.history.push( "/" + user.username );
+		}
+	}
 
 	render() {
-		const { comment } = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ comment } = this.props;
 		try {
 			if ( comment.author.profileImage ) {
-				userPicture = require( "../images/" + comment.author.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					userPicture = require( "../images/" + comment.author.profileImage )
+					:
+					userPicture = s3Bucket + comment.author.profileImage;
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}
@@ -152,7 +138,7 @@ class Comment extends Component {
 			<Wrapper>
 				<CommentHeader>
 					<AuthorImg circular src={userPicture} />
-					<HeaderInfo>
+					<HeaderInfo onClick={() => this.goToProfile( comment.author )}>
 						<AuthorFullname className="postAuthor">
 							{comment.author.fullname}
 							<AuthorUsername>
@@ -164,16 +150,11 @@ class Comment extends Component {
 						</DateTime>
 					</HeaderInfo>
 
-					{ !this.props.fakeOptions &&
-						<DropdownOptions
-							style={StyledOptions}
-							author={comment.author}
-							currentContent={comment.content}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-							handleChange={this.handleChange}
-						/>
-					}
+					<DropdownOptions
+						style={StyledOptions}
+						postOrComment={comment}
+						socket={this.props.socket}
+					/>
 				</CommentHeader>
 				<Content>{this.state.content}</Content>
 
@@ -189,10 +170,9 @@ class Comment extends Component {
 
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired,
-	handleUpdate: PropTypes.func.isRequired,
 	handleReply: PropTypes.func.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 export default Comment;

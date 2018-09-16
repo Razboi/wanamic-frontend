@@ -9,7 +9,7 @@ import { addPost, switchMediaOptions } from "../services/actions/posts";
 import MediaStep2 from "../components/MediaStep2";
 import MediaStep3 from "../components/MediaStep3";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -26,19 +26,22 @@ const
 		background: #333;
 	`,
 	Header = styled.div`
-		height: 50px;
+		height: 55px;
 		width: 100%;
 		display: flex;
 		align-items: center;
-		padding-left: 10px;
+		padding: 0 20px;
 		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		i {
+			font-size: 1.5rem !important;
+			position: absolute;
+		}
 		@media (min-width: 420px) {
 			background: #111;
-			height: 60px;
+			height: 80px;
 			padding: 0px 40px;
 			i {
-				font-size: 1.5rem !important;
 				:hover {
 					cursor: pointer !important;
 				}
@@ -48,13 +51,13 @@ const
 	HeaderTxt = styled.span`
 		margin: auto;
 		font-weight: bold;
-		font-size: 16px;
+		font-size: 1.2rem;
 		@media (min-width: 420px) {
 			display: none;
-		};
+		}
 	`,
 	SmallScreenSearch = styled.div`
-		height: 44px;
+		height: 50px;
 		display: flex;
 		width: 100%;
 		align-items: center;
@@ -80,7 +83,7 @@ const
 		};
 	`,
 	SearchInput = styled( Input )`
-		height: 34px;
+		height: 40px;
 		justify-self: center;
 		align-self: center;
 		input {
@@ -269,12 +272,12 @@ class SearchMedia extends Component {
 		this.setState({ step: this.state.step - 1 });
 	}
 
-	handleSubmit = async() => {
+	handleSubmit = async( feed, selectedClub ) => {
 		var
 			i,
 			finalData = this.state.mediaData;
 		const
-			{ description, privacyRange, checkNsfw, checkSpoiler,
+			{ description, checkNsfw, checkSpoiler,
 				spoilerDescription } = this.state,
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
@@ -282,7 +285,8 @@ class SearchMedia extends Component {
 		finalData.mentions = mentions;
 		finalData.hashtags = hashtags;
 		finalData.content = description;
-		finalData.privacyRange = privacyRange;
+		finalData.feed = feed;
+		finalData.selectedClub = selectedClub;
 		finalData.alerts = {
 			nsfw: checkNsfw,
 			spoiler: checkSpoiler,

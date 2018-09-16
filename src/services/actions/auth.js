@@ -21,6 +21,9 @@ export const
 				if ( data.profileImage ) {
 					localStorage.setItem( "uimg", data.profileImage );
 				}
+				if ( data.admin ) {
+					localStorage.setItem( "ia", true );
+				}
 				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());
 			}
@@ -34,6 +37,7 @@ export const
 				localStorage.setItem( "token", data.token );
 				localStorage.setItem( "refreshToken", data.refreshToken );
 				localStorage.setItem( "username", data.username );
+				localStorage.setItem( "fullname", data.fullname );
 				localStorage.setItem( "uimg", data.profileImage );
 				localStorage.setItem( "id", data.id );
 				localStorage.setItem( "NU", true );

@@ -14,6 +14,7 @@ import PasswordSettings from "../components/PasswordSettings";
 import EmailSettings from "../components/EmailSettings";
 import DeleteAccount from "../components/DeleteAccount";
 import ContentSettings from "../components/ContentSettings";
+import compressImage from "../utils/compressImage";
 
 const
 	Wrapper = styled.div`
@@ -29,7 +30,7 @@ const
 		height: 100%;
 	`,
 	Page = styled.div`
-		height: 100vh;
+		height: 100%;
 		display: grid;
 		margin-top: 69.33px !important;
 		@media (max-width: 760px) {
@@ -41,9 +42,10 @@ const
 				"opt";
 		}
 		@media (min-width: 760px) {
+			position: relative;
 			width: 90%;
 			max-width: 1000px;
-			margin: 0 auto;
+			margin: 100px auto;
 			grid-template-columns: 20% 80%;
 			grid-template-rows: 100%;
 			grid-template-areas:
@@ -81,6 +83,17 @@ const
 		font-size: 1.15rem !important;
 		margin: 0 0 0 auto !important;
 		color: rgba(0, 0, 0, .5);
+	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 class SettingsPage extends Component {
@@ -92,7 +105,8 @@ class SettingsPage extends Component {
 			newPassword: "", confirmPassword: "", currentEmail: "",
 			newEmail: "", deletePassword: "", deleteFeedback: "",
 			checkedCategories: [], error: "", categoriesChanged: false,
-			country: "", region: "", birthday: "", gender: ""
+			country: "", region: "", birthday: "", gender: "", loader: false,
+			tagInput: ""
 		};
 	}
 
@@ -101,13 +115,19 @@ class SettingsPage extends Component {
 		if ( window.innerWidth > 760 ) {
 			this.setState({ tab: 1 });
 		}
+		document.title = "Settings";
 	}
 
 	getUserInfo = async() => {
+		var birthday;
 		const res = await api.getUserInfo( localStorage.getItem( "username" ));
 		var tagCompatibleHobbies = [];
 		for ( const hobbie of res.data.hobbies ) {
 			tagCompatibleHobbies.push({ text: hobbie, id: hobbie });
+		}
+
+		if ( res.data.birthday ) {
+			[ birthday ] = res.data.birthday.split( "T" );
 		}
 
 		this.setState({
@@ -117,7 +137,7 @@ class SettingsPage extends Component {
 			hobbies: tagCompatibleHobbies,
 			country: res.data.country,
 			region: res.data.region,
-			birthday: res.data.birthday,
+			birthday: birthday,
 			gender: res.data.gender,
 			checkedCategories: res.data.interests
 		});
@@ -126,17 +146,14 @@ class SettingsPage extends Component {
 	handleFileChange = e => {
 		const
 			file = e.target.files[ 0 ],
-			fileExt = file && file.name.split( "." ).pop();
+			target = e.target.name;
 
 		if ( !file ) {
 			return;
 		}
 
 		if (( file.type !== "image/jpeg" && file.type !== "image/png"
-			&& file.type !== "image/jpg" && file.type !== "image/gif" )
-			||
-			( fileExt !== "jpeg" && fileExt !== "png"
-			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )) {
 			this.setState({
 				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
 			});
@@ -145,20 +162,26 @@ class SettingsPage extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file, target === "headerImage" ).then( compressedImg => {
+				this.setState({
+					[ target ]: compressedImg,
+					loader: false
+				});
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			this.resetError();
-			return;
+		} else {
+			this.setState({
+				[ e.target.name ]: file
+			});
 		}
-
-		this.setState({
-			[ e.target.name ]: file
-		});
 	}
 
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value })
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	updateUserInfo = async() => {
 		var data = new FormData();
@@ -196,6 +219,9 @@ class SettingsPage extends Component {
 			}
 			if ( res.data.newUsername ) {
 				localStorage.setItem( "username", res.data.newUsername );
+			}
+			if ( res.data.newUsername || res.data.newImage ) {
+				window.location.reload();
 			}
 			this.backToMain();
 		} catch ( err ) {
@@ -360,8 +386,11 @@ class SettingsPage extends Component {
 	}
 
 	handleAddition = hobbie => {
+		if ( !hobbie.id.trim( "" )) {
+			return;
+		}
 		this.setState( state => ({
-			hobbies: [ ...state.hobbies, hobbie ]
+			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
 	}
 
@@ -394,7 +423,10 @@ class SettingsPage extends Component {
 					country={this.state.country}
 					region={this.state.region}
 					gender={this.state.gender}
+					birthday={this.state.birthday}
 					error={this.state.error}
+					loader={this.state.loader}
+					tagInput={this.state.tagInput}
 				/>
 			);
 		}
@@ -451,6 +483,11 @@ class SettingsPage extends Component {
 				<NavBar socket={this.props.socket} />
 				<OutsideClickHandler onClick={this.hideNotifications}>
 					<Page onClick={this.hidePopups}>
+						{this.state.loader &&
+							<LoaderDimmer>
+								<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+							</LoaderDimmer>
+						}
 						<Options>
 							<Option
 								active={this.state.tab === 1}
@@ -501,7 +538,9 @@ class SettingsPage extends Component {
 								country={this.state.country}
 								region={this.state.region}
 								gender={this.state.gender}
+								birthday={this.state.birthday}
 								error={this.state.error}
+								tagInput={this.state.tagInput}
 							/>}
 						{this.state.tab === 2 && window.innerWidth > 760 &&
 							<ContentSettings

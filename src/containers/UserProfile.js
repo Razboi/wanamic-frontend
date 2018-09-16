@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import {
-	switchPostDetails, setPosts, switchComments, switchShare, addToPosts,
-	switchMediaOptions
+import { 	setPosts, addToPosts, switchMediaOptions
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
 import { switchNotifications } from "../services/actions/notifications";
@@ -11,9 +9,6 @@ import api from "../services/api";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
-import Comments from "../containers/Comments";
-import Share from "../containers/Share";
-import PostDetails from "../containers/PostDetails";
 import InfiniteScroll from "react-infinite-scroller";
 import ProfileOptions from "../components/ProfileOptions";
 import ProfileTimeLine from "../components/ProfileTimeLine";
@@ -27,11 +22,13 @@ var
 const
 	Wrapper = styled.div`
 		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
 		background: rgb(230, 240, 236);
+		padding-bottom: 300px;
 		@media (max-width: 1100px) {
 			::-webkit-scrollbar {
 			display: none !important;
@@ -72,6 +69,7 @@ const
 		position: relative;
 		transform: ${props => props.active ? "rotate(45deg)" : "none"};
 		transition: transform 0.5s;
+		background-size: 100%;
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
 		height: 100%;
@@ -110,17 +108,17 @@ const
 		align-items: center;
 		z-index: 2;
 		width: 300px;
-		margin-top: -12rem;
+		margin-top: -10rem;
 		padding: 0 5px;
 		@media (max-width: 1100px) {
 			display: none;
 		}
 	`,
 	UserInfoBackground = styled.div`
-		height: 180px;
+		height: 250px;
 		background-image: url(${props => props.backgroundImg});
 		background-size: cover;
-		filter: brightness(85%);
+		background-position: center;
 		@media (min-width: 420px) and (max-width: 600px) {
 			height: 400px;
 		}
@@ -130,15 +128,23 @@ const
 	`,
 	UserImage = styled.img`
 		z-index: 2;
-		width: 116px;
-		height: 116px;
+    height: auto;
+    width: auto;
+		max-height: 116px;
+    max-width: 116px;
 		border-radius: 4px;
 		border: 2px solid #fff;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 		@media (min-width: 420px) {
-			width: 200px;
-			height: 200px;
+			max-height: 200px;
+	    max-width: 200px;
 			box-shadow: 0px 3px 8px rgba(0, 0, 0, .25);
+		}
+		@media (max-width: 420px) {
+			margin-top: -5rem;
+		}
+		@media (min-width: 420px) and (max-width: 1100px) {
+			margin-top: -9rem;
 		}
 	`,
 	Fullname = styled.h2`
@@ -251,27 +257,33 @@ const
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0 0.5rem 0 0;
-	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100vh;
-		width: 100vw;
-		z-index: 5;
-		background: rgba(0,0,0,0.6);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
 	`,
 	MediaDimmer = styled.div`
 		filter: ${props => props.blur ? "blur(15px)" : "none"};
 		padding-top: 49.33px;
 	`,
-	Page = styled.div``;
+	Page = styled.div``,
+	RequestMessage = styled.div`
+		position: absolute;
+		top: 49.33px;
+		left: 0px;
+		background: rgba(0,0,0,0.60);
+		width: 100%;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		font-family: inherit !important;
+	`,
+	RequestButton = styled( Button )`
+		font-family: inherit !important;
+		background: rgb(133, 217, 191) !important;
+		border-radius: 2px !important;
+	`;
 
 
 class UserProfile extends Component {
@@ -303,19 +315,24 @@ class UserProfile extends Component {
 
 	componentDidMount() {
 		this.getUserInfo();
-		this.refreshTimeline();
 		this.checkPendingRequest();
+		this.refreshTimeline();
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.user !== prevState.user ) {
-			this.refreshTimeline();
 			this.setImages();
+			this.checkPendingRequest();
+			this.refreshTimeline();
 			window.scrollTo( 0, 0 );
+			if ( this.state.user ) {
+				document.title = `${this.state.user.fullname} @${this.state.user.username}`;
+			}
 		} else if ( this.props.username !== prevProps.username ) {
 			this.getUserInfo();
-			this.refreshTimeline();
 			this.checkPendingRequest();
+			this.refreshTimeline();
+			window.scrollTo( 0, 0 );
 		}
 	}
 
@@ -336,6 +353,7 @@ class UserProfile extends Component {
 				}
 			}
 		}
+		document.title = `${this.state.user.fullname} @${this.state.user.username}`;
 	}
 
 	checkPendingRequest = async() => {
@@ -356,16 +374,24 @@ class UserProfile extends Component {
 	}
 
 	setImages() {
-		const { user } = this.state;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ user } = this.state;
 
 		try {
 			if ( user.headerImage ) {
-				backgroundImg = require( "../images/" + user.headerImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					backgroundImg = require( "../images/" + user.headerImage )
+					:
+					backgroundImg = s3Bucket + user.headerImage;
 			} else {
 				backgroundImg = require( "../images/defaultbg.png" );
 			}
 			if ( user.profileImage ) {
-				profileImg = require( "../images/" + user.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					profileImg = require( "../images/" + user.profileImage )
+					:
+					profileImg = s3Bucket + user.profileImage;
 			} else {
 				profileImg = require( "../images/defaultUser.png" );
 			}
@@ -380,18 +406,18 @@ class UserProfile extends Component {
 				const posts = await api.getTimeline(
 					this.state.skip, this.props.username
 				);
-				if ( posts === "jwt expired" ) {
+				this.props.addToPosts( posts.data );
+				this.setState({
+					hasMore: posts.data.length === 10,
+					skip: this.state.skip + 1
+				});
+			} catch ( err ) {
+				if ( err.response.data === "jwt expired" ) {
 					await refreshToken();
 					this.getTimeline();
-				} else if ( posts.data ) {
-					this.props.addToPosts( posts.data, false, true );
-					this.setState({
-						hasMore: posts.data.length === 10,
-						skip: this.state.skip + 1
-					});
+				} else {
+					console.log( err );
 				}
-			} catch ( err ) {
-				console.log( err );
 			}
 		}
 	}
@@ -403,8 +429,11 @@ class UserProfile extends Component {
 				await refreshToken();
 				this.refreshTimeline();
 			} else if ( posts.data ) {
-				this.props.setPosts( posts.data, false, false, true );
-				this.setState({ hasMore: posts.data.length === 10 });
+				this.props.setPosts( posts.data );
+				this.setState({
+					hasMore: posts.data.length === 10,
+					skip: 1
+				});
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -414,72 +443,34 @@ class UserProfile extends Component {
 	addFriend = async() => {
 		try {
 			const response = await api.addFriend( this.props.username );
-			if ( response === "jwt expired" ) {
+			this.setState({ userRequested: true });
+			this.props.socket.emit( "sendNotification", response.data );
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.addFriend();
-			} else if ( response.data ) {
-				this.setState({ userRequested: true });
-				this.props.socket.emit( "sendNotification", response.data );
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	follow = async() => {
-		var user = this.state.user;
-		try {
-			const notification = await api.followUser( this.props.username );
-			if ( notification === "jwt expired" ) {
-				await refreshToken();
-				this.follow();
 			} else {
-				user.followers.push( localStorage.getItem( "id" ));
-				this.setState({ user: user });
-				notification.data && this.props.socket.emit(
-					"sendNotification", notification.data );
-				this.refreshTimeline();
+				console.log( err );
 			}
-		} catch ( err ) {
-			console.log( err );
 		}
 	}
 
-	unFriend = async() => {
+	unFriend = async( username, id ) => {
 		var user = this.state.user;
 		try {
-			const response = await api.deleteFriend( this.props.username );
-			if ( response === "jwt expired" ) {
+			await api.deleteFriend( username );
+			const indexOfUnfriend = user.friends.indexOf(
+				localStorage.getItem( "id" ));
+			user.friends.splice( indexOfUnfriend, 1 );
+			this.setState({ user: user });
+			this.refreshTimeline();
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.unFriend();
 			} else {
-				const index = user.friends.indexOf(
-					localStorage.getItem( "id" ));
-				user.friends.splice( index, 1 );
-				this.setState({ user: user });
-				this.refreshTimeline();
+				console.log( err );
 			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	unFollow = async() => {
-		var user = this.state.user;
-		try {
-			const response = await api.unfollowUser( this.props.username );
-			if ( response === "jwt expired" ) {
-				await refreshToken();
-				this.unFollow();
-			} else {
-				const index = user.followers.indexOf(
-					localStorage.getItem( "id" ));
-				user.followers.splice( index, 1 );
-				this.setState({ user: user });
-				this.refreshTimeline();
-			}
-		} catch ( err ) {
-			console.log( err );
 		}
 	}
 
@@ -514,15 +505,6 @@ class UserProfile extends Component {
 		if ( this.props.displayMessages ) {
 			this.props.switchMessages();
 		}
-		if ( this.props.displayPostDetails ) {
-			this.props.switchPostDetails();
-		}
-		if ( this.props.displayComments ) {
-			this.props.switchComments();
-		}
-		if ( this.props.displayShare ) {
-			this.props.switchShare();
-		}
 	}
 
 	toggleTab = tab => {
@@ -542,13 +524,8 @@ class UserProfile extends Component {
 			ownProfile = this.props.username === localStorage.getItem( "username" ),
 			plusImage;
 
-		const {
-			postDetailsIndex, displayPostDetails, displayComments,
-			displayShare, profilePosts, albumPosts
-		} = this.props;
-
 		try {
-			plusImage = require( "../images/plus.png" );
+			plusImage = require( "../images/plus.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -566,29 +543,6 @@ class UserProfile extends Component {
 		const { user } = this.state;
 		return (
 			<Wrapper>
-				{( displayPostDetails || displayComments || displayShare ) &&
-					<PostDetailsDimmer>
-						<OutsideClickHandler onClick={this.hidePopups} />
-						{displayPostDetails &&
-							<PostDetails
-								post={this.state.tab === "Album" ?
-									albumPosts[ postDetailsIndex ]
-									:
-									profilePosts[ postDetailsIndex ]
-								}
-								switchDetails={this.props.switchPostDetails}
-								socket={this.props.socket}
-								index={postDetailsIndex}
-								history={this.props.history}
-							/>}
-						{displayComments &&
-							<Comments
-								socket={this.props.socket}
-							/>}
-						{displayShare && <Share />}
-					</PostDetailsDimmer>
-				}
-
 				<StyledInfiniteScroll
 					pageStart={this.state.skip}
 					hasMore={this.state.hasMore}
@@ -622,6 +576,16 @@ class UserProfile extends Component {
 							messageTarget={this.state.messageTarget}
 							startChat={this.startChat}
 						/>
+						{this.state.targetRequested &&
+							<RequestMessage>
+								<h4>{user.fullname} sent you a friend request.</h4>
+								<RequestButton
+									onClick={this.acceptRequest}
+									content="Accept request"
+									size="tiny"
+									primary
+								/>
+							</RequestMessage>}
 						<Page onClick={this.hidePopups}>
 							<UserInfoBackground backgroundImg={backgroundImg} />
 							<UserInfoWrapper>
@@ -631,7 +595,7 @@ class UserProfile extends Component {
 									<Username>@{user.username}</Username>
 									<LikesCount>
 										<HeartImage
-											image={require( "../images/small_heart.png" )}
+											image={require( "../images/heart.svg" )}
 										/>
 										{user.totalLikes}
 									</LikesCount>
@@ -645,11 +609,8 @@ class UserProfile extends Component {
 									</Hobbies>
 									<ProfileOptions
 										user={this.state.user}
-										follow={this.follow}
 										addFriend={this.addFriend}
 										unFriend={this.unFriend}
-										unFollow={this.unFollow}
-										acceptRequest={this.acceptRequest}
 										goToUserSettings={this.props.goToUserSettings}
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
@@ -693,7 +654,7 @@ class UserProfile extends Component {
 									<Username>@{user.username}</Username>
 									<LikesCount>
 										<HeartImage
-											image={require( "../images/small_heart.png" )}
+											image={require( "../images/heart.svg" )}
 										/>
 										{user.totalLikes}
 									</LikesCount>
@@ -711,7 +672,6 @@ class UserProfile extends Component {
 										addFriend={this.addFriend}
 										unFriend={this.unFriend}
 										unFollow={this.unFollow}
-										acceptRequest={this.acceptRequest}
 										goToUserSettings={this.props.goToUserSettings}
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
@@ -725,7 +685,7 @@ class UserProfile extends Component {
 									history={this.props.history}
 									username={this.props.username}
 									toggleTab={this.toggleTab}
-									profilePosts={this.props.profilePosts}
+									profilePosts={this.props.feedPosts}
 									user={user}
 								/>
 							</TimeLine>
@@ -760,7 +720,7 @@ class UserProfile extends Component {
 UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
 	username: PropTypes.string.isRequired,
-	profilePosts: PropTypes.array.isRequired,
+	feedPosts: PropTypes.array.isRequired,
 	backToMenu: PropTypes.func,
 	next: PropTypes.func
 };
@@ -770,25 +730,15 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		displayComments: state.posts.displayComments,
-		displayShare: state.posts.displayShare,
-		displayPostDetails: state.posts.displayPostDetails,
-		postDetailsIndex: state.posts.postDetailsIndex,
-		profilePosts: state.posts.profilePosts,
-		albumPosts: state.posts.album
+		feedPosts: state.posts.feedPosts
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		setPosts: ( posts, onExplore, onAlbum, onProfile ) =>
-			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
-		addToPosts: ( posts, onExplore, onProfile ) =>
-			dispatch( addToPosts( posts, onExplore, onProfile )),
+		setPosts: ( posts ) => dispatch( setPosts( posts )),
+		addToPosts: ( posts ) => dispatch( addToPosts( posts )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
-		switchPostDetails: () => dispatch( switchPostDetails()),
 		switchMessages: () => dispatch( switchMessages()),
-		switchNotifications: () => dispatch( switchNotifications()),
-		switchComments: () => dispatch( switchComments()),
-		switchShare: () => dispatch( switchShare())
+		switchNotifications: () => dispatch( switchNotifications())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

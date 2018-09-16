@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		z-index: 3;
-		height: 100%;
 		display: ${props => props.showSuggestions ? "flex" : "none"};
 		flex-direction: column;
 		flex-grow: 1;
@@ -49,6 +48,7 @@ const
 
 class Suggestions extends Component {
 	render() {
+		const s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/";
 		return (
 			<Wrapper
 				showSuggestions={this.props.showSuggestions}
@@ -70,7 +70,10 @@ class Suggestions extends Component {
 							<SugestionImg
 								circular
 								src={user.profileImage ?
-									require( "../images/" + user.profileImage )
+									process.env.REACT_APP_STAGE === "dev" ?
+										require( "../images/" + user.profileImage )
+										:
+										s3Bucket + user.profileImage
 									:
 									require( "../images/defaultUser.png" )
 								}

@@ -2,14 +2,13 @@ import React, { Component } from "react";
 import { Image } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import FollowButtonComponent from "./FollowButton";
 
 const
 	Wrapper = styled.div`
 		display: flex;
 		position: relative;
 		flex-direction: column;
-		margin-bottom: 2.5rem;
+		margin-bottom: ${props => props.exposition ? "1rem" : "2.5rem"};
 	`,
 	MatchFullname = styled.h3`
 		margin: 0px;
@@ -23,6 +22,12 @@ const
 		margin: 0.5rem 0 0 0 !important;
 		font-size: 1.025rem !important;
 		color: #222;
+		max-height: 80px;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`,
 	Hobbies = styled.div`
 		display: flex;
@@ -31,6 +36,12 @@ const
 		align-items: center;
 		justify-content: center;
 		margin: 1rem 0;
+		max-height: 170px;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`,
 	Hobbie = styled.div`
 		border: 1px solid rgba( 0,0,0,0.4);
@@ -43,8 +54,8 @@ const
 		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
 	`,
 	UserImg = styled( Image )`
-		width: 40px !important;
-		height: 40px !important;
+		width: ${props => props.exposition ? "55px" : "40px"} !important;
+		height: ${props => props.exposition ? "55px" : "40px"} !important;
 		margin-right: 0.5rem !important;
 	`,
 	UserInfo = styled.div`
@@ -61,21 +72,31 @@ const
 
 class UserPreview extends Component {
 	render() {
-		const {
-			user, handleFollow, handleUnfollow, handleUnfriend,
-			alreadyFollowing, alreadyFriends, handleClick
-		} = this.props;
+		let userImage;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ user, handleClick } = this.props;
+
+		try {
+			if ( user.profileImage ) {
+				process.env.REACT_APP_STAGE === "dev" ?
+					userImage = require( "../images/" + user.profileImage )
+					:
+					userImage = s3Bucket + user.profileImage;
+			} else {
+				userImage = require( "../images/defaultUser.png" );
+			}
+		} catch ( err ) {
+			console.log( err );
+		}
 		return (
-			<Wrapper>
+			<Wrapper exposition={this.props.exposition}>
 				<UserInfo onClick={() =>
 					handleClick && handleClick( user.username )}>
 					<UserImg
+						exposition={this.props.exposition}
 						circular
-						src={user.profileImage ?
-							require( "../images/" + user.profileImage )
-							:
-							require( "../images/defaultUser.png" )
-						}
+						src={userImage}
 					/>
 					<TextInfo>
 						<MatchFullname>{user.fullname}</MatchFullname>
@@ -90,16 +111,6 @@ class UserPreview extends Component {
 						</Hobbie>
 					)}
 				</Hobbies>
-				{localStorage.getItem( "username" ) !== user.username &&
-				<FollowButtonComponent
-					user={user}
-					handleFollow={handleFollow}
-					handleUnfollow={handleUnfollow}
-					handleUnfriend={handleUnfriend}
-					alreadyFollowing={alreadyFollowing}
-					alreadyFriends={alreadyFriends}
-				/>
-				}
 			</Wrapper>
 		);
 	}
@@ -107,12 +118,8 @@ class UserPreview extends Component {
 
 UserPreview.propTypes = {
 	user: PropTypes.object.isRequired,
-	handleFollow: PropTypes.func.isRequired,
-	handleUnfollow: PropTypes.func.isRequired,
-	handleUnfriend: PropTypes.func,
-	alreadyFollowing: PropTypes.bool,
-	alreadyFriends: PropTypes.bool,
-	handleClick: PropTypes.func
+	handleClick: PropTypes.func,
+	exposition: PropTypes.bool
 };
 
 export default UserPreview;

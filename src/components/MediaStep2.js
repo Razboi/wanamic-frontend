@@ -2,42 +2,43 @@ import React, { Component } from "react";
 import { Image, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "./Suggestions";
 
 const
 	Wrapper = styled.div`
-		overflow: hidden;
-		position: fixed;
-		height: 100vh;
+		position: absolute;
+		height: 100%;
 		width: 100%;
 		z-index: 3;
+		overflow-y: auto;
 	`,
 	Content = styled.div`
-		position: absolute;
-		height: 100vh;
+		height: 100%;
 		width: 100%;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 7% 33% 60%;
-		grid-template-areas:
-			"hea"
-			"inp"
-			"img"
+		display: flex;
+		flex-direction: column;
 	`,
 	HeaderWrapper = styled.div`
-		grid-area: hea;
 		display: flex;
 		z-index: 2;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0px 10px;
-		color: #fff;
 		box-shadow: 0 1px 2px #111;
+		color: #fff;
+		i {
+			font-size: 1.5rem !important;
+		}
+		@media (max-width: 420px) {
+			height: 55px;
+			min-height: 55px;
+			padding: 0px 20px;
+		}
 		@media (min-width: 420px) {
+			height: 80px;
+			min-height: 80px;
 			padding: 0px 40px;
 			i {
-				font-size: 1.5rem !important;
 				:hover {
 					cursor: pointer !important;
 				}
@@ -46,19 +47,17 @@ const
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
-		font-size: 1rem;
+		font-size: 1.35rem;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		max-width: 65%;
-		@media (min-width: 420px) {
-			font-size: 1.1rem !important;
+		@media (max-width: 450px) {
+			font-size: 1.2rem;
 		}
 	`,
 	ContentInputWrapper = styled.div`
-		grid-area: inp;
 		display: grid;
-		padding-bottom: 40px;
 		@media (min-width: 420px) {
 			position: relative;
 		}
@@ -81,12 +80,11 @@ const
 		justifyContent: "center",
 		zIndex: 2
 	},
-	SelectedMediaImgWrapper = styled.div`
-		grid-area: img;
-		display: grid;
-	`,
 	SelectedMediaBackground = styled.div`
-		height: 100vh;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		position: fixed;
 		background-image: url(${props => props.background});
 		background-size: cover;
 		filter: blur(20px) brightness(50%);
@@ -95,14 +93,18 @@ const
 	SelectedMediaImg = styled( Image )`
 		justify-self: center;
 		align-self: start;
-		max-width: 600px !important;
+		max-width: 100% !important;
     max-height: 300px !important;
 		z-index: 2;
-		@media (max-width: 600px) {
-			width: 90%;
+		margin: 2rem auto;
+		@media (min-width: 600px) and (min-height: 300px) {
+			max-width: 600px !important;
+	    max-height: 300px !important;
 		}
-		@media (max-width: 420px) {
-			width: 100%;
+		@media (min-width: 1200px) and (min-height: 600px) {
+			max-width: 1200px !important;
+	    max-height: 600px !important;
+			margin: 4rem auto 2rem auto;
 		}
 	`,
 	SuggestionsWrapper = styled.div`
@@ -142,7 +144,8 @@ class MediaStep2 extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			if ( this.state.showSuggestions ) {
 				const
@@ -269,6 +272,7 @@ class MediaStep2 extends Component {
 							onCancel={metaData => this.toggleSuggestions( metaData ) }
 							onType={metaData => this.handleMentionInput( metaData ) }
 							endTrigger={endHandler => this.endHandler = endHandler }
+							inputdata={this.state.description}
 						>
 							<textarea
 								id="mediaStep2Input"
@@ -294,11 +298,11 @@ class MediaStep2 extends Component {
 						</SuggestionsWrapper>
 
 					</ContentInputWrapper>
-					<SelectedMediaImgWrapper>
+					<div>
 						{this.props.mediaData && this.props.mediaData.image &&
 							<SelectedMediaImg src={this.props.mediaData.image} />
 						}
-					</SelectedMediaImgWrapper>
+					</div>
 				</Content>
 				{this.props.mediaData && this.props.mediaData.image &&
 					<SelectedMediaBackground background={this.props.mediaData.image} />
@@ -312,7 +316,7 @@ MediaStep2.propTypes = {
 	prevStep: PropTypes.func.isRequired,
 	nextStep: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
-	socialCircle: PropTypes.array.isRequired,
+	socialCircle: PropTypes.array.isRequired
 };
 
 export default MediaStep2;

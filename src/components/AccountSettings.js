@@ -7,9 +7,10 @@ import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		@media (max-width: 760px) {
+			position: relative;
 			display: ${props => props.largeScreen && "none"} !important;
 			grid-area: main;
 			display: grid;
@@ -34,6 +35,7 @@ const
 	`,
 	HeaderWrapper = styled.div`
 		grid-area: hea;
+		height: 60px;
 		display: flex;
 		align-items: center;
 		padding-left: 10px;
@@ -53,7 +55,7 @@ const
 	`,
 	Options = styled.div`
 		grid-area: opt;
-		padding: 1rem !important;
+		padding: 1rem 1rem 0 1rem !important;
 		::-webkit-scrollbar {
 			display: none !important;
 		}
@@ -77,6 +79,9 @@ const
 	`,
 	Hobbies = styled.div`
 		margin-bottom: 2rem;
+		.ReactTags__tags {
+			width: 100%;
+		}
 		.ReactTags__tag {
 			padding: 0.25rem;
 			border: 1px solid rgba( 0,0,0,0.4);
@@ -108,12 +113,45 @@ const
 	Gender = styled.div`
 		margin-bottom: 2rem;
 	`,
+	LoaderDimmer = styled.div`
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	`,
+	HobbiesInputWrapper = styled.div`
+		display: flex;
+		align-items: flex-end;
+	`,
+	AddButton = styled( Button )`
+		height: 38px;
+	`,
 	KeyCodes = { comma: 188, enter: 13 };
 
 class AccountSettings extends Component {
+	handleTagChange = value => {
+		const fakeEvent = { target: { value: value, name: "tagInput" } };
+		this.props.handleChange( fakeEvent );
+	}
+
+	handleManualAddition = () => {
+		const { tagInput, handleAddition } = this.props;
+		handleAddition({ text: tagInput, id: tagInput });
+	}
+
 	render() {
 		return (
 			<Wrapper largeScreen={this.props.largeScreen}>
+				{this.props.loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 				<HeaderWrapper>
 					<BackArrow
 						name="arrow left"
@@ -154,18 +192,26 @@ class AccountSettings extends Component {
 						/>
 						<Hobbies>
 							<CustomLabel>Hobbies and interests</CustomLabel>
-							<ReactTags
-								tags={this.props.hobbies}
-								handleDelete={this.props.handleDelete}
-								handleAddition={this.props.handleAddition}
-								delimiters={this.props.hobbies.length < 10 ?
-									[ KeyCodes.comma, KeyCodes.enter ]
-									:
-									[]}
-								placeholder="Add a new interest (with enter or comma)"
-								autofocus={false}
-								maxLength={17}
-							/>
+							<HobbiesInputWrapper>
+								<ReactTags
+									tags={this.props.hobbies}
+									handleDelete={this.props.handleDelete}
+									handleAddition={this.props.handleAddition}
+									handleInputChange={this.handleTagChange}
+									name="tagInput"
+									inputValue={this.props.tagInput}
+									delimiters={[ KeyCodes.comma, KeyCodes.enter ]}
+									placeholder="Add a new interest"
+									autofocus={false}
+									maxLength={20}
+									allowDeleteFromEmptyInput={false}
+								/>
+								<AddButton
+									onClick={this.handleManualAddition}
+									content="Add"
+									primary
+								/>
+							</HobbiesInputWrapper>
 						</Hobbies>
 						<Location>
 							<CustomLabel>Location</CustomLabel>
@@ -188,6 +234,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleChange}
 							label="Birthday"
 							type="date"
+							value={this.props.birthday}
 						/>
 						<Gender>
 							<CustomLabel>Gender</CustomLabel>
@@ -210,6 +257,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleFileChange}
 							label="Profile Image"
 							type="file"
+							accept="image/*"
 						/>
 						<FormInput
 							className="headerImageInput"
@@ -217,6 +265,7 @@ class AccountSettings extends Component {
 							onChange={this.props.handleFileChange}
 							label="Header Image"
 							type="file"
+							accept="image/*"
 						/>
 					</Form>
 					<SaveButton content="Save" onClick={this.props.updateUserInfo} />
@@ -241,7 +290,10 @@ AccountSettings.propTypes = {
 	largeScreen: PropTypes.bool,
 	region: PropTypes.string,
 	country: PropTypes.string,
-	gender: PropTypes.string
+	gender: PropTypes.string,
+	birthday: PropTypes.string,
+	loader: PropTypes.bool,
+	tagInput: PropTypes.string.isRequired
 };
 
 export default AccountSettings;

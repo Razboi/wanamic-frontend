@@ -3,7 +3,7 @@ import { Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { switchComments, switchShare } from "../services/actions/posts";
+import { switchPostDetails, switchShare } from "../services/actions/posts";
 
 const
 	Wrapper = styled.div`
@@ -27,7 +27,7 @@ class PostOptions extends Component {
 		}
 		return (
 			<Wrapper>
-				{this.props.liked ?
+				{this.props.post.likedBy.includes( localStorage.getItem( "username" )) ?
 					<Option className="dislikeOption"
 						onClick={() => this.props.handleDislike()}
 					>
@@ -36,7 +36,7 @@ class PostOptions extends Component {
 							color="red"
 							size="large"
 						/>
-						<b>{this.props.numLiked}</b>
+						<b>{this.props.post.likedBy.length}</b>
 					</Option>
 					:
 					<Option className="likeOption"
@@ -46,20 +46,20 @@ class PostOptions extends Component {
 							name="empty heart"
 							size="large"
 						/>
-						<b>{this.props.numLiked}</b>
+						<b>{this.props.post.likedBy.length}</b>
 					</Option>
 				}
 
 				<Option className="commentOption"
 					onClick={() =>
-						this.props.switchComments( this.props.id )
+						this.props.switchPostDetails( this.props.post )
 					}
 				>
 					<Icon
 						name="comment outline"
 						size="large"
 					/>
-					<b>{this.props.numComments}</b>
+					<b>{this.props.post.comments.length}</b>
 				</Option>
 
 				<Option className="shareOption"
@@ -69,7 +69,7 @@ class PostOptions extends Component {
 						name="share"
 						size="large"
 					/>
-					<b>{this.props.numShared}</b>
+					<b>{this.props.post.sharedBy.length}</b>
 				</Option>
 			</Wrapper>
 		);
@@ -78,14 +78,10 @@ class PostOptions extends Component {
 
 PostOptions.propTypes = {
 	fakeOptions: PropTypes.bool,
-	liked: PropTypes.bool.isRequired,
-	numLiked: PropTypes.number.isRequired,
-	numComments: PropTypes.number.isRequired,
-	numShared: PropTypes.number.isRequired,
-	switchComments: PropTypes.func.isRequired,
 	switchShare: PropTypes.func.isRequired,
 	handleLike: PropTypes.func.isRequired,
-	handleDislike: PropTypes.func.isRequired
+	handleDislike: PropTypes.func.isRequired,
+	post: PropTypes.object.isRequired
 };
 
 const
@@ -93,7 +89,7 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: id => dispatch( switchComments( id )),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
 		switchShare: post => dispatch( switchShare( post ))
 	});
 

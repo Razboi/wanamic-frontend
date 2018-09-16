@@ -1,16 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Image } from "semantic-ui-react";
+import { Image, Button } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
-import PostDetails from "../containers/PostDetails";
-import Comments from "../containers/Comments";
 import api from "../services/api";
-import { switchComments } from "../services/actions/posts";
 import {
 	checkNotifications, addToNotifications, setNotifications
 } from "../services/actions/notifications";
+import { switchPostDetails } from "../services/actions/posts";
 import { withRouter } from "react-router";
 import refreshToken from "../utils/refreshToken";
 import NotificationButton from "../components/NotificationButton";
@@ -91,25 +89,24 @@ const
 		color: rgba(0,0,0,0.45) !important;
 	`,
 	Content = styled.p`
-		color: #222;
+		color: ${props => props.alert ? "red" : "#222"};
 		margin-bottom: 0px;
 		font-size: 15px;
 	`,
-	PostDetailsDimmer = styled.div`
-		position: fixed;
-		height: 100vh;
-		width: 100vw;
-		bottom: 0;
-		right: 0;
+	LoaderDimmer = styled.div`
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		width: 100%;
 		z-index: 5;
-		background: rgba(0,0,0,0.6);
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 	`,
-	OutsideClickHandler = styled.div`
-		width: 100%;
-		height: 100%;
+	PresidencyButton = styled( Button )`
+		display: block !important;
 	`;
 
 class Notifications extends Component {
@@ -122,7 +119,8 @@ class Notifications extends Component {
 			alreadyFollowing: [],
 			network: undefined,
 			skip: 0,
-			hasMore: true
+			hasMore: true,
+			loader: false
 		};
 	}
 
@@ -152,12 +150,19 @@ class Notifications extends Component {
 		case notification.follow || notification.friendRequest:
 			this.props.history.push( "/" + notification.author.username );
 			break;
-		case notification.comment:
-			this.props.switchComments( notification.object );
-			break;
 		default:
-			this.setState({ postId: notification.object, displayDetails: true });
+			this.getPost( notification.object );
 		}
+	}
+
+	getPost = async postId => {
+		let post;
+		try {
+			post = await api.getPost( postId );
+		} catch ( err ) {
+			console.log( err );
+		}
+		this.props.switchPostDetails( post.data );
 	}
 
 	checkNotifications = () => {
@@ -245,8 +250,9 @@ class Notifications extends Component {
 	}
 
 	getNotifications = async() => {
-		if ( this.state.hasMore ) {
+		if ( this.state.hasMore && !this.state.loader ) {
 			try {
+				this.setState({ loader: true });
 				const res = await api.getNotifications( this.state.skip );
 				if ( res === "jwt expired" ) {
 					await refreshToken();
@@ -258,7 +264,8 @@ class Notifications extends Component {
 						this.props.addToNotifications( res.data.notifications );
 					this.setState({
 						hasMore: res.data.notifications.length === 10,
-						skip: this.state.skip + 1
+						skip: this.state.skip + 1,
+						loader: false
 					});
 				}
 			} catch ( err ) {
@@ -267,24 +274,30 @@ class Notifications extends Component {
 		}
 	}
 
-	render() {
-		if ( this.props.displayComments && !this.props.isPopup ) {
-			return (
-				<Comments socket={this.props.socket} />
-			);
+	acceptPresidency = async clubName => {
+		try {
+			await api.acceptPresidency( clubName );
+			if ( this.props.history.location.pathname === `/c/${clubName}` ) {
+				window.location.reload();
+			} else {
+				this.props.history.push( `/c/${clubName}` );
+			}
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.acceptPresidency( clubName );
+			} else {
+				console.log( err );
+			}
 		}
-		if ( this.state.displayDetails ) {
-			return (
-				<PostDetailsDimmer>
-					<OutsideClickHandler onClick={this.switchDetails} />
-					<PostDetails
-						postId={this.state.postId}
-						switchDetails={this.switchDetails}
-						socket={this.props.socket}
-						history={this.props.history}
-					/>
-				</PostDetailsDimmer>
-			);
+	}
+
+	render() {
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ displayPostDetails, history } = this.props;
+		if ( displayPostDetails && history.location.pathname !== "/notifications" ) {
+			return null;
 		}
 		return (
 			<Wrapper>
@@ -301,15 +314,41 @@ class Notifications extends Component {
 					<Header>Notifications</Header>
 					{this.state.network &&
 					<div>
+						{this.state.loader &&
+							<LoaderDimmer>
+								<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+							</LoaderDimmer>
+						}
 						{this.props.notifications.map(( notification, index ) =>
 							notification.author &&
-							<React.Fragment key={index}>
-								<Notification>
+								( notification.alert || notification.clubRequestResponse
+									|| notification.clubSuccession ) ?
+								<Notification key={index}>
+									<Content alert>
+										{notification.content}
+										{notification.alert &&
+											<a href="/information/content">Content Policy of Wanamic</a> }
+										{( notification.clubName || notification.clubSuccession ) &&
+											<a href={`/c/${notification.clubName}`}> Club Page</a> }
+										{notification.clubSuccession &&
+											<PresidencyButton
+												primary
+												content="Accept"
+												onClick={() => this.acceptPresidency( notification.clubName )}
+											/>
+										}
+									</Content>
+								</Notification>
+								:
+								<Notification key={index}>
 									<NotificationImg
 										onClick={() => this.handleDetails( notification, index )}
 										circular
 										src={notification.author.profileImage ?
-											require( "../images/" + notification.author.profileImage )
+											process.env.REACT_APP_STAGE === "dev" ?
+												require( "../images/" + notification.author.profileImage )
+												:
+												s3Bucket + notification.author.profileImage
 											:
 											require( "../images/defaultUser.png" )
 										}
@@ -330,8 +369,10 @@ class Notifications extends Component {
 											src={notification.externalImg ?
 												notification.mediaImg
 												:
-												require( "../images/" + notification.mediaImg )
-											}
+												process.env.REACT_APP_STAGE === "dev" ?
+													require( "../images/" + notification.mediaImg )
+													:
+													s3Bucket + notification.mediaImg}
 										/>
 									}
 									<NotificationButton
@@ -347,7 +388,6 @@ class Notifications extends Component {
 											this.unFriend( notification.author )}
 									/>
 								</Notification>
-							</React.Fragment>
 						)}
 					</div>}
 				</StyledInfiniteScroll>
@@ -358,7 +398,6 @@ class Notifications extends Component {
 
 Notifications.propTypes = {
 	notifications: PropTypes.array.isRequired,
-	switchComments: PropTypes.func.isRequired,
 	checkNotifications: PropTypes.func.isRequired,
 	socket: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
@@ -368,14 +407,15 @@ Notifications.propTypes = {
 const
 	mapStateToProps = state => ({
 		notifications: state.notifications.allNotifications,
-		displayComments: state.posts.displayComments
+		displayComments: state.posts.displayComments,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id ) => dispatch( switchComments( id )),
 		checkNotifications: () => dispatch( checkNotifications()),
 		setNotifications: notif => dispatch( setNotifications( notif )),
-		addToNotifications: notif => dispatch( addToNotifications( notif ))
+		addToNotifications: notif => dispatch( addToNotifications( notif )),
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
 export default withRouter(

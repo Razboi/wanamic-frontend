@@ -6,56 +6,27 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 
 const
 	Wrapper = styled.div`
-		display: grid;
 		z-index: 2;
-		height: 100%;
-		width: 100%;
-		grid-template-columns: 100%;
-		grid-template-rows: 40% 60%;
-		grid-template-areas:
-			"header"
-			"form";
-	`,
-	HeaderContainer = styled.div`
-		grid-area: header;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
 		@media (max-width: 420px) {
-			padding: 0 10px;
-		}
-	`,
-	HeaderLogo = styled.span`
-		font-size: 3rem;
-		color: #fff;
-	`,
-	Subheader = styled.span`
-		text-align: center;
-		font-size: 1rem;
-		margin-top: 1.7rem;
-		color: #fff;
-		@media (min-width: 420px) {
-			font-size: 1.2rem;
+			width: 90%;
 		}
 	`,
 	FormContainer = styled.div`
-		grid-area: form;
 		display: flex;
 		flex-direction: column;
 	`,
 	FormDimmer = styled.div`
-		background: rgba( 0, 0, 0, 0.4 );
+		background: rgba( 139,175,216,0.85 );
 		padding: 1.5rem;
-		border-radius: 3px;
+		border-radius: 6px;
 		margin: 0 auto;
 		@media (max-width: 420px) {
-			background: none;
 			width: 100%;
 		}
 	`,
 	StyledForm = styled( Form )`
 		width: 100%;
+		margin: 0 auto !important;
 		@media (min-width: 420px) {
 			width: 400px;
 		}
@@ -118,19 +89,18 @@ const
 		}
 	`,
 	NewAccount = styled.span`
-		display: flex;
-		align-items: center;
-		justify-content: center;
 		color: #eee;
-		margin: auto;
+		position: absolute;
+		bottom: 2rem;
 		font-size: 1rem;
+		left: 0;
+		right: 0;
+		text-align: center;
 		@media(min-width: 420px) {
-			font-size: 1.05rem;
+			font-size: 1.1rem;
 		}
 	`,
 	ErrorMessage = styled( Message )`
-		position: absolute !important;
-		top: 0 !important;
 		width: 100% !important;
 		text-align: center !important;
 		border-radius: 0px !important;
@@ -168,14 +138,6 @@ class LoginForm extends Component {
 		}
 		return (
 			<Wrapper>
-
-				<HeaderContainer className="formHeader">
-					<HeaderLogo>Wanamic</HeaderLogo>
-					<Subheader>
-						Find people and content relative to your interests and hobbies.
-					</Subheader>
-				</HeaderContainer>
-
 				<FormContainer id="AuthFormContainer">
 					{this.props.error &&
 						<ErrorMessage negative>
@@ -210,7 +172,7 @@ class LoginForm extends Component {
 							<LoginButton
 								type="button"
 								className="loginButton"
-								content="Log In"
+								content="LOG IN"
 								onClick={this.props.handleLogin}
 							/>
 
@@ -239,7 +201,7 @@ LoginForm.propTypes = {
 	forgotPassword: PropTypes.bool.isRequired,
 	toggleForgotPassword: PropTypes.func.isRequired,
 	resetPassword: PropTypes.func.isRequired,
-	error: PropTypes.string.isRequired
+	error: PropTypes.string
 };
 
 export default LoginForm;

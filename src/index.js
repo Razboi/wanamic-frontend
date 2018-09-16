@@ -27,3 +27,5 @@ verifyToken( store ).then(() => {
 });
 
 registerServiceWorker();
+
+export default store;

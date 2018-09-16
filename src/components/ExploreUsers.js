@@ -1,127 +1,75 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Divider, Input } from "semantic-ui-react";
+import { Button, Input } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		height: 100%;
+		height: 100vh;
 		width: 100%;
 		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 30% 15% 20% 20%;
-		grid-template-areas:
-			"b"
-			"s"
-			"i"
-			"u";
+		padding: 2rem;
+		overflow: hidden;
+		h1 {
+			font-family: inherit;
+			text-align: center;
+		}
 		@media (min-width: 800px) {
-			width: 800px;
-			margin: auto;
-	    margin-bottom: 4rem;
+			width: 50%;
+			max-width: 600px;
+			height: 800px;
 			background: #fff;
 		}
 	`,
-	ButtonsWrapper = styled.div`
-		grid-area: b;
-		display: grid;
-		grid-template-columns: 50% 50%;
-		grid-template-rows: 40% 60%;
-		grid-template-areas:
-			"h h"
-			"rb sb";
+	Options = styled.div`
+		height: 100%;
+		width: 100%;
+		display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 	`,
-	SugestedHeader = styled.h4`
-		grid-area: h;
+	ButtonsWrapper = styled.div`
+	`,
+	SugestedHeader = styled.h2`
+		font-weight: 400;
+		font-size: 1.3rem;
 		margin: 0px;
 		text-align: center;
 		color: #222;
 		align-self: center;
 		font-family: inherit;
+		margin-bottom: 2rem;
+	`,
+	Buttons = styled.div`
+		display: flex;
+		justify-content: space-evenly;
 	`,
 	SugestedButton = styled( Button )`
-		grid-area: sb;
-		justify-self: center;
-		align-self: center;
 		font-family: inherit !important;
 		background: rgb(133, 217, 191) !important;
 		border-radius: 2px !important;
 	`,
 	RandomButton = styled( Button )`
-		grid-area: rb;
-		justify-self: center;
-		align-self: center;
 		color: rgb(133, 217, 191) !important;
 		border: 1px solid rgb(133, 217, 191) !important;
 		background: #fff !important;
 		font-family: inherit !important;
 		border-radius: 2px !important;
 	`,
-	SeparatorWrapper = styled( Divider )`
-		grid-area: s;
-		color: rgba(0,0,0,0.40) !important;
-		:before, :after {
-			position: static !important;
+	SearchWrapper = styled.div`
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		h2 {
+			font-weight: 400;
+    	font-size: 1.3rem;
+			font-family: inherit;
+			color: #111;
+			text-align: center;
 		}
 	`,
-	InterestsWrapper = styled.div`
-		grid-area: i;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 25% 75%;
-		grid-template-areas:
-			"ih"
-			"is";
-	`,
-	InterestsHeader = styled.h4`
-		grid-area: ih;
-		margin: 0px;
-		justify-self: center;
-		align-self: flex-end;
-		font-family: inherit;
-		color: #333;
-	`,
-	InterestsSearch = styled( Input )`
-		grid-area: is;
-		justify-self: center;
-		align-self: flex-start;
-		margin-top: 10px;
-		width: 90%;
-		font-family: inherit !important;
-		input {
-			text-align: center !important;
-			font-family: inherit !important;
-			color: #444 !important;
-			::placeholder {
-				color: #666 !important;
-			};
-		};
-		i {
-			color: rgb(133, 217, 191) !important;
-		};
-	`,
-	UsernameWrapper = styled.div`
-		grid-area: u;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 25% 75%;
-		grid-template-areas:
-			"ih"
-			"is";
-	`,
-	UsernameHeader = styled.h4`
-		grid-area: ih;
-		margin: 0px;
-		justify-self: center;
-		align-self: flex-end;
-		font-family: inherit;
-		color: #333;
-	`,
-	UsernameSearch = styled( Input )`
-		grid-area: is;
-		justify-self: center;
-		align-self: flex-start;
+	SearchBar = styled( Input )`
 		margin-top: 10px;
 		width: 90%;
 		font-family: inherit !important;
@@ -150,45 +98,45 @@ class ExploreUsers extends Component {
 	render() {
 		return (
 			<Wrapper>
-				<ButtonsWrapper>
-					<SugestedHeader>
-						Find users with similar interests or random ones.
-					</SugestedHeader>
-					<SugestedButton
-						className="sugestedButton"
-						primary
-						content="Sugested"
-						onClick={this.props.getSugested}
-					/>
-					<RandomButton
-						className="randomButton"
-						content="Random"
-						onClick={this.props.getRandom}
-					/>
-				</ButtonsWrapper>
-				<SeparatorWrapper horizontal content="Or" />
-				<InterestsWrapper>
-					<InterestsHeader>Search by interests and hobbies</InterestsHeader>
-					<InterestsSearch
-						className="interestsSearch"
-						icon="search"
-						name="hobbies"
-						placeholder="Try 'music' or 'fishing'"
-						onKeyPress={this.handleKeyPress}
-						onChange={this.props.handleChange}
-					/>
-				</InterestsWrapper>
-				<UsernameWrapper>
-					<UsernameHeader>Search by username</UsernameHeader>
-					<UsernameSearch
-						className="usernameSearch"
-						icon="search"
-						name="usernameSearch"
-						placeholder="skankhunt42"
-						onKeyPress={this.handleKeyPress}
-						onChange={this.props.handleChange}
-					/>
-				</UsernameWrapper>
+				<h1>Explore Users</h1>
+				<Options>
+					<ButtonsWrapper>
+						<SugestedHeader>
+							Find users with similar interests or random ones.
+						</SugestedHeader>
+						<Buttons>
+							<SugestedButton
+								primary
+								content="SUGGESTED"
+								onClick={this.props.getSugested}
+							/>
+							<RandomButton
+								className="randomButton"
+								content="RANDOM"
+								onClick={this.props.getRandom}
+							/>
+						</Buttons>
+					</ButtonsWrapper>
+					<SearchWrapper>
+						<h2>Search by interests and hobbies</h2>
+						<SearchBar
+							icon="search"
+							name="hobbies"
+							placeholder="Try 'gaming' or 'fishing'"
+							onKeyPress={this.handleKeyPress}
+							onChange={this.props.handleChange}
+						/>
+
+						<h2>Search by username</h2>
+						<SearchBar
+							icon="search"
+							name="usernameSearch"
+							placeholder="skankhunt42"
+							onKeyPress={this.handleKeyPress}
+							onChange={this.props.handleChange}
+						/>
+					</SearchWrapper>
+				</Options>
 			</Wrapper>
 		);
 	}

@@ -2,10 +2,13 @@ import React, { Component } from "react";
 import { Dropdown, Modal, Form, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "./Suggestions";
 import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
+import postLogic from "../utils/postLogic";
+import commentLogic from "../utils/commentLogic";
+import { connect } from "react-redux";
 
 const
 	StyledDropdown = styled( Dropdown )`
@@ -17,6 +20,15 @@ const
 		margin: 2rem auto 0 auto !important;
 	`,
 	UpdateForm = styled( Form )`
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	`,
+	ReportModal = styled( Modal )`
+		margin: 2rem auto 0 auto !important;
+	`,
+	ReportForm = styled( Form )`
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -36,10 +48,17 @@ const
 		font-family: inherit !important;
 		margin-top: 1rem !important;
 	`,
+	ReportButton = styled( Button )`
+		background: rgb(133, 217, 191) !important;
+		border-radius: 2px !important;
+		font-family: inherit !important;
+		margin-top: 1rem !important;
+	`,
 	SuggestionsWrapper = styled.div`
 		display: ${props => !props.showSuggestions && "none"};
 		z-index: 3;
 		border: 1px solid rgba(0,0,0,0.1);
+		background: #fff;
 		@media (min-width: 420px) {
 			position: absolute;
 			grid-area: none;
@@ -63,14 +82,16 @@ class DropdownOptions extends Component {
 		super();
 		this.state = {
 			socialCircle: [],
-			updatedContent: props.currentContent,
+			updatedContent: props.postOrComment.content,
 			openModal: false,
 			showSuggestions: false,
 			suggestionsTop: undefined,
 			suggestionsLeft: undefined,
 			mentionInput: "",
 			currentSelection: 0,
-			startPosition: undefined
+			startPosition: undefined,
+			report: false,
+			reportContent: ""
 		};
 	}
 
@@ -88,7 +109,8 @@ class DropdownOptions extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			const
 				{ updatedContent, startPosition, currentSelection } = this.state,
@@ -179,18 +201,61 @@ class DropdownOptions extends Component {
 		}
 	}
 
-	displayModal = () => {
-		this.getSocialCircle();
-		this.toggleModal();
+	displayModal = type => {
+		if ( type === "report" ) {
+			this.setState({ report: true });
+		} else {
+			this.getSocialCircle();
+			this.toggleModal();
+		}
 	}
 
 	toggleModal = () => {
-		this.setState( state => ({ openModal: !state.openModal }));
+		if ( this.state.report ) {
+			this.setState( state => ({ report: !state.report }));
+		} else {
+			this.setState( state => ({ openModal: !state.openModal }));
+		}
 	}
 
 	handleUpdate = () => {
+		const { postOrComment, socket } = this.props;
 		this.toggleModal();
-		this.props.handleUpdate( this.state.updatedContent );
+		if ( postOrComment.post ) {
+			commentLogic.update(
+				postOrComment, this.state.updatedContent, socket );
+		} else {
+			postLogic.update(
+				postOrComment, this.state.updatedContent, socket );
+		}
+	}
+
+	handleDelete = () => {
+		if ( this.props.postOrComment.post ) {
+			commentLogic.remove( this.props.postOrComment );
+		} else {
+			postLogic.remove( this.props.postOrComment._id );
+		}
+	}
+
+	handleReport = () => {
+		this.toggleModal();
+		if ( this.props.postOrComment.post ) {
+			commentLogic.report(
+				this.state.reportContent, this.props.postOrComment._id );
+		} else {
+			postLogic.report(
+				this.state.reportContent, this.props.postOrComment._id );
+		}
+	}
+
+	banFromClub = async() => {
+		const { postOrComment, selectedClub } = this.props;
+		try {
+			await api.banFromClub( postOrComment.author._id, selectedClub );
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	handleChange = e => {
@@ -198,9 +263,55 @@ class DropdownOptions extends Component {
 	}
 
 	render() {
+		if ( localStorage.getItem( "id" ) !== this.props.postOrComment.author._id
+		&& this.props.clubAdmin ) {
+			return (
+				<StyledDropdown icon="angle down" style={this.props.style} direction="left">
+					<Dropdown.Menu className="postDropdown">
+						<Dropdown.Item
+							text="Delete"
+							onClick={this.handleDelete}
+						/>
+						<Dropdown.Item
+							text="Ban user"
+							onClick={this.banFromClub}
+						/>
+						<ReportModal
+							open={this.state.report}
+							onClose={this.toggleModal}
+							trigger={
+								<Dropdown.Item
+									text="Report"
+									onClick={() => this.displayModal( "report" )}
+								/>}
+						>
+							<Modal.Content>
+								<ReportForm>
+									<textarea
+										style={TextAreaStyle}
+										name="reportContent"
+										maxLength="500"
+										autoFocus
+										rows="4"
+										value={this.state.reportContent}
+										onChange={this.handleChange}
+										onKeyDown={this.handleKeyPress}
+									/>
+									<ReportButton
+										primary
+										content="Report"
+										onClick={this.handleReport}
+									/>
+								</ReportForm>
+							</Modal.Content>
+						</ReportModal>
+					</Dropdown.Menu>
+				</StyledDropdown>
+			);
+		}
 		return (
 			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
-				{ localStorage.getItem( "id" ) === this.props.author._id ?
+				{ localStorage.getItem( "id" ) === this.props.postOrComment.author._id ?
 					<Dropdown.Menu className="postDropdown">
 						<UpdateModal
 							open={this.state.openModal}
@@ -252,16 +363,41 @@ class DropdownOptions extends Component {
 						</UpdateModal>
 
 						<Dropdown.Item
-							className="postDeleteOption"
 							text="Delete"
-							onClick={this.props.handleDelete}
+							onClick={this.handleDelete}
 						/>
 					</Dropdown.Menu>
 					:
 					<Dropdown.Menu className="postDropdown">
-						<Dropdown.Item
-							text="Report"
-						/>
+						<ReportModal
+							open={this.state.report}
+							onClose={this.toggleModal}
+							trigger={
+								<Dropdown.Item
+									text="Report"
+									onClick={() => this.displayModal( "report" )}
+								/>}
+						>
+							<Modal.Content>
+								<ReportForm>
+									<textarea
+										style={TextAreaStyle}
+										name="reportContent"
+										maxLength="500"
+										autoFocus
+										rows="4"
+										value={this.state.reportContent}
+										onChange={this.handleChange}
+										onKeyDown={this.handleKeyPress}
+									/>
+									<ReportButton
+										primary
+										content="Report"
+										onClick={this.handleReport}
+									/>
+								</ReportForm>
+							</Modal.Content>
+						</ReportModal>
 					</Dropdown.Menu>
 				}
 			</StyledDropdown>
@@ -270,10 +406,13 @@ class DropdownOptions extends Component {
 }
 
 DropdownOptions.propTypes = {
-	author: PropTypes.object.isRequired,
-	handleDelete: PropTypes.func.isRequired,
-	handleUpdate: PropTypes.func.isRequired,
-	currentContent: PropTypes.string.isRequired
+	postOrComment: PropTypes.object.isRequired,
+	socket: PropTypes.object.isRequired
 };
 
-export default DropdownOptions;
+const
+	mapStateToProps = state => ({
+		selectedClub: state.posts.selectedClub
+	});
+
+export default connect( mapStateToProps )( DropdownOptions );

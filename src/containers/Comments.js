@@ -1,95 +1,78 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Icon, Message } from "semantic-ui-react";
+import { Message } from "semantic-ui-react";
 import api from "../services/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
-	switchComments, setComments, addComment, deleteComment, updatePost,
+	setComments, addComment, updatePost,
 	addToComments, updateComment
 } from "../services/actions/posts";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
-import InputTrigger from "react-input-trigger";
+import extract from "../utils/extractMentionsHashtags";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "../components/Suggestions";
 import InfiniteScroll from "react-infinite-scroller";
 
 const
 	Wrapper = styled.div`
-		z-index: 20;
-		position: absolute;
-		overflow-y: scroll;
+		grid-area: comments;
 		background: #fff;
 		display: grid;
-		height: 100vh;
+    height: 100%;
 		width: 100%;
-		grid-template-rows: 10% 80% 10%;
+		grid-template-rows: 1fr auto;
 		grid-template-columns: 100%;
+		position: ${props => props.TextPost && "absolute"};
 		grid-template-areas:
-			"hea"
-			"com"
-			"inp";
-		@media (min-width: 760px) and (min-height: 600px) {
-			width: 600px;
-			height: 600px;
-			border-radius: 2px;
-			grid-template-rows: 10% 76% 14%;
+			"comments"
+			"input";
+		@media (min-width: 760px) {
+			position: absolute;
 		}
-		@media (max-height: 500px) {
-			grid-template-rows: 14% 70% 16%;
-		}
-		::-webkit-scrollbar {
-			display: none !important;
-		};
 	`,
 	StyledInfiniteScroll = styled( InfiniteScroll )`
-		height: 100%;
 		width: 100%;
-	`,
-	HeaderWrapper = styled.div`
-		grid-area: hea;
-		display: flex;
-		align-items: center;
-		padding-left: 10px;
-		box-shadow: 0 1px 2px #555;
-		z-index: 4;
+		padding: ${props => props.textpost && "0 3rem"};
 	`,
 	CommentsWrapper = styled.div`
-		grid-area: com;
+		grid-area: comments;
+		display: flex;
+		flex-direction: column;
 		z-index: 3;
-		overflow-y: scroll;
-		@media (max-width: 420px) {
-			::-webkit-scrollbar {
-				display: none !important;
-			}
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 6px !important;
+		}
+		@media (max-width: 760px) {
+			max-height: ${props => !props.TextPost && "300px"};
 		}
 	`,
 	InputTriggerStyles = {
-		width: "100%",
-		height: "100%",
-		gridArea: "inp",
+		gridArea: "input",
+		height: "55px"
 	},
 	StyledTextArea = {
 		width: "100%",
+		height: "100%",
 		fontFamily: "inherit",
 		resize: "none",
 		padding: "0.5rem"
 	},
-	HeaderTxt = styled.span`
-		margin-left: 15px;
-		font-weight: bold;
-		font-size: 16px;
-	`,
 	SuggestionsWrapper = styled.div`
-		grid-area: com;
+		grid-area: comments;
 		z-index: 3;
 		visibility: ${props => props.showSuggestions ? "visible" : "hidden"};
+		background: #fff;
 	`,
 	SpamWarning = styled( Message )`
 		position: fixed !important;
-		left: 5px;
-		right: 5px;
+		top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
 		z-index: 2;
 		word-break: break-word;
 	`,
@@ -105,12 +88,25 @@ const
 		justify-content: center;
 		font-size: 1rem;
 		font-weight: 600;
+	`,
+	Description = styled.div`
+		width: 100%;
+		font-size: ${props => props.TextPost && "1.5rem"};
+	`,
+	Content = styled.p`
+		padding: ${props => props.TextPost ? "2rem 1rem" : "1.5rem 1rem"};
+	`,
+	DescriptionAuthor = styled.span`
+		font-weight: bold;
+		font-size: ${props => props.TextPost && "1.3rem"};
+		word-break: break-all;
+		padding-right: 7px;
 	`;
 
 
 class Comments extends Component {
-	constructor() {
-		super();
+	constructor( props ) {
+		super( props );
 		this.state = {
 			comment: "",
 			socialCircle: [],
@@ -125,24 +121,23 @@ class Comments extends Component {
 			sentComments: 0,
 			spam: false
 		};
-		this.scrollAlreadyBlocked = false;
 		this.interval = setInterval( this.resetCommentsLimit, 30000 );
+		this.commentInput = React.createRef();
 	}
 
 	componentDidMount() {
-		document.body.style.overflowY === "hidden" ?
-			this.scrollAlreadyBlocked = true
-			:
-			document.body.style.overflowY = "hidden";
 		this.getInitialComments();
 		this.getSocialCircle();
 	}
 
 	componentWillUnmount() {
-		if ( !this.scrollAlreadyBlocked ) {
-			document.body.style.overflowY = "auto";
-		}
 		clearInterval( this.interval );
+	}
+
+	componentDidUpdate( prevProps ) {
+		if ( prevProps.hiddeCommentInput && !this.props.hiddeCommentInput ) {
+			this.commentInput.focus();
+		}
 	}
 
 	resetCommentsLimit = () => {
@@ -150,7 +145,7 @@ class Comments extends Component {
 	}
 
 	getInitialComments = () => {
-		api.getPostComments( this.props.postId, 0 )
+		api.getPostComments( this.props.postDetails._id, 0 )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -158,6 +153,9 @@ class Comments extends Component {
 						.catch( err => console.log( err ));
 				} else {
 					this.props.setComments( res.data );
+					this.setState({
+						hasMore: res.data.length === 10
+					});
 				}
 			}).catch( err => console.log( err ));
 	}
@@ -166,14 +164,14 @@ class Comments extends Component {
 		if ( this.state.hasMore ) {
 			try {
 				const res = await api.getPostComments(
-					this.props.postId, this.state.skip );
+					this.props.postDetails._id, this.state.skip );
 				if ( res === "jwt expired" ) {
 					await refreshToken();
 					this.getComments();
 				} else if ( res.data ) {
 					this.props.addToComments( res.data );
 					this.setState({
-						hasMore: res.data.length > 10,
+						hasMore: res.data.length === 10,
 						skip: this.state.skip + 1
 					});
 				}
@@ -254,7 +252,7 @@ class Comments extends Component {
 			this.handleSpam();
 		} else {
 			const mentions = extract( comment, { symbol: false });
-			api.createComment( comment, this.props.postId, mentions )
+			api.createComment( comment, this.props.postDetails._id, mentions )
 				.then( res => {
 					if ( res === "jwt expired" ) {
 						refreshToken()
@@ -290,19 +288,10 @@ class Comments extends Component {
 		}, 10000 );
 	}
 
-	handleDelete = ( commentIndex, updatedPost ) => {
-		this.props.deleteComment( commentIndex );
-		this.props.updatePost(
-			updatedPost,
-			this.props.onExplore
-		);
-	};
-
-	handleUpdate = comment => {
-		this.props.updateComment( comment );
-	}
-
 	handleReply = target => {
+		if ( this.props.hiddeCommentInput ) {
+			this.props.toggleCommentInput();
+		}
 		this.setState({ comment: "@" + target.username + " " });
 	}
 
@@ -358,7 +347,7 @@ class Comments extends Component {
 
 	render() {
 		const
-			{ comments } = this.props,
+			{ comments, postDetails } = this.props,
 			placeholder = "Comment as @" + localStorage.getItem( "username" );
 
 		if ( !comments ) {
@@ -369,19 +358,25 @@ class Comments extends Component {
 			);
 		}
 		return (
-			<Wrapper>
-				<HeaderWrapper>
-					<Icon name="arrow left" onClick={() => this.props.switchComments()} />
-					<HeaderTxt>Comments</HeaderTxt>
-				</HeaderWrapper>
-
-				<CommentsWrapper className="commentsWrapper">
+			<Wrapper TextPost={this.props.TextPost}>
+				<CommentsWrapper TextPost={this.props.TextPost}>
+					{postDetails.content &&
+						<Description TextPost={this.props.TextPost}>
+							<Content TextPost={this.props.TextPost}>
+								<DescriptionAuthor TextPost={this.props.TextPost}>
+									@{postDetails.author.username}
+								</DescriptionAuthor>
+								{postDetails.content}
+							</Content>
+						</Description>
+					}
 					<StyledInfiniteScroll
 						pageStart={this.state.skip}
 						hasMore={this.state.hasMore}
 						loadMore={this.getComments}
 						initialLoad={false}
 						useWindow={false}
+						textpost={this.props.TextPost ? 1 : 0}
 					>
 						{this.state.spam &&
 							<SpamWarning warning>
@@ -398,9 +393,9 @@ class Comments extends Component {
 								index={index}
 								comment={comment}
 								handleUpdate={this.handleUpdate}
-								handleDelete={this.handleDelete}
 								handleReply={() => this.handleReply( comment.author )}
 								socket={this.props.socket}
+								history={this.props.history}
 							/>
 						)}
 					</StyledInfiniteScroll>
@@ -413,10 +408,12 @@ class Comments extends Component {
 					onCancel={metaData => this.toggleSuggestions( metaData ) }
 					onType={metaData => this.handleMentionInput( metaData ) }
 					endTrigger={endHandler => this.endHandler = endHandler }
+					className={this.props.hiddeCommentInput ?
+						"hiddenCommentInput" : undefined}
 				>
 					<textarea
-						autoFocus
 						maxLength="2200"
+						id={this.props.TextPost && "textPostCommentInput"}
 						className="commentsTextarea"
 						style={StyledTextArea}
 						name="comment"
@@ -424,6 +421,7 @@ class Comments extends Component {
 						placeholder={placeholder}
 						onChange={this.handleChange}
 						onKeyDown={this.handleKeyPress}
+						ref={input => this.commentInput = input}
 					/>
 				</InputTrigger>
 				<SuggestionsWrapper showSuggestions={this.state.showSuggestions}>
@@ -442,27 +440,27 @@ class Comments extends Component {
 
 Comments.propTypes = {
 	socket: PropTypes.object.isRequired,
-	switchComments: PropTypes.func.isRequired,
+	history: PropTypes.object.isRequired,
 	setComments: PropTypes.func.isRequired,
-	postId: PropTypes.string.isRequired,
-	newsfeed: PropTypes.array.isRequired,
 	comments: PropTypes.array,
-	onExplore: PropTypes.bool
+	onExplore: PropTypes.bool,
+	TextPost: PropTypes.bool,
+	forwardRef: PropTypes.object,
+	hiddeCommentInput: PropTypes.bool
 };
 
 const
 	mapStateToProps = state => ({
-		postId: state.posts.postDetailsId,
+		postDetails: state.posts.postDetails,
 		newsfeed: state.posts.newsfeed,
-		comments: state.posts.comments
+		comments: state.posts.comments,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		switchComments: ( id ) => dispatch( switchComments( id )),
 		setComments: comments => dispatch( setComments( comments )),
 		addToComments: comments => dispatch( addToComments( comments )),
 		addComment: comment => dispatch( addComment( comment )),
-		deleteComment: commentIndex => dispatch( deleteComment( commentIndex )),
 		updateComment: comment => dispatch( updateComment( comment )),
 		updatePost: ( post, onExplore ) =>
 			dispatch( updatePost( post, onExplore ))

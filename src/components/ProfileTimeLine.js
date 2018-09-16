@@ -18,6 +18,9 @@ const
 			background: none;
 			margin: 0 auto;
 		}
+		@media (min-width: 1100px) {
+			padding: 0 5px;
+		}
 	`,
 	StyledNewsFeed = styled( NewsFeed )`
 		height: 100%;
@@ -74,6 +77,8 @@ class ProfileTimeline extends Component {
 						<StyledNewsFeed
 							posts={this.props.profilePosts}
 							socket={this.props.socket}
+							history={this.props.history}
+							hideTabs
 						/>
 					</UserPostsWrapper>
 					:

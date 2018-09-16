@@ -10,7 +10,8 @@ import api from "../services/api";
 import { addPost, switchMediaOptions } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import extract from "../utils/extractMentionsHashtags";
+import compressImage from "../utils/compressImage";
 
 const
 	MediaOptionsWrapper = styled.div`
@@ -38,22 +39,30 @@ const
 	`,
 	MediaButtons = styled.div`
 		display: flex;
-		justify-content: space-between;
 		align-self: center;
 		z-index: 1;
-		@media (min-height: 575px) {
+		@media (min-height: 600px) {
 			flex-direction: column;
-			height: 70%;
 		}
-		@media (max-width: 450px) and (max-height: 575px) {
+		@media (min-height: 800px) {
+			height: 80%;
+			justify-content: space-evenly;
+		}
+		@media (max-width: 490px) and (max-height: 600px) {
 			flex-wrap: wrap;
 			width: 50%;
 			justify-content: space-around;
 			height: 60%;
-    	align-content: space-between;
 		}
-		@media (min-width: 450px) and (max-height: 575px) {
-			width: 70%;
+		@media (max-width: 490px) and (max-height: 410px) {
+			align-self: flex-start;
+			margin-top: 1rem;
+		}
+		@media (max-width: 490px) and (max-height: 350px) {
+			align-self: flex-start;
+			margin-top: 1rem;
+			width: 100%;
+			justify-content: center;
 		}
 	`,
 	MediaOption = styled.div`
@@ -64,6 +73,11 @@ const
 		justify-content: center;
 		border: 1px solid #fff;
 		border-radius: 100%;
+		background: rgba(0,0,0,0.8);
+		margin: 3px;
+		@media (min-height: 575px) {
+			margin: 5px;
+		}
 		:hover {
 			cursor: pointer;
 		}
@@ -76,6 +90,8 @@ const
 		background-repeat: no-repeat;
 		margin: 0;
 		position: relative;
+		background-size: 100%;
+}
 	`,
 	PictureUploadWrapper = styled.span`
 		position: relative;
@@ -90,6 +106,19 @@ const
 	`,
 	StyledSearchMedia = styled( SearchMedia )`
 		z-index: 2;
+	`,
+	LoaderDimmer = styled.div`
+		position: fixed;
+		left: 0;
+		top: 0;
+		height: 100vh;
+		width: 100vw;
+		z-index: 5;
+		background: rgba(0,0,0,0.85);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	`;
 
 
@@ -104,7 +133,8 @@ class MediaOptions extends Component {
 			sharePicture: false,
 			mediaType: "",
 			mediaData: {},
-			error: undefined
+			error: undefined,
+			loader: false
 		};
 	}
 
@@ -134,9 +164,7 @@ class MediaOptions extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	submitLink = async( description, link, privacyRange, alerts ) => {
-		var i;
-
+	submitLink = async( description, link, feed, selectedClub, alerts ) => {
 		if ( !link ) {
 			return;
 		}
@@ -146,24 +174,21 @@ class MediaOptions extends Component {
 
 		try {
 			const res = await api.createMediaLink( link, description,
-				mentions, hashtags, privacyRange, alerts );
+				mentions, hashtags, feed, selectedClub, alerts );
 
 			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
 			if ( res.mentionsNotifications ) {
-				const notifLength = res.mentionsNotifications.length;
-				for ( i = 0; i < notifLength; i++ ) {
-					this.props.socket.emit(
-						"sendNotification", res.mentionsNotifications[ i ]
-					);
+				for ( const notification of res.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
 				}
 			}
 		} catch ( err ) {
 			console.log( err );
-			if ( err.response.status === 401 ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.submitLink( description, link, privacyRange, alerts );
+				this.submitLink( description, link, feed, selectedClub, alerts );
 				return;
 			} else if ( err.response.status === 500 ) {
 				this.setState({
@@ -205,32 +230,30 @@ class MediaOptions extends Component {
 		this.setState({ shareState: !this.state.shareState });
 	}
 
-	shareTextPost = async( userInput, privacyRange, alerts ) => {
-		var i;
+	shareTextPost = async( userInput, feed, selectedClub, alerts ) => {
 		if ( userInput ) {
 			const { mentions, hashtags } = await extract(
 				userInput, { symbol: false, type: "all" }
 			);
-			api.createPost( userInput, mentions, hashtags, privacyRange, alerts )
-				.then( res => {
-					if ( res === "jwt expired" ) {
-						refreshToken()
-							.then(() => this.shareTextPost())
-							.catch( err => console.log( err ));
-					} else if ( res ) {
-						this.props.addPost( res.newPost, this.props.onProfile );
-						this.props.switchMediaOptions();
-						this.props.toggleMediaButton();
-						if ( res.mentionsNotifications ) {
-							const notifLength = res.mentionsNotifications.length;
-							for ( i = 0; i < notifLength; i++ ) {
-								this.props.socket.emit(
-									"sendNotification", res.mentionsNotifications[ i ]
-								);
-							}
-						}
+			try {
+				const res = await api.createPost(
+					userInput, mentions, hashtags, feed, selectedClub, alerts );
+				this.props.addPost( res.newPost, this.props.onProfile );
+				this.props.switchMediaOptions();
+				this.props.toggleMediaButton();
+				if ( res.mentionsNotifications ) {
+					for ( const notification of res.mentionsNotifications ) {
+						this.props.socket.emit( "sendNotification", notification );
 					}
-				}).catch( err => console.log( err ));
+				}
+			} catch ( err ) {
+				if ( err.response.data === "jwt expired" ) {
+					await refreshToken();
+					this.shareTextPost( userInput, feed, selectedClub, alerts );
+				} else {
+					console.log( err );
+				}
+			}
 		}
 	};
 
@@ -255,24 +278,35 @@ class MediaOptions extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file ).then( compressedImg => {
+				this.setState({
+					mediaData: {
+						imageFile: compressedImg,
+						image: URL.createObjectURL( compressedImg )
+					},
+					sharePicture: true,
+					error: ""
+				});
+				this.setState({ loader: false });
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			return;
+		} else {
+			this.setState({
+				mediaData: {
+					imageFile: file,
+					image: URL.createObjectURL( file )
+				},
+				sharePicture: true,
+				error: ""
+			});
 		}
-
 		this.props.toggleMediaButton();
-		this.setState({
-			mediaData: {
-				imageFile: file,
-				image: URL.createObjectURL( file )
-			},
-			sharePicture: true,
-			error: ""
-		});
 	}
 
-	submitPicture = async( description, privacyRange, alerts ) => {
+	submitPicture = async( description, feed, selectedClub, alerts ) => {
 		var
 			data = new FormData();
 		const
@@ -280,7 +314,6 @@ class MediaOptions extends Component {
 			{ mentions, hashtags } = await extract(
 				description, { symbol: false, type: "all" }
 			);
-
 		if ( !mediaData.imageFile ) {
 			return;
 		}
@@ -288,7 +321,8 @@ class MediaOptions extends Component {
 		data.append( "content", description );
 		data.append( "mentions", mentions );
 		data.append( "hashtags", hashtags );
-		data.append( "privacyRange", privacyRange );
+		data.append( "feed", feed );
+		data.append( "selectedClub", selectedClub );
 		data.append( "nsfw", alerts.nsfw );
 		data.append( "spoiler", alerts.spoiler );
 		data.append( "spoilerDescription", alerts.spoilerDescription );
@@ -299,15 +333,15 @@ class MediaOptions extends Component {
 			this.props.addPost( res.newPost, this.props.onProfile );
 			this.props.switchMediaOptions();
 			this.props.toggleMediaButton();
-			if ( res.mentionsNotifications ) {
+			if ( res.mentionsNotifications && res.mentionsNotifications.length > 0 ) {
 				for ( const notification of res.mentionsNotifications ) {
 					this.props.socket.emit( "sendNotification", notification );
 				}
 			}
 		} catch ( err ) {
-			if ( err.response.status === 401 ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.submitPicture( description, privacyRange, alerts );
+				this.submitPicture( description, feed, selectedClub, alerts );
 				return;
 			}
 			this.setState({ error: err.response.data, sharePicture: false });
@@ -315,15 +349,19 @@ class MediaOptions extends Component {
 		}
 	}
 
+	_crop() {
+		console.log( this.refs.cropper.getCroppedCanvas().toDataURL());
+	}
+
 	render() {
 		try {
-			this.bookIcon = require( "../images/book.png" );
-			this.musicIcon = require( "../images/music.png" );
-			this.popcornIcon = require( "../images/popcorn.png" );
-			this.monitorIcon = require( "../images/monitor.png" );
-			this.cameraIcon = require( "../images/camera.png" );
-			this.linkIcon = require( "../images/link.png" );
-			this.pencilIcon = require( "../images/pencil.png" );
+			this.bookIcon = require( "../images/book.svg" );
+			this.musicIcon = require( "../images/music.svg" );
+			this.popcornIcon = require( "../images/movies.svg" );
+			this.monitorIcon = require( "../images/monitor.svg" );
+			this.cameraIcon = require( "../images/camera.svg" );
+			this.linkIcon = require( "../images/link.svg" );
+			this.pencilIcon = require( "../images/state.svg" );
 		} catch ( err ) {
 			console.log( err );
 		}
@@ -380,6 +418,11 @@ class MediaOptions extends Component {
 		}
 		return (
 			<MediaOptionsWrapper>
+				{this.state.loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 				{this.state.error &&
 					<ErrorMessage warning>
 						<Message.Header>{this.state.error}</Message.Header>
@@ -413,7 +456,7 @@ class MediaOptions extends Component {
 							<OptionImage image={this.cameraIcon} />
 						</MediaOption>
 						<PictureUploadInput type="file" name="picture" id="pictureInput"
-							onChange={this.handlePicture}
+							accept="image/*" onChange={this.handlePicture}
 						/>
 					</PictureUploadWrapper>
 

@@ -1,10 +1,18 @@
 import axios from "axios";
 
+let API_URL = process.env.REACT_APP_STAGE === "dev" ?
+	"http://192.168.1.15:8081"
+	:
+	process.env.REACT_APP_STAGE === "testing" ?
+		"http://testing.wanamic.com"
+		:
+		"https://api.wanamic.com";
+
 export default {
 	login: credentials =>
 		axios({
 			method: "post",
-			url: "/auth/login",
+			url: API_URL + "/auth/login",
 			data: { credentials: credentials }
 		})
 			.then( res => res.data )
@@ -15,8 +23,72 @@ export default {
 	signup: credentials =>
 		axios({
 			method: "post",
-			url: "/auth/signup",
+			url: API_URL + "/auth/signup",
 			data: { credentials: credentials }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	batcaveAuth: password =>
+		axios({
+			method: "post",
+			url: API_URL + "/auth/batcaveAuth",
+			data: { password: password, token: localStorage.getItem( "token" ) }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	batcaveData: () =>
+		axios({
+			method: "post",
+			url: API_URL + "/admin/adminData",
+			data: { token: localStorage.getItem( "token" ) }
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	removeTicket: ticketId =>
+		axios({
+			method: "delete",
+			url: API_URL + "/admin/removeTicket",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	deleteObject: ticketId =>
+		axios({
+			method: "delete",
+			url: API_URL + "/admin/deleteObject",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
+		})
+			.then( res => res.data )
+			.catch( err => {
+				throw err;
+			}),
+
+	banUser: ticketId =>
+		axios({
+			method: "post",
+			url: API_URL + "/admin/banUser",
+			data: {
+				token: localStorage.getItem( "token" ),
+				ticketId: ticketId
+			}
 		})
 			.then( res => res.data )
 			.catch( err => {
@@ -26,7 +98,7 @@ export default {
 	resetPassword: email =>
 		axios({
 			method: "post",
-			url: "/auth/resetPassword",
+			url: API_URL + "/auth/resetPassword",
 			data: { email: email }
 		})
 			.then( res => res.data )
@@ -37,7 +109,7 @@ export default {
 	setNewPassword: ( token, newPassword ) =>
 		axios({
 			method: "post",
-			url: "/auth/setNewPassword",
+			url: API_URL + "/auth/setNewPassword",
 			data: { token: token, newPassword: newPassword }
 		})
 			.then( res => res.data )
@@ -48,58 +120,66 @@ export default {
 	verifyToken: () =>
 		axios({
 			method: "post",
-			url: "/auth/verify",
+			url: API_URL + "/auth/verify",
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	refreshToken: () =>
 		axios({
 			method: "post",
-			url: "/auth/token",
+			url: API_URL + "/auth/token",
 			data: { refreshToken: localStorage.getItem( "refreshToken" ) }
 		})
 			.then( res => res.data )
-			.catch( err => err ),
+			.catch( err => {
+				throw err;
+			}),
 
-	createPost: ( userInput, mentions, hashtags, privacyRange, alerts ) =>
+	createPost: ( userInput, mentions, hashtags, feed, selectedClub, alerts ) =>
 		axios({
 			method: "post",
-			url: "/posts/create",
+			url: API_URL + "/posts/create",
 			data: {
 				token: localStorage.getItem( "token" ),
 				userInput: userInput,
 				mentions: mentions,
 				hashtags: hashtags,
-				privacyRange: privacyRange,
+				feed: feed,
+				selectedClub: selectedClub,
 				alerts: alerts
 			}
 		})
 			.then( res => res.data )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	createMediaPost: data =>
 		axios({
 			method: "post",
-			url: "/posts/media",
+			url: API_URL + "/posts/media",
 			data: { token: localStorage.getItem( "token" ), data: data }
 		})
 			.then( res => res.data )
 			.catch( err => err.response.data ),
 
-	createMediaLink: ( link, description, mentions, hashtags, privacyRange, alerts ) =>
+	createMediaLink: ( link, description, mentions, hashtags, feed, selectedClub, alerts ) =>
 		axios({
 			method: "post",
-			url: "/posts/mediaLink",
+			url: API_URL + "/posts/mediaLink",
 			data: {
 				token: localStorage.getItem( "token" ),
 				link: link,
 				description: description,
 				mentions: mentions,
 				hashtags: hashtags,
-				privacyRange: privacyRange,
-				alerts: alerts
+				alerts: alerts,
+				feed: feed,
+				selectedClub: selectedClub
 			}
 		})
 			.then( res => res.data )
@@ -110,7 +190,7 @@ export default {
 	createMediaPicture: data =>
 		axios({
 			method: "post",
-			url: "/posts/mediaPicture",
+			url: API_URL + "/posts/mediaPicture",
 			data: data
 		})
 			.then( res => res.data )
@@ -118,37 +198,46 @@ export default {
 				throw err;
 			}),
 
-	getNewsFeed: skip =>
+	homeFeed: skip =>
 		axios({
 			method: "post",
-			url: "posts/newsfeed/" + skip,
+			url: API_URL + "/posts/home/" + skip,
 			data: { token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getTimeline: ( skip, username ) =>
 		axios({
 			method: "post",
-			url: "posts/" + username + "/" + skip,
-			data: { token: localStorage.getItem( "token" ) }
+			url: `${API_URL}/posts/timeline/${skip}`,
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username
+			}
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	deletePost: postId =>
 		axios({
 			method: "delete",
-			url: "/posts/delete",
+			url: API_URL + "/posts/delete",
 			data: { postId: postId, token: localStorage.getItem( "token" ) }
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updatePost: ( postId, newContent, mentions, hashtags ) =>
 		axios({
 			method: "patch",
-			url: "/posts/update",
+			url: API_URL + "/posts/update",
 			data: {
 				token: localStorage.getItem( "token" ),
 				postId: postId,
@@ -158,7 +247,39 @@ export default {
 			}
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
+
+	reportPost: ( postId, content ) =>
+		axios({
+			method: "post",
+			url: API_URL + "/posts/report",
+			data: {
+				token: localStorage.getItem( "token" ),
+				postId: postId,
+				content: content
+			}
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	reportComment: ( commentId, content ) =>
+		axios({
+			method: "post",
+			url: API_URL + "/comments/report",
+			data: {
+				token: localStorage.getItem( "token" ),
+				commentId: commentId,
+				content: content
+			}
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 
 	getUserInfo: username =>
 		axios({
@@ -167,7 +288,7 @@ export default {
 				username: username,
 				token: localStorage.getItem( "token" )
 			},
-			url: "/user/userInfo"
+			url: API_URL + "/user/userInfo"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -178,7 +299,7 @@ export default {
 		axios({
 			method: "post",
 			data: data,
-			url: "/user/info"
+			url: API_URL + "/user/info"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -192,10 +313,12 @@ export default {
 				token: localStorage.getItem( "token" ),
 				friendUsername: username
 			},
-			url: "/friends/add"
+			url: API_URL + "/friends/add"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	deleteFriend: username =>
 		axios({
@@ -204,43 +327,23 @@ export default {
 				token: localStorage.getItem( "token" ),
 				friendUsername: username
 			},
-			url: "/friends/delete"
+			url: API_URL + "/friends/delete"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
-
-	followUser: username =>
-		axios({
-			method: "post",
-			data: {
-				token: localStorage.getItem( "token" ),
-				targetUsername: username
-			},
-			url: "/followers/follow"
-		})
-			.then( res => res )
-			.catch( err => err.response.data ),
-
-	unfollowUser: username =>
-		axios({
-			method: "delete",
-			data: {
-				token: localStorage.getItem( "token" ),
-				targetUsername: username
-			},
-			url: "/followers/unfollow"
-		})
-			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getInterestsMatches: data =>
 		axios({
 			method: "post",
 			data: { data: data },
-			url: "/user/match"
+			url: API_URL + "/user/match"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updateInterests: newInterests =>
 		axios({
@@ -249,7 +352,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				newInterests: newInterests
 			},
-			url: "/user/updateInterests"
+			url: API_URL + "/user/updateInterests"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -258,7 +361,7 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ), users: users },
-			url: "/followers/setupFollow"
+			url: API_URL + "/followers/setupFollow"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -267,16 +370,19 @@ export default {
 		axios({
 			method: "post",
 			data: { skip: skip, token: localStorage.getItem( "token" ) },
-			url: "/user/sugestedUsers"
+			url: API_URL + "/user/sugestedUsers"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	getRandom: () =>
+	getRandom: ( exposition ) =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ) },
-			url: "/user/randomUser"
+			data: {
+				token: localStorage.getItem( "token" ),
+				exposition: exposition
+			},
+			url: API_URL + "/user/randomUser"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -289,7 +395,7 @@ export default {
 				data: data,
 				skip: skip
 			},
-			url: "/user/matchHobbies"
+			url: API_URL + "/user/matchHobbies"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -298,26 +404,28 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ), data: data },
-			url: "/user/setUserKw"
+			url: API_URL + "/user/setUserKw"
 		})
 			.then( res => res )
 			.catch( err => {
 				throw err;
 			}),
 
-	exploreContent: ( skip, limit ) =>
+	globalFeed: ( skip, limit ) =>
 		axios({
 			method: "get",
-			url: `/posts/explore/${skip}/${limit}`
+			url: API_URL + `/posts/global/${skip}/${limit}`
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	searchContent: ( skip, search ) =>
 		axios({
 			method: "post",
 			data: { search: search },
-			url: "posts/search/:skip" + skip
+			url: API_URL + "/posts/search/:skip" + skip
 		})
 			.then( res => res )
 			.catch( err => {
@@ -328,7 +436,7 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ), postId: postId },
-			url: "/posts/like/"
+			url: API_URL + "/posts/like/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -337,7 +445,7 @@ export default {
 		axios({
 			method: "patch",
 			data: { token: localStorage.getItem( "token" ), postId: postId },
-			url: "/posts/dislike/"
+			url: API_URL + "/posts/dislike/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -351,7 +459,7 @@ export default {
 				postId: postId,
 				mentions: mentions
 			},
-			url: "/comments/create/"
+			url: API_URL + "/comments/create/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -364,10 +472,12 @@ export default {
 				commentId: commentId,
 				postId: postId
 			},
-			url: "/comments/delete/"
+			url: API_URL + "/comments/delete/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	updateComment: ( commentId, newContent, mentions, hashtags ) =>
 		axios({
@@ -378,21 +488,34 @@ export default {
 				newContent: newContent,
 				mentions: mentions
 			},
-			url: "/comments/update/"
+			url: API_URL + "/comments/update/"
 		})
 			.then( res => res )
-			.catch( err => err.response.data ),
+			.catch( err => {
+				throw err;
+			}),
 
 	getPostComments: ( postId, skip ) =>
 		axios({
 			method: "post",
-			data: { token: localStorage.getItem( "token" ), postId: postId },
-			url: "/comments/retrieve/" + skip
+			data: { postId: postId },
+			url: API_URL + "/comments/retrieve/" + skip
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	sharePost: ( postId, shareComment, privacyRange, alerts ) =>
+	getComment: commentId =>
+		axios({
+			method: "post",
+			data: { commentId: commentId },
+			url: API_URL + "/comments/getComment/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	sharePost: ( postId, shareComment, privacyRange, alerts, mentions, hashtags ) =>
 		axios({
 			method: "post",
 			data: {
@@ -400,9 +523,11 @@ export default {
 				postId: postId,
 				description: shareComment,
 				privacyRange: privacyRange,
-				alerts: alerts
+				alerts: alerts,
+				mentions: mentions,
+				hashtags: hashtags
 			},
-			url: "/posts/share/"
+			url: API_URL + "/posts/share/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -413,7 +538,7 @@ export default {
 			data: {
 				token: localStorage.getItem( "token" ),
 			},
-			url: "/notifications/retrieve/" + skip
+			url: API_URL + "/notifications/retrieve/" + skip
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -424,10 +549,12 @@ export default {
 			data: {
 				postId: postId
 			},
-			url: "/posts/getPost/"
+			url: API_URL + "/posts/getPost/"
 		})
 			.then( res => res )
-			.catch( err => console.log( err )),
+			.catch( err => {
+				throw err;
+			}),
 
 	checkNotifications: () =>
 		axios({
@@ -435,7 +562,7 @@ export default {
 			data: {
 				token: localStorage.getItem( "token" )
 			},
-			url: "/notifications/check/"
+			url: API_URL + "/notifications/check/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -447,7 +574,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				targetUsername: targetUsername
 			},
-			url: "/friends/isRequested/"
+			url: API_URL + "/friends/isRequested/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -459,7 +586,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				friendUsername: friendUsername
 			},
-			url: "/friends/accept/"
+			url: API_URL + "/friends/accept/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -470,7 +597,7 @@ export default {
 			data: {
 				token: localStorage.getItem( "token" )
 			},
-			url: "/friends/getFriends/"
+			url: API_URL + "/friends/getFriends/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -481,7 +608,7 @@ export default {
 			data: {
 				token: localStorage.getItem( "token" )
 			},
-			url: "/user/getSocialCircle/"
+			url: API_URL + "/user/getSocialCircle/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -493,7 +620,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				friendUsername: friendUsername
 			},
-			url: "/conversations/retrieve/"
+			url: API_URL + "/conversations/retrieve/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -506,7 +633,7 @@ export default {
 				friendId: friendId,
 				content: content
 			},
-			url: "/conversations/add/"
+			url: API_URL + "/conversations/add/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -515,7 +642,7 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ) },
-			url: "/user/getChats/"
+			url: API_URL + "/user/getChats/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -527,7 +654,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				targetUsername: targetUsername
 			},
-			url: "/conversations/clearNotifications/"
+			url: API_URL + "/conversations/clearNotifications/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -539,7 +666,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				targetId: targetId
 			},
-			url: "/conversations/delete/"
+			url: API_URL + "/conversations/delete/"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -552,7 +679,7 @@ export default {
 				currentPassword: currentPassword,
 				newPassword: newPassword
 			},
-			url: "/user/updatePassword/"
+			url: API_URL + "/user/updatePassword/"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -567,7 +694,7 @@ export default {
 				currentEmail: currentEmail,
 				newEmail: newEmail
 			},
-			url: "/user/updateEmail/"
+			url: API_URL + "/user/updateEmail/"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -582,7 +709,7 @@ export default {
 				password: password,
 				feedback: feedback
 			},
-			url: "/user/deleteAccount/"
+			url: API_URL + "/user/deleteAccount/"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -596,7 +723,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				username: username
 			},
-			url: "/user/getUserAlbum/"
+			url: API_URL + "/user/getUserAlbum/"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -610,7 +737,7 @@ export default {
 				token: localStorage.getItem( "token" ),
 				username: username
 			},
-			url: "/user/getUserNetwork/"
+			url: API_URL + "/user/getUserNetwork/"
 		})
 			.then( res => res )
 			.catch( err => {
@@ -621,7 +748,201 @@ export default {
 		axios({
 			method: "post",
 			data: { token: localStorage.getItem( "token" ) },
-			url: "/user/getLikesAndViews/"
+			url: API_URL + "/user/getLikesAndViews/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	userClubs: () =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: API_URL + "/user/clubs/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	createClubRequest: ( name, title, description ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				name: name,
+				title: title,
+				description: description
+			},
+			url: API_URL + "/clubs/requestCreation/"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	clubFeed: ( skip, club ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/posts/clubFeed/${club}/${skip}`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getClub: ( club ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/getClub/${club}/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	approveClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/approveCreation/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	rejectClub: ( clubID, feedback ) =>
+		axios({
+			method: "delete",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID,
+				feedback: feedback
+			},
+			url: `${API_URL}/clubs/rejectCreation/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	exitClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/exitClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	joinClub: ( clubID ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubID: clubID
+			},
+			url: `${API_URL}/clubs/joinClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	clubSuggestions: () =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/suggestions/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	updateClub: ( clubId, title, description ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubId: clubId,
+				title: title,
+				description: description
+			},
+			url: `${API_URL}/clubs/update/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	banFromClub: ( targetId, clubName ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				targetId: targetId,
+				clubName: clubName
+			},
+			url: `${API_URL}/clubs/banUser/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	giveUpPresidency: ( username, clubId ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				username: username,
+				clubId: clubId
+			},
+			url: `${API_URL}/clubs/requestSuccessor/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	acceptPresidency: ( clubName ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				clubName: clubName
+			},
+			url: `${API_URL}/clubs/acceptPresidency/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	randomClub: () =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/randomClub/`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	searchClub: ( clubName ) =>
+		axios({
+			method: "get",
+			url: `${API_URL}/clubs/search/${clubName}`
 		})
 			.then( res => res )
 			.catch( err => {

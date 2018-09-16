@@ -17,45 +17,41 @@ import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
+		/* Hide home sidebar to avoid collision with random user */
+		@media (max-height: 920px) and (max-width: 1900px) {
+			display: ${props => props.onHome && "none"};
+		}
+		/* Fullpage for small devices */
 		@media (max-width: 1300px) {
 			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
 			width: 100%;
-			overflow: hidden;
+			overflow-y: auto;
 			position: absolute;
 			z-index: 3;
 			background: #fff;
-			padding-top: 49.33px;
+			padding: 49.33px 0;
 			::-webkit-scrollbar {
 				display: none !important;
 			}
 		}
-		@media (min-width: 760px) and (max-width: 1300px) {
-			display: ${props => props.onHome && "none"};
-		}
+		/* Display sidebar unless is toggled */
 		@media (min-width: 1300px) {
 			display: ${props => props.hideSidebar && "none"};
-			height: 350px;
 			position: fixed;
 			right: 10px;
 			bottom: 0;
+			height: 350px;
 			width: 260px;
 			background: rgba( 255, 255, 255, 0.35 );
 			border-radius: 2px;
-			overflow-y: auto;
 			z-index: 2;
-			::-webkit-scrollbar {
-				display: block !important;
-				width: 10px !important;
-			}
 		}
 	`,
 	PopupWrapper = styled.div`
 		@media (min-width: 760px)  {
-			height: 400px;
-			width: 400px;
 			position: absolute;
-			bottom: -393px;
+			bottom: -425px;
 			left: 0;
 			background: #fff;
 			border-radius: 2px;
@@ -64,13 +60,19 @@ const
 			z-index: 5;
 			border-top: 0;
 		};
+		/* To avoid bad position when options cover all navbar */
 		@media (min-width: 760px) and (max-width: 960px)  {
-			right: 0;
 			left: auto;
 		}
 		@media (max-width: 760px) {
 			display: none;
 		}
+	`,
+	PopupConversations = styled.div`
+		height: 400px;
+		width: 400px;
+		overflow-y: auto;
+		padding-bottom: 4rem;
 	`,
 	PageHeader = styled.div`
 		border-bottom: 1px solid rgba(0, 0, 0, .1);
@@ -87,12 +89,31 @@ const
 			border-bottom: 0;
 		}
 	`,
+	ConversationsList = styled.div`
+	@media (max-width: 1300px) {
+		display: ${props => props.largeScreen && "none"};
+		height: 100%;
+		::-webkit-scrollbar {
+			display: none !important;
+		}
+	}
+	@media (min-width: 1300px) {
+		height: 100%;
+		overflow-y: auto;
+		padding-bottom: 4rem;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 10px !important;
+		}
+	}
+	`,
 	Buttons = styled.div`
 		display: flex;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		background: #fff;
+		border-top: 1px solid rgba(0,0,0,0.05);
 	`,
 	NewConversationButton = styled( Button )`
 		z-index: 3;
@@ -399,6 +420,9 @@ class Messages extends Component {
 		if ( this.props.profilePage && this.props.messageTarget ) {
 			this.props.startChat( undefined );
 		}
+		if ( this.props.newConversation ) {
+			this.props.setupNewConversation( undefined );
+		}
 	}
 
 	handleSpam = () => {
@@ -414,12 +438,13 @@ class Messages extends Component {
 		}
 	}
 
+
 	render() {
-		const {
-			conversations, selectedConversation, newConversation,
-			largeScreen, profilePage, displayPopup, hideSidebar,
-			onHome
-		} = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ conversations, selectedConversation, newConversation,
+				largeScreen, profilePage, displayPopup, hideSidebar,
+				onHome } = this.props;
 		if ( this.props.displayConversation && !largeScreen ) {
 			return (
 				<Conversation
@@ -432,9 +457,11 @@ class Messages extends Component {
 					handleKeyPress={this.handleKeyPress}
 					handleChange={this.handleChange}
 					handleDeleteChat={this.handleDeleteChat}
+					handleSendMessage={this.handleSendMessage}
 					back={this.backToOpenConversations}
 					messageInput={this.state.messageInput}
 					spam={this.state.spam}
+					history={this.props.history}
 				/>
 			);
 		}
@@ -466,7 +493,7 @@ class Messages extends Component {
 								<React.Fragment>
 									<PageHeader>Conversations</PageHeader>
 
-									<div className="conversationsList">
+									<ConversationsList>
 										{this.props.conversations.map(( chat, index ) =>
 											<OpenConversation
 												key={index}
@@ -476,7 +503,10 @@ class Messages extends Component {
 												<UserImg
 													circular
 													src={chat.target.profileImage ?
-														require( "../images/" + chat.target.profileImage )
+														process.env.REACT_APP_STAGE === "dev" ?
+															require( "../images/" + chat.target.profileImage )
+															:
+															s3Bucket + chat.target.profileImage
 														:
 														require( "../images/defaultUser.png" )
 													}
@@ -504,7 +534,7 @@ class Messages extends Component {
 												}
 											</OpenConversation>
 										)}
-									</div>
+									</ConversationsList>
 									<Buttons>
 										<HideButton
 											onClick={this.toggleChat}
@@ -544,9 +574,11 @@ class Messages extends Component {
 								handleKeyPress={this.handleKeyPress}
 								handleChange={this.handleChange}
 								handleDeleteChat={this.handleDeleteChat}
+								handleSendMessage={this.handleSendMessage}
 								back={this.backToOpenConversations}
 								messageInput={this.state.messageInput}
 								spam={this.state.spam}
+								history={this.props.history}
 							/>
 					}
 
@@ -557,12 +589,13 @@ class Messages extends Component {
 									socialCircle={this.state.socialCircle}
 									handleNewConversation={this.handleNewConversation}
 									back={this.backToOpenConversations}
+									popup={true}
 								/>
 								:
 								<React.Fragment>
 									<PageHeader isPopup>Conversations</PageHeader>
 
-									<div className="conversationsList">
+									<PopupConversations>
 										{this.props.conversations.map(( chat, index ) =>
 											<OpenConversation
 												key={index}
@@ -572,7 +605,10 @@ class Messages extends Component {
 												<UserImg
 													circular
 													src={chat.target.profileImage ?
-														require( "../images/" + chat.target.profileImage )
+														process.env.REACT_APP_STAGE === "dev" ?
+															require( "../images/" + chat.target.profileImage )
+															:
+															s3Bucket + chat.target.profileImage
 														:
 														require( "../images/defaultUser.png" )
 													}
@@ -600,7 +636,7 @@ class Messages extends Component {
 												}
 											</OpenConversation>
 										)}
-									</div>
+									</PopupConversations>
 									<Buttons>
 										<NewConversationButton
 											onClick={this.handleSocialCircle}
@@ -634,7 +670,10 @@ class Messages extends Component {
 									<UserImg
 										circular
 										src={chat.target.profileImage ?
-											require( "../images/" + chat.target.profileImage )
+											process.env.REACT_APP_STAGE === "dev" ?
+												require( "../images/" + chat.target.profileImage )
+												:
+												s3Bucket + chat.target.profileImage
 											:
 											require( "../images/defaultUser.png" )
 										}

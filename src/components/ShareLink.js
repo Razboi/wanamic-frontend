@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Input, Icon } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import MediaStep3 from "../components/MediaStep3";
 import Suggestions from "./Suggestions";
 
@@ -115,7 +115,8 @@ class ShareLink extends Component {
 	}
 
 	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions ) {
+		if ( e.key === "Enter" && this.state.showSuggestions &&
+		this.props.socialCircle.length > 0 ) {
 			e.preventDefault();
 			const
 				{ description, startPosition, currentSelection } = this.state,
@@ -230,9 +231,9 @@ class ShareLink extends Component {
 		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
-	handleSubmit = () => {
+	handleSubmit = ( feed, selectedClub ) => {
 		const {
-				description, link, privacyRange, checkNsfw, checkSpoiler,
+				description, link, checkNsfw, checkSpoiler,
 				spoilerDescription
 			} = this.state,
 			alerts = {
@@ -240,7 +241,7 @@ class ShareLink extends Component {
 				spoiler: checkSpoiler,
 				spoilerDescription: spoilerDescription
 			};
-		this.props.submitLink( description, link, privacyRange, alerts );
+		this.props.submitLink( description, link, feed, selectedClub, alerts );
 	}
 
 	render() {

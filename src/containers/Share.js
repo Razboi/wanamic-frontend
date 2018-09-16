@@ -7,9 +7,9 @@ import SharedPost from "./SharedPost";
 import { addPost, switchShare, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
-import MediaStep3 from "../components/MediaStep3";
-import InputTrigger from "react-input-trigger";
+import InputTrigger from "../utils/inputTrigger";
 import Suggestions from "../components/Suggestions";
+import extract from "../utils/extractMentionsHashtags";
 
 const
 	Wrapper = styled.div`
@@ -17,21 +17,15 @@ const
 		z-index: 20;
 		background: #222;
 		color: #fff !important;
-		display: grid;
 		overflow-y: auto;
-		height: 100vh;
+		height: 100%;
 		width: 100%;
-		grid-template-columns: 100%;
-		grid-template-rows: 7% 93%;
-		grid-template-areas:
-			"hea"
-			"com";
+		display: flex;
+		flex-direction: column;
 		@media (min-width: 760px) and (min-height: 700px) {
 			height: 700px;
 			width: 600px;
-		}
-		@media (max-height: 500px) {
-			grid-template-rows: 12% 88%;
+			border-radius: 2px;
 		}
 		::-webkit-scrollbar {
 			display: block !important;
@@ -40,33 +34,40 @@ const
 		}
 	`,
 	HeaderWrapper = styled.div`
-		grid-area: hea;
 		display: flex;
+		z-index: 2;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0px 10px;
 		box-shadow: 0 1px 2px #111;
+		i {
+			font-size: 1.5rem !important;
+		}
+		@media (max-width: 420px) {
+			height: 55px;
+			min-height: 55px;
+			padding: 0px 20px;
+		}
+		@media (min-width: 420px) {
+			height: 80px;
+			min-height: 80px;
+			padding: 0px 40px;
+			i {
+				:hover {
+					cursor: pointer !important;
+				}
+			}
+		}
 	`,
 	HeaderTxt = styled.span`
 		font-weight: bold;
-		font-size: 16px;
-	`,
-	ShareWrapper = styled.div`
-		grid-area: com;
-		display: grid;
-		grid-template-columns: 100%;
-		grid-template-rows: 15% 85%;
-		grid-template-areas:
-			"inp"
-			"mai";
-		@media (max-height: 450px) {
-			grid-template-areas:
-				"inp";
-			grid-template-rows: 100%;
+		font-size: 1.35rem;
+		@media (max-width: 450px) {
+			font-size: 1.2rem;
 		}
 	`,
 	InputWrapper = styled.div`
 		position: relative;
+		margin-top: 2rem;
 	`,
 	UserContentInput = {
 		width: "90%",
@@ -112,9 +113,6 @@ const
 		background: #fff;
 		max-width: 390px;
     margin: 0 auto 3rem auto;
-		@media (max-height: 450px) {
-			display: none;
-		}
 	`;
 
 class Share extends Component {
@@ -123,10 +121,6 @@ class Share extends Component {
 		this.state = {
 			description: "",
 			step: 1,
-			privacyRange: 1,
-			checkNsfw: false,
-			checkSpoiler: false,
-			spoilerDescription: "",
 			socialCircle: [],
 			showSuggestions: false,
 			suggestionsTop: undefined,
@@ -136,6 +130,7 @@ class Share extends Component {
 			startPosition: undefined
 		};
 		this.scrollAlreadyBlocked = false;
+		this.previousHref = undefined;
 	}
 
 	componentDidMount() {
@@ -143,6 +138,11 @@ class Share extends Component {
 			this.scrollAlreadyBlocked = true
 			:
 			document.body.style.overflowY = "hidden";
+		if ( !this.props.displayPostDetails ) {
+			this.previousHref = window.location.href;
+			window.history.pushState( null, null, "/share" );
+			window.onpopstate = e => this.handlePopstate( e );
+		}
 		this.getSocialCircle();
 	}
 
@@ -150,6 +150,14 @@ class Share extends Component {
 		if ( !this.scrollAlreadyBlocked ) {
 			document.body.style.overflowY = "auto";
 		}
+		if ( !this.props.displayPostDetails ) {
+			window.history.pushState( null, null, this.previousHref );
+		}
+	}
+
+	handlePopstate = e => {
+		e.preventDefault();
+		this.props.switchShare();
 	}
 
 	getSocialCircle = () => {
@@ -266,14 +274,15 @@ class Share extends Component {
 
 	handleShare = async() => {
 		var response;
-		const {
-				description, privacyRange, checkNsfw, checkSpoiler
-			} = this.state,
-			alerts = { nsfw: checkNsfw, spoiler: checkSpoiler };
+		const { description } = this.state,
+
+			{ mentions, hashtags } = await extract(
+				description, { symbol: false, type: "all" }
+			);
 
 		try {
 			response = await api.sharePost(
-				this.props.postToShare._id, description, privacyRange, alerts
+				this.props.postToShare._id, description, mentions, hashtags
 			);
 		} catch ( err ) {
 			console.log( err );
@@ -286,110 +295,78 @@ class Share extends Component {
 			this.props.addPost( response.data.newPost );
 			this.props.updatePost( response.data.postToShare );
 			this.props.switchShare( undefined );
+			if ( response.mentionsNotifications ) {
+				for ( const notification of response.mentionsNotifications ) {
+					this.props.socket.emit( "sendNotification", notification );
+				}
+			}
 		}
-	}
-
-	nextStep = () => {
-		this.setState({ step: this.state.step + 1 });
-	}
-
-	prevStep = () => {
-		if ( this.state.step !== 1 ) {
-			this.setState({ step: this.state.step - 1 });
-		}
-	}
-
-	setPrivacyRange = range => {
-		this.setState({ privacyRange: range });
-	}
-
-	handleCheck = ( e, semanticUiProps ) => {
-		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
 	render() {
-		if ( this.state.step === 2 ) {
-			return (
-				<Wrapper>
-					<MediaStep3
-						handleCheck={this.handleCheck}
-						setPrivacyRange={this.setPrivacyRange}
-						prevStep={this.prevStep}
-						handleSubmit={this.handleShare}
-						mediaData={{}}
-						privacyRange={this.state.privacyRange}
-						spoilers={this.state.checkSpoiler}
-						handleChange={this.handleChange}
-						onShare
-					/>
-				</Wrapper>
-			);
-		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
 					<Icon
 						className="backIcon"
 						name="arrow left"
-						onClick={() => this.props.switchShare( undefined )}
+						onClick={() => this.props.switchShare()}
 					/>
-					<HeaderTxt>Share</HeaderTxt>
+					<HeaderTxt>Share with Friends</HeaderTxt>
 					<Icon
 						className="nextIcon"
 						name="check"
-						onClick={this.nextStep}
+						onClick={this.handleShare}
 					/>
 				</HeaderWrapper>
-				<ShareWrapper>
-					<InputWrapper>
-						<InputTrigger
-							style={InputTriggerStyles}
-							trigger={{ key: "@" }}
-							onStart={metaData => this.toggleSuggestions( metaData ) }
-							onCancel={metaData => this.toggleSuggestions( metaData ) }
-							onType={metaData => this.handleMentionInput( metaData ) }
-							endTrigger={endHandler => this.endHandler = endHandler }
-						>
-							<textarea
-								id="SharePostInput"
-								maxLength="2200"
-								style={UserContentInput}
-								autoFocus
-								name="description"
-								value={this.state.description}
-								placeholder="Share your opinion, tag @users and add #hashtags..."
-								onChange={this.handleChange}
-								onKeyDown={this.handleKeyPress}
-							/>
-						</InputTrigger>
+				<InputWrapper>
+					<InputTrigger
+						style={InputTriggerStyles}
+						trigger={{ key: "@" }}
+						onStart={metaData => this.toggleSuggestions( metaData ) }
+						onCancel={metaData => this.toggleSuggestions( metaData ) }
+						onType={metaData => this.handleMentionInput( metaData ) }
+						endTrigger={endHandler => this.endHandler = endHandler }
+					>
+						<textarea
+							id="SharePostInput"
+							maxLength="2200"
+							style={UserContentInput}
+							name="description"
+							value={this.state.description}
+							placeholder="Share your opinion, tag @users and add #hashtags..."
+							onChange={this.handleChange}
+							onKeyDown={this.handleKeyPress}
+						/>
+					</InputTrigger>
 
-						<SuggestionsWrapper
+					<SuggestionsWrapper
+						showSuggestions={this.state.showSuggestions}
+						left={this.state.suggestionsLeft}
+						top={this.state.suggestionsTop}
+					>
+						<Suggestions
+							socialCircle={this.state.socialCircle}
 							showSuggestions={this.state.showSuggestions}
-							left={this.state.suggestionsLeft}
-							top={this.state.suggestionsTop}
-						>
-							<Suggestions
-								socialCircle={this.state.socialCircle}
-								showSuggestions={this.state.showSuggestions}
-								mentionInput={this.state.mentionInput}
-								selectFromMentions={this.selectFromMentions}
-								media={"true"}
-							/>
-						</SuggestionsWrapper>
-					</InputWrapper>
+							mentionInput={this.state.mentionInput}
+							selectFromMentions={this.selectFromMentions}
+							media={"true"}
+						/>
+					</SuggestionsWrapper>
+				</InputWrapper>
 
-					<ShareMain>
-						<PostToShare>
-							<SharedPost
-								post={this.props.postToShare.sharedPost ?
-									this.props.postToShare.sharedPost
-									:
-									this.props.postToShare
-								}
-							/>
-						</PostToShare>
-					</ShareMain>
-				</ShareWrapper>
+				<ShareMain>
+					<PostToShare>
+						<SharedPost
+							history={this.props.history}
+							post={this.props.postToShare.sharedPost ?
+								this.props.postToShare.sharedPost
+								:
+								this.props.postToShare
+							}
+						/>
+					</PostToShare>
+				</ShareMain>
 			</Wrapper>
 		);
 	}
@@ -398,11 +375,14 @@ class Share extends Component {
 Share.propTypes = {
 	postToShare: PropTypes.object.isRequired,
 	switchShare: PropTypes.func.isRequired,
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 const
 	mapStateToProps = state => ({
-		postToShare: state.posts.postToShare
+		postToShare: state.posts.postToShare,
+		displayPostDetails: state.posts.displayPostDetails
 	}),
 
 	mapDispatchToProps = dispatch => ({

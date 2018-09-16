@@ -85,7 +85,10 @@ class Step4 extends Component {
 					/>
 					<NextButton
 						className="nextButton"
-						disabled={toFollow.length === 0}
+						disabled={toFollow.length === 0 ?
+							matchedUsers.length > 0 ? true : false
+							:
+							false }
 						primary
 						floated="right"
 						content="Finish"

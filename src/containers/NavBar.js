@@ -7,8 +7,11 @@ import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
+import { switchPostDetails, switchShare } from "../services/actions/posts";
 import Notifications from "../pages/Notifications";
 import Messages from "../pages/Messages";
+import Share from "../containers/Share";
+import PostDetails from "../containers/PostDetails";
 
 const
 	Wrapper = styled.div`
@@ -72,6 +75,7 @@ const
 		display: block;
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
+		background-size: 100%;
 		margin: 0;
 		position: relative;
 		:hover {
@@ -79,8 +83,8 @@ const
 		}
 	`,
 	ProfileImg = styled( Image )`
-		width: 30px !important;
-		height: 30px !important;
+		width: 33px !important;
+		height: 33px !important;
 	`,
 	DropdownFullname = styled.h4`
 		margin: 0 !important;
@@ -94,6 +98,9 @@ const
 		display: flex !important;
 		align-content: center !important;
 		justify-content: center !important;
+		a {
+			color: #111;
+		}
 	`,
 	Scores = styled( Dropdown.Item )`
 		display: flex !important;
@@ -121,6 +128,7 @@ const
 	`,
 	RightOptions = styled.div`
 		display: flex;
+		align-items: center;
 		margin-left: auto;
 		@media (max-width: 960px) {
 			display: none;
@@ -130,16 +138,42 @@ const
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		font-size: 1.9rem;
-    font-family: inherit;
-    color: #111 !important;
+		z-index: 2;
+		height: 45px;
+		width: 153px;
+		display: block;
+		background-image: url(${props => props.image});
+		background-repeat: no-repeat;
+		background-size: 100%;
+		span {
+			font-weight: 400;
+		}
 		@media (max-width: 960px) {
 			display: none;
 		}
+	`,
+	PostDetailsDimmer = styled.div`
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		z-index: 5;
+		background: rgba(0,0,0,0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	OutsideClickHandler = styled.div`
+		width: 100%;
+		height: 100%;
+		min-height: 100vh;
 	`;
 
 
 class NavBar extends Component {
+	componentWillUnmount() {
+		this.hidePopups();
+	}
+
 	handleHome = () => {
 		if ( this.props.location.pathname !== "/" ) {
 			this.props.history.push( "/" );
@@ -187,11 +221,33 @@ class NavBar extends Component {
 		this.props.logout();
 	}
 
+	goToBatcave = () => {
+		if ( this.props.location.pathname !== "/batcave" ) {
+			this.props.history.push( "/batcave" );
+		}
+	}
+
+	hidePopups = () => {
+		if ( this.props.displayNotifications ) {
+			this.props.switchNotifications();
+		}
+		if ( this.props.displayMessages ) {
+			this.props.switchMessages();
+		}
+		if ( this.props.displayPostDetails ) {
+			this.props.switchPostDetails();
+		}
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+		}
+	}
+
 	render() {
 		var
 			profileImage,
 			chatNotifications = 0;
 		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
 			username = localStorage.getItem( "username" ),
 			fullname = localStorage.getItem( "fullname" );
 		try {
@@ -200,27 +256,45 @@ class NavBar extends Component {
 					chatNotifications++;
 				}
 			}
-			if ( localStorage.getItem( "uimg" ) !== "undefined" ) {
-				profileImage = require( "../images/" +
-				localStorage.getItem( "uimg" ));
-			} else {
+
+			if ( !localStorage.getItem( "uimg" ) ||
+			localStorage.getItem( "uimg" ) === "undefined" ) {
 				profileImage = require( "../images/defaultUser.png" );
+			} else {
+				process.env.REACT_APP_STAGE === "dev" ?
+					profileImage = require( `../images/${localStorage.getItem( "uimg" )}` )
+					:
+					profileImage = s3Bucket + localStorage.getItem( "uimg" );
 			}
 		} catch ( err ) {
 			console.log( err );
 		}
+		const { displayPostDetails, displayShare } = this.props;
 		return (
 			<Wrapper
 				hide={this.props.hide}
 				hideOnLargeScreen={this.props.hideOnLargeScreen}
 			>
+				{( displayPostDetails || displayShare ) &&
+					<PostDetailsDimmer>
+						<OutsideClickHandler onClick={this.hidePopups} />
+						{displayPostDetails &&
+							<PostDetails
+								socket={this.props.socket}
+								history={this.props.history}
+							/>}
+						{displayShare &&
+							<Share socket={this.props.socket} history={this.props.history}
+							/>}
+					</PostDetailsDimmer>
+				}
 				<Options>
 					<NavOption onClick={this.handleHome} >
 						<NavImage
 							image={this.props.location.pathname === "/" ?
-								require( "../images/home_color.png" )
+								require( "../images/home_color.svg" )
 								:
-								require( "../images/home.png" )
+								require( "../images/home.svg" )
 							}
 						/>
 					</NavOption>
@@ -228,9 +302,9 @@ class NavBar extends Component {
 					<NavOption onClick={this.handleExplore}>
 						<NavImage
 							image={this.props.location.pathname === "/explore" ?
-								require( "../images/explore_color.png" )
+								require( "../images/search_color.svg" )
 								:
-								require( "../images/explore.png" )
+								require( "../images/search.svg" )
 							}
 						/>
 					</NavOption>
@@ -241,9 +315,9 @@ class NavBar extends Component {
 							image={this.props.location.pathname === "/notifications"
 							|| this.props.displayNotifications
 								?
-								require( "../images/bell_color.png" )
+								require( "../images/bell_color.svg" )
 								:
-								require( "../images/bell.png" )
+								require( "../images/bell.svg" )
 							}
 						>
 							{this.props.newNotifications > 0 &&
@@ -263,9 +337,9 @@ class NavBar extends Component {
 							onClick={this.handleMessages}
 							image={this.props.location.pathname === "/messages"
 							|| this.props.displayMessages ?
-								require( "../images/chat_color.png" )
+								require( "../images/chat_color.svg" )
 								:
-								require( "../images/chat.png" )
+								require( "../images/chat.svg" )
 							}
 						>
 							{chatNotifications > 0 &&
@@ -284,23 +358,22 @@ class NavBar extends Component {
 							messageTarget={this.props.messageTarget}
 							profilePage={this.props.profilePage}
 							startChat={this.props.startChat}
+							history={this.props.history}
 						/>
 					</NavOption>
 
-					<Logo href="localhost:3000">
-						Wanamic
-					</Logo>
+					<Logo href="/" image={require( "../images/black-logo-lname.svg" )} />
 
 					<RightOptions>
 						<Scores>
 							<NavImage
-								image={require( "../images/heart.png" )}
+								image={require( "../images/heart.svg" )}
 							/>
 							<Count>{this.props.totalLikes} likes</Count>
 						</Scores>
 						<Scores>
 							<NavImage
-								image={require( "../images/visibility.png" )}
+								image={require( "../images/visibility.svg" )}
 							/>
 							<Count>{this.props.totalViews} views</Count>
 						</Scores>
@@ -324,6 +397,11 @@ class NavBar extends Component {
 									text="Settings"
 									onClick={this.goToSettings}
 								/>
+								{localStorage.getItem( "ia" ) === "true" &&
+								<StyledDropdownItem
+									text="Batcave"
+									onClick={this.goToBatcave}
+								/>}
 							</Dropdown.Menu>
 						</Dropdown>
 					</RightOptions>
@@ -342,13 +420,13 @@ class NavBar extends Component {
 								<Dropdown.Divider />
 								<Scores>
 									<NavImage
-										image={require( "../images/heart.png" )}
+										image={require( "../images/heart.svg" )}
 									/>
 									<Count>{this.props.totalLikes} likes</Count>
 								</Scores>
 								<Scores>
 									<NavImage
-										image={require( "../images/visibility.png" )}
+										image={require( "../images/visibility.svg" )}
 									/>
 									<Count>{this.props.totalViews} views</Count>
 								</Scores>
@@ -361,6 +439,14 @@ class NavBar extends Component {
 									text="Settings"
 									onClick={this.goToSettings}
 								/>
+								<StyledDropdownItem>
+									<a href="/information/terms">Terms</a>
+								</StyledDropdownItem>
+								{localStorage.getItem( "ia" ) === "true" &&
+								<StyledDropdownItem
+									text="Batcave"
+									onClick={this.goToBatcave}
+								/>}
 							</Dropdown.Menu>
 						</Dropdown>
 					</NavOption>
@@ -386,13 +472,17 @@ const
 		totalViews: state.user.totalViews,
 		displayNotifications: state.notifications.displayNotifications,
 		displayMessages: state.conversations.displayMessages,
-		allConversations: state.conversations.allConversations
+		allConversations: state.conversations.allConversations,
+		displayShare: state.posts.displayShare,
+		displayPostDetails: state.posts.displayPostDetails,
 	}),
 
 	mapDispatchToProps = dispatch => ({
 		logout: () => dispatch( logout()),
 		switchNotifications: () => dispatch( switchNotifications()),
-		switchMessages: () => dispatch( switchMessages())
+		switchMessages: () => dispatch( switchMessages()),
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		switchShare: () => dispatch( switchShare())
 	});
 
 export default withRouter(

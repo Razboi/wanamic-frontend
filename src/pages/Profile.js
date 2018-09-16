@@ -4,10 +4,14 @@ import PropTypes from "prop-types";
 
 
 class ProfilePage extends Component {
-
+	constructor() {
+		super();
+		this.invalidEndpoints = [
+			"post", "share", "conversation", "socialCircle" ];
+	}
 	componentDidMount() {
 		const { match } = this.props;
-		if ( match && match.params.username === "post" ) {
+		if ( match && ( this.invalidEndpoints.includes( match.params.username ))) {
 			window.history.back();
 		}
 	}
@@ -18,13 +22,9 @@ class ProfilePage extends Component {
 	render() {
 		const
 			{ match, user } = this.props,
+			username = user ? user.username : match.params.username;
 
-			username = user ?
-				user.username
-				:
-				match.params.username;
-
-		if ( match && match.params.username === "post" ) {
+		if ( match && ( this.invalidEndpoints.includes( match.params.username ))) {
 			return null;
 		}
 

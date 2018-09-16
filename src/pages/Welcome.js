@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import api from "../services/api";
 import Step2 from "../components/WelcomeStep2";
 import Step3 from "../components/WelcomeStep3";
-import Step4 from "../components/WelcomeStep4";
 import styled from "styled-components";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import refreshToken from "../utils/refreshToken";
+import compressImage from "../utils/compressImage";
 
 const
 	Wrapper = styled.div`
@@ -17,7 +17,6 @@ class WelcomePage extends Component {
 	constructor() {
 		super();
 		this.state = {
-			description: "",
 			hobbies: [],
 			userImage: null,
 			imagePreview: undefined,
@@ -25,28 +24,55 @@ class WelcomePage extends Component {
 			checkedCategories: [],
 			toFollow: [],
 			matchedUsers: [],
-			error: ""
+			error: "",
+			loader: false,
+			tagInput: "",
+			suggestions: []
+		};
+		this.hobbiesSuggestions = {
+			Art: [ "Drawing", "Painting", "Design", "Architecture", "Sculpture" ],
+			Gaming: [ "Fortnite", "PUB", "Grand Theft Auto V", "WOW", "Overwatch" ],
+			Technology: [ "Programming", "Hardware", "Gadgets", "Smartphones", "Cryptocurrency", "Artificial intelligence" ],
+			Science: [ "Physics", "Chemistry", "Astronomy", "Biology", "Medicine", "Computer Science", "Engineering" ],
+			Music: [ "Rock", "Pop", "HipHop", "Jazz", "Electronic", "Blues", "Classical", "Country" ],
+			Sports: [ "Football/Soccer", "Basketball", "Cricket", "Golf", "Tennis", "Hockey" ],
+			Books: [ "Science Fiction", "Mystery", "Horror", "Romance", "Thriller" ],
+			Cooking: [ "Gardening", "Asian food", "Indian food", "Mexican food" ],
+			Travel: [ "Europe", "Africa", "Asia", "Japan", "Spain" ],
+			Films: [ "Comedy", "Action films", "Drama", "Marvel", "DC" ],
+			Health: [ "Detox", "Smoothies", "Keto diet", "Vegetarian", "Vegan" ],
+			Fitness: [ "Gym", "Running", "Bodybuilding", "Calisthenics", "Crossfit" ],
+			Beauty: [ "Makeup", "Nail art", "Hairstyles" ],
+			Humor: [ "Memes", "Dark humor", "Improvisation", "Stand up comedy" ],
+			Business: [ "Startups", "Investing", "Stocks", "Economy", "Politics" ],
+			Photography: [ "Architectural photography", "Wildlife photography" ],
+			TV: [ "Game of thrones", "Westworld", "The walking dead", "Stranger things", "Atlanta" ],
+			Family: [ "Babies", "Weddings", "Parenting", "Religion", "Family travel" ],
+			Motor: [ "Motorcycles", "Cars", "EV", "Tesla", "Racing", "Harley-Davidson" ],
+			Pets: [ "Dogs", "Cats", "Pet training", "Birds", "Mice" ],
+			Fashion: [ "Vintage", "Urban style", "Bohemian", "Rocker" ]
 		};
 	}
 
+	componentDidMount() {
+		document.title = "Welcome";
+	}
 
-	handleChange = e =>
-		this.setState({ [ e.target.name ]: e.target.value })
+	handleChange = e => {
+		this.setState({ [ e.target.name ]: e.target.value });
+	}
 
 	handleFileChange = e => {
 		const
 			file = e.target.files[ 0 ],
-			fileExt = file && file.name.split( "." ).pop();
+			target = e.target.name;
 
 		if ( !file ) {
 			return;
 		}
 
 		if (( file.type !== "image/jpeg" && file.type !== "image/png"
-			&& file.type !== "image/jpg" && file.type !== "image/gif" )
-			||
-			( fileExt !== "jpeg" && fileExt !== "png"
-			&& fileExt !== "jpg" && fileExt !== "gif" )) {
+			&& file.type !== "image/jpg" && file.type !== "image/gif" )) {
 			this.setState({
 				error: "Only .png/.jpg/.gif/.jpeg images are allowed"
 			});
@@ -54,17 +80,24 @@ class WelcomePage extends Component {
 		}
 
 		if ( file.size > 1010000 ) {
-			this.setState({
-				error: "The filesize limit is 1MB"
+			this.setState({ loader: true });
+			compressImage( file, target === "headerImage" ).then( compressedImg => {
+				this.setState({
+					[ target ]: compressedImg,
+					loader: false,
+					imagePreview: URL.createObjectURL( compressedImg )
+				});
+			}).catch( err => {
+				console.log( err );
+				this.setState({ err });
 			});
-			return;
+		} else {
+			this.setState({
+				[ e.target.name ]: file,
+				imagePreview: URL.createObjectURL( file ),
+				error: ""
+			});
 		}
-
-		this.setState({
-			[ e.target.name ]: file,
-			imagePreview: URL.createObjectURL( file ),
-			error: ""
-		});
 	}
 
 	handleDelete = i => {
@@ -74,8 +107,11 @@ class WelcomePage extends Component {
 	}
 
 	handleAddition = hobbie => {
+		if ( !hobbie.id.trim( "" )) {
+			return;
+		}
 		this.setState( state => ({
-			hobbies: [ ...state.hobbies, hobbie ]
+			hobbies: [ ...state.hobbies, hobbie ], tagInput: ""
 		}));
 	}
 
@@ -111,52 +147,36 @@ class WelcomePage extends Component {
 		this.setState({ toFollow: usersToFollow });
 	}
 
-	finishStep2 = async() => {
-		var data = new FormData();
-		if ( this.state.userImage ) {
-			data.append( "userImage", this.state.userImage );
-		}
-		data.append( "description", this.state.description );
-		data.append( "token", localStorage.getItem( "token" ));
-
-		this.handleNext();
+	categoriesNext = async() => {
+		var finalSuggestions = [];
 		try {
-			const res = await api.setUserInfo( data );
-			await api.setUserKw( this.state.hobbies );
-			if ( res.data.newImage ) {
-				localStorage.setItem( "uimg", res.data.newImage );
+			for ( const category of this.state.checkedCategories ) {
+				finalSuggestions.push( ...this.hobbiesSuggestions[ category ]);
 			}
+			this.setState({ suggestions: finalSuggestions });
+			this.handleNext();
 		} catch ( err ) {
 			console.log( err );
-			if ( err.response.data === "jwt expired" ) {
-				await refreshToken();
-				this.finishStep2();
-			}
-		}
-	}
-
-	categoriesNext = async() => {
-		try {
-			const res = await api.getInterestsMatches( this.state.checkedCategories );
-			if ( res === "jwt expired" ) {
+			if ( err.response && err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.categoriesNext();
-			} else {
-				this.setState({ matchedUsers: res.data });
-				this.handleNext();
+				return;
 			}
-		} catch ( err ) {
-			console.log( err );
+			this.setState({ error: err.response && err.response.data });
 		}
 	}
 
 	finish = async() => {
 		try {
-			await api.updateInterests( this.state.checkedCategories );
-			const notifications = await api.setupFollow( this.state.toFollow );
-			for ( const index in notifications ) {
-				this.props.socket.emit( "sendNotification", notifications[ index ]);
+			if ( this.state.userImage ) {
+				let data = new FormData();
+				data.append( "userImage", this.state.userImage );
+				data.append( "token", localStorage.getItem( "token" ));
+				const res = await api.setUserInfo( data );
+				res.data.newImage && localStorage.setItem( "uimg", res.data.newImage );
 			}
+			await api.setUserKw( this.state.hobbies );
+			await api.updateInterests( this.state.checkedCategories );
 			localStorage.removeItem( "NU" );
 			this.props.history.push( "/" );
 		} catch ( err ) {
@@ -175,22 +195,7 @@ class WelcomePage extends Component {
 			<Wrapper>
 				{ this.state.step === 1 &&
 					<Step2
-						handleNext={this.finishStep2}
-						handleChange={this.handleChange}
-						handleFileChange={this.handleFileChange}
-						description={this.state.description}
-						hobbies={this.state.hobbies}
-						handleDelete={this.handleDelete}
-						handleAddition={this.handleAddition}
-						error={this.state.error}
-						imagePreview={this.state.imagePreview}
-					/>
-				}
-
-				{ this.state.step === 2 &&
-					<Step3
 						categoriesNext={this.categoriesNext}
-						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
 						toggle={this.toggle}
 						handleCategoryClick={this.handleCategoryClick}
@@ -198,15 +203,20 @@ class WelcomePage extends Component {
 					/>
 				}
 
-				{ this.state.step === 3 &&
-					<Step4
+				{ this.state.step === 2 &&
+					<Step3
+						handleNext={this.finish}
 						handlePrev={this.handlePrev}
 						handleChange={this.handleChange}
-						matchedUsers={this.state.matchedUsers}
-						handleFollow={this.handleFollow}
-						handleUnfollow={this.handleUnfollow}
-						finish={this.finish}
-						toFollow={this.state.toFollow}
+						handleFileChange={this.handleFileChange}
+						hobbies={this.state.hobbies}
+						handleDelete={this.handleDelete}
+						handleAddition={this.handleAddition}
+						error={this.state.error}
+						imagePreview={this.state.imagePreview}
+						loader={this.state.loader}
+						tagInput={this.state.tagInput}
+						suggestions={this.state.suggestions}
 					/>
 				}
 

@@ -37,33 +37,6 @@ class NotificationButton extends Component {
 				</React.Fragment>
 			);
 		}
-		if ( notification.follow ) {
-			return (
-				<React.Fragment>
-					{network.friends.includes( notification.author._id ) ?
-						<StyledButton
-							onClick={this.props.unFriend}
-							size="tiny"
-							content="Friend"
-						/>
-						:
-						network.following.includes( notification.author._id ) ?
-							<StyledButton
-								onClick={this.props.unFollow}
-								size="tiny"
-								content="Following"
-							/>
-							:
-							<StyledButton
-								onClick={this.props.handleFollow}
-								primary
-								size="tiny"
-								content="Follow"
-							/>
-					}
-				</React.Fragment>
-			);
-		}
 		return null;
 	}
 }

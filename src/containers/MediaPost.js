@@ -1,19 +1,15 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Image } from "semantic-ui-react";
-import moment from "moment";
+import { Image } from "semantic-ui-react";
 import PostOptions from "./PostOptions";
 import api from "../services/api";
-import DropdownOptions from "../components/DropdownOptions";
 import PropTypes from "prop-types";
-import {
-	deletePost, updatePost, switchPostDetails
-} from "../services/actions/posts";
+import { switchPostDetails, updatePost } from "../services/actions/posts";
 import { connect } from "react-redux";
 import AlertsFilter from "../components/AlertsFilter";
 import LinkPreview from "../components/LinkPreview";
 import refreshToken from "../utils/refreshToken";
-import extract from "mention-hashtag";
+import PostHeader from "../components/PostHeader";
 
 const
 	Wrapper = styled.div`
@@ -29,60 +25,6 @@ const
 			border-bottom-left-radius: 2px;
 			border-bottom-right-radius: 2px;
 		}
-	`,
-	PostHeader = styled( Header )`
-		min-height: 60px;
-		display: flex;
-		flex-direction: row;
-		padding: 1rem !important;
-		margin: 0 !important;
-		align-items: center !important;
-		font-family: inherit !important;
-	`,
-	HeaderInfo = styled.div`
-		display: flex;
-		flex-direction: column;
-		margin: 0 2rem 0 0.5rem;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	AuthorImg = styled( Image )`
-		overflow: visible !important;
-		width: 30px !important;
-		height: 30px !important;
-		margin: 0 !important;
-		@media (min-width: 420px) {
-			width: 35px !important;
-			height: 35px !important;
-		}
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	StyledOptions = {
-		position: "absolute",
-		right: "1rem",
-		top: "1rem",
-	},
-	AuthorFullname = styled.span`
-		font-size: 1.05rem !important;
-		color: #111 !important;
-		word-break: break-word !important;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	AuthorUsername = styled.span`
-		font-size: 1rem;
-		color: rgba(0,0,0,0.65);
-		font-weight: normal;
-		margin-left: 0.25rem;
-		word-break: break-word !important;
-	`,
-	DateTime = styled( Header.Subheader )`
-		font-size: 1rem !important;
-		color: rgba(0,0,0,0.45) !important;
 	`,
 	MediaTitle = styled.h4`
 		font-family: inherit !important;
@@ -174,52 +116,16 @@ class MediaPost extends Component {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleDelete = () => {
-		api.deletePost( this.props.post._id )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.handleDelete())
-						.catch( err => console.log( err ));
-				} else {
-					this.props.deletePost( this.props.post._id );
-				}
-			}).catch( err => console.log( err ));
-	};
-
-	handleUpdate = async updatedContent => {
-		if (( !updatedContent && !this.props.post.content )
-			|| this.props.post.content === updatedContent ) {
-			return;
-		}
-		try {
-			const
-				{ mentions, hashtags } = await extract(
-					updatedContent, { symbol: false, type: "all" }),
-				res = await api.updatePost(
-					this.props.post._id, updatedContent, mentions, hashtags );
-			if ( res === "jwt expired" ) {
-				await refreshToken();
-				this.handleUpdate();
-			} else {
-				this.props.updatePost( res.data.updatedPost );
-				for ( const notification of res.data.mentionsNotifications ) {
-					this.props.socket.emit( "sendNotification", notification );
-				}
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	};
-
 	handleLike = retry => {
+		const { post } = this.props;
 		if ( !retry ) {
-			this.setState({
-				likedBy: [ ...this.state.likedBy, localStorage.getItem( "username" ) ]
-			});
+			let updatedPost = post;
+			updatedPost.likedBy = [
+				localStorage.getItem( "username" ), ...updatedPost.likedBy ];
+			this.props.updatePost( updatedPost );
 		}
 
-		api.likePost( this.props.post._id )
+		api.likePost( post._id )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -232,15 +138,15 @@ class MediaPost extends Component {
 	}
 
 	handleDislike = retry => {
-		var	newLikedBy;
+		const { post } = this.props;
 		if ( !retry ) {
-			newLikedBy = this.state.likedBy;
-			const index = this.state.likedBy.indexOf( localStorage.getItem( "username" ));
-			newLikedBy.splice( index, 1 );
-			this.setState({ likedBy: newLikedBy });
+			let updatedPost = post;
+			const index = post.likedBy.indexOf( localStorage.getItem( "username" ));
+			updatedPost.likedBy.splice( index, 1 );
+			this.props.updatePost( updatedPost );
 		}
 
-		api.dislikePost( this.props.post._id )
+		api.dislikePost( post._id )
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
@@ -255,30 +161,28 @@ class MediaPost extends Component {
 	}
 
 	displayPostDetails = () => {
-		if ( this.props.newsFeed && !this.props.post.picture ) {
-			this.props.switchPostDetails( this.props.index );
-		}
-	}
-
-	hidePostDetails = () => {
-		this.setState({
-			selectedPost: 0
-		});
-		this.props.switchPostDetails();
+		this.props.switchPostDetails( this.props.post );
 	}
 
 	render() {
-		const { post } = this.props;
+		const
+			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
+			{ post } = this.props;
 		try {
 			if ( post.author.profileImage ) {
-				userPicture = require( "../images/" + post.author.profileImage );
+				process.env.REACT_APP_STAGE === "dev" ?
+					userPicture = require( "../images/" + post.author.profileImage )
+					:
+					userPicture = s3Bucket + post.author.profileImage;
 			} else {
 				userPicture = require( "../images/defaultUser.png" );
 			}
 
 			if ( post.picture ) {
-				mediaPicture =
-					require( "../images/" + post.mediaContent.image );
+				process.env.REACT_APP_STAGE === "dev" ?
+					mediaPicture = require( "../images/" + post.mediaContent.image )
+					:
+					mediaPicture = s3Bucket + post.mediaContent.image;
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -290,34 +194,12 @@ class MediaPost extends Component {
 				noBorder={this.props.fakeOptions || this.props.details
 					? 1 : 0}
 			>
-				<PostHeader className="mediaPostHeader">
-					<AuthorImg
-						circular
-						src={userPicture}
-						onClick={this.props.goToProfile}
-					/>
-					<HeaderInfo onClick={this.props.goToProfile}>
-						<AuthorFullname className="postAuthor">
-							{post.author.fullname}
-							<AuthorUsername>
-								@{post.author.username}
-							</AuthorUsername>
-						</AuthorFullname>
-						<DateTime className="postDate">
-							{moment( post.createdAt ).fromNow()}
-						</DateTime>
-					</HeaderInfo>
-
-					{ !this.props.fakeOptions &&
-						<DropdownOptions
-							style={StyledOptions}
-							author={post.author}
-							currentContent={post.content}
-							handleUpdate={this.handleUpdate}
-							handleDelete={this.handleDelete}
-						/>
-					}
-				</PostHeader>
+				<PostHeader
+					post={post}
+					userPicture={userPicture}
+					fakeOptions={this.props.fakeOptions}
+					socket={this.props.socket}
+				/>
 
 				<PostBody alerts={this.state.nsfw || this.state.spoiler}>
 					<AlertsFilter
@@ -331,6 +213,7 @@ class MediaPost extends Component {
 							<LinkPreview
 								linkContent={post.linkContent}
 								details={this.props.details}
+								displayPostDetails={this.displayPostDetails}
 							/>
 							:
 							<PostMediaContent onClick={this.displayPostDetails}>
@@ -359,13 +242,7 @@ class MediaPost extends Component {
 								fakeOptions={this.props.fakeOptions}
 								handleLike={this.handleLike}
 								handleDislike={this.handleDislike}
-								numLiked={this.state.likedBy.length}
-								numComments={post.comments.length}
-								numShared={post.sharedBy.length}
 								id={post._id}
-								liked={
-									this.state.likedBy.includes( localStorage.getItem( "username" ))
-								}
 							/>
 						}
 
@@ -388,9 +265,10 @@ MediaPost.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
-	goToProfile: PropTypes.func,
+	history: PropTypes.object,
 	newsFeed: PropTypes.bool,
-	details: PropTypes.bool
+	details: PropTypes.bool,
+	clubAdmin: PropTypes.bool
 };
 
 const
@@ -398,9 +276,8 @@ const
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		deletePost: postId => dispatch( deletePost( postId )),
-		updatePost: post => dispatch( updatePost( post )),
-		switchPostDetails: index => dispatch( switchPostDetails( index ))
+		switchPostDetails: post => dispatch( switchPostDetails( post )),
+		updatePost: post => dispatch( updatePost( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( MediaPost );
