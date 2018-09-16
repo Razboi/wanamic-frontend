@@ -14,27 +14,25 @@ export const
 	DELETE_POST = "DELETE_POST",
 	SWITCH_POST_DETAILS = "SWITCH_POST_DETAILS",
 	ADD_TO_COMMENTS = "ADD_TO_COMMENTS",
+	SET_FEED = "SET_FEED",
+	SET_CLUB = "SET_CLUB",
+	SET_CLUBS = "SET_CLUBS",
 
 
-	setPosts = ( posts, onExplore, onAlbum, onProfile ) => ({
+	setPosts = ( posts, onAlbum ) => ({
 		type: SET_POSTS,
 		posts: posts,
-		onExplore: onExplore,
-		onAlbum: onAlbum,
-		onProfile: onProfile
+		onAlbum: onAlbum
 	}),
 
-	addToPosts = ( posts, onExplore, onProfile ) => ({
+	addToPosts = ( posts ) => ({
 		type: ADD_TO_POSTS,
-		posts: posts,
-		onExplore: onExplore,
-		onProfile: onProfile
+		posts: posts
 	}),
 
-	addPost = ( post, onProfile ) => ({
+	addPost = ( post ) => ({
 		type: ADD_POST,
-		post: post,
-		onProfile: onProfile
+		post: post
 	}),
 
 	deletePost = postId => ({
@@ -79,6 +77,21 @@ export const
 	switchShare = post => ({
 		type: SWITCH_SHARE,
 		post: post
+	}),
+
+	setFeed = feed => ({
+		type: SET_FEED,
+		feed: feed
+	}),
+
+	setClub = club => ({
+		type: SET_CLUB,
+		club: club
+	}),
+
+	setClubs = clubs => ({
+		type: SET_CLUBS,
+		clubs: clubs
 	}),
 
 	switchPostDetails = post => ({

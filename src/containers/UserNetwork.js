@@ -20,26 +20,6 @@ const
 			margin: 2rem auto 0 auto;
 		}
 	`,
-	Tabs = styled.div`
-		background: #fff;
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-		justify-content: space-around;
-		padding: 1rem 0;
-		border-bottom: 1px solid #bec2c9;
-		position: relative;
-	`,
-	TabOption = styled.div`
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		font-size: 1rem;
-		font-weight: ${props => props.selected ? "bold" : "normal"};
-		:hover {
-			cursor: pointer;
-		}
-	`,
 	UsersWrapper = styled.div`
 		background: #fff;
 		display: flex;
@@ -64,7 +44,7 @@ class UserNetwork extends Component {
 	constructor() {
 		super();
 		this.state = {
-			network: { friends: [], followers: [], following: [] },
+			network: { friends: [] },
 			tab: 0,
 			requesterNetwork: {},
 			loader: false
@@ -98,148 +78,39 @@ class UserNetwork extends Component {
 		}
 	}
 
-	handleFollow = async( username, id ) => {
-		var requesterNetwork = this.state.requesterNetwork;
-		try {
-			const notification = await api.followUser( username );
-			if ( notification === "jwt expired" ) {
-				await refreshToken();
-				this.handleFollow();
-			} else if ( notification.data ) {
-				this.props.socket.emit( "sendNotification", notification.data );
-				requesterNetwork.following.push( id );
-				this.setState({ requesterNetwork: requesterNetwork });
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	handleUnfollow = async( username, id ) => {
-		var requesterNetwork = this.state.requesterNetwork;
-		try {
-			const response = await api.unfollowUser( username );
-			if ( response === "jwt expired" ) {
-				await refreshToken();
-				this.handleUnfollow();
-			} else {
-				const indexOfUnfollow = requesterNetwork.following.indexOf(
-					id );
-				requesterNetwork.following.splice( indexOfUnfollow, 1 );
-				this.setState({ requesterNetwork: requesterNetwork });
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	handleUnfriend = async( username, id ) => {
-		var requesterNetwork = this.state.requesterNetwork;
-		try {
-			const response = await api.deleteFriend( username );
-			if ( response === "jwt expired" ) {
-				await refreshToken();
-				this.handleUnfriend();
-			} else {
-				const indexOfUnfriend = requesterNetwork.friends.indexOf(
-					id );
-				requesterNetwork.friends.splice( indexOfUnfriend, 1 );
-				this.setState({ requesterNetwork: requesterNetwork });
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
 	handleUserPreviewClick = username => {
 		this.props.toggleTab();
 		this.props.history.push( "/" + username );
 	}
 
 	render() {
-		const { requesterNetwork, network, tab } = this.state;
+		const { network, loader } = this.state;
+		if ( network.friends.length === 0 && !loader ) {
+			return (
+				<Wrapper>
+					<UsersWrapper>
+						@{this.props.username} hasn't built a network yet.
+					</UsersWrapper>
+				</Wrapper>
+			);
+		}
 		return (
 			<Wrapper>
-				<Tabs>
-					{this.state.loader &&
-						<LoaderDimmer>
-							<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
-						</LoaderDimmer>
-					}
-					<TabOption
-						onClick={() => this.setTab( 0 )}
-						selected={tab === 0}
-					>
-						<span>Friends</span>
-						<span>{network.friends.length}</span>
-					</TabOption>
-					<TabOption
-						onClick={() => this.setTab( 1 )}
-						selected={tab === 1}
-					>
-						<span>Followers</span>
-						<span>{network.followers.length}</span>
-					</TabOption>
-					<TabOption
-						onClick={() => this.setTab( 2 )}
-						selected={tab === 2}
-					>
-						<span>Following</span>
-						<span>{network.following.length}</span>
-					</TabOption>
-				</Tabs>
+				{loader &&
+					<LoaderDimmer>
+						<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+					</LoaderDimmer>
+				}
 
-				{tab === 0 &&
 				<UsersWrapper>
 					{network.friends.map(( user, index ) =>
 						<UserPreview
 							handleClick={this.handleUserPreviewClick}
 							key={index}
 							user={user}
-							handleFollow={this.handleFollow}
-							handleUnfollow={this.handleUnfollow}
-							handleUnfriend={this.handleUnfriend}
-							alreadyFollowing={
-								requesterNetwork.following.includes( user._id )}
-							alreadyFriends={
-								requesterNetwork.friends.includes( user._id )}
 						/>
 					)}
-				</UsersWrapper>}
-				{tab === 1 &&
-				<UsersWrapper>
-					{network.followers.map(( user, index ) =>
-						<UserPreview
-							handleClick={this.handleUserPreviewClick}
-							key={index}
-							user={user}
-							handleFollow={this.handleFollow}
-							handleUnfollow={this.handleUnfollow}
-							handleUnfriend={this.handleUnfriend}
-							alreadyFollowing={
-								requesterNetwork.following.includes( user._id )}
-							alreadyFriends={
-								requesterNetwork.friends.includes( user._id )}
-						/>
-					)}
-				</UsersWrapper>}
-				{tab === 2 &&
-				<UsersWrapper>
-					{network.following.map(( user, index ) =>
-						<UserPreview
-							handleClick={this.handleUserPreviewClick}
-							key={index}
-							user={user}
-							handleFollow={this.handleFollow}
-							handleUnfollow={this.handleUnfollow}
-							handleUnfriend={this.handleUnfriend}
-							alreadyFollowing={
-								requesterNetwork.following.includes( user._id )}
-							alreadyFriends={
-								requesterNetwork.friends.includes( user._id )}
-						/>
-					)}
-				</UsersWrapper>}
+				</UsersWrapper>
 			</Wrapper>
 		);
 	}

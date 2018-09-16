@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Image } from "semantic-ui-react";
+import { Image, Button } from "semantic-ui-react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import moment from "moment";
@@ -104,6 +104,9 @@ const
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+	`,
+	PresidencyButton = styled( Button )`
+		display: block !important;
 	`;
 
 class Notifications extends Component {
@@ -271,6 +274,24 @@ class Notifications extends Component {
 		}
 	}
 
+	acceptPresidency = async clubName => {
+		try {
+			await api.acceptPresidency( clubName );
+			if ( this.props.history.location.pathname === `/c/${clubName}` ) {
+				window.location.reload();
+			} else {
+				this.props.history.push( `/c/${clubName}` );
+			}
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.acceptPresidency( clubName );
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
@@ -300,10 +321,22 @@ class Notifications extends Component {
 						}
 						{this.props.notifications.map(( notification, index ) =>
 							notification.author &&
-								notification.alert ?
+								( notification.alert || notification.clubRequestResponse
+									|| notification.clubSuccession ) ?
 								<Notification key={index}>
 									<Content alert>
-										{notification.content} <a href="/information/content">Content Policy of Wanamic</a>
+										{notification.content}
+										{notification.alert &&
+											<a href="/information/content">Content Policy of Wanamic</a> }
+										{( notification.clubName || notification.clubSuccession ) &&
+											<a href={`/c/${notification.clubName}`}> Club Page</a> }
+										{notification.clubSuccession &&
+											<PresidencyButton
+												primary
+												content="Accept"
+												onClick={() => this.acceptPresidency( notification.clubName )}
+											/>
+										}
 									</Content>
 								</Notification>
 								:

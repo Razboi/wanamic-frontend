@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Explore from "./pages/Explore";
 import Batcave from "./pages/Batcave";
+import Club from "./pages/Club";
 import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
 import GuestRoute from "./utils/routes/GuestRoute";
@@ -34,7 +35,10 @@ ReactGA.initialize( "UA-72968417-3" );
 let apiURL = process.env.REACT_APP_STAGE === "dev" ?
 	"http://192.168.1.15:8081"
 	:
-	"https://api.wanamic.com";
+	process.env.REACT_APP_STAGE === "testing" ?
+		"http://testing.wanamic.com"
+		:
+		"https://api.wanamic.com";
 
 
 class App extends Component {
@@ -166,6 +170,7 @@ class App extends Component {
 						path="/reset_password/:token" component={PasswordReset}
 					/>
 					<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
+					<UserRoute path="/c/:club" component={Club} socket={this.socket} />
 					<Route path="/information/:section" component={Information} />
 					<UserRoute exact path="/:username" component={Profile} socket={this.socket} />
 				</Switch>

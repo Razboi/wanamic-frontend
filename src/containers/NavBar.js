@@ -98,6 +98,9 @@ const
 		display: flex !important;
 		align-content: center !important;
 		justify-content: center !important;
+		a {
+			color: #111;
+		}
 	`,
 	Scores = styled( Dropdown.Item )`
 		display: flex !important;
@@ -436,6 +439,9 @@ class NavBar extends Component {
 									text="Settings"
 									onClick={this.goToSettings}
 								/>
+								<StyledDropdownItem>
+									<a href="/information/terms">Terms</a>
+								</StyledDropdownItem>
 								{localStorage.getItem( "ia" ) === "true" &&
 								<StyledDropdownItem
 									text="Batcave"

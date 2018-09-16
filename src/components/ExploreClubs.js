@@ -11,8 +11,8 @@ const
 		padding: 2rem;
 		overflow: hidden;
 		h1 {
-			font-family: inherit;
 			text-align: center;
+			font-family: inherit;
 		}
 		@media (min-width: 800px) {
 			width: 50%;
@@ -29,30 +29,21 @@ const
     justify-content: space-evenly;
 	`,
 	ButtonsWrapper = styled.div`
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	`,
 	SugestedHeader = styled.h2`
-		font-weight: 400;
-		font-size: 1.3rem;
 		margin: 0px;
 		text-align: center;
 		color: #222;
 		align-self: center;
 		font-family: inherit;
 		margin-bottom: 2rem;
-	`,
-	Buttons = styled.div`
-		display: flex;
-		justify-content: space-evenly;
-	`,
-	SugestedButton = styled( Button )`
-		font-family: inherit !important;
-		background: rgb(133, 217, 191) !important;
-		border-radius: 2px !important;
+		font-weight: 400;
+    font-size: 1.3rem;
 	`,
 	RandomButton = styled( Button )`
-		color: rgb(133, 217, 191) !important;
-		border: 1px solid rgb(133, 217, 191) !important;
-		background: #fff !important;
 		font-family: inherit !important;
 		border-radius: 2px !important;
 	`,
@@ -85,53 +76,34 @@ const
 		};
 	`;
 
-class ExploreUsers extends Component {
+class ExploreClubs extends Component {
 	handleKeyPress = e => {
 		if ( e.key === "Enter" ) {
-			e.target.name === "hobbies" ?
-				this.props.matchHobbies()
-				:
-				this.props.matchUsername();
+			this.props.searchClub();
 		}
 	}
 
 	render() {
 		return (
 			<Wrapper>
-				<h1>Explore Users</h1>
+				<h1>Explore Clubs</h1>
 				<Options>
 					<ButtonsWrapper>
 						<SugestedHeader>
-							Find users with similar interests or random ones.
+							Explore random clubs. You never know what you will find.
 						</SugestedHeader>
-						<Buttons>
-							<SugestedButton
-								primary
-								content="SUGGESTED"
-								onClick={this.props.getSugested}
-							/>
-							<RandomButton
-								className="randomButton"
-								content="RANDOM"
-								onClick={this.props.getRandom}
-							/>
-						</Buttons>
+						<RandomButton
+							primary
+							content="EXPLORE"
+							onClick={this.props.randomClub}
+						/>
 					</ButtonsWrapper>
 					<SearchWrapper>
-						<h2>Search by interests and hobbies</h2>
+						<h2>Search a club by name</h2>
 						<SearchBar
 							icon="search"
-							name="hobbies"
-							placeholder="Try 'gaming' or 'fishing'"
-							onKeyPress={this.handleKeyPress}
-							onChange={this.props.handleChange}
-						/>
-
-						<h2>Search by username</h2>
-						<SearchBar
-							icon="search"
-							name="usernameSearch"
-							placeholder="skankhunt42"
+							name="clubSearch"
+							placeholder="programming"
 							onKeyPress={this.handleKeyPress}
 							onChange={this.props.handleChange}
 						/>
@@ -142,12 +114,10 @@ class ExploreUsers extends Component {
 	}
 }
 
-ExploreUsers.propTypes = {
+ExploreClubs.propTypes = {
+	randomClub: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	getRandom: PropTypes.func.isRequired,
-	getSugested: PropTypes.func.isRequired,
-	matchHobbies: PropTypes.func.isRequired,
-	matchUsername: PropTypes.func.isRequired
+	searchClub: PropTypes.func.isRequired
 };
 
-export default ExploreUsers;
+export default ExploreClubs;

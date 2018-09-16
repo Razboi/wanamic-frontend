@@ -46,9 +46,9 @@ class MediaPicture extends Component {
 		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
-	handleSubmit = () => {
+	handleSubmit = ( feed, selectedClub ) => {
 		const {
-				description, privacyRange, checkNsfw, checkSpoiler,
+				description, checkNsfw, checkSpoiler,
 				spoilerDescription
 			} = this.state,
 			alerts = {
@@ -56,7 +56,7 @@ class MediaPicture extends Component {
 				spoiler: checkSpoiler,
 				spoilerDescription: spoilerDescription
 			};
-		this.props.submitPicture( description, privacyRange, alerts );
+		this.props.submitPicture( description, feed, selectedClub, alerts );
 		return;
 	}
 

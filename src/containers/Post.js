@@ -1,81 +1,27 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Image } from "semantic-ui-react";
 import api from "../services/api";
-import moment from "moment";
 import PostOptions from "./PostOptions";
 import SharedPost from "../containers/SharedPost";
-import DropdownOptions from "../components/DropdownOptions";
 import { switchPostDetails, updatePost } from "../services/actions/posts";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import refreshToken from "../utils/refreshToken";
 import AlertsFilter from "../components/AlertsFilter";
+import PostHeader from "../components/PostHeader";
 
 const
 	Wrapper = styled.div`
 		overflow: hidden;
 		position: relative;
-		@media (min-width: 420px) {
-			border: 1px solid rgba(0, 0, 0, .1);
-			margin-bottom: 1rem;
-			background: #fff;
-		}
-		@media (max-width: 420px) {
-			border-bottom: ${props => props.noBorder ?
+		border-bottom: ${props => props.noBorder ?
 		"0" : "1px solid rgba(0, 0, 0, .1)"};
+		@media (min-width: 420px) {
+			margin-bottom: ${props => !props.noBorder && "1rem"};
+			background: #fff;
+			border-bottom-left-radius: 2px;
+			border-bottom-right-radius: 2px;
 		}
-	`,
-	PostHeader = styled( Header )`
-		min-height: 60px;
-		display: flex;
-		flex-direction: row;
-		padding: 1rem !important;
-		margin: 0 !important;
-		align-items: center !important;
-		font-family: inherit !important;
-	`,
-	HeaderInfo = styled.div`
-		display: flex;
-		flex-direction: column;
-		margin: 0 2rem 0 0.5rem;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	AuthorImg = styled( Image )`
-		overflow: visible !important;
-		width: 40px !important;
-		height: 40px !important;
-		margin: 0 !important;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	StyledOptions = {
-		position: "absolute",
-		right: "1rem",
-		top: "1rem",
-	},
-	AuthorFullname = styled.span`
-		font-size: 1.05rem !important;
-		color: #111 !important;
-		word-break: break-word !important;
-		:hover {
-			cursor: pointer;
-		}
-	`,
-	AuthorUsername = styled.span`
-		font-size: 1rem;
-		color: rgba(0,0,0,0.65);
-		font-weight: normal;
-		margin-left: 0.25rem;
-		word-break: break-word !important;
-	`,
-	DateTime = styled( Header.Subheader )`
-		color: rgba(0,0,0,0.85) !important;
-		font-size: 1rem !important;
-		font-weight: 200 !important;
 	`,
 	ContentWrapper = styled.div`
 		display: flex;
@@ -135,12 +81,6 @@ class Post extends Component {
 
 	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
-	}
-
-	goToProfile = user => {
-		if ( this.props.history ) {
-			this.props.history.push( "/" + user.username );
-		}
 	}
 
 	handleLike = retry => {
@@ -213,32 +153,12 @@ class Post extends Component {
 				noBorder={this.props.fakeOptions || this.props.details
 					? 1 : 0}
 			>
-				<PostHeader>
-					<AuthorImg
-						circular
-						src={userPicture}
-						onClick={() => this.goToProfile( post.author )}
-					/>
-					<HeaderInfo onClick={() => this.goToProfile( post.author )}>
-						<AuthorFullname className="postAuthor">
-							{post.author.fullname}
-							<AuthorUsername>
-								@{post.author.username}
-							</AuthorUsername>
-						</AuthorFullname>
-						<DateTime className="postDate">
-							{moment( post.createdAt ).fromNow()}
-						</DateTime>
-					</HeaderInfo>
-
-					{ !this.props.fakeOptions &&
-						<DropdownOptions
-							style={StyledOptions}
-							postOrComment={post}
-							socket={this.props.socket}
-						/>
-					}
-				</PostHeader>
+				<PostHeader
+					post={post}
+					userPicture={userPicture}
+					fakeOptions={this.props.fakeOptions}
+					socket={this.props.socket}
+				/>
 
 				<PostBody alerts={this.state.nsfw || this.state.spoiler}>
 					<AlertsFilter
@@ -279,7 +199,7 @@ Post.propTypes = {
 	index: PropTypes.number,
 	post: PropTypes.object.isRequired,
 	socket: PropTypes.object,
-	history: PropTypes.object,
+	history: PropTypes.object
 };
 
 const

@@ -315,13 +315,14 @@ class UserProfile extends Component {
 
 	componentDidMount() {
 		this.getUserInfo();
-		this.refreshTimeline();
 		this.checkPendingRequest();
+		this.refreshTimeline();
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
 		if ( this.state.user !== prevState.user ) {
 			this.setImages();
+			this.checkPendingRequest();
 			this.refreshTimeline();
 			window.scrollTo( 0, 0 );
 			if ( this.state.user ) {
@@ -405,18 +406,18 @@ class UserProfile extends Component {
 				const posts = await api.getTimeline(
 					this.state.skip, this.props.username
 				);
-				if ( posts === "jwt expired" ) {
+				this.props.addToPosts( posts.data );
+				this.setState({
+					hasMore: posts.data.length === 10,
+					skip: this.state.skip + 1
+				});
+			} catch ( err ) {
+				if ( err.response.data === "jwt expired" ) {
 					await refreshToken();
 					this.getTimeline();
-				} else if ( posts.data ) {
-					this.props.addToPosts( posts.data, false, true );
-					this.setState({
-						hasMore: posts.data.length === 10,
-						skip: this.state.skip + 1
-					});
+				} else {
+					console.log( err );
 				}
-			} catch ( err ) {
-				console.log( err );
 			}
 		}
 	}
@@ -428,8 +429,11 @@ class UserProfile extends Component {
 				await refreshToken();
 				this.refreshTimeline();
 			} else if ( posts.data ) {
-				this.props.setPosts( posts.data, false, false, true );
-				this.setState({ hasMore: posts.data.length === 10 });
+				this.props.setPosts( posts.data );
+				this.setState({
+					hasMore: posts.data.length === 10,
+					skip: 1
+				});
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -439,73 +443,34 @@ class UserProfile extends Component {
 	addFriend = async() => {
 		try {
 			const response = await api.addFriend( this.props.username );
-			if ( response === "jwt expired" ) {
+			this.setState({ userRequested: true });
+			this.props.socket.emit( "sendNotification", response.data );
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.addFriend();
-			} else if ( response.data ) {
-				this.setState({ userRequested: true });
-				this.props.socket.emit( "sendNotification", response.data );
-			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	follow = async() => {
-		var user = this.state.user;
-		try {
-			const notification = await api.followUser( this.props.username );
-			if ( notification === "jwt expired" ) {
-				await refreshToken();
-				this.follow();
 			} else {
-				user.followers.push( localStorage.getItem( "id" ));
-				this.setState({ user: user });
-				console.log( "here", notification );
-				notification.data && this.props.socket.emit(
-					"sendNotification", notification.data );
-				this.refreshTimeline();
+				console.log( err );
 			}
-		} catch ( err ) {
-			console.log( err );
 		}
 	}
 
-	unFriend = async() => {
+	unFriend = async( username, id ) => {
 		var user = this.state.user;
 		try {
-			const response = await api.deleteFriend( this.props.username );
-			if ( response === "jwt expired" ) {
+			await api.deleteFriend( username );
+			const indexOfUnfriend = user.friends.indexOf(
+				localStorage.getItem( "id" ));
+			user.friends.splice( indexOfUnfriend, 1 );
+			this.setState({ user: user });
+			this.refreshTimeline();
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.unFriend();
 			} else {
-				const index = user.friends.indexOf(
-					localStorage.getItem( "id" ));
-				user.friends.splice( index, 1 );
-				this.setState({ user: user });
-				this.refreshTimeline();
+				console.log( err );
 			}
-		} catch ( err ) {
-			console.log( err );
-		}
-	}
-
-	unFollow = async() => {
-		var user = this.state.user;
-		try {
-			const response = await api.unfollowUser( this.props.username );
-			if ( response === "jwt expired" ) {
-				await refreshToken();
-				this.unFollow();
-			} else {
-				const index = user.followers.indexOf(
-					localStorage.getItem( "id" ));
-				user.followers.splice( index, 1 );
-				this.setState({ user: user });
-				this.refreshTimeline();
-			}
-		} catch ( err ) {
-			console.log( err );
 		}
 	}
 
@@ -644,10 +609,8 @@ class UserProfile extends Component {
 									</Hobbies>
 									<ProfileOptions
 										user={this.state.user}
-										follow={this.follow}
 										addFriend={this.addFriend}
 										unFriend={this.unFriend}
-										unFollow={this.unFollow}
 										goToUserSettings={this.props.goToUserSettings}
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
@@ -722,7 +685,7 @@ class UserProfile extends Component {
 									history={this.props.history}
 									username={this.props.username}
 									toggleTab={this.toggleTab}
-									profilePosts={this.props.profilePosts}
+									profilePosts={this.props.feedPosts}
 									user={user}
 								/>
 							</TimeLine>
@@ -757,7 +720,7 @@ class UserProfile extends Component {
 UserProfile.propTypes = {
 	socket: PropTypes.object.isRequired,
 	username: PropTypes.string.isRequired,
-	profilePosts: PropTypes.array.isRequired,
+	feedPosts: PropTypes.array.isRequired,
 	backToMenu: PropTypes.func,
 	next: PropTypes.func
 };
@@ -767,14 +730,12 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		profilePosts: state.posts.profilePosts
+		feedPosts: state.posts.feedPosts
 	}),
 
 	mapDispatchToProps = dispatch => ({
-		setPosts: ( posts, onExplore, onAlbum, onProfile ) =>
-			dispatch( setPosts( posts, onExplore, onAlbum, onProfile )),
-		addToPosts: ( posts, onExplore, onProfile ) =>
-			dispatch( addToPosts( posts, onExplore, onProfile )),
+		setPosts: ( posts ) => dispatch( setPosts( posts )),
+		addToPosts: ( posts ) => dispatch( addToPosts( posts )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		switchMessages: () => dispatch( switchMessages()),
 		switchNotifications: () => dispatch( switchNotifications())

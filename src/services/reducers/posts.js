@@ -1,58 +1,43 @@
 const initialState = {
-	newsfeed: [],
-	explore: [],
+	feedPosts: [],
 	album: [],
-	profilePosts: [],
 	comments: [],
 	mediaOptions: false,
 	displayShare: false,
 	displayPostDetails: false,
 	postDetails: {},
-	postToShare: {}
+	postToShare: {},
+	feed: "global",
+	selectedClub: undefined,
+	clubs: []
 };
 
 export default function posts( state = initialState, action = {}) {
 	switch ( action.type ) {
 	case "SET_POSTS":
-		if ( action.onExplore ) {
-			return { ...state, explore: action.posts };
-		} else if ( action.onAlbum ) {
+		if ( action.onAlbum ) {
 			return { ...state, album: action.posts };
-		} else if ( action.onProfile ) {
-			return { ...state, profilePosts: action.posts };
 		} else {
-			return { ...state, newsfeed: action.posts };
+			return { ...state, feedPosts: action.posts };
 		}
 
 	case "ADD_TO_POSTS":
-		if ( action.onExplore ) {
-			return { ...state, explore: [ ...state.explore, ...action.posts ] };
-		} else if ( action.onProfile ) {
-			return { ...state, profilePosts: [ ...state.profilePosts, ...action.posts ] };
-		} else {
-			return { ...state, newsfeed: [ ...state.newsfeed, ...action.posts ] };
-		}
+		return { ...state, feedPosts: [ ...state.feedPosts, ...action.posts ] };
 
 	case "ADD_POST":
-		if ( action.onProfile ) {
-			return { ...state, profilePosts: [ action.post, ...state.profilePosts ] };
+		if ( state.feed !== action.post.feed && state.feed !== "home" ) {
+			return state;
 		} else {
-			return { ...state, newsfeed: [ action.post, ...state.newsfeed ] };
+			return { ...state, feedPosts: [ action.post, ...state.feedPosts ] };
 		}
 
 	case "DELETE_POST":
 		return {
 			...state,
-			newsfeed: state.newsfeed.filter( post => {
+			feedPosts: state.feedPosts.filter( post => {
 				return post._id !== action.postId;
 			}),
 			album: state.album.filter( post => {
-				return post._id !== action.postId;
-			}),
-			explore: state.explore.filter( post => {
-				return post._id !== action.postId;
-			}),
-			profilePosts: state.profilePosts.filter( post => {
 				return post._id !== action.postId;
 			}),
 			displayPostDetails: false
@@ -71,25 +56,13 @@ export default function posts( state = initialState, action = {}) {
 	case "UPDATE_POST":
 		return {
 			...state,
-			profilePosts: state.profilePosts.map( post => {
-				if ( post._id === action.post._id ) {
-					return { ...post, ...action.post };
-				}
-				return post;
-			}),
-			explore: state.explore.map( post => {
+			feedPosts: state.feedPosts.map( post => {
 				if ( post._id === action.post._id ) {
 					return { ...post, ...action.post };
 				}
 				return post;
 			}),
 			album: state.album.map( post => {
-				if ( post._id === action.post._id ) {
-					return { ...post, ...action.post };
-				}
-				return post;
-			}),
-			newsfeed: state.newsfeed.map( post => {
 				if ( post._id === action.post._id ) {
 					return { ...post, ...action.post };
 				}
@@ -134,6 +107,24 @@ export default function posts( state = initialState, action = {}) {
 			...state,
 			displayPostDetails: !state.displayPostDetails,
 			postDetails: action.post
+		};
+
+	case "SET_FEED":
+		return {
+			...state,
+			feed: action.feed
+		};
+
+	case "SET_CLUB":
+		return {
+			...state,
+			selectedClub: action.club
+		};
+
+	case "SET_CLUBS":
+		return {
+			...state,
+			clubs: action.clubs
 		};
 
 	default:

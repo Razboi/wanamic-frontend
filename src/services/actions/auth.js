@@ -22,7 +22,7 @@ export const
 					localStorage.setItem( "uimg", data.profileImage );
 				}
 				if ( data.admin ) {
-					localStorage.setItem( "ai", true );
+					localStorage.setItem( "ia", true );
 				}
 				localStorage.setItem( "id", data.id );
 				dispatch( userLoggedIn());

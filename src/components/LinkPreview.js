@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, Icon } from "semantic-ui-react";
+import { Image } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
@@ -8,23 +8,13 @@ const
 		display: grid;
 		height: auto;
 		grid-template-columns: 100%;
-		grid-row-gap: ${props => props.explore ? "0" : "7px"};
-		grid-template-rows: 1fr auto;
+		grid-template-rows: auto 1fr;
 		grid-template-areas:
-			"img"
 			"txt"
+			"img";
 	`,
 	LinkPreviewImage = styled( Image )`
 		grid-area: img;
-		position: absolute !important;
-		height: 100%;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		margin: auto !important;
-		border-radius: ${props => props.explore ? "8px" : "0"};
-		filter: ${props => props.explore && "brightness( 85% )"};
 	`,
 	LinkPreviewIframe = styled.iframe`
 		grid-area: img;
@@ -36,7 +26,7 @@ const
 		border-radius: ${props => props.explore ? "8px" : "0"};
 		border: none;
 	`,
-	LinkMedia = styled.div`
+	EmbeddedMedia = styled.div`
 		position: relative;
 		height: 0;
 		padding-bottom: 100%;
@@ -47,6 +37,16 @@ const
 			padding-bottom: ${props => props.details ?
 		( props.video ? "50%" : "420px" ) : "100%"};
 
+			width: ${props => props.details && !props.video && "420px"};
+			margin: ${props => props.details && !props.video && "0 auto"};
+		}
+	`,
+	LinkImage = styled.div`
+		position: relative;
+		:hover {
+			cursor: pointer;
+		}
+		@media (min-width: 760px) {
 			width: ${props => props.details && !props.video && "420px"};
 			margin: ${props => props.details && !props.video && "0 auto"};
 		}
@@ -63,82 +63,42 @@ const
 	`,
 	LinkPreviewHeader = styled.h4`
 		grid-area: head;
-		margin-bottom: 5px;
+		margin-bottom: 5px !important;
+    font-size: 1.6rem;
+    font-family: inherit;
 	`,
 	LinkPreviewHostname = styled.span`
 		grid-area: host;
 		color: #808080;
 		font-size: 13px;
-	`,
-	PlayIcon = styled( Icon )`
-		position: absolute !important;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		margin: auto !important;
-		font-size: 2.5rem !important;
-		color: rgba( 255, 255, 255, 0.75 );
-	`,
-	LinkIcon = styled( Icon )`
-		position: absolute !important;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		margin: auto !important;
-		font-size: 2.5rem !important;
-		color: rgba( 255, 255, 255, 0.75 );
 	`;
 
 
 class LinkPreview extends Component {
 	render() {
 		const { linkContent } = this.props;
-		if ( this.props.explore ) {
-			return (
-				<LinkPreviewWrapper
-					explore={this.props.explore ? 1 : 0}
-					className="linkPreviewWrapper"
-				>
-					<LinkMedia>
-						<LinkPreviewImage
-							explore={this.props.explore ? 1 : 0}
-							className="linkPreviewImage"
-							src={linkContent.type === "image" ?
-								linkContent.url : linkContent.image}
-						/>
-						{linkContent.embeddedUrl ?
-							<PlayIcon name="video play" />
-							:
-							<LinkIcon name="linkify" />
-						}
-					</LinkMedia>
-
-				</LinkPreviewWrapper>
-			);
-		}
 		return (
-			<LinkPreviewWrapper
-				className="linkPreviewWrapper"
-			>
-				<LinkMedia
-					video={linkContent.embeddedUrl}
-					details={this.props.details}
-					onClick={this.props.displayPostDetails}
-				>
-					{linkContent.embeddedUrl ?
+			<LinkPreviewWrapper>
+				{linkContent.embeddedUrl ?
+					<EmbeddedMedia
+						video={linkContent.embeddedUrl}
+						details={this.props.details}
+					>
 						<LinkPreviewIframe
 							src={linkContent.embeddedUrl}
 							frameBorder="0"
 							allow="autoplay; encrypted-media"
 							allowFullScreen="allowfullscreen"
 						/>
-						:
-						<LinkPreviewImage src={linkContent.type === "image" ?
-							linkContent.url : linkContent.image} />
-					}
-				</LinkMedia>
+					</EmbeddedMedia>
+					:
+					<LinkImage>
+						<a href={linkContent.url} target="_blank">
+							<LinkPreviewImage src={linkContent.type === "image" ?
+								linkContent.url : linkContent.image} />
+						</a>
+					</LinkImage>
+				}
 
 				{linkContent.type !== "image" &&
 					<LinkPreviewText>
@@ -163,7 +123,6 @@ class LinkPreview extends Component {
 
 LinkPreview.propTypes = {
 	linkContent: PropTypes.object.isRequired,
-	explore: PropTypes.bool,
 	details: PropTypes.bool,
 	displayPostDetails: PropTypes.func
 };

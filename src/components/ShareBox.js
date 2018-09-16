@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import { Form, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import InputTrigger from "../utils/inputTrigger";
 import MediaStep3 from "./MediaStep3";
-import Suggestions from "./Suggestions";
+import InputWithMentions from "./InputWithMentions";
 
 const
 	Wrapper = styled.div`
@@ -66,31 +65,6 @@ const
 			width: 600px;
 			position: relative;
 		}
-	`,
-	TextAreaStyle = {
-		width: "100%",
-		borderRadius: "2px"
-	},
-	SuggestionsWrapper = styled.div`
-		display: ${props => !props.showSuggestions && "none"};
-		z-index: 3;
-		border: 1px solid rgba(0,0,0,0.1);
-		@media (min-width: 420px) {
-			position: absolute;
-			grid-area: none;
-			height: 150px;
-			width: 300px;
-			top: ${props => props.top}px;
-			left: ${props => props.left < 280 ? props.left + "px" : "auto"};
-			right: ${props => props.left > 280 ? 0 + "px" : "auto"};
-		}
-		@media (max-width: 420px) {
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			width: 100%;
-			height: 50%;
-		}
 	`;
 
 
@@ -100,110 +74,10 @@ class ShareBox extends Component {
 		this.state = {
 			userInput: "",
 			step: 1,
-			privacyRange: 1,
 			checkNsfw: false,
 			checkSpoiler: false,
-			spoilerDescription: "",
-			showSuggestions: false,
-			suggestionsTop: undefined,
-			suggestionsLeft: undefined,
-			mentionInput: "",
-			currentSelection: 0,
-			startPosition: undefined
+			spoilerDescription: ""
 		};
-	}
-
-	handleKeyPress = e => {
-		if ( e.key === "Enter" && this.state.showSuggestions &&
-		this.props.socialCircle.length > 0 ) {
-			e.preventDefault();
-			const
-				{ userInput, startPosition, currentSelection } = this.state,
-				user = this.props.socialCircle[ currentSelection ],
-				updatedUserInput =
-					userInput.slice( 0, startPosition - 1 )
-					+ "@" + user.username + " " +
-					userInput.slice( startPosition + user.username.length, userInput.length );
-
-			this.setState({
-				userInput: updatedUserInput,
-				startPosition: undefined,
-				showSuggestions: false,
-				suggestionsLeft: undefined,
-				suggestionsTop: undefined,
-				mentionInput: "",
-				currentSelection: 0
-			});
-
-			this.endHandler();
-		}
-
-		if ( this.state.showSuggestions ) {
-			if ( e.keyCode === 40 &&
-			this.state.currentSelection !== this.props.socialCircle.length - 1 ) {
-				e.preventDefault();
-				this.setState({
-					currentSelection: this.state.currentSelection + 1
-				});
-			}
-
-			if ( e.keyCode === 38 && this.state.currentSelection !== 0 ) {
-				e.preventDefault();
-				this.setState({
-					currentSelection: this.state.currentSelection - 1
-				});
-			}
-		}
-	}
-
-	selectFromMentions = user => {
-		const
-			{ userInput, startPosition } = this.state,
-			updatedUserInput =
-				userInput.slice( 0, startPosition - 1 )
-				+ "@" + user.username + " " +
-				userInput.slice( startPosition + user.username.length, userInput.length );
-
-		this.setState({
-			userInput: updatedUserInput,
-			startPosition: undefined,
-			showSuggestions: false,
-			suggestionsLeft: undefined,
-			suggestionsTop: undefined,
-			mentionInput: "",
-			currentSelection: 0
-		});
-
-		this.endHandler();
-	}
-
-	toggleSuggestions = metaData => {
-		if ( metaData.hookType === "start" &&
-			( this.state.userInput.length + 31 ) <= 2200 ) {
-			this.setState({
-				startPosition: metaData.cursor.selectionStart,
-				showSuggestions: true,
-				suggestionsLeft: metaData.cursor.left,
-				suggestionsTop: metaData.cursor.top + metaData.cursor.height,
-			});
-		}
-
-		if ( metaData.hookType === "cancel" ) {
-			this.setState({
-				startPosition: undefined,
-				showSuggestions: false,
-				suggestionsLeft: undefined,
-				suggestionsTop: undefined,
-				mentionInput: "",
-				currentSelection: 0
-			});
-		}
-	}
-
-	handleMentionInput = metaData => {
-		if ( this.state.showSuggestions ) {
-			this.setState({ mentionInput: metaData.text });
-		}
 	}
 
 	handleChange = e => {
@@ -222,17 +96,13 @@ class ShareBox extends Component {
 		}
 	}
 
-	setPrivacyRange = range => {
-		this.setState({ privacyRange: range });
-	}
-
 	handleCheck = ( e, semanticUiProps ) => {
 		this.setState({ [ semanticUiProps.name ]: semanticUiProps.checked });
 	}
 
-	handleSubmit = () => {
+	handleSubmit = ( feed, selectedClub ) => {
 		const {
-				userInput, privacyRange, checkNsfw, checkSpoiler,
+				userInput, checkNsfw, checkSpoiler,
 				spoilerDescription
 			} = this.state,
 			alerts = {
@@ -241,7 +111,7 @@ class ShareBox extends Component {
 				spoilerDescription: spoilerDescription
 			};
 
-		this.props.shareTextPost( userInput, privacyRange, alerts );
+		this.props.shareTextPost( userInput, feed, selectedClub, alerts );
 		this.setState({ userInput: "" });
 	}
 
@@ -275,39 +145,20 @@ class ShareBox extends Component {
 					/>
 				</HeaderWrapper>
 				<Box id="ShareBox">
-					<InputTrigger
-						style={TextAreaStyle}
-						trigger={{ key: "@" }}
-						onStart={metaData => this.toggleSuggestions( metaData ) }
-						onCancel={metaData => this.toggleSuggestions( metaData ) }
-						onType={metaData => this.handleMentionInput( metaData ) }
-						endTrigger={endHandler => this.endHandler = endHandler }
-					>
-						<textarea
-							maxLength="2200"
-							autoFocus
-							rows="3"
-							id="ShareBoxInput"
-							placeholder="Express yourself."
-							name="userInput"
-							value={this.state.userInput}
-							onChange={this.handleChange}
-							onKeyDown={this.handleKeyPress}
-						/>
-					</InputTrigger>
-
-					<SuggestionsWrapper
-						showSuggestions={this.state.showSuggestions}
-						left={this.state.suggestionsLeft}
-						top={this.state.suggestionsTop}
-					>
-						<Suggestions
-							socialCircle={this.props.socialCircle}
-							showSuggestions={this.state.showSuggestions}
-							mentionInput={this.state.mentionInput}
-							selectFromMentions={this.selectFromMentions}
-						/>
-					</SuggestionsWrapper>
+					<InputWithMentions
+						userInput={this.state.userInput}
+						socialCircle={this.props.socialCircle}
+						handleChange={this.handleChange}
+						setUserInput={userInput => this.setState({ userInput: userInput })}
+						textareaProps={{
+							maxLength: "2200",
+							autoFocus: true,
+							rows: "3",
+							id: "ShareBoxInput",
+							placeholder: "Express yourself.",
+							name: "userInput"
+						}}
+					/>
 				</Box>
 
 			</Wrapper>

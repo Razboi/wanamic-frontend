@@ -46,7 +46,7 @@ const
 		background-image: url(${props => props.image});
 		background-repeat: no-repeat;
 		background-size: 100%;
-		margin: 0;
+		margin: auto;
 		position: absolute;
 		top: 1rem;
 		left: 2rem;
@@ -88,8 +88,10 @@ const
 			display: none;
 		}
 	`,
-	Intro = styled.span`
+	Intro = styled.h1`
+		font-family: inherit;
 		font-size: 2.5rem;
+		font-weight: 400;
 		color: #fff;
 		line-height: 1.2;
 		width: 600px;
@@ -99,17 +101,26 @@ const
 			display: none;
 		}
 	`,
+	Subheader = styled.h2`
+		font-size: 1.65rem;
+		font-weight: 200;
+		width: 600px;
+		color: #fff;
+		line-height: 1.2;
+		font-family: inherit;
+		margin: 0;
+		@media (max-width: 800px) {
+			display: none;
+		}
+	`,
 	SmallIntro = styled.span`
 		font-size: 1.5rem;
+		font-weight: 200;
 		color: #fff;
 		line-height: 1.2;
 		@media (min-width: 800px), (max-height: 775px) {
 			display: none;
 		}
-	`,
-	Subheader = styled.span`
-		font-size: 1.65rem;
-		font-weight: 200;
 	`,
 	HeaderForm = styled.div`
 		grid-area: Form;
@@ -266,7 +277,7 @@ class Signup extends Component {
 	componentDidMount() {
 		this.props.history.push( "#1" );
 		this.setState({ activeSection: 0 });
-		document.title = "Wanamic - Find like-minded people from all around the world.";
+		document.title = "Wanamic - Make friends online with your same interests.";
 	}
 
 	handleChange = e =>
@@ -395,10 +406,10 @@ class Signup extends Component {
 									<Logo image={require( "../images/wanamic-logo-name.svg" )} />
 									<Intro>
 										Find like-minded people.
-										<Subheader>
-											Wanamic allows you to connect with others that share your interests and hobbies.
-										</Subheader>
 									</Intro>
+									<Subheader>
+										Wanamic allows you to connect with others that share your interests and hobbies.
+									</Subheader>
 									<SmallIntro>
 										Connect with people that share your interests and hobbies.
 									</SmallIntro>
@@ -457,11 +468,10 @@ class Signup extends Component {
 						<SectionFour>
 							<BulletText>
 								<BulletHeader>
-									Flexible social circles.
+									Join clubs related to your interests.
 								</BulletHeader>
 								<BulletDescription>
-									In wanamic you have two social circles: Friends and Followers.
-									You will be able to choose who sees what.
+									In wanamic you can join and create clubs focused on hobbies, there you can connect with other members or discover and share content.
 								</BulletDescription>
 							</BulletText>
 							<SmallScrollTaunt href="#5">

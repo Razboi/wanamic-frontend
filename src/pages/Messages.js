@@ -17,6 +17,11 @@ import NavBar from "../containers/NavBar";
 
 const
 	Wrapper = styled.div`
+		/* Hide home sidebar to avoid collision with random user */
+		@media (max-height: 920px) and (max-width: 1900px) {
+			display: ${props => props.onHome && "none"};
+		}
+		/* Fullpage for small devices */
 		@media (max-width: 1300px) {
 			display: ${props => props.largeScreen && "none"};
 			height: 100vh;
@@ -30,9 +35,7 @@ const
 				display: none !important;
 			}
 		}
-		@media (min-width: 760px) and (max-width: 1300px) {
-			display: ${props => props.onHome && "none"};
-		}
+		/* Display sidebar unless is toggled */
 		@media (min-width: 1300px) {
 			display: ${props => props.hideSidebar && "none"};
 			position: fixed;
@@ -48,7 +51,7 @@ const
 	PopupWrapper = styled.div`
 		@media (min-width: 760px)  {
 			position: absolute;
-			bottom: -393px;
+			bottom: -425px;
 			left: 0;
 			background: #fff;
 			border-radius: 2px;
@@ -57,8 +60,8 @@ const
 			z-index: 5;
 			border-top: 0;
 		};
+		/* To avoid bad position when options cover all navbar */
 		@media (min-width: 760px) and (max-width: 960px)  {
-			right: 0;
 			left: auto;
 		}
 		@media (max-width: 760px) {
@@ -586,6 +589,7 @@ class Messages extends Component {
 									socialCircle={this.state.socialCircle}
 									handleNewConversation={this.handleNewConversation}
 									back={this.backToOpenConversations}
+									popup={true}
 								/>
 								:
 								<React.Fragment>

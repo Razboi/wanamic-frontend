@@ -395,6 +395,7 @@ class Comments extends Component {
 								handleUpdate={this.handleUpdate}
 								handleReply={() => this.handleReply( comment.author )}
 								socket={this.props.socket}
+								history={this.props.history}
 							/>
 						)}
 					</StyledInfiniteScroll>
@@ -439,8 +440,8 @@ class Comments extends Component {
 
 Comments.propTypes = {
 	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired,
 	setComments: PropTypes.func.isRequired,
-	newsfeed: PropTypes.array.isRequired,
 	comments: PropTypes.array,
 	onExplore: PropTypes.bool,
 	TextPost: PropTypes.bool,

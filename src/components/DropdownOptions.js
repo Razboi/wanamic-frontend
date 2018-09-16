@@ -8,6 +8,7 @@ import api from "../services/api";
 import refreshToken from "../utils/refreshToken";
 import postLogic from "../utils/postLogic";
 import commentLogic from "../utils/commentLogic";
+import { connect } from "react-redux";
 
 const
 	StyledDropdown = styled( Dropdown )`
@@ -248,11 +249,66 @@ class DropdownOptions extends Component {
 		}
 	}
 
+	banFromClub = async() => {
+		const { postOrComment, selectedClub } = this.props;
+		try {
+			await api.banFromClub( postOrComment.author._id, selectedClub );
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
 	handleChange = e => {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 	render() {
+		if ( localStorage.getItem( "id" ) !== this.props.postOrComment.author._id
+		&& this.props.clubAdmin ) {
+			return (
+				<StyledDropdown icon="angle down" style={this.props.style} direction="left">
+					<Dropdown.Menu className="postDropdown">
+						<Dropdown.Item
+							text="Delete"
+							onClick={this.handleDelete}
+						/>
+						<Dropdown.Item
+							text="Ban user"
+							onClick={this.banFromClub}
+						/>
+						<ReportModal
+							open={this.state.report}
+							onClose={this.toggleModal}
+							trigger={
+								<Dropdown.Item
+									text="Report"
+									onClick={() => this.displayModal( "report" )}
+								/>}
+						>
+							<Modal.Content>
+								<ReportForm>
+									<textarea
+										style={TextAreaStyle}
+										name="reportContent"
+										maxLength="500"
+										autoFocus
+										rows="4"
+										value={this.state.reportContent}
+										onChange={this.handleChange}
+										onKeyDown={this.handleKeyPress}
+									/>
+									<ReportButton
+										primary
+										content="Report"
+										onClick={this.handleReport}
+									/>
+								</ReportForm>
+							</Modal.Content>
+						</ReportModal>
+					</Dropdown.Menu>
+				</StyledDropdown>
+			);
+		}
 		return (
 			<StyledDropdown icon="angle down" style={this.props.style} direction="left">
 				{ localStorage.getItem( "id" ) === this.props.postOrComment.author._id ?
@@ -307,7 +363,6 @@ class DropdownOptions extends Component {
 						</UpdateModal>
 
 						<Dropdown.Item
-							className="postDeleteOption"
 							text="Delete"
 							onClick={this.handleDelete}
 						/>
@@ -355,4 +410,9 @@ DropdownOptions.propTypes = {
 	socket: PropTypes.object.isRequired
 };
 
-export default DropdownOptions;
+const
+	mapStateToProps = state => ({
+		selectedClub: state.posts.selectedClub
+	});
+
+export default connect( mapStateToProps )( DropdownOptions );

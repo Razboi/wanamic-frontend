@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { Button, Checkbox, Icon, Input } from "semantic-ui-react";
+import { Button, Checkbox, Icon, Input, Dropdown } from "semantic-ui-react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { connect } from "react-redux";
+import api from "../services/api";
+import refreshToken from "../utils/refreshToken";
 
 const
 	Wrapper = styled.div`
@@ -63,10 +66,18 @@ const
 		flex-direction: column;
 		width: 100%;
 		justify-content: center;
+		align-items: center;
 		height: 150px;
 		@media (min-height: 420px) {
 			height: 200px;
 		}
+	`,
+	Tabs = styled.div`
+		align-self: center;
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
 	`,
 	AlertsWrapper = styled.div`
 		display: flex;
@@ -74,7 +85,7 @@ const
 		align-items: center;
 		margin-top: 1rem;
 	`,
-	AlertsTitle = styled.h4`
+	Title = styled.h4`
 		font-size: 1.2rem !important;
 	`,
 	Alerts = styled.div`
@@ -89,32 +100,6 @@ const
 	AlertLabel = styled.b`
 		margin-left: 10px;
 		font-size: 16px;
-	`,
-	PrivacySlider = styled.div`
-		background: ${props => props.range === 2 &&
-			"linear-gradient(to right, rgb(73,157,131) 50%, rgba(0,0,0,0.75) 50%) !important" };
-		background: ${props => props.range === 3 && "rgb(73,157,131) !important"};
-		background: rgba(0,0,0,0.75);
-		border-radius: 25px;
-		align-self: center;
-		display: flex;
-		justify-content: space-between;
-		@media (max-width: 420px) {
-			width: 70%;
-		};
-		@media (min-width: 420px) {
-			width: 300px;
-		}
-	`,
-	PrivacyButton = styled( Button )`
-		margin: 0px !important;
-		background: rgb(133, 217, 191) !important
-		color: ${props => props.active ? "#fff" : "#000"} !important;
-	`,
-	SliderHeader = styled.h4`
-		text-align: center;
-		align-self: center;
-		font-size: 1.2rem !important;
 	`,
 	SelectedMediaBackground = styled.div`
 		height: 100vh;
@@ -142,11 +127,76 @@ const
 				color: #444 !important;
 			}
 		}
+	`,
+	Tab = styled( Button )`
+		background-color: ${props => props.primary && "rgb(133,217,191)"} !important;
+	`,
+	ClubsList = styled( Dropdown.Menu )`
+		max-height: 300px;
+		overflow-y: auto;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
 	`;
 
 
 class MediaStep3 extends Component {
+	constructor( props ) {
+		super( props );
+		this.state = {
+			feed: props.feed,
+			selectedClub: props.selectedClub,
+			clubs: []
+		};
+	}
+
+	componentDidMount() {
+		this.getUserClubs();
+	}
+
+	getUserClubs = async() => {
+		try {
+			const clubs = await api.userClubs();
+			this.setState({ clubs: clubs.data });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getUserClubs();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+	switchFeed = feed => {
+		this.setState({ feed: feed, selectedClub: undefined });
+	}
+
+	selectClub = club => {
+		this.setState({ feed: "club", selectedClub: club.name });
+	}
+
+	renderClub = ( club, index ) => {
+		return (
+			<Dropdown.Item
+				key={index}
+				text={club.name}
+				onClick={() => this.selectClub( club )}
+			/>
+		);
+	}
+
+	submit = () => {
+		const { feed, selectedClub } = this.state;
+		if ( feed !== "global" && feed !== "club" ) {
+			return;
+		}
+		this.props.handleSubmit( feed, selectedClub );
+	}
+
 	render() {
+		let { selectedClub, feed } = this.state;
 		return (
 			<Wrapper onShare={this.props.onShare}>
 				<Options whiteTheme={this.props.whiteTheme}>
@@ -160,43 +210,37 @@ class MediaStep3 extends Component {
 						<Icon
 							className="nextIcon"
 							name="check"
-							onClick={this.props.handleSubmit}
+							onClick={this.submit}
 						/>
 					</HeaderWrapper>
 					<ShareOptions>
-						<SliderHeader>
-							{this.props.privacyRange === 1 && "Friends"}
-							{this.props.privacyRange === 2 && "Friends and Followers"}
-							{this.props.privacyRange === 3 &&
-								"Everybody (will be included in the explore page)"}
-						</SliderHeader>
-						<PrivacySlider range={this.props.privacyRange}>
-							<PrivacyButton
-								active={this.props.privacyRange >= 1}
-								circular
-								icon="users"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 1 )}
-							/>
-							<PrivacyButton
-								active={this.props.privacyRange >= 2}
-								className="privacyButton2"
-								circular
-								icon="binoculars"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 2 )}
-							/>
-							<PrivacyButton
-								active={this.props.privacyRange === 3}
-								circular
-								icon="globe"
-								size="huge"
-								onClick={() => this.props.setPrivacyRange( 3 )}
-							/>
-						</PrivacySlider>
+						<Title>Share with</Title>
+						<Tabs>
+							{selectedClub && feed === "club" ?
+								<Tab primary content={selectedClub} />
+								:
+								<React.Fragment>
+									<Tab
+										content="Global"
+										primary={feed === "global"}
+										onClick={() => this.switchFeed( "global" )}
+									/>
+									<Tab
+										primary={feed === "club"}
+										content={
+											<Dropdown text={selectedClub ? selectedClub : "Clubs"}>
+												<ClubsList>
+													{this.state.clubs.map( this.renderClub )}
+												</ClubsList>
+											</Dropdown>
+										}
+									/>
+								</React.Fragment>
+							}
+						</Tabs>
 					</ShareOptions>
 					<AlertsWrapper>
-						<AlertsTitle>Alerts</AlertsTitle>
+						<Title>Alerts</Title>
 						<Alerts>
 							<AlertCheck>
 								<Checkbox name="checkNsfw" onChange={this.props.handleCheck}/>
@@ -232,8 +276,6 @@ class MediaStep3 extends Component {
 MediaStep3.propTypes = {
 	handleCheck: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	setPrivacyRange: PropTypes.func.isRequired,
-	privacyRange: PropTypes.number.isRequired,
 	prevStep: PropTypes.func.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	mediaData: PropTypes.object.isRequired,
@@ -242,4 +284,11 @@ MediaStep3.propTypes = {
 	onShare: PropTypes.bool
 };
 
-export default MediaStep3;
+
+const
+	mapStateToProps = state => ({
+		feed: state.posts.feed,
+		selectedClub: state.posts.selectedClub
+	});
+
+export default connect( mapStateToProps )( MediaStep3 );

@@ -27,6 +27,9 @@ const
 		display: flex;
 		flex-direction: column;
 		margin: 0 2rem 0 0.5rem;
+		:hover {
+			cursor: pointer;
+		}
 	`,
 	AuthorImg = styled( Image )`
 		overflow: visible !important;
@@ -109,6 +112,12 @@ class Comment extends Component {
 		}
 	}
 
+	goToProfile = user => {
+		if ( this.props.history ) {
+			this.props.history.push( "/" + user.username );
+		}
+	}
+
 	render() {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
@@ -129,7 +138,7 @@ class Comment extends Component {
 			<Wrapper>
 				<CommentHeader>
 					<AuthorImg circular src={userPicture} />
-					<HeaderInfo>
+					<HeaderInfo onClick={() => this.goToProfile( comment.author )}>
 						<AuthorFullname className="postAuthor">
 							{comment.author.fullname}
 							<AuthorUsername>
@@ -162,7 +171,8 @@ class Comment extends Component {
 Comment.propTypes = {
 	comment: PropTypes.object.isRequired,
 	handleReply: PropTypes.func.isRequired,
-	socket: PropTypes.object.isRequired
+	socket: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired
 };
 
 export default Comment;
