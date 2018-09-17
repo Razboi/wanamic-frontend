@@ -10,7 +10,6 @@ const verifyToken = store => {
 				store.dispatch( userLoggedIn());
 				resolve();
 			} catch ( err ) {
-				console.log( err );
 				if ( err.response && err.response.data === "jwt expired" ) {
 					await refreshToken();
 					main();
@@ -24,6 +23,9 @@ const verifyToken = store => {
 					localStorage.removeItem( "uimg" );
 					localStorage.removeItem( "id" );
 					store.dispatch( userLoggedOut());
+				}
+				if ( err.response.status !== 422 ) {
+					console.log( err );
 				}
 				resolve();
 			}

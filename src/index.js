@@ -15,16 +15,16 @@ const store = createStore( rootReducer, composeWithDevTools(
 	applyMiddleware( thunk )
 ));
 
-verifyToken( store ).then(() => {
-	ReactDOM.render(
-		<BrowserRouter>
-			<Provider store={store}>
-				<App />
-			</Provider>
-		</BrowserRouter>
-		,
-		document.getElementById( "root" ));
-});
+verifyToken( store );
+
+ReactDOM.render(
+	<BrowserRouter>
+		<Provider store={store}>
+			<App />
+		</Provider>
+	</BrowserRouter>
+	,
+	document.getElementById( "root" ));
 
 registerServiceWorker();
 

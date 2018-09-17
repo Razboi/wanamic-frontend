@@ -558,7 +558,7 @@ class Home extends Component {
 										<UserPreview
 											user={this.state.randomUser}
 											handleClick={this.handleUserPreviewClick}
-											exposition
+											exposition="true"
 										/>
 										<Button
 											primary

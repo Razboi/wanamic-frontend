@@ -167,10 +167,6 @@ class Login extends Component {
 		this.setState({ showPopup: false });
 	}
 
-	swapForm = () => {
-		this.props.history.push( "/signup" );
-	}
-
 	render() {
 		return (
 			<Wrapper>
@@ -187,7 +183,6 @@ class Login extends Component {
 					<LoginForm
 						error={this.state.error}
 						handleChange={this.handleChange}
-						swapForm={this.swapForm}
 						email={this.state.email}
 						password={this.state.password}
 						handleLogin={this.handleLogin}
