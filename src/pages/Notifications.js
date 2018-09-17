@@ -70,7 +70,7 @@ const
 			cursor: pointer;
 		}
 	`,
-	NotificationImg = styled( Image )`
+	NotificationAuthorImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
 		align-self: flex-start;
@@ -341,18 +341,19 @@ class Notifications extends Component {
 								</Notification>
 								:
 								<Notification key={index}>
-									<NotificationImg
-										onClick={() => this.handleDetails( notification, index )}
-										circular
-										src={notification.author.profileImage ?
-											process.env.REACT_APP_STAGE === "dev" ?
-												require( "../images/" + notification.author.profileImage )
+									<a href={`/${notification.author.username}`}>
+										<NotificationAuthorImg
+											circular
+											src={notification.author.profileImage ?
+												process.env.REACT_APP_STAGE === "dev" ?
+													require( "../images/" + notification.author.profileImage )
+													:
+													s3Bucket + notification.author.profileImage
 												:
-												s3Bucket + notification.author.profileImage
-											:
-											require( "../images/defaultUser.png" )
-										}
-									/>
+												require( "../images/defaultUser.png" )
+											}
+										/>
+									</a>
 									<NotificationData
 										onClick={() => this.handleDetails( notification, index )}
 									>

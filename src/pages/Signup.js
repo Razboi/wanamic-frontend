@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { Icon } from "semantic-ui-react";
 import { signup } from "../services/actions/auth";
@@ -6,7 +7,6 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import SignupForm from "../components/SignupForm";
 import validateEmail from "../utils/validateEmail";
-import { SectionsContainer, Section } from "react-fullpage";
 import Step1 from "../components/WelcomeStep1";
 
 const
@@ -15,14 +15,6 @@ const
 		background: #222233;
 		display: flex;
 		flex-direction: column;
-		.Navigation {
-			left: 20px !important;
-			right: auto !important;
-			transform: translate(50%, -50%) !important;
-			a.active {
-				background: #fff !important;
-			}
-		}
 	`,
 	SectionOne = styled.div`
 		height: 100%;
@@ -113,7 +105,7 @@ const
 			display: none;
 		}
 	`,
-	SmallIntro = styled.span`
+	SmallIntro = styled.h1`
 		font-size: 1.5rem;
 		font-weight: 200;
 		color: #fff;
@@ -184,7 +176,7 @@ const
 		}
 	`,
 	SectionTwo = styled.div`
-		height: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -193,7 +185,7 @@ const
 		position: relative;
 	`,
 	SectionThree = styled.div`
-		height: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -202,7 +194,7 @@ const
 		position: relative;
 	`,
 	SectionFour = styled.div`
-		height: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -211,7 +203,7 @@ const
 		position: relative;
 	`,
 	SectionFive = styled.div`
-		height: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -241,9 +233,11 @@ const
 		font-size: 2.5rem;
 		line-height: 1.2;
 	`,
-	BulletDescription = styled.p`
+	BulletDescription = styled.h2`
 		font-size: 1.65rem;
 		font-weight: 200;
+		font-family: inherit;
+		margin-top: 0.5rem;
 	`,
 	SmallScrollTaunt = styled.a`
 		position: absolute;
@@ -251,11 +245,16 @@ const
 		right: 1rem;
 		color: #fff;
 		font-size: 2.5rem !important;
-		@media (min-width: 800px) {
-			display: none !important;
-		}
 		:hover {
 			color: #fff;
+			cursor: pointer;
+		}
+		@media (min-width: 550px) {
+			right: auto;
+			left: 50%;
+			transform: translateX( -50% );
+			font-size: 2.7rem !important;
+			bottom: 2rem;
 		}
 	`;
 
@@ -269,14 +268,15 @@ class Signup extends Component {
 			fullname: "",
 			signupStep: 1,
 			error: undefined,
-			showPopup: true,
-			activeSection: null
+			showPopup: true
 		};
+		this.section2Ref = React.createRef();
+		this.section3Ref = React.createRef();
+		this.section4Ref = React.createRef();
+		this.section5Ref = React.createRef();
 	}
 
 	componentDidMount() {
-		this.props.history.push( "#1" );
-		this.setState({ activeSection: 0 });
 		document.title = "Wanamic - Make friends online with your same interests.";
 	}
 
@@ -352,27 +352,12 @@ class Signup extends Component {
 		this.setState({ showPopup: false });
 	}
 
-	swapForm = () => {
-		this.props.history.push( "/login" );
-	}
-
-	onScroll = e => {
-		if ( this.state.activeSection !== e.activeSection ) {
-			this.setState({ activeSection: e.activeSection });
-		}
+	scrollTo = ( ref ) => {
+		const domNode = ReactDOM.findDOMNode( ref.current );
+		domNode.scrollIntoView({ behavior: "smooth" });
 	}
 
 	render() {
-		let options = {
-			sectionClassName: "section",
-			anchors: [ "1", "2", "3", "4", "5" ],
-			scrollBar: false,
-			navigation: window.innerWidth > 800,
-			verticalAlign: false,
-			arrowNavigation: true,
-			lockAnchors: true
-		};
-
 		if ( this.state.signupStep === 2 ) {
 			return (
 				<Step1
@@ -384,129 +369,118 @@ class Signup extends Component {
 		}
 		return (
 			<Wrapper>
-				<SectionsContainer
-					className="section"
-					scrollCallback={this.onScroll}
-					activeSection={this.state.activeSection}
-					{...options}
-				>
-					<Section>
-						<SectionOne>
-							{this.state.showPopup &&
-								<CookiesPopup>
-									We use cookies to provide the best possible experience. By navigating Wanamic, you agree to our use of cookies. <a href="/information/cookies">Cookies Policy</a>
-									<ClosePopup name="close" onClick={this.closePopup} />
-								</CookiesPopup>
-							}
-							<BackgroundImage
-								image={require( "../images/background.jpg" )}
-							/>
-							<Header>
-								<HeaderText>
-									<Logo image={require( "../images/wanamic-logo-name.svg" )} />
-									<Intro>
-										Find like-minded people.
-									</Intro>
-									<Subheader>
-										Wanamic allows you to connect with others that share your interests and hobbies.
-									</Subheader>
-									<SmallIntro>
-										Connect with people that share your interests and hobbies.
-									</SmallIntro>
-								</HeaderText>
-								<HeaderForm>
-									<SignupForm
-										error={this.state.error}
-										handleChange={this.handleChange}
-										swapForm={this.swapForm}
-										handleSignup={this.handleSignup}
-										handleSignupNext={this.handleSignupNext}
-										step={this.state.signupStep}
-										email={this.state.email}
-										password={this.state.password}
-									/>
-								</HeaderForm>
-							</Header>
-							<BottomLine href="#2">
-								Show me what it does
-							</BottomLine>
-						</SectionOne>
-					</Section>
-					<Section>
-						<SectionTwo>
-							<BulletText>
-								<BulletHeader>
-									In Wanamic connecting with users matters, not only content.
-								</BulletHeader>
-								<BulletDescription>
-									Tired of social networks where users are just a number and there isn't real interaction?
-									We created Wanamic focusing on connecting our users.
-								</BulletDescription>
-							</BulletText>
-							<SmallScrollTaunt href="#3">
-								<Icon name="arrow alternate circle down outline" />
-							</SmallScrollTaunt>
-						</SectionTwo>
-					</Section>
-					<Section>
-						<SectionThree>
-							<BulletText>
-								<BulletHeader>
-									Don't worry, content still matters.
-								</BulletHeader>
-								<BulletDescription>
-									Watching a movie? Reading a book? Maybe listening to a great song? Share it!
-									Express yourself through our 7 types of post: text, image, link, music, books, movies and shows.
-								</BulletDescription>
-							</BulletText>
-							<SmallScrollTaunt href="#4">
-								<Icon name="arrow alternate circle down outline" />
-							</SmallScrollTaunt>
-						</SectionThree>
-					</Section>
-					<Section>
-						<SectionFour>
-							<BulletText>
-								<BulletHeader>
-									Join clubs related to your interests.
-								</BulletHeader>
-								<BulletDescription>
-									In wanamic you can join and create clubs focused on hobbies, there you can connect with other members or discover and share content.
-								</BulletDescription>
-							</BulletText>
-							<SmallScrollTaunt href="#5">
-								<Icon name="arrow alternate circle down outline" />
-							</SmallScrollTaunt>
-						</SectionFour>
-					</Section>
-					<Section>
-						<SectionFive>
-							<BackgroundImage
-								lastPage
-								image={require( "../images/background2.jpg" )}
-							/>
+				<SectionOne>
+					{this.state.showPopup &&
+						<CookiesPopup>
+							We use cookies to provide the best possible experience. By navigating Wanamic, you agree to our use of cookies. <a href="/information/cookies">Cookies Policy</a>
+							<ClosePopup name="close" onClick={this.closePopup} />
+						</CookiesPopup>
+					}
+					<BackgroundImage
+						image={require( "../images/background.jpg" )}
+					/>
+					<Header>
+						<HeaderText>
 							<Logo image={require( "../images/wanamic-logo-name.svg" )} />
-							<BulletText sectionFive>
-								<BulletHeader>
-									There is much much more.
-								</BulletHeader>
-								<BulletDescription>
-									Why don't you see it yourself? We are waiting for you.
-								</BulletDescription>
-							</BulletText>
+							<Intro>
+								Make new friends online.
+							</Intro>
+							<Subheader>
+								Wanamic allows you to connect with like-minded people who share your interests and hobbies.
+							</Subheader>
+							<SmallIntro>
+								Connect with like-minded people who share your interests and hobbies.
+							</SmallIntro>
+						</HeaderText>
+						<HeaderForm>
 							<SignupForm
 								error={this.state.error}
 								handleChange={this.handleChange}
-								swapForm={this.swapForm}
 								handleSignup={this.handleSignup}
 								handleSignupNext={this.handleSignupNext}
 								step={this.state.signupStep}
 								email={this.state.email}
 								password={this.state.password}
 							/>
-						</SectionFive>
-					</Section>
-				</SectionsContainer>
+						</HeaderForm>
+					</Header>
+					<BottomLine onClick={() => this.scrollTo( this.section2Ref )}>
+						Show me what it does
+					</BottomLine>
+				</SectionOne>
+				<SectionTwo ref={this.section2Ref}>
+					<BulletText>
+						<BulletHeader>
+							Make new friends with our matchmaking tools.
+						</BulletHeader>
+						<BulletDescription>
+							You will be able to explore profiles of users who share your interests.
+							You can send them a friend request or start a conversation at any time.
+							In Wanamic, making new friends matters, not just content.
+						</BulletDescription>
+					</BulletText>
+					<SmallScrollTaunt
+						onClick={() => this.scrollTo( this.section3Ref )}
+					>
+						<Icon name="arrow alternate circle down outline" />
+					</SmallScrollTaunt>
+				</SectionTwo>
+				<SectionThree ref={this.section3Ref}>
+					<BulletText>
+						<BulletHeader>
+							Join clubs to find new friends.
+						</BulletHeader>
+						<BulletDescription>
+							You can join and create clubs focused on hobbies, there you can connect with other members or discover and share content.
+							Finding friends with your same hobby has never been so easy!
+						</BulletDescription>
+					</BulletText>
+					<SmallScrollTaunt
+						onClick={() => this.scrollTo( this.section4Ref )}
+					>
+						<Icon name="arrow alternate circle down outline" />
+					</SmallScrollTaunt>
+				</SectionThree>
+				<SectionFour ref={this.section4Ref}>
+					<BulletText>
+						<BulletHeader>
+							Express yourself through our 7 types of post.
+						</BulletHeader>
+						<BulletDescription>
+							Watching a movie? Reading a book? Maybe listening to a great song? Share it!
+							Once you make friends you can share everything with them.
+						</BulletDescription>
+					</BulletText>
+					<SmallScrollTaunt
+						onClick={() => this.scrollTo( this.section5Ref )}
+					>
+						<Icon name="arrow alternate circle down outline" />
+					</SmallScrollTaunt>
+				</SectionFour>
+				<SectionFive ref={this.section5Ref}>
+					<BackgroundImage
+						lastPage
+						image={require( "../images/background2.jpg" )}
+					/>
+					<Logo image={require( "../images/wanamic-logo-name.svg" )} />
+					<BulletText sectionFive>
+						<BulletHeader>
+							There is much much more.
+						</BulletHeader>
+						<BulletDescription>
+							Why don't you see it yourself? We are waiting for you.
+						</BulletDescription>
+					</BulletText>
+					<SignupForm
+						error={this.state.error}
+						handleChange={this.handleChange}
+						handleSignup={this.handleSignup}
+						handleSignupNext={this.handleSignupNext}
+						step={this.state.signupStep}
+						email={this.state.email}
+						password={this.state.password}
+					/>
+				</SectionFive>
 			</Wrapper>
 		);
 	}

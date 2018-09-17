@@ -33,7 +33,7 @@ const
 	UserContent = styled.p`
 		color: #222;
 		word-break: break-word;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		:hover {
 			cursor: pointer;
 		}

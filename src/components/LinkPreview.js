@@ -75,6 +75,7 @@ const
 
 
 class LinkPreview extends Component {
+
 	render() {
 		const { linkContent } = this.props;
 		return (
@@ -85,6 +86,7 @@ class LinkPreview extends Component {
 						details={this.props.details}
 					>
 						<LinkPreviewIframe
+							key={linkContent.embeddedUrl}
 							src={linkContent.embeddedUrl}
 							frameBorder="0"
 							allow="autoplay; encrypted-media"

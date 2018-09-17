@@ -77,7 +77,7 @@ const
 		color: #fff !important;
 		background: rgb(133, 217, 191) !important;
 	`,
-	LoginWrapper = styled.span`
+	LoginWrapper = styled.a`
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -85,6 +85,9 @@ const
 		margin: auto;
 		font-size: 1rem;
 		margin-top: 2rem;
+		:hover {
+			color: #eee;
+		}
 		@media(min-width: 420px) {
 			font-size: 1.05rem;
 		}
@@ -155,7 +158,7 @@ class SignupForm extends Component {
 							/>
 						</StyledForm>
 
-						<LoginWrapper onClick={this.props.swapForm}>
+						<LoginWrapper href="/login">
 							Already have an account? <Login>Sign In</Login>
 						</LoginWrapper>
 					</FormDimmer>
@@ -169,7 +172,6 @@ SignupForm.propTypes = {
 	handleSignupNext: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
 	handleSignup: PropTypes.func.isRequired,
-	swapForm: PropTypes.func.isRequired,
 	password: PropTypes.string.isRequired,
 	email: PropTypes.string.isRequired,
 };

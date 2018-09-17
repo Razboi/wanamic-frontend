@@ -123,7 +123,7 @@ const
 
 PostHeader.propTypes = {
 	post: PropTypes.object.isRequired,
-	userPicture: PropTypes.object.isRequired,
+	userPicture: PropTypes.string.isRequired,
 	fakeOptions: PropTypes.bool
 };
 
