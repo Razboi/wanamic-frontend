@@ -49,6 +49,7 @@ class App extends Component {
 			ReactGA.pageview( window.location.pathname );
 		});
 	}
+
 	componentDidMount() {
 		ReactGA.pageview( window.location.pathname );
 		if ( this.props.authenticated ) {
@@ -64,6 +65,24 @@ class App extends Component {
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
+		}
+	}
+
+	displayNotification = ( title, body ) => {
+		if ( navigator.serviceWorker.controller &&
+			Notification.permission === "granted" ) {
+			navigator.serviceWorker.getRegistration().then( reg => {
+				let options = {
+					body: body,
+					icon: require( "./images/android-chrome-192x192.png" ),
+					vibrate: [ 100, 50, 100 ],
+					data: {
+						dateOfArrival: Date.now(),
+						primaryKey: 1
+					}
+				};
+				reg.showNotification( title, options );
+			});
 		}
 	}
 
@@ -91,6 +110,8 @@ class App extends Component {
 		this.socket.emit( "register", userData );
 		this.socket.on( "notifications", async notification => {
 			this.props.addNotification( notification );
+			this.displayNotification( "New notification",
+				`${notification.author.fullname} ${notification.content}` );
 		});
 		this.socket.on( "message", async message => {
 			const {
@@ -103,6 +124,8 @@ class App extends Component {
 				if ( conversation.target.username === message.author.username ) {
 					updateConversation( message, i );
 					incrementChatNewMessages( i );
+					this.displayNotification( "New message",
+						`${message.author.fullname}: ${message.content}` );
 
 					if ( conversations[ selectedConversation ].target.username
 						=== message.author.username && displayConversation ) {
@@ -112,9 +135,12 @@ class App extends Component {
 					return;
 				}
 			}
+
 			const newConversation = await api.getConversation(
 				message.author.username );
 			addConversation( newConversation.data );
+			this.displayNotification( "New conversation.",
+				`${message.author.fullname} started a new conversation.` );
 		});
 	}
 

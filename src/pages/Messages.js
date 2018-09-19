@@ -417,7 +417,7 @@ class Messages extends Component {
 		}
 		this.setState({ displaySocialCircle: false });
 		this.props.switchConversation( false );
-		if ( this.props.profilePage && this.props.messageTarget ) {
+		if ( this.props.clearTargetAfterClose && this.props.messageTarget ) {
 			this.props.startChat( undefined );
 		}
 		if ( this.props.newConversation ) {
@@ -443,7 +443,7 @@ class Messages extends Component {
 		const
 			s3Bucket = "https://d3dlhr4nnvikjb.cloudfront.net/",
 			{ conversations, selectedConversation, newConversation,
-				largeScreen, profilePage, displayPopup, hideSidebar,
+				largeScreen, clearTargetAfterClose, displayPopup, hideSidebar,
 				onHome } = this.props;
 		if ( this.props.displayConversation && !largeScreen ) {
 			return (
@@ -653,7 +653,7 @@ class Messages extends Component {
 			);
 		}
 
-		if ( !largeScreen && !profilePage ) {
+		if ( !largeScreen && !clearTargetAfterClose ) {
 			return (
 				<React.Fragment>
 					<Wrapper>
@@ -723,9 +723,10 @@ Messages.propTypes = {
 	socket: PropTypes.object.isRequired,
 	onHome: PropTypes.bool,
 	largeScreen: PropTypes.bool,
-	profilePage: PropTypes.bool,
+	clearTargetAfterClose: PropTypes.bool,
 	displayPopup: PropTypes.bool,
-	hideSidebar: PropTypes.bool
+	hideSidebar: PropTypes.bool,
+	startChat: PropTypes.func
 };
 
 const

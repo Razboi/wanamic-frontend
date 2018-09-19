@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
+import { toggleFeedbackForm } from "../services/actions/user";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
 import { switchPostDetails, switchShare } from "../services/actions/posts";
@@ -12,6 +13,7 @@ import Notifications from "../pages/Notifications";
 import Messages from "../pages/Messages";
 import Share from "../containers/Share";
 import PostDetails from "../containers/PostDetails";
+import FeedbackForm from "../containers/FeedbackForm";
 
 const
 	Wrapper = styled.div`
@@ -288,6 +290,12 @@ class NavBar extends Component {
 							/>}
 					</PostDetailsDimmer>
 				}
+
+				{this.props.feedback &&
+					<FeedbackForm
+						toggleFeedback={this.props.toggleFeedbackForm}
+					/>
+				}
 				<Options>
 					<NavOption onClick={this.handleHome} >
 						<NavImage
@@ -356,7 +364,7 @@ class NavBar extends Component {
 							onHome={this.props.location.pathname === "/"}
 							hideSidebar={this.props.location.pathname !== "/"}
 							messageTarget={this.props.messageTarget}
-							profilePage={this.props.profilePage}
+							clearTargetAfterClose={this.props.profilePage}
 							startChat={this.props.startChat}
 							history={this.props.history}
 						/>
@@ -442,6 +450,11 @@ class NavBar extends Component {
 								<StyledDropdownItem>
 									<a href="/information/terms">Terms</a>
 								</StyledDropdownItem>
+								<StyledDropdownItem
+									onClick={this.props.toggleFeedbackForm}
+								>
+									Feedback
+								</StyledDropdownItem>
 								{localStorage.getItem( "ia" ) === "true" &&
 								<StyledDropdownItem
 									text="Batcave"
@@ -475,6 +488,7 @@ const
 		allConversations: state.conversations.allConversations,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
+		feedback: state.user.feedback
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -482,7 +496,8 @@ const
 		switchNotifications: () => dispatch( switchNotifications()),
 		switchMessages: () => dispatch( switchMessages()),
 		switchPostDetails: post => dispatch( switchPostDetails( post )),
-		switchShare: () => dispatch( switchShare())
+		switchShare: () => dispatch( switchShare()),
+		toggleFeedbackForm: () => dispatch( toggleFeedbackForm())
 	});
 
 export default withRouter(

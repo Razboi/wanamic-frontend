@@ -8,13 +8,13 @@ const
 		height: 100vh;
 		width: 100%;
 		margin-top: 1rem;
-		padding: 2rem;
 		overflow: hidden;
 		h1 {
 			text-align: center;
 			font-family: inherit;
 		}
 		@media (min-width: 800px) {
+			padding: 2rem;
 			width: 50%;
 			max-width: 600px;
 			height: 800px;
