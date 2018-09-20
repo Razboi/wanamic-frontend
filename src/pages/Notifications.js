@@ -59,7 +59,7 @@ const
 			border-bottom: 0;
 		}
 	`,
-	Notification = styled.div`
+	NotificationWrapper = styled.div`
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -128,6 +128,7 @@ class Notifications extends Component {
 		this.getNotifications();
 		this.getNetwork();
 		this.checkNotifications();
+		Notification.requestPermission();
 	}
 
 	getNetwork = async() => {
@@ -323,7 +324,7 @@ class Notifications extends Component {
 							notification.author &&
 								( notification.alert || notification.clubRequestResponse
 									|| notification.clubSuccession ) ?
-								<Notification key={index}>
+								<NotificationWrapper key={index}>
 									<Content alert>
 										{notification.content}
 										{notification.alert &&
@@ -338,9 +339,9 @@ class Notifications extends Component {
 											/>
 										}
 									</Content>
-								</Notification>
+								</NotificationWrapper>
 								:
-								<Notification key={index}>
+								<NotificationWrapper key={index}>
 									<a href={`/${notification.author.username}`}>
 										<NotificationAuthorImg
 											circular
@@ -388,7 +389,7 @@ class Notifications extends Component {
 										unFriend={() =>
 											this.unFriend( notification.author )}
 									/>
-								</Notification>
+								</NotificationWrapper>
 						)}
 					</div>}
 				</StyledInfiniteScroll>
