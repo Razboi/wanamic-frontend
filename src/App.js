@@ -49,6 +49,7 @@ class App extends Component {
 			ReactGA.pageview( window.location.pathname );
 		});
 	}
+
 	componentDidMount() {
 		ReactGA.pageview( window.location.pathname );
 		if ( this.props.authenticated ) {
@@ -64,6 +65,24 @@ class App extends Component {
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
+		}
+	}
+
+	displayNotification = ( title, body ) => {
+		if ( navigator.serviceWorker.controller &&
+			Notification.permission === "granted" ) {
+			navigator.serviceWorker.getRegistration().then( reg => {
+				let options = {
+					body: body,
+					icon: require( "./images/android-chrome-192x192.png" ),
+					vibrate: [ 100, 50, 100 ],
+					data: {
+						dateOfArrival: Date.now(),
+						primaryKey: 1
+					}
+				};
+				reg.showNotification( title, options );
+			});
 		}
 	}
 
@@ -91,6 +110,8 @@ class App extends Component {
 		this.socket.emit( "register", userData );
 		this.socket.on( "notifications", async notification => {
 			this.props.addNotification( notification );
+			this.displayNotification( "New notification",
+				`${notification.author.fullname} ${notification.content}` );
 		});
 		this.socket.on( "message", async message => {
 			const {
@@ -103,6 +124,8 @@ class App extends Component {
 				if ( conversation.target.username === message.author.username ) {
 					updateConversation( message, i );
 					incrementChatNewMessages( i );
+					this.displayNotification( "New message",
+						`${message.author.fullname}: ${message.content}` );
 
 					if ( conversations[ selectedConversation ].target.username
 						=== message.author.username && displayConversation ) {
@@ -112,9 +135,12 @@ class App extends Component {
 					return;
 				}
 			}
+
 			const newConversation = await api.getConversation(
 				message.author.username );
 			addConversation( newConversation.data );
+			this.displayNotification( "New conversation.",
+				`${message.author.fullname} started a new conversation.` );
 		});
 	}
 
@@ -150,31 +176,29 @@ class App extends Component {
 	render() {
 		// Switch will render the first match. /:username must be last
 		return (
-			<div>
-				<Switch>
-					<UserRoute exact path="/" component={Home} socket={this.socket}/>
-					<GuestRoute path="/signup" component={Signup} />
-					<GuestRoute path="/login" component={Login} />
-					<UserRoute
-						path="/notifications" component={Notifications} socket={this.socket}
-					/>
-					<UserRoute
-						path="/messages" component={Messages} socket={this.socket}
-					/>
-					<UserRoute path="/settings" component={Settings} socket={this.socket}/>
-					<NewUserRoute path="/welcome" component={Welcome} socket={this.socket} />
-					<UserRoute
-						path="/explore" component={Explore} socket={this.socket}
-					/>
-					<GuestRoute
-						path="/reset_password/:token" component={PasswordReset}
-					/>
-					<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
-					<UserRoute path="/c/:club" component={Club} socket={this.socket} />
-					<Route path="/information/:section" component={Information} />
-					<UserRoute exact path="/:username" component={Profile} socket={this.socket} />
-				</Switch>
-			</div>
+			<Switch>
+				<UserRoute exact path="/" component={Home} socket={this.socket}/>
+				<GuestRoute path="/signup" component={Signup} />
+				<GuestRoute path="/login" component={Login} />
+				<UserRoute
+					path="/notifications" component={Notifications} socket={this.socket}
+				/>
+				<UserRoute
+					path="/messages" component={Messages} socket={this.socket}
+				/>
+				<UserRoute path="/settings" component={Settings} socket={this.socket}/>
+				<NewUserRoute path="/welcome" component={Welcome} socket={this.socket} />
+				<UserRoute
+					path="/explore" component={Explore} socket={this.socket}
+				/>
+				<GuestRoute
+					path="/reset_password/:token" component={PasswordReset}
+				/>
+				<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
+				<UserRoute path="/c/:club" component={Club} socket={this.socket} />
+				<Route path="/information/:section" component={Information} />
+				<Route exact path="/:username" component={Profile} socket={this.socket} />
+			</Switch>
 		);
 	}
 }

@@ -59,14 +59,14 @@ class ExplorePage extends Component {
 			renderProfile: false,
 			renderClub: false,
 			typeOfSearch: "",
-			skip: 1,
 			userSkip: 0,
 			hasMore: true,
 			user: {},
 			clubSearch: "",
 			type: "",
 			clubData: {},
-			multiple: false
+			multiple: false,
+			messageTarget: undefined
 		};
 	}
 
@@ -75,19 +75,18 @@ class ExplorePage extends Component {
 		document.title = "Explore";
 	}
 
-	getSugestedUser = () => {
-		api.getSugested( this.state.skip )
+	getSuggestedUser = () => {
+		api.getSuggested()
 			.then( res => {
 				if ( res === "jwt expired" ) {
 					refreshToken()
-						.then(() => this.getSugestedUser())
+						.then(() => this.getSuggestedUser())
 						.catch( err => console.log( err ));
 				} else if ( res.data ) {
 					this.setState({
 						user: res.data,
 						renderProfile: true,
-						typeOfSearch: "sugested",
-						skip: this.state.skip + 1
+						typeOfSearch: "sugested"
 					});
 				}
 			}).catch( err => console.log( err ));
@@ -157,7 +156,7 @@ class ExplorePage extends Component {
 	nextUser = () => {
 		switch ( this.state.typeOfSearch ) {
 		case "sugested":
-			this.getSugestedUser();
+			this.getSuggestedUser();
 			break;
 		case "random":
 			this.getRandomUser();
@@ -166,7 +165,7 @@ class ExplorePage extends Component {
 			this.matchHobbies();
 			break;
 		default:
-			this.getSugestedUser();
+			this.getSuggestedUser();
 		}
 	}
 
@@ -231,6 +230,24 @@ class ExplorePage extends Component {
 		}
 	}
 
+	startChat = messageTarget => {
+		this.setState({ messageTarget: messageTarget });
+	}
+
+	chatMatchmaking = async() => {
+		try {
+			const user = await api.chatMatchmaking();
+			this.startChat( user.data );
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.chatMatchmaking();
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
 
 	render() {
 		if ( this.state.renderProfile ) {
@@ -263,18 +280,20 @@ class ExplorePage extends Component {
 				this.state.type ?
 					<Wrapper>
 						<NavBar
-							hide={this.state.scrollingDown}
 							socket={this.props.socket}
+							messageTarget={this.state.messageTarget}
+							startChat={this.startChat}
 						/>
 
 						<PageContent onClick={this.hidePopups}>
 							{this.state.type === "users" ?
 								<ExploreUsers
-									getSugested={this.getSugestedUser}
+									getSugested={this.getSuggestedUser}
 									getRandom={this.getRandomUser}
 									matchHobbies={this.matchHobbies}
 									matchUsername={this.matchUsername}
 									handleChange={this.handleChange}
+									chatMatchmaking={this.chatMatchmaking}
 								/>
 								:
 								<ExploreClubs
@@ -305,17 +324,20 @@ class ExplorePage extends Component {
 		return (
 			<Wrapper>
 				<NavBar
-					hide={this.state.scrollingDown}
 					socket={this.props.socket}
+					profilePage
+					messageTarget={this.state.messageTarget}
+					startChat={this.startChat}
 				/>
 
 				<PageContent onClick={this.hidePopups}>
 					<ExploreUsers
-						getSugested={this.getSugestedUser}
+						getSugested={this.getSuggestedUser}
 						getRandom={this.getRandomUser}
 						matchHobbies={this.matchHobbies}
 						matchUsername={this.matchUsername}
 						handleChange={this.handleChange}
+						chatMatchmaking={this.chatMatchmaking}
 					/>
 					<ExploreClubs
 						randomClub={this.randomClub}

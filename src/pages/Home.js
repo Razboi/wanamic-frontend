@@ -7,6 +7,7 @@ import {
 } from "../services/actions/posts";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
+import { toggleFeedbackForm } from "../services/actions/user";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import NewsFeed from "../components/NewsFeed";
@@ -76,6 +77,8 @@ const
 		margin: 0 auto;
 		@media (max-width: 900px) {
 			justify-content: center;
+			align-items: center;
+			flex-direction: ${props => props.clubFeed && "column"};
 		}
 	`,
 	Information = styled.div`
@@ -84,12 +87,16 @@ const
 		font-size: 12px;
 		text-align: center;
 		margin: auto;
+		@media (max-width: 900px) {
+			display: none;
+		}
 	`,
 	Clubs = styled.div`
 		margin-top: 50px;
 		margin-right: 10px;
 		@media (max-width: 900px) {
-			display: none;
+			display: ${props => !props.clubFeed && "none"};
+			margin: 0;
 		}
 	`,
 	ClubSuggestions = styled.div`
@@ -105,14 +112,18 @@ const
 		div {
 			margin-bottom: 1rem;
 		}
-		h4,h3 {
+		h2 {
 			font-family: inherit;
 			color: #111;
 			margin-bottom: 0.2rem;
+			font-size: 1.07rem;
 		}
-		h3 {
+		h1 {
 			margin-bottom: 1rem;
 			font-weight: 200;
+			font-size: 1.4rem;
+			font-family: inherit;
+			color: #111;
 		}
 		p {
 			color: #111;
@@ -129,15 +140,37 @@ const
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		margin-bottom: 1rem;
 	`,
-	CreateClubTitle = styled.h4`
+	CreateClubTitle = styled.h1`
 		font-family: inherit;
 		color: #111;
+		font-size: 1.2rem;
 	`,
 	CreateClubDescription = styled.p`
 		color: #111;
 		font-weight: 200;
 		font-size: 1.01rem;
+	`,
+	ChatMatchmaking = styled.div`
+		width: 300px;
+		padding: 1rem;
+		border-radius: 5px;
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		h1 {
+			font-family: inherit;
+			color: #111;
+			font-size: 1.2rem;
+		}
+		p {
+			color: #111;
+			font-weight: 200;
+			font-size: 1.01rem;
+		}
 	`,
 	InfoLinks = styled.ul`
 		display: flex;
@@ -182,6 +215,20 @@ const
 		}
 		button {
 			font-family: inherit !important;
+			background: none !important;
+			border: 1px solid #111 !important;
+			color: #111 !important;
+		}
+	`,
+	FeedbackButton = styled( Button )`
+		position: absolute;
+		left: 1rem;
+		top: 4.5rem;
+		border-radius: 0px !important;
+		box-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
+		background: #fff !important;
+		@media (max-width: 1500px) {
+			display: none !important;
 		}
 	`;
 
@@ -197,7 +244,8 @@ class Home extends Component {
 			clubForm: false,
 			clubSuggestions: [],
 			clubData: {},
-			randomUser: {}
+			randomUser: {},
+			messageTarget: undefined
 		};
 	}
 
@@ -451,11 +499,29 @@ class Home extends Component {
 		return (
 			<div key={index}>
 				<a href={`/c/${club.name}`}>
-					<h4>{club.title}</h4>
+					<h2>{club.title}</h2>
 					<p>{club.description}</p>
 				</a>
 			</div>
 		);
+	}
+
+	startChat = messageTarget => {
+		this.setState({ messageTarget: messageTarget });
+	}
+
+	chatMatchmaking = async() => {
+		try {
+			const user = await api.chatMatchmaking();
+			this.startChat( user.data );
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.chatMatchmaking();
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	render() {
@@ -497,11 +563,20 @@ class Home extends Component {
 						/>}
 
 					<MediaDimmer blur={this.props.mediaOptions} >
-						<NavBar socket={this.props.socket}/>
+						<NavBar
+							socket={this.props.socket}
+							messageTarget={this.state.messageTarget}
+							startChat={this.startChat}
+						/>
+
+						<FeedbackButton
+							content="Feedback"
+							onClick={this.props.toggleFeedbackForm}
+						/>
 
 						<OutsideClickHandler onClick={this.hidePopups}>
-							<HomeContent>
-								<Clubs>
+							<HomeContent clubFeed={this.props.feed === "club"}>
+								<Clubs clubFeed={this.props.feed === "club"}>
 									{this.props.feed === "club" ?
 										<ClubInformation
 											clubData={clubData}
@@ -513,7 +588,7 @@ class Home extends Component {
 										:
 										<React.Fragment>
 											<ClubSuggestions>
-												<h3>Random club suggestions</h3>
+												<h1>Random club suggestions</h1>
 												{this.state.clubSuggestions.map( this.renderClubSuggestions )}
 											</ClubSuggestions>
 											<CreateClub>
@@ -522,8 +597,8 @@ class Home extends Component {
 													Haven't found a club for your hobbie? You can create it so other users with the same hobbie can join.
 												</CreateClubDescription>
 												<Button
-													primary
-													content="Create"
+													secondary
+													content="Create Club"
 													onClick={this.switchCreateForm}
 												/>
 											</CreateClub>
@@ -533,6 +608,15 @@ class Home extends Component {
 									{this.state.clubForm &&
 										<CreateClubPopup switchCreateForm={this.switchCreateForm} />
 									}
+									<ChatMatchmaking>
+										<h1>Chat Matchmaking</h1>
+										<p>Click the button to start a conversation with a like-minded user!</p>
+										<Button
+											content="Start Chat"
+											secondary
+											onClick={this.chatMatchmaking}
+										/>
+									</ChatMatchmaking>
 									<Information>
 										<InfoLinks>
 											<li><a href="/information/privacy">Privacy</a></li>
@@ -561,7 +645,7 @@ class Home extends Component {
 											exposition="true"
 										/>
 										<Button
-											primary
+											secondary
 											content="View profile"
 											onClick={this.handleUserPreviewClick}
 										/>
@@ -604,7 +688,8 @@ const
 		switchShare: () => dispatch( switchShare()),
 		setFeed: ( feed ) => dispatch( setFeed( feed )),
 		setClub: ( club ) => dispatch( setClub( club )),
-		setClubs: ( clubs ) => dispatch( setClubs( clubs ))
+		setClubs: ( clubs ) => dispatch( setClubs( clubs )),
+		toggleFeedbackForm: () => dispatch( toggleFeedbackForm())
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( Home );
