@@ -214,7 +214,6 @@ export default {
 			method: "post",
 			url: `${API_URL}/posts/timeline/${skip}`,
 			data: {
-				token: localStorage.getItem( "token" ),
 				username: username
 			}
 		})

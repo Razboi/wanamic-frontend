@@ -357,6 +357,9 @@ class UserProfile extends Component {
 	}
 
 	checkPendingRequest = async() => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
 		try {
 			const res = await api.isRequested( this.props.username );
 			if ( res === "jwt expired" ) {
@@ -730,7 +733,8 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		feedPosts: state.posts.feedPosts
+		feedPosts: state.posts.feedPosts,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({
