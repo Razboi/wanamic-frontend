@@ -128,6 +128,7 @@ class Notifications extends Component {
 		this.getNotifications();
 		this.getNetwork();
 		this.checkNotifications();
+		Notification.requestPermission();
 	}
 
 	getNetwork = async() => {

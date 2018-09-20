@@ -5,19 +5,22 @@ import PropTypes from "prop-types";
 
 const
 	Wrapper = styled.div`
-		height: 100vh;
+		min-height: 100vh;
+		height: 100%;
 		width: 100%;
 		margin-top: 1rem;
-		padding: 2rem;
+		padding: 0 5px 5rem 5px;
 		overflow: hidden;
 		h1 {
 			font-family: inherit;
 			text-align: center;
 		}
 		@media (min-width: 800px) {
+			padding: 2rem;
 			width: 50%;
 			max-width: 600px;
 			height: 800px;
+			min-height: auto;
 			background: #fff;
 		}
 	`,
@@ -29,16 +32,22 @@ const
     justify-content: space-evenly;
 	`,
 	ButtonsWrapper = styled.div`
+		button {
+			font-family: inherit !important;
+		}
 	`,
 	SugestedHeader = styled.h2`
 		font-weight: 400;
 		font-size: 1.3rem;
-		margin: 0px;
 		text-align: center;
 		color: #222;
 		align-self: center;
 		font-family: inherit;
 		margin-bottom: 2rem;
+		margin-top: 0;
+		@media (max-width: 800px) {
+			margin-top: 3rem !important;
+		}
 	`,
 	Buttons = styled.div`
 		display: flex;
@@ -67,6 +76,9 @@ const
 			font-family: inherit;
 			color: #111;
 			text-align: center;
+			@media (max-width: 800px) {
+				margin-top: 3rem !important;
+			}
 		}
 	`,
 	SearchBar = styled( Input )`
@@ -111,9 +123,20 @@ class ExploreUsers extends Component {
 								onClick={this.props.getSugested}
 							/>
 							<RandomButton
-								className="randomButton"
 								content="RANDOM"
 								onClick={this.props.getRandom}
+							/>
+						</Buttons>
+					</ButtonsWrapper>
+					<ButtonsWrapper>
+						<SugestedHeader>
+							Start a conversation with a like-minded user.
+						</SugestedHeader>
+						<Buttons>
+							<SugestedButton
+								primary
+								content="START CHAT"
+								onClick={this.props.chatMatchmaking}
 							/>
 						</Buttons>
 					</ButtonsWrapper>
@@ -147,7 +170,8 @@ ExploreUsers.propTypes = {
 	getRandom: PropTypes.func.isRequired,
 	getSugested: PropTypes.func.isRequired,
 	matchHobbies: PropTypes.func.isRequired,
-	matchUsername: PropTypes.func.isRequired
+	matchUsername: PropTypes.func.isRequired,
+	chatMatchmaking: PropTypes.func.isRequired
 };
 
 export default ExploreUsers;

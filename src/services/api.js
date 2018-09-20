@@ -214,7 +214,6 @@ export default {
 			method: "post",
 			url: `${API_URL}/posts/timeline/${skip}`,
 			data: {
-				token: localStorage.getItem( "token" ),
 				username: username
 			}
 		})
@@ -366,11 +365,22 @@ export default {
 			.then( res => res )
 			.catch( err => err.response.data ),
 
-	getSugested: skip =>
+	chatMatchmaking: () =>
 		axios({
 			method: "post",
-			data: { skip: skip, token: localStorage.getItem( "token" ) },
-			url: API_URL + "/user/sugestedUsers"
+			data: { token: localStorage.getItem( "token" ) },
+			url: API_URL + "/user/suggestedUserChat"
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getSuggested: () =>
+		axios({
+			method: "post",
+			data: { token: localStorage.getItem( "token" ) },
+			url: API_URL + "/user/suggestedUsers"
 		})
 			.then( res => res )
 			.catch( err => err.response.data ),
@@ -943,6 +953,20 @@ export default {
 		axios({
 			method: "get",
 			url: `${API_URL}/clubs/search/${clubName}`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	feedback: ( content ) =>
+		axios({
+			method: "post",
+			data: {
+				token: localStorage.getItem( "token" ),
+				content: content
+			},
+			url: `${API_URL}/user/feedback`
 		})
 			.then( res => res )
 			.catch( err => {

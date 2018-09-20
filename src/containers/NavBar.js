@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Label, Dropdown, Image } from "semantic-ui-react";
+import { Label, Dropdown, Image, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
+import { toggleFeedbackForm } from "../services/actions/user";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
 import { switchPostDetails, switchShare } from "../services/actions/posts";
@@ -12,6 +13,7 @@ import Notifications from "../pages/Notifications";
 import Messages from "../pages/Messages";
 import Share from "../containers/Share";
 import PostDetails from "../containers/PostDetails";
+import FeedbackForm from "../containers/FeedbackForm";
 
 const
 	Wrapper = styled.div`
@@ -166,6 +168,18 @@ const
 		width: 100%;
 		height: 100%;
 		min-height: 100vh;
+	`,
+	AuthOptions = styled.div`
+		margin-left: auto;
+		button {
+			font-family: inherit !important;
+			border-radius: 2px !important;
+		}
+	`,
+	LoginButton = styled( Button )`
+		background: #fff !important;
+		color: #111 !important;
+		border: 1px solid #111 !important;
 	`;
 
 
@@ -288,6 +302,12 @@ class NavBar extends Component {
 							/>}
 					</PostDetailsDimmer>
 				}
+
+				{this.props.feedback &&
+					<FeedbackForm
+						toggleFeedback={this.props.toggleFeedbackForm}
+					/>
+				}
 				<Options>
 					<NavOption onClick={this.handleHome} >
 						<NavImage
@@ -309,115 +329,68 @@ class NavBar extends Component {
 						/>
 					</NavOption>
 
-					<NavOption>
-						<NavImage
-							onClick={this.handleNotifications}
-							image={this.props.location.pathname === "/notifications"
-							|| this.props.displayNotifications
-								?
-								require( "../images/bell_color.svg" )
-								:
-								require( "../images/bell.svg" )
-							}
-						>
-							{this.props.newNotifications > 0 &&
-								<Label size="small" floating circular>
-									{this.props.newNotifications}
-								</Label>
-							}
-						</NavImage>
+					{this.props.authenticated &&
+						<React.Fragment>
+							<NavOption>
+								<NavImage
+									onClick={this.handleNotifications}
+									image={this.props.location.pathname === "/notifications"
+									|| this.props.displayNotifications
+										?
+										require( "../images/bell_color.svg" )
+										:
+										require( "../images/bell.svg" )
+									}
+								>
+									{this.props.newNotifications > 0 &&
+										<Label size="small" floating circular>
+											{this.props.newNotifications}
+										</Label>
+									}
+								</NavImage>
 
-						{this.props.displayNotifications &&
-							<Notifications socket={this.props.socket} isPopup />
-						}
-					</NavOption>
+								{this.props.displayNotifications &&
+									<Notifications socket={this.props.socket} isPopup />
+								}
+							</NavOption>
 
-					<NavOption>
-						<NavImage
-							onClick={this.handleMessages}
-							image={this.props.location.pathname === "/messages"
-							|| this.props.displayMessages ?
-								require( "../images/chat_color.svg" )
-								:
-								require( "../images/chat.svg" )
-							}
-						>
-							{chatNotifications > 0 &&
-								<Label size="small" floating circular>
-									{chatNotifications}
-								</Label>
-							}
-						</NavImage>
+							<NavOption>
+								<NavImage
+									onClick={this.handleMessages}
+									image={this.props.location.pathname === "/messages"
+									|| this.props.displayMessages ?
+										require( "../images/chat_color.svg" )
+										:
+										require( "../images/chat.svg" )
+									}
+								>
+									{chatNotifications > 0 &&
+										<Label size="small" floating circular>
+											{chatNotifications}
+										</Label>
+									}
+								</NavImage>
 
-						<Messages
-							displayPopup={this.props.displayMessages}
-							socket={this.props.socket}
-							largeScreen
-							onHome={this.props.location.pathname === "/"}
-							hideSidebar={this.props.location.pathname !== "/"}
-							messageTarget={this.props.messageTarget}
-							profilePage={this.props.profilePage}
-							startChat={this.props.startChat}
-							history={this.props.history}
-						/>
-					</NavOption>
+								<Messages
+									displayPopup={this.props.displayMessages}
+									socket={this.props.socket}
+									largeScreen
+									onHome={this.props.location.pathname === "/"}
+									hideSidebar={this.props.location.pathname !== "/"}
+									messageTarget={this.props.messageTarget}
+									clearTargetAfterClose={this.props.profilePage}
+									startChat={this.props.startChat}
+									history={this.props.history}
+								/>
+							</NavOption>
+						</React.Fragment>
+					}
 
 					<Logo href="/" image={require( "../images/black-logo-lname.svg" )} />
 
-					<RightOptions>
-						<Scores>
-							<NavImage
-								image={require( "../images/heart.svg" )}
-							/>
-							<Count>{this.props.totalLikes} likes</Count>
-						</Scores>
-						<Scores>
-							<NavImage
-								image={require( "../images/visibility.svg" )}
-							/>
-							<Count>{this.props.totalViews} views</Count>
-						</Scores>
-
-						<Dropdown
-							trigger={<ProfileImg circular src={profileImage} />}
-							icon={null} direction="left">
-							<Dropdown.Menu>
-								<UserInfo
-									onClick={() => this.goToProfile( username )}
-								>
-									<DropdownFullname>{fullname}</DropdownFullname>
-									<DropdownUsername>@{username}</DropdownUsername>
-								</UserInfo>
-								<Dropdown.Divider />
-								<StyledDropdownItem
-									text="Logout"
-									onClick={this.handleLogout}
-								/>
-								<StyledDropdownItem
-									text="Settings"
-									onClick={this.goToSettings}
-								/>
-								{localStorage.getItem( "ia" ) === "true" &&
-								<StyledDropdownItem
-									text="Batcave"
-									onClick={this.goToBatcave}
-								/>}
-							</Dropdown.Menu>
-						</Dropdown>
-					</RightOptions>
-
-					<NavOption id="NavbarSmallScreenOption">
-						<Dropdown
-							trigger={<ProfileImg circular src={profileImage} />}
-							icon={null} direction="left">
-							<Dropdown.Menu>
-								<UserInfo
-									onClick={() => this.goToProfile( username )}
-								>
-									<DropdownFullname>{fullname}</DropdownFullname>
-									<DropdownUsername>@{username}</DropdownUsername>
-								</UserInfo>
-								<Dropdown.Divider />
+					{this.props.authenticated ?
+						<React.Fragment>
+							<RightOptions>
 								<Scores>
 									<NavImage
 										image={require( "../images/heart.svg" )}
@@ -430,26 +403,91 @@ class NavBar extends Component {
 									/>
 									<Count>{this.props.totalViews} views</Count>
 								</Scores>
-								<Dropdown.Divider />
-								<StyledDropdownItem
-									text="Logout"
-									onClick={this.handleLogout}
-								/>
-								<StyledDropdownItem
-									text="Settings"
-									onClick={this.goToSettings}
-								/>
-								<StyledDropdownItem>
-									<a href="/information/terms">Terms</a>
-								</StyledDropdownItem>
-								{localStorage.getItem( "ia" ) === "true" &&
-								<StyledDropdownItem
-									text="Batcave"
-									onClick={this.goToBatcave}
-								/>}
-							</Dropdown.Menu>
-						</Dropdown>
-					</NavOption>
+
+								<Dropdown
+									trigger={<ProfileImg circular src={profileImage} />}
+									icon={null} direction="left">
+									<Dropdown.Menu>
+										<UserInfo
+											onClick={() => this.goToProfile( username )}
+										>
+											<DropdownFullname>{fullname}</DropdownFullname>
+											<DropdownUsername>@{username}</DropdownUsername>
+										</UserInfo>
+										<Dropdown.Divider />
+										<StyledDropdownItem
+											text="Logout"
+											onClick={this.handleLogout}
+										/>
+										<StyledDropdownItem
+											text="Settings"
+											onClick={this.goToSettings}
+										/>
+										{localStorage.getItem( "ia" ) === "true" &&
+										<StyledDropdownItem
+											text="Batcave"
+											onClick={this.goToBatcave}
+										/>}
+									</Dropdown.Menu>
+								</Dropdown>
+							</RightOptions>
+
+							<NavOption id="NavbarSmallScreenOption">
+								<Dropdown
+									trigger={<ProfileImg circular src={profileImage} />}
+									icon={null} direction="left">
+									<Dropdown.Menu>
+										<UserInfo
+											onClick={() => this.goToProfile( username )}
+										>
+											<DropdownFullname>{fullname}</DropdownFullname>
+											<DropdownUsername>@{username}</DropdownUsername>
+										</UserInfo>
+										<Dropdown.Divider />
+										<Scores>
+											<NavImage
+												image={require( "../images/heart.svg" )}
+											/>
+											<Count>{this.props.totalLikes} likes</Count>
+										</Scores>
+										<Scores>
+											<NavImage
+												image={require( "../images/visibility.svg" )}
+											/>
+											<Count>{this.props.totalViews} views</Count>
+										</Scores>
+										<Dropdown.Divider />
+										<StyledDropdownItem
+											text="Logout"
+											onClick={this.handleLogout}
+										/>
+										<StyledDropdownItem
+											text="Settings"
+											onClick={this.goToSettings}
+										/>
+										<StyledDropdownItem>
+											<a href="/information/terms">Terms</a>
+										</StyledDropdownItem>
+										<StyledDropdownItem
+											onClick={this.props.toggleFeedbackForm}
+										>
+											Feedback
+										</StyledDropdownItem>
+										{localStorage.getItem( "ia" ) === "true" &&
+										<StyledDropdownItem
+											text="Batcave"
+											onClick={this.goToBatcave}
+										/>}
+									</Dropdown.Menu>
+								</Dropdown>
+							</NavOption>
+						</React.Fragment>
+						:
+						<AuthOptions>
+							<Button secondary content="Sign up" />
+							<LoginButton content="Log in" />
+						</AuthOptions>
+					}
 				</Options>
 			</Wrapper>
 		);
@@ -475,6 +513,8 @@ const
 		allConversations: state.conversations.allConversations,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
+		feedback: state.user.feedback,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -482,7 +522,8 @@ const
 		switchNotifications: () => dispatch( switchNotifications()),
 		switchMessages: () => dispatch( switchMessages()),
 		switchPostDetails: post => dispatch( switchPostDetails( post )),
-		switchShare: () => dispatch( switchShare())
+		switchShare: () => dispatch( switchShare()),
+		toggleFeedbackForm: () => dispatch( toggleFeedbackForm())
 	});
 
 export default withRouter(
