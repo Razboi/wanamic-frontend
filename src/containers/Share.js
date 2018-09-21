@@ -304,6 +304,9 @@ class Share extends Component {
 	}
 
 	render() {
+		if ( !this.props.authenticated ) {
+			return null;
+		}
 		return (
 			<Wrapper>
 				<HeaderWrapper>
@@ -382,7 +385,8 @@ Share.propTypes = {
 const
 	mapStateToProps = state => ({
 		postToShare: state.posts.postToShare,
-		displayPostDetails: state.posts.displayPostDetails
+		displayPostDetails: state.posts.displayPostDetails,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({

@@ -50,7 +50,7 @@ const
 		margin-top: 1rem !important;
 	`,
 	SecondaryInfo = styled.div`
-		margin-top: 1rem;
+		margin-bottom: 1rem;
 		width: 300px;
 		padding: 1rem;
 		border-radius: 5px;

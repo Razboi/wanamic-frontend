@@ -730,7 +730,6 @@ export default {
 		axios({
 			method: "post",
 			data: {
-				token: localStorage.getItem( "token" ),
 				username: username
 			},
 			url: API_URL + "/user/getUserAlbum/"
@@ -744,7 +743,6 @@ export default {
 		axios({
 			method: "post",
 			data: {
-				token: localStorage.getItem( "token" ),
 				username: username
 			},
 			url: API_URL + "/user/getUserNetwork/"
@@ -967,6 +965,16 @@ export default {
 				content: content
 			},
 			url: `${API_URL}/user/feedback`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
+
+	getSitemap: () =>
+		axios({
+			method: "get",
+			url: `${API_URL}/admin/sitemap`
 		})
 			.then( res => res )
 			.catch( err => {

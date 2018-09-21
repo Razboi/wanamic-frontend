@@ -85,15 +85,15 @@ class UserAlbum extends Component {
 		try {
 			this.setState({ loader: true });
 			const album = await api.getUserAlbum( this.props.username );
-			if ( album === "jwt expired" ) {
+			this.props.setPosts( album.data, true );
+			this.setState({ loader: false });
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
 				this.getAlbum();
-			} else if ( album.data ) {
-				this.props.setPosts( album.data, true );
-				this.setState({ loader: false });
+			} else {
+				console.log( err );
 			}
-		} catch ( err ) {
-			console.log( err );
 		}
 	}
 

@@ -44,9 +44,8 @@ class UserNetwork extends Component {
 	constructor() {
 		super();
 		this.state = {
-			network: { friends: [] },
+			network: [],
 			tab: 0,
-			requesterNetwork: {},
 			loader: false
 		};
 	}
@@ -57,18 +56,17 @@ class UserNetwork extends Component {
 		try {
 			this.setState({ loader: true });
 			const network = await api.getUserNetwork( this.props.username );
-			if ( network === "jwt expired" ) {
-				await refreshToken();
-				this.getNetwork();
-			} else if ( network.data ) {
-				this.setState({
-					network: network.data.user,
-					requesterNetwork: network.data.requester,
-					loader: false
-				});
-			}
+			this.setState({
+				network: network.data,
+				loader: false
+			});
 		} catch ( err ) {
-			console.log( err );
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getAlbum();
+			} else {
+				console.log( err );
+			}
 		}
 	}
 
@@ -85,7 +83,7 @@ class UserNetwork extends Component {
 
 	render() {
 		const { network, loader } = this.state;
-		if ( network.friends.length === 0 && !loader ) {
+		if ( network.length === 0 && !loader ) {
 			return (
 				<Wrapper>
 					<UsersWrapper>
@@ -103,7 +101,7 @@ class UserNetwork extends Component {
 				}
 
 				<UsersWrapper>
-					{network.friends.map(( user, index ) =>
+					{network.map(( user, index ) =>
 						<UserPreview
 							handleClick={this.handleUserPreviewClick}
 							key={index}

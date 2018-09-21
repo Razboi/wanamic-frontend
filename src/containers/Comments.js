@@ -127,7 +127,7 @@ class Comments extends Component {
 
 	componentDidMount() {
 		this.getInitialComments();
-		this.getSocialCircle();
+		this.props.authenticated && this.getSocialCircle();
 	}
 
 	componentWillUnmount() {
@@ -401,38 +401,42 @@ class Comments extends Component {
 					</StyledInfiniteScroll>
 				</CommentsWrapper>
 
-				<InputTrigger
-					style={InputTriggerStyles}
-					trigger={{ key: "@" }}
-					onStart={metaData => this.toggleSuggestions( metaData ) }
-					onCancel={metaData => this.toggleSuggestions( metaData ) }
-					onType={metaData => this.handleMentionInput( metaData ) }
-					endTrigger={endHandler => this.endHandler = endHandler }
-					className={this.props.hiddeCommentInput ?
-						"hiddenCommentInput" : undefined}
-				>
-					<textarea
-						maxLength="2200"
-						id={this.props.TextPost && "textPostCommentInput"}
-						className="commentsTextarea"
-						style={StyledTextArea}
-						name="comment"
-						value={this.state.comment}
-						placeholder={placeholder}
-						onChange={this.handleChange}
-						onKeyDown={this.handleKeyPress}
-						ref={input => this.commentInput = input}
-					/>
-				</InputTrigger>
-				<SuggestionsWrapper showSuggestions={this.state.showSuggestions}>
-					<Suggestions
-						socialCircle={this.state.socialCircle}
-						showSuggestions={this.state.showSuggestions}
-						mentionInput={this.state.mentionInput}
-						selectFromMentions={this.selectFromMentions}
-						media={"true"}
-					/>
-				</SuggestionsWrapper>
+				{this.props.authenticated &&
+					<React.Fragment>
+						<InputTrigger
+							style={InputTriggerStyles}
+							trigger={{ key: "@" }}
+							onStart={metaData => this.toggleSuggestions( metaData ) }
+							onCancel={metaData => this.toggleSuggestions( metaData ) }
+							onType={metaData => this.handleMentionInput( metaData ) }
+							endTrigger={endHandler => this.endHandler = endHandler }
+							className={this.props.hiddeCommentInput ?
+								"hiddenCommentInput" : undefined}
+						>
+							<textarea
+								maxLength="2200"
+								id={this.props.TextPost && "textPostCommentInput"}
+								className="commentsTextarea"
+								style={StyledTextArea}
+								name="comment"
+								value={this.state.comment}
+								placeholder={placeholder}
+								onChange={this.handleChange}
+								onKeyDown={this.handleKeyPress}
+								ref={input => this.commentInput = input}
+							/>
+						</InputTrigger>
+						<SuggestionsWrapper showSuggestions={this.state.showSuggestions}>
+							<Suggestions
+								socialCircle={this.state.socialCircle}
+								showSuggestions={this.state.showSuggestions}
+								mentionInput={this.state.mentionInput}
+								selectFromMentions={this.selectFromMentions}
+								media={"true"}
+							/>
+						</SuggestionsWrapper>
+					</React.Fragment>
+				}
 			</Wrapper>
 		);
 	}
@@ -454,7 +458,8 @@ const
 		postDetails: state.posts.postDetails,
 		newsfeed: state.posts.newsfeed,
 		comments: state.posts.comments,
-		displayPostDetails: state.posts.displayPostDetails
+		displayPostDetails: state.posts.displayPostDetails,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({
