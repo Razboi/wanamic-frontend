@@ -38,7 +38,7 @@ class ProfilePage extends Component {
 				next={this.props.next}
 				explore={this.props.explore}
 				user={this.props.user}
-				post={this.props.match.params.post}
+				post={this.props.match && this.props.match.params.post}
 			/>
 		);
 	}
