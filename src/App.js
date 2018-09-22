@@ -17,6 +17,7 @@ import Batcave from "./pages/Batcave";
 import Club from "./pages/Club";
 import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
+import Robots from "./pages/Robots";
 import { Switch } from "react-router";
 import io from "socket.io-client";
 import {
@@ -202,6 +203,7 @@ class App extends Component {
 					path="/sitemap"
 					component={() => window.location = `${apiURL}/admin/sitemap`}
 				/>
+				<PublicRoute path="/robots.txt" component={Robots} />
 				<PublicRoute exact path="/:username/:post?" component={Profile} socket={this.socket} />
 			</Switch>
 		);

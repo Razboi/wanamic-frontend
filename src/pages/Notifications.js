@@ -139,7 +139,7 @@ class Notifications extends Component {
 				await refreshToken();
 				this.getNetwork();
 			} else if ( network.data ) {
-				this.setState({ network: network.data.requester });
+				this.setState({ network: network.data });
 			}
 		} catch ( err ) {
 			console.log( err );
