@@ -11,6 +11,7 @@ class ProfilePage extends Component {
 	}
 	componentDidMount() {
 		const { match } = this.props;
+		document.title = `@${match.params.username} - Wanamic`;
 		if ( match && ( this.invalidEndpoints.includes( match.params.username ))) {
 			window.history.back();
 		}

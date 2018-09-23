@@ -96,7 +96,7 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
-		document.title = "Login";
+		document.title = "Log in";
 	}
 
 	handleChange = e =>
