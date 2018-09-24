@@ -141,7 +141,7 @@ class ExplorePage extends Component {
 			return;
 		}
 		try {
-			this.setState({ loading: true });
+			this.setState({ loadingUsers: true });
 			const userSuggestions = await api.getUserSuggestions( value );
 			this.setState({
 				userSuggestions: userSuggestions.data,

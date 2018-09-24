@@ -7,7 +7,7 @@ class ProfilePage extends Component {
 	constructor() {
 		super();
 		this.invalidEndpoints = [
-			"share", "conversation", "socialCircle" ];
+			"share", "conversation" ];
 	}
 	componentDidMount() {
 		const { match } = this.props;

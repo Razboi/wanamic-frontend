@@ -110,12 +110,6 @@ const
 	`;
 
 class ExploreClubs extends Component {
-	handleKeyPress = e => {
-		if ( e.key === "Enter" ) {
-			this.props.searchClub();
-		}
-	}
-
 	render() {
 		let { searchSuggestions, loading } = this.props;
 		return (
@@ -172,7 +166,6 @@ class ExploreClubs extends Component {
 ExploreClubs.propTypes = {
 	randomClub: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	searchClub: PropTypes.func.isRequired,
 	searchSuggestions: PropTypes.array,
 	loading: PropTypes.bool
 };
