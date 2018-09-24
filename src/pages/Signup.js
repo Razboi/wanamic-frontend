@@ -11,17 +11,18 @@ import Step1 from "../components/WelcomeStep1";
 
 const
 	Wrapper = styled.div`
-		height: 100%;
 		background: #222233;
 		display: flex;
 		flex-direction: column;
 	`,
 	SectionOne = styled.div`
-		height: 100%;
+		height: 100vh;
+		max-height: 1080px;
 		position: relative;
 	`,
 	BackgroundImage = styled.div`
-		height: 100%;
+		height: 100vh;
+		max-height: 1080px;
 		width: 100%;
 		position: absolute;
 		filter: brightness(35%);
@@ -48,6 +49,7 @@ const
 	`,
 	Header = styled.div`
 		height: 100vh;
+		max-height: 1080px;
 		display: grid;
 		grid-template-columns: 50% 50%;
 		grid-template-areas: "Text Form";
@@ -177,6 +179,7 @@ const
 	`,
 	SectionTwo = styled.div`
 		height: 100vh;
+		max-height: 1080px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -186,6 +189,7 @@ const
 	`,
 	SectionThree = styled.div`
 		height: 100vh;
+		max-height: 1080px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -195,6 +199,7 @@ const
 	`,
 	SectionFour = styled.div`
 		height: 100vh;
+		max-height: 1080px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -204,6 +209,7 @@ const
 	`,
 	SectionFive = styled.div`
 		height: 100vh;
+		max-height: 1080px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;

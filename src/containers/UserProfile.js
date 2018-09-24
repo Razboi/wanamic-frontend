@@ -291,7 +291,7 @@ class UserProfile extends Component {
 		super();
 		this.state = {
 			mediaButton: true,
-			user: undefined,
+			user: {},
 			posts: [],
 			hasMore: true,
 			skip: 1,
@@ -550,9 +550,6 @@ class UserProfile extends Component {
 					<h2>This account doesn't exist</h2>
 				</NullAccountWarning>
 			);
-		}
-		if ( !this.state.user ) {
-			return null;
 		}
 		const { user } = this.state;
 		return (

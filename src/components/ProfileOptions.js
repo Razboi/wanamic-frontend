@@ -45,7 +45,7 @@ class ProfileOptions extends Component {
 		}
 
 		const { user } = this.props;
-		if ( user.friends.includes( localStorage.getItem( "id" ))) {
+		if ( user.friends && user.friends.includes( localStorage.getItem( "id" ))) {
 			return (
 				<Options>
 					<Option onClick={this.props.unFriend}>

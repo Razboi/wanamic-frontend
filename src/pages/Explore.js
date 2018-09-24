@@ -66,7 +66,9 @@ class ExplorePage extends Component {
 			type: "",
 			clubData: {},
 			multiple: false,
-			messageTarget: undefined
+			messageTarget: undefined,
+			suggestions: undefined,
+			loading: false
 		};
 	}
 
@@ -127,21 +129,47 @@ class ExplorePage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
-	matchUsername = () => {
-		api.getUserInfo( this.state.usernameSearch )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.matchUsername())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.setState({ user: res.data, renderProfile: true });
-				}
-			}).catch( err => console.log( err ));
+	handleChange = e => {
+		this.getSearchSuggestions( e.target.name, e.target.value );
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleChange = e => {
-		this.setState({ [ e.target.name ]: e.target.value });
+	getSearchSuggestions = ( type, value ) => {
+		switch ( type ) {
+		case "usernameSearch":
+			this.getUserSuggestions( value );
+			break;
+		case "clubSearch":
+			this.getClubSuggestions( value );
+			break;
+		default:
+			this.getUserSuggestions( value );
+		}
+	}
+
+	getUserSuggestions = async value => {
+		if ( !value ) {
+			this.setState({
+				suggestions: undefined,
+				loading: false
+			});
+			return;
+		}
+		try {
+			this.setState({ loading: true });
+			const suggestions = await api.getUserSuggestions( value );
+			this.setState({
+				suggestions: suggestions.data,
+				loading: false
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getUserSuggestions( value );
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	backToMenu = () => {
@@ -275,7 +303,7 @@ class ExplorePage extends Component {
 				/>
 			);
 		}
-		if ( window.innerWidth < 800 ) {
+		if ( window.innerWidth < 1300 ) {
 			return (
 				this.state.type ?
 					<Wrapper>
@@ -288,12 +316,14 @@ class ExplorePage extends Component {
 						<PageContent onClick={this.hidePopups}>
 							{this.state.type === "users" ?
 								<ExploreUsers
+									history={this.props.history}
 									getSugested={this.getSuggestedUser}
 									getRandom={this.getRandomUser}
 									matchHobbies={this.matchHobbies}
-									matchUsername={this.matchUsername}
 									handleChange={this.handleChange}
 									chatMatchmaking={this.chatMatchmaking}
+									searchSuggestions={this.state.suggestions}
+									loading={this.state.loading}
 								/>
 								:
 								<ExploreClubs
@@ -332,12 +362,14 @@ class ExplorePage extends Component {
 
 				<PageContent onClick={this.hidePopups}>
 					<ExploreUsers
+						history={this.props.history}
 						getSugested={this.getSuggestedUser}
 						getRandom={this.getRandomUser}
 						matchHobbies={this.matchHobbies}
-						matchUsername={this.matchUsername}
 						handleChange={this.handleChange}
 						chatMatchmaking={this.chatMatchmaking}
+						searchSuggestions={this.state.suggestions}
+						loading={this.state.loading}
 					/>
 					<ExploreClubs
 						randomClub={this.randomClub}

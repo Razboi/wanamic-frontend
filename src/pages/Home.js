@@ -257,6 +257,7 @@ class Home extends Component {
 		this.getRandomUser();
 		this.props.setFeed( "global" );
 		this.props.setClub( undefined );
+		document.title = "Wanamic";
 	}
 
 	getRandomUser = async() => {

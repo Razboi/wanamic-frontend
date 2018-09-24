@@ -10,7 +10,6 @@ import api from "../services/api";
 const
 	Wrapper = styled.div`
 		min-height: 100vh;
-		height: 100%;
 		background: #222;
 		display: flex;
 		flex-direction: column;
@@ -18,7 +17,6 @@ const
 		justify-content: center;
 	`,
 	BackgroundImage = styled.div`
-		height: 100%;
 		min-height: 100vh;
 		width: 100%;
 		position: absolute;

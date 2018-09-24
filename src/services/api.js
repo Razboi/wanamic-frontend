@@ -980,4 +980,14 @@ export default {
 			.catch( err => {
 				throw err;
 			}),
+
+	getUserSuggestions: searchValue =>
+		axios({
+			method: "get",
+			url: `${API_URL}/user/suggestions/${searchValue}`
+		})
+			.then( res => res )
+			.catch( err => {
+				throw err;
+			}),
 };
