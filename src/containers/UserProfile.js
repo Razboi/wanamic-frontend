@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import { 	setPosts, addToPosts, switchMediaOptions
+import { 	setPosts, addToPosts, switchMediaOptions, switchPostDetails
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
 import { switchNotifications } from "../services/actions/notifications";
@@ -291,7 +291,7 @@ class UserProfile extends Component {
 		super();
 		this.state = {
 			mediaButton: true,
-			user: undefined,
+			user: {},
 			posts: [],
 			hasMore: true,
 			skip: 1,
@@ -317,6 +317,7 @@ class UserProfile extends Component {
 		this.getUserInfo();
 		this.checkPendingRequest();
 		this.refreshTimeline();
+		this.props.post && this.getPost( this.props.post );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
@@ -354,6 +355,16 @@ class UserProfile extends Component {
 			}
 		}
 		document.title = `${this.state.user.fullname} @${this.state.user.username}`;
+	}
+
+	getPost = async( postId ) => {
+		var post;
+		try {
+			post = await api.getPost( postId );
+			this.props.switchPostDetails( post.data );
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 
 	checkPendingRequest = async() => {
@@ -540,9 +551,6 @@ class UserProfile extends Component {
 				</NullAccountWarning>
 			);
 		}
-		if ( !this.state.user ) {
-			return null;
-		}
 		const { user } = this.state;
 		return (
 			<Wrapper>
@@ -618,6 +626,7 @@ class UserProfile extends Component {
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
 										startChat={() => this.startChat( user )}
+										hide={!this.props.authenticated}
 									/>
 								</UserInfo>
 								<TabsWrapper>
@@ -679,6 +688,7 @@ class UserProfile extends Component {
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
 										startChat={() => this.startChat( user )}
+										hide={!this.props.authenticated}
 									/>
 								</FloatingUserInfo>
 
@@ -742,7 +752,8 @@ const
 		addToPosts: ( posts ) => dispatch( addToPosts( posts )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		switchMessages: () => dispatch( switchMessages()),
-		switchNotifications: () => dispatch( switchNotifications())
+		switchNotifications: () => dispatch( switchNotifications()),
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

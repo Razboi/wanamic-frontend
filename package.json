@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
     "image-compressor.js": "^1.1.4",
     "moment": "^2.22.2",
     "react": "^16.4.2",

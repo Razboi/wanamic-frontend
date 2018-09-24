@@ -40,8 +40,12 @@ const
 
 class ProfileOptions extends Component {
 	render() {
+		if ( this.props.hide ) {
+			return null;
+		}
+
 		const { user } = this.props;
-		if ( user.friends.includes( localStorage.getItem( "id" ))) {
+		if ( user.friends && user.friends.includes( localStorage.getItem( "id" ))) {
 			return (
 				<Options>
 					<Option onClick={this.props.unFriend}>
@@ -92,7 +96,8 @@ ProfileOptions.propTypes = {
 	addFriend: PropTypes.func.isRequired,
 	unFriend: PropTypes.func.isRequired,
 	startChat: PropTypes.func.isRequired,
-	requested: PropTypes.bool
+	requested: PropTypes.bool,
+	hide: PropTypes.bool
 };
 
 

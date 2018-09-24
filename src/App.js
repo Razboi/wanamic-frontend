@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from "react";
 import "./App.css";
 import Signup from "./pages/Signup";
@@ -7,6 +8,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
+import GuestRoute from "./utils/routes/GuestRoute";
+import PublicRoute from "./utils/routes/PublicRoute";
 import Welcome from "./pages/Welcome";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
@@ -15,7 +18,7 @@ import Batcave from "./pages/Batcave";
 import Club from "./pages/Club";
 import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
-import GuestRoute from "./utils/routes/GuestRoute";
+import Robots from "./pages/Robots";
 import { Switch } from "react-router";
 import io from "socket.io-client";
 import {
@@ -28,7 +31,7 @@ import { setupLikesViews } from "./services/actions/user";
 import { connect } from "react-redux";
 import api from "./services/api";
 import refreshToken from "./utils/refreshToken";
-import { withRouter, Route } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import ReactGA from "react-ga";
 
 ReactGA.initialize( "UA-72968417-3" );
@@ -196,8 +199,13 @@ class App extends Component {
 				/>
 				<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
 				<UserRoute path="/c/:club" component={Club} socket={this.socket} />
-				<Route path="/information/:section" component={Information} />
-				<Route exact path="/:username" component={Profile} socket={this.socket} />
+				<PublicRoute path="/information/:section" component={Information} />
+				<PublicRoute
+					path="/sitemap"
+					component={() => window.location = `${apiURL}/admin/sitemap`}
+				/>
+				<PublicRoute path="/robots.txt" component={Robots} />
+				<PublicRoute exact path="/:username/:post?" component={Profile} socket={this.socket} />
 			</Switch>
 		);
 	}

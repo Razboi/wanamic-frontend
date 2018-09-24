@@ -60,7 +60,7 @@ const
 	NavOption = styled.div`
 		height: 100%;
 		@media (max-width: 960px) {
-			width: 100%;
+			width: ${props => props.auth ? "100%" : "49.33px"};
 		}
 		@media (min-width: 960px) {
 			width: 49.33px;
@@ -102,6 +102,9 @@ const
 		justify-content: center !important;
 		a {
 			color: #111;
+			:hover {
+				color: #111;
+			}
 		}
 	`,
 	Scores = styled( Dropdown.Item )`
@@ -118,6 +121,12 @@ const
 		flex-direction: column !important;
 		align-content: center !important;
 		justify-content: center !important;
+		a {
+			color: #111;
+			:hover {
+				color: #111;
+			}
+		}
 	`,
 	Count = styled.span`
 		z-index: 2;
@@ -188,9 +197,10 @@ class NavBar extends Component {
 		this.hidePopups();
 	}
 
-	handleHome = () => {
-		if ( this.props.location.pathname !== "/" ) {
-			this.props.history.push( "/" );
+	handleLink = e => {
+		if ( this.props.location.pathname ===
+			e.currentTarget.getAttribute( "href" )) {
+			e.preventDefault();
 		}
 	}
 
@@ -203,30 +213,12 @@ class NavBar extends Component {
 		}
 	}
 
-	handleExplore = () => {
-		if ( this.props.location.pathname !== "/explore" ) {
-			this.props.history.push( "/explore" );
-		}
-	}
-
 	handleMessages = () => {
 		if ( window.innerWidth > 760 && window.innerHeight > 450 ) {
 			this.props.switchMessages();
 			this.props.displayNotifications && this.props.switchNotifications();
 		} else if ( this.props.location.pathname !== "/messages" ) {
 			this.props.history.push( "/messages" );
-		}
-	}
-
-	goToProfile = username => {
-		if ( this.props.location.pathname !== "/" + username ) {
-			this.props.history.push( "/" + username );
-		}
-	}
-
-	goToSettings = username => {
-		if ( this.props.location.pathname !== "/settings" ) {
-			this.props.history.push( "/settings" );
 		}
 	}
 
@@ -308,25 +300,29 @@ class NavBar extends Component {
 						toggleFeedback={this.props.toggleFeedbackForm}
 					/>
 				}
-				<Options>
-					<NavOption onClick={this.handleHome} >
-						<NavImage
-							image={this.props.location.pathname === "/" ?
-								require( "../images/home_color.svg" )
-								:
-								require( "../images/home.svg" )
-							}
-						/>
+				<Options auth={this.props.authenticated}>
+					<NavOption>
+						<a href="/" onClick={this.handleLink}>
+							<NavImage
+								image={this.props.location.pathname === "/" ?
+									require( "../images/home_color.svg" )
+									:
+									require( "../images/home.svg" )
+								}
+							/>
+						</a>
 					</NavOption>
 
-					<NavOption onClick={this.handleExplore}>
-						<NavImage
-							image={this.props.location.pathname === "/explore" ?
-								require( "../images/search_color.svg" )
-								:
-								require( "../images/search.svg" )
-							}
-						/>
+					<NavOption>
+						<a href="/explore" onClick={this.handleLink}>
+							<NavImage
+								image={this.props.location.pathname === "/explore" ?
+									require( "../images/search_color.svg" )
+									:
+									require( "../images/search.svg" )
+								}
+							/>
+						</a>
 					</NavOption>
 
 					{this.props.authenticated &&
@@ -386,7 +382,11 @@ class NavBar extends Component {
 						</React.Fragment>
 					}
 
-					<Logo href="/" image={require( "../images/black-logo-lname.svg" )} />
+					<Logo
+						href="/"
+						onClick={this.handleLink}
+						image={require( "../images/black-logo-lname.svg" )}
+					/>
 
 					{this.props.authenticated ?
 						<React.Fragment>
@@ -408,21 +408,22 @@ class NavBar extends Component {
 									trigger={<ProfileImg circular src={profileImage} />}
 									icon={null} direction="left">
 									<Dropdown.Menu>
-										<UserInfo
-											onClick={() => this.goToProfile( username )}
-										>
-											<DropdownFullname>{fullname}</DropdownFullname>
-											<DropdownUsername>@{username}</DropdownUsername>
+										<UserInfo>
+											<a href={`/${username}`} onClick={this.handleLink}>
+												<DropdownFullname>{fullname}</DropdownFullname>
+												<DropdownUsername>@{username}</DropdownUsername>
+											</a>
 										</UserInfo>
 										<Dropdown.Divider />
 										<StyledDropdownItem
 											text="Logout"
 											onClick={this.handleLogout}
 										/>
-										<StyledDropdownItem
-											text="Settings"
-											onClick={this.goToSettings}
-										/>
+										<StyledDropdownItem>
+											<a href="/settings" onClick={this.handleLink}>
+												Settings
+											</a>
+										</StyledDropdownItem>
 										{localStorage.getItem( "ia" ) === "true" &&
 										<StyledDropdownItem
 											text="Batcave"
@@ -437,11 +438,11 @@ class NavBar extends Component {
 									trigger={<ProfileImg circular src={profileImage} />}
 									icon={null} direction="left">
 									<Dropdown.Menu>
-										<UserInfo
-											onClick={() => this.goToProfile( username )}
-										>
-											<DropdownFullname>{fullname}</DropdownFullname>
-											<DropdownUsername>@{username}</DropdownUsername>
+										<UserInfo>
+											<a href={`/${username}`} onClick={this.handleLink}>
+												<DropdownFullname>{fullname}</DropdownFullname>
+												<DropdownUsername>@{username}</DropdownUsername>
+											</a>
 										</UserInfo>
 										<Dropdown.Divider />
 										<Scores>
@@ -461,12 +462,15 @@ class NavBar extends Component {
 											text="Logout"
 											onClick={this.handleLogout}
 										/>
-										<StyledDropdownItem
-											text="Settings"
-											onClick={this.goToSettings}
-										/>
 										<StyledDropdownItem>
-											<a href="/information/terms">Terms</a>
+											<a href="/settings" onClick={this.handleLink}>
+												Settings
+											</a>
+										</StyledDropdownItem>
+										<StyledDropdownItem>
+											<a href="/information/terms" onClick={this.handleLink}>
+												Terms
+											</a>
 										</StyledDropdownItem>
 										<StyledDropdownItem
 											onClick={this.props.toggleFeedbackForm}
@@ -484,8 +488,12 @@ class NavBar extends Component {
 						</React.Fragment>
 						:
 						<AuthOptions>
-							<Button secondary content="Sign up" />
-							<LoginButton content="Log in" />
+							<a href="/signup" onClick={this.handleLink}>
+								<Button secondary content="Sign up" />
+							</a>
+							<a href="/login" onClick={this.handleLink}>
+								<LoginButton content="Log in" />
+							</a>
 						</AuthOptions>
 					}
 				</Options>
@@ -500,7 +508,8 @@ NavBar.propTypes = {
 	newNotifications: PropTypes.number.isRequired,
 	totalLikes: PropTypes.number.isRequired,
 	totalViews: PropTypes.number.isRequired,
-	messageTarget: PropTypes.object
+	messageTarget: PropTypes.object,
+	socket: PropTypes.object
 };
 
 const

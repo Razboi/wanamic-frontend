@@ -103,7 +103,7 @@ class ExploreClubs extends Component {
 						<SearchBar
 							icon="search"
 							name="clubSearch"
-							placeholder="programming"
+							placeholder="movies"
 							onKeyPress={this.handleKeyPress}
 							onChange={this.props.handleChange}
 						/>
