@@ -947,10 +947,10 @@ export default {
 				throw err;
 			}),
 
-	searchClub: ( clubName ) =>
+	getClubSuggestions: searchValue =>
 		axios({
 			method: "get",
-			url: `${API_URL}/clubs/search/${clubName}`
+			url: `${API_URL}/clubs/suggestions/${searchValue}`
 		})
 			.then( res => res )
 			.catch( err => {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button, Input } from "semantic-ui-react";
+import { Button, Input, Header } from "semantic-ui-react";
 import PropTypes from "prop-types";
 
 const
@@ -9,6 +9,7 @@ const
 		width: 100%;
 		margin-top: 1rem;
 		overflow: hidden;
+		background: #fff;
 		h1 {
 			text-align: center;
 			font-family: inherit;
@@ -18,7 +19,6 @@ const
 			width: 50%;
 			max-width: 600px;
 			height: 800px;
-			background: #fff;
 		}
 	`,
 	Options = styled.div`
@@ -52,6 +52,7 @@ const
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		position: relative;
 		h2 {
 			font-weight: 400;
     	font-size: 1.3rem;
@@ -74,6 +75,38 @@ const
 		i {
 			color: rgb(133, 217, 191) !important;
 		};
+	`,
+	Suggestions = styled.div`
+		position: absolute;
+		z-index: 2;
+		width: 50%;
+		height: 200px;
+		top: -170px;
+		background: #fff;
+		box-shadow: 2px 2px 2px rgba(0,0,0,0.15);
+		border: 1px solid rgba(0,0,0,0.1);
+		border-radius: 2px;
+		overflow-y: auto;
+		padding: 1rem 5px;
+		::-webkit-scrollbar {
+			display: block !important;
+			width: 5px !important;
+		}
+		@media (max-width: 800px) {
+			position: fixed;
+			top: 50px;
+			right: auto;
+			width: 100%;
+		}
+	`,
+	Suggestion = styled( Header )`
+		display: flex;
+		flex-direction: row;
+		margin-top: 0px !important;
+		font-family: inherit !important;
+		:hover {
+			cursor: pointer;
+		}
 	`;
 
 class ExploreClubs extends Component {
@@ -84,6 +117,7 @@ class ExploreClubs extends Component {
 	}
 
 	render() {
+		let { searchSuggestions, loading } = this.props;
 		return (
 			<Wrapper>
 				<h1>Explore Clubs</h1>
@@ -107,6 +141,27 @@ class ExploreClubs extends Component {
 							onKeyPress={this.handleKeyPress}
 							onChange={this.props.handleChange}
 						/>
+
+						{( searchSuggestions || loading ) &&
+							<Suggestions>
+								{loading ?
+									<div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+									:
+									searchSuggestions.length > 0 ?
+										searchSuggestions.map(( club, i ) =>
+											<Suggestion
+												key={i}
+												onClick={() =>
+													this.props.history.push( `/c/${club.name}` )}
+											>
+												{club.title}
+											</Suggestion>
+										)
+										:
+										<h2>No results</h2>
+								}
+							</Suggestions>
+						}
 					</SearchWrapper>
 				</Options>
 			</Wrapper>
@@ -117,7 +172,9 @@ class ExploreClubs extends Component {
 ExploreClubs.propTypes = {
 	randomClub: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	searchClub: PropTypes.func.isRequired
+	searchClub: PropTypes.func.isRequired,
+	searchSuggestions: PropTypes.array,
+	loading: PropTypes.bool
 };
 
 export default ExploreClubs;

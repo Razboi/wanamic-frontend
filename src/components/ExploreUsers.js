@@ -114,7 +114,7 @@ const
 		}
 		@media (max-width: 800px) {
 			position: fixed;
-			top: 0;
+			top: 50px;
 			right: auto;
 			width: 100%;
 		}
@@ -123,6 +123,7 @@ const
 		display: flex;
 		flex-direction: row;
 		margin-top: 0px !important;
+		font-family: inherit !important;
 		:hover {
 			cursor: pointer;
 		}
@@ -244,7 +245,6 @@ class ExploreUsers extends Component {
 ExploreUsers.propTypes = {
 	handleChange: PropTypes.func.isRequired,
 	getRandom: PropTypes.func.isRequired,
-	getSugested: PropTypes.func.isRequired,
 	matchHobbies: PropTypes.func.isRequired,
 	chatMatchmaking: PropTypes.func.isRequired,
 	searchSuggestions: PropTypes.array,
