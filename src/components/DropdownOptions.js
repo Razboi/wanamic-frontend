@@ -263,6 +263,9 @@ class DropdownOptions extends Component {
 	}
 
 	render() {
+		if ( !this.props.authenticated ) {
+			return null;
+		}
 		if ( localStorage.getItem( "id" ) !== this.props.postOrComment.author._id
 		&& this.props.clubAdmin ) {
 			return (
@@ -412,7 +415,8 @@ DropdownOptions.propTypes = {
 
 const
 	mapStateToProps = state => ({
-		selectedClub: state.posts.selectedClub
+		selectedClub: state.posts.selectedClub,
+		authenticated: state.authenticated
 	});
 
 export default connect( mapStateToProps )( DropdownOptions );

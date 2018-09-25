@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
-import { 	setPosts, addToPosts, switchMediaOptions
+import { Button, Icon } from "semantic-ui-react";
+import { 	setPosts, addToPosts, switchMediaOptions, switchPostDetails
 } from "../services/actions/posts";
 import { switchMessages } from "../services/actions/conversations";
 import { switchNotifications } from "../services/actions/notifications";
@@ -135,6 +135,9 @@ const
 		border-radius: 4px;
 		border: 2px solid #fff;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, .125);
+		:hover {
+			cursor: pointer;
+		}
 		@media (min-width: 420px) {
 			max-height: 200px;
 	    max-width: 200px;
@@ -283,6 +286,47 @@ const
 		font-family: inherit !important;
 		background: rgb(133, 217, 191) !important;
 		border-radius: 2px !important;
+	`,
+	BigPictureWrapper = styled.div`
+		position: fixed;
+		min-height: 100vh;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 5;
+		overflow-y: auto;
+	`,
+	BigPicture = styled.img`
+		z-index: 6;
+		padding: 5rem 0;
+    margin: auto;
+	`,
+	Dimmer = styled.div`
+		position: fixed;
+		min-height: 100vh;
+		height: 100%;
+		width: 100%;
+		background: rgba(0,0,0,0.8);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`,
+	CloseIcon = styled( Icon )`
+		color: #fff;
+		position: fixed;
+		top: 10px;
+		right: 10px;
+		font-size: 2rem !important;
+		z-index: 7;
+		:hover {
+			cursor: pointer;
+		}
+		@media (max-width: 500px) {
+			color: #111;
+			font-size: 1.5rem;
+		}
 	`;
 
 
@@ -291,7 +335,7 @@ class UserProfile extends Component {
 		super();
 		this.state = {
 			mediaButton: true,
-			user: undefined,
+			user: {},
 			posts: [],
 			hasMore: true,
 			skip: 1,
@@ -317,6 +361,7 @@ class UserProfile extends Component {
 		this.getUserInfo();
 		this.checkPendingRequest();
 		this.refreshTimeline();
+		this.props.post && this.getPost( this.props.post );
 	}
 
 	componentDidUpdate( prevProps, prevState ) {
@@ -356,7 +401,20 @@ class UserProfile extends Component {
 		document.title = `${this.state.user.fullname} @${this.state.user.username}`;
 	}
 
+	getPost = async( postId ) => {
+		var post;
+		try {
+			post = await api.getPost( postId );
+			this.props.switchPostDetails( post.data );
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+
 	checkPendingRequest = async() => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
 		try {
 			const res = await api.isRequested( this.props.username );
 			if ( res === "jwt expired" ) {
@@ -519,6 +577,15 @@ class UserProfile extends Component {
 		this.setState({ mediaButton: !this.state.mediaButton });
 	}
 
+	togglePicDetails = () => {
+		if ( !this.state.picDetails ) {
+			document.body.style.overflowY = "hidden";
+		} else {
+			document.body.style.overflowY = "auto";
+		}
+		this.setState( state => ({ picDetails: !state.picDetails }));
+	}
+
 	render() {
 		var
 			ownProfile = this.props.username === localStorage.getItem( "username" ),
@@ -537,9 +604,6 @@ class UserProfile extends Component {
 				</NullAccountWarning>
 			);
 		}
-		if ( !this.state.user ) {
-			return null;
-		}
 		const { user } = this.state;
 		return (
 			<Wrapper>
@@ -550,6 +614,14 @@ class UserProfile extends Component {
 					initialLoad={false}
 					useWindow={true}
 				>
+
+					{this.state.picDetails &&
+						<BigPictureWrapper>
+							<Dimmer onClick={this.togglePicDetails} />
+							<CloseIcon name="close" onClick={this.togglePicDetails} />
+							<BigPicture src={profileImg} />
+						</BigPictureWrapper>
+					}
 
 					{ownProfile && this.state.mediaButton &&
 						<ShareMediaButton
@@ -590,7 +662,7 @@ class UserProfile extends Component {
 							<UserInfoBackground backgroundImg={backgroundImg} />
 							<UserInfoWrapper>
 								<UserInfo>
-									<UserImage src={profileImg} />
+									<UserImage src={profileImg} onClick={this.togglePicDetails} />
 									<Fullname>{user.fullname}</Fullname>
 									<Username>@{user.username}</Username>
 									<LikesCount>
@@ -615,6 +687,7 @@ class UserProfile extends Component {
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
 										startChat={() => this.startChat( user )}
+										hide={!this.props.authenticated}
 									/>
 								</UserInfo>
 								<TabsWrapper>
@@ -649,7 +722,7 @@ class UserProfile extends Component {
 
 							<TimeLine>
 								<FloatingUserInfo>
-									<UserImage src={profileImg} />
+									<UserImage src={profileImg} onClick={this.togglePicDetails} />
 									<Fullname>{user.fullname}</Fullname>
 									<Username>@{user.username}</Username>
 									<LikesCount>
@@ -676,6 +749,7 @@ class UserProfile extends Component {
 										userRequested={this.state.userRequested}
 										targetRequested={this.state.targetRequested}
 										startChat={() => this.startChat( user )}
+										hide={!this.props.authenticated}
 									/>
 								</FloatingUserInfo>
 
@@ -730,7 +804,8 @@ const
 		mediaOptions: state.posts.mediaOptions,
 		displayMessages: state.conversations.displayMessages,
 		displayNotifications: state.notifications.displayNotifications,
-		feedPosts: state.posts.feedPosts
+		feedPosts: state.posts.feedPosts,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -738,7 +813,8 @@ const
 		addToPosts: ( posts ) => dispatch( addToPosts( posts )),
 		switchMediaOptions: () => dispatch( switchMediaOptions()),
 		switchMessages: () => dispatch( switchMessages()),
-		switchNotifications: () => dispatch( switchNotifications())
+		switchNotifications: () => dispatch( switchNotifications()),
+		switchPostDetails: post => dispatch( switchPostDetails( post ))
 	});
 
 export default connect( mapStateToProps, mapDispatchToProps )( UserProfile );

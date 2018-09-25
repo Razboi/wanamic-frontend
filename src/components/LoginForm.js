@@ -88,7 +88,7 @@ const
 			}
 		}
 	`,
-	NewAccount = styled.span`
+	NewAccount = styled.a`
 		color: #eee;
 		position: absolute;
 		bottom: 2rem;
@@ -96,6 +96,9 @@ const
 		left: 0;
 		right: 0;
 		text-align: center;
+		:hover {
+			color: #eee;
+		}
 		@media(min-width: 420px) {
 			font-size: 1.1rem;
 		}
@@ -183,7 +186,7 @@ class LoginForm extends Component {
 						</StyledForm>
 					</FormDimmer>
 
-					<NewAccount className="swapLink" onClick={this.props.swapForm}>
+					<NewAccount href="/signup">
 						Don't have an account? <Signup>Sign Up</Signup>
 					</NewAccount>
 				</FormContainer>
@@ -195,7 +198,6 @@ class LoginForm extends Component {
 LoginForm.propTypes = {
 	handleLogin: PropTypes.func.isRequired,
 	handleChange: PropTypes.func.isRequired,
-	swapForm: PropTypes.func.isRequired,
 	password: PropTypes.string.isRequired,
 	email: PropTypes.string.isRequired,
 	forgotPassword: PropTypes.bool.isRequired,

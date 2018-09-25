@@ -7,10 +7,13 @@ class ProfilePage extends Component {
 	constructor() {
 		super();
 		this.invalidEndpoints = [
-			"post", "share", "conversation", "socialCircle" ];
+			"share", "conversation" ];
 	}
 	componentDidMount() {
 		const { match } = this.props;
+		if ( match && match.params.username ) {
+			document.title = `@${match.params.username} - Wanamic`;
+		}
 		if ( match && ( this.invalidEndpoints.includes( match.params.username ))) {
 			window.history.back();
 		}
@@ -38,6 +41,7 @@ class ProfilePage extends Component {
 				next={this.props.next}
 				explore={this.props.explore}
 				user={this.props.user}
+				post={this.props.match && this.props.match.params.post}
 			/>
 		);
 	}

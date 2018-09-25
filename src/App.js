@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from "react";
 import "./App.css";
 import Signup from "./pages/Signup";
@@ -7,6 +8,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import UserRoute from "./utils/routes/UserRoute";
 import NewUserRoute from "./utils/routes/NewUserRoute";
+import GuestRoute from "./utils/routes/GuestRoute";
+import PublicRoute from "./utils/routes/PublicRoute";
 import Welcome from "./pages/Welcome";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
@@ -15,7 +18,7 @@ import Batcave from "./pages/Batcave";
 import Club from "./pages/Club";
 import Information from "./pages/Information";
 import PasswordReset from "./pages/PasswordReset";
-import GuestRoute from "./utils/routes/GuestRoute";
+import Robots from "./pages/Robots";
 import { Switch } from "react-router";
 import io from "socket.io-client";
 import {
@@ -28,7 +31,7 @@ import { setupLikesViews } from "./services/actions/user";
 import { connect } from "react-redux";
 import api from "./services/api";
 import refreshToken from "./utils/refreshToken";
-import { withRouter, Route } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import ReactGA from "react-ga";
 
 ReactGA.initialize( "UA-72968417-3" );
@@ -49,6 +52,7 @@ class App extends Component {
 			ReactGA.pageview( window.location.pathname );
 		});
 	}
+
 	componentDidMount() {
 		ReactGA.pageview( window.location.pathname );
 		if ( this.props.authenticated ) {
@@ -64,6 +68,24 @@ class App extends Component {
 			this.setupNotifications();
 			this.setupSockets();
 			this.getLikesAndViews();
+		}
+	}
+
+	displayNotification = ( title, body ) => {
+		if ( navigator.serviceWorker.controller &&
+			Notification.permission === "granted" ) {
+			navigator.serviceWorker.getRegistration().then( reg => {
+				let options = {
+					body: body,
+					icon: require( "./images/android-chrome-192x192.png" ),
+					vibrate: [ 100, 50, 100 ],
+					data: {
+						dateOfArrival: Date.now(),
+						primaryKey: 1
+					}
+				};
+				reg.showNotification( title, options );
+			});
 		}
 	}
 
@@ -91,6 +113,8 @@ class App extends Component {
 		this.socket.emit( "register", userData );
 		this.socket.on( "notifications", async notification => {
 			this.props.addNotification( notification );
+			this.displayNotification( "New notification",
+				`${notification.author.fullname} ${notification.content}` );
 		});
 		this.socket.on( "message", async message => {
 			const {
@@ -103,6 +127,8 @@ class App extends Component {
 				if ( conversation.target.username === message.author.username ) {
 					updateConversation( message, i );
 					incrementChatNewMessages( i );
+					this.displayNotification( "New message",
+						`${message.author.fullname}: ${message.content}` );
 
 					if ( conversations[ selectedConversation ].target.username
 						=== message.author.username && displayConversation ) {
@@ -112,9 +138,12 @@ class App extends Component {
 					return;
 				}
 			}
+
 			const newConversation = await api.getConversation(
 				message.author.username );
 			addConversation( newConversation.data );
+			this.displayNotification( "New conversation.",
+				`${message.author.fullname} started a new conversation.` );
 		});
 	}
 
@@ -150,31 +179,34 @@ class App extends Component {
 	render() {
 		// Switch will render the first match. /:username must be last
 		return (
-			<div>
-				<Switch>
-					<UserRoute exact path="/" component={Home} socket={this.socket}/>
-					<GuestRoute path="/signup" component={Signup} />
-					<GuestRoute path="/login" component={Login} />
-					<UserRoute
-						path="/notifications" component={Notifications} socket={this.socket}
-					/>
-					<UserRoute
-						path="/messages" component={Messages} socket={this.socket}
-					/>
-					<UserRoute path="/settings" component={Settings} socket={this.socket}/>
-					<NewUserRoute path="/welcome" component={Welcome} socket={this.socket} />
-					<UserRoute
-						path="/explore" component={Explore} socket={this.socket}
-					/>
-					<GuestRoute
-						path="/reset_password/:token" component={PasswordReset}
-					/>
-					<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
-					<UserRoute path="/c/:club" component={Club} socket={this.socket} />
-					<Route path="/information/:section" component={Information} />
-					<UserRoute exact path="/:username" component={Profile} socket={this.socket} />
-				</Switch>
-			</div>
+			<Switch>
+				<UserRoute exact path="/" component={Home} socket={this.socket}/>
+				<GuestRoute path="/signup" component={Signup} />
+				<GuestRoute path="/login" component={Login} />
+				<UserRoute
+					path="/notifications" component={Notifications} socket={this.socket}
+				/>
+				<UserRoute
+					path="/messages" component={Messages} socket={this.socket}
+				/>
+				<UserRoute path="/settings" component={Settings} socket={this.socket}/>
+				<NewUserRoute path="/welcome" component={Welcome} socket={this.socket} />
+				<UserRoute
+					path="/explore" component={Explore} socket={this.socket}
+				/>
+				<GuestRoute
+					path="/reset_password/:token" component={PasswordReset}
+				/>
+				<UserRoute path="/batcave" component={Batcave} socket={this.socket} />
+				<UserRoute path="/c/:club" component={Club} socket={this.socket} />
+				<PublicRoute path="/information/:section" component={Information} />
+				<PublicRoute
+					path="/sitemap"
+					component={() => window.location = `${apiURL}/admin/sitemap`}
+				/>
+				<PublicRoute path="/robots.txt" component={Robots} />
+				<PublicRoute exact path="/:username/:post?" component={Profile} socket={this.socket} />
+			</Switch>
 		);
 	}
 }

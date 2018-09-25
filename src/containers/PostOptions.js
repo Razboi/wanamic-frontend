@@ -21,6 +21,31 @@ const
 	`;
 
 class PostOptions extends Component {
+	share = () => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
+		this.props.switchShare( this.props.post );
+	}
+
+	like = () => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
+		this.props.handleLike();
+	}
+
+	dislike = () => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
+		this.props.handleDislike();
+	}
+
+	handleDetails = () => {
+		this.props.switchPostDetails( this.props.post );
+	}
+
 	render() {
 		if ( this.props.fakeOptions ) {
 			return null;
@@ -29,7 +54,7 @@ class PostOptions extends Component {
 			<Wrapper>
 				{this.props.post.likedBy.includes( localStorage.getItem( "username" )) ?
 					<Option className="dislikeOption"
-						onClick={() => this.props.handleDislike()}
+						onClick={this.dislike}
 					>
 						<Icon
 							name="heart"
@@ -40,7 +65,7 @@ class PostOptions extends Component {
 					</Option>
 					:
 					<Option className="likeOption"
-						onClick={() => this.props.handleLike()}
+						onClick={this.like}
 					>
 						<Icon
 							name="empty heart"
@@ -51,9 +76,7 @@ class PostOptions extends Component {
 				}
 
 				<Option className="commentOption"
-					onClick={() =>
-						this.props.switchPostDetails( this.props.post )
-					}
+					onClick={this.handleDetails}
 				>
 					<Icon
 						name="comment outline"
@@ -63,7 +86,7 @@ class PostOptions extends Component {
 				</Option>
 
 				<Option className="shareOption"
-					onClick={() => this.props.switchShare( this.props.post )}
+					onClick={this.share}
 				>
 					<Icon
 						name="share"
@@ -86,6 +109,7 @@ PostOptions.propTypes = {
 
 const
 	mapStateToProps = state => ({
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({

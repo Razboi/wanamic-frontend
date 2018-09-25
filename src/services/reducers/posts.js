@@ -25,7 +25,7 @@ export default function posts( state = initialState, action = {}) {
 		return { ...state, feedPosts: [ ...state.feedPosts, ...action.posts ] };
 
 	case "ADD_POST":
-		if ( state.feed !== action.post.feed && state.feed !== "home" ) {
+		if ( state.feed === "club" && state.feed !== action.post.feed ) {
 			return state;
 		} else {
 			return { ...state, feedPosts: [ action.post, ...state.feedPosts ] };

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 const
 	Wrapper = styled.div`
 		display: flex;
+		max-width: 100%;
 		position: relative;
 		flex-direction: column;
 		margin-bottom: ${props => props.exposition ? "1rem" : "2.5rem"};
@@ -24,6 +25,7 @@ const
 		color: #222;
 		max-height: 80px;
 		overflow-y: auto;
+		word-wrap: break-word;
 		::-webkit-scrollbar {
 			display: block !important;
 			width: 5px !important;
@@ -119,7 +121,7 @@ class UserPreview extends Component {
 UserPreview.propTypes = {
 	user: PropTypes.object.isRequired,
 	handleClick: PropTypes.func,
-	exposition: PropTypes.bool
+	exposition: PropTypes.string
 };
 
 export default UserPreview;

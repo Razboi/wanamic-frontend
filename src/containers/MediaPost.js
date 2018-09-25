@@ -62,7 +62,7 @@ const
 	UserContent = styled.p`
 		color: #222;
 		word-break: break-word;
-		font-size: 1rem;
+		font-size: 1.2rem;
 	`,
 	Description = styled.span`
 		font-weight: bold;
@@ -201,6 +201,15 @@ class MediaPost extends Component {
 					socket={this.props.socket}
 				/>
 
+				{post.content &&
+					<PostUserContent>
+						<UserContent className="postContent">
+							<Description>@{post.author.username} </Description>
+							{post.content}
+						</UserContent>
+					</PostUserContent>
+				}
+
 				<PostBody alerts={this.state.nsfw || this.state.spoiler}>
 					<AlertsFilter
 						handleFilter={this.handleFilter}
@@ -244,15 +253,6 @@ class MediaPost extends Component {
 								handleDislike={this.handleDislike}
 								id={post._id}
 							/>
-						}
-
-						{post.content &&
-							<PostUserContent>
-								<UserContent className="postContent">
-									<Description>@{post.author.username} </Description>
-									{post.content}
-								</UserContent>
-							</PostUserContent>
 						}
 					</Dimmer>
 				</PostBody>

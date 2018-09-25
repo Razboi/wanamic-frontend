@@ -26,6 +26,8 @@ verifyToken( store ).then(() => {
 		document.getElementById( "root" ));
 });
 
+
+
 registerServiceWorker();
 
 export default store;

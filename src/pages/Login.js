@@ -10,7 +10,6 @@ import api from "../services/api";
 const
 	Wrapper = styled.div`
 		min-height: 100vh;
-		height: 100%;
 		background: #222;
 		display: flex;
 		flex-direction: column;
@@ -18,7 +17,6 @@ const
 		justify-content: center;
 	`,
 	BackgroundImage = styled.div`
-		height: 100%;
 		min-height: 100vh;
 		width: 100%;
 		position: absolute;
@@ -96,7 +94,7 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
-		document.title = "Login";
+		document.title = "Log in";
 	}
 
 	handleChange = e =>
@@ -167,10 +165,6 @@ class Login extends Component {
 		this.setState({ showPopup: false });
 	}
 
-	swapForm = () => {
-		this.props.history.push( "/signup" );
-	}
-
 	render() {
 		return (
 			<Wrapper>
@@ -187,7 +181,6 @@ class Login extends Component {
 					<LoginForm
 						error={this.state.error}
 						handleChange={this.handleChange}
-						swapForm={this.swapForm}
 						email={this.state.email}
 						password={this.state.password}
 						handleLogin={this.handleLogin}

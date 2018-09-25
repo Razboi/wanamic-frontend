@@ -95,26 +95,13 @@ class SocialCircleList extends Component {
 		this.state = {
 			socialCircleImages: []
 		};
-		this.previousHref = window.location.href;
 	}
 
 	componentDidMount() {
-		window.history.pushState( null, null, "/socialCircle" );
-		window.onpopstate = e => this.handlePopstate( e );
 		this.setFriendsImages();
 	}
 
-	componentWillUnmount() {
-		window.onpopstate = () => {};
-	}
-
-	handlePopstate = e => {
-		e.preventDefault();
-		this.handleBack();
-	}
-
 	handleBack = () => {
-		window.history.pushState( null, null, this.previousHref );
 		this.props.back();
 	}
 

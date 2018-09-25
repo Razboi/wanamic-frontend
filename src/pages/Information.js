@@ -15,6 +15,7 @@ class Information extends Component {
 	render() {
 		const { match } = this.props;
 		if ( match.params.section === "terms" ) {
+			document.title = "Wanamic Terms of Service";
 			return (
 				<Wrapper>
 					<nav>
@@ -100,6 +101,7 @@ class Information extends Component {
 			);
 		}
 		if ( match.params.section === "cookies" ) {
+			document.title = "Wanamic Cookies Policy";
 			return (
 				<Wrapper>
 					<nav>
@@ -183,6 +185,7 @@ class Information extends Component {
 			);
 		}
 		if ( match.params.section === "contact" ) {
+			document.title = "Contact - Wanamic";
 			return (
 				<Wrapper>
 					<nav>
@@ -199,6 +202,7 @@ class Information extends Component {
 			);
 		}
 		if ( match.params.section === "content" ) {
+			document.title = "Wanamic Content Policy";
 			return (
 				<Wrapper>
 					<nav>
@@ -228,6 +232,7 @@ class Information extends Component {
 				</Wrapper>
 			);
 		}
+		document.title = "Wanamic Privacy Policy";
 		return (
 			<Wrapper>
 				<nav>

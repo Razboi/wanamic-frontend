@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Label, Dropdown, Image } from "semantic-ui-react";
+import { Label, Dropdown, Image, Button } from "semantic-ui-react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import { logout } from "../services/actions/auth";
+import { toggleFeedbackForm } from "../services/actions/user";
 import { switchNotifications } from "../services/actions/notifications";
 import { switchMessages } from "../services/actions/conversations";
 import { switchPostDetails, switchShare } from "../services/actions/posts";
@@ -12,6 +13,7 @@ import Notifications from "../pages/Notifications";
 import Messages from "../pages/Messages";
 import Share from "../containers/Share";
 import PostDetails from "../containers/PostDetails";
+import FeedbackForm from "../containers/FeedbackForm";
 
 const
 	Wrapper = styled.div`
@@ -58,7 +60,7 @@ const
 	NavOption = styled.div`
 		height: 100%;
 		@media (max-width: 960px) {
-			width: 100%;
+			width: ${props => props.auth ? "100%" : "49.33px"};
 		}
 		@media (min-width: 960px) {
 			width: 49.33px;
@@ -100,6 +102,9 @@ const
 		justify-content: center !important;
 		a {
 			color: #111;
+			:hover {
+				color: #111;
+			}
 		}
 	`,
 	Scores = styled( Dropdown.Item )`
@@ -116,6 +121,12 @@ const
 		flex-direction: column !important;
 		align-content: center !important;
 		justify-content: center !important;
+		a {
+			color: #111;
+			:hover {
+				color: #111;
+			}
+		}
 	`,
 	Count = styled.span`
 		z-index: 2;
@@ -166,6 +177,18 @@ const
 		width: 100%;
 		height: 100%;
 		min-height: 100vh;
+	`,
+	AuthOptions = styled.div`
+		margin-left: auto;
+		button {
+			font-family: inherit !important;
+			border-radius: 2px !important;
+		}
+	`,
+	LoginButton = styled( Button )`
+		background: #fff !important;
+		color: #111 !important;
+		border: 1px solid #111 !important;
 	`;
 
 
@@ -174,9 +197,10 @@ class NavBar extends Component {
 		this.hidePopups();
 	}
 
-	handleHome = () => {
-		if ( this.props.location.pathname !== "/" ) {
-			this.props.history.push( "/" );
+	handleLink = e => {
+		if ( this.props.location.pathname ===
+			e.currentTarget.getAttribute( "href" )) {
+			e.preventDefault();
 		}
 	}
 
@@ -189,30 +213,12 @@ class NavBar extends Component {
 		}
 	}
 
-	handleExplore = () => {
-		if ( this.props.location.pathname !== "/explore" ) {
-			this.props.history.push( "/explore" );
-		}
-	}
-
 	handleMessages = () => {
 		if ( window.innerWidth > 760 && window.innerHeight > 450 ) {
 			this.props.switchMessages();
 			this.props.displayNotifications && this.props.switchNotifications();
 		} else if ( this.props.location.pathname !== "/messages" ) {
 			this.props.history.push( "/messages" );
-		}
-	}
-
-	goToProfile = username => {
-		if ( this.props.location.pathname !== "/" + username ) {
-			this.props.history.push( "/" + username );
-		}
-	}
-
-	goToSettings = username => {
-		if ( this.props.location.pathname !== "/settings" ) {
-			this.props.history.push( "/settings" );
 		}
 	}
 
@@ -288,136 +294,103 @@ class NavBar extends Component {
 							/>}
 					</PostDetailsDimmer>
 				}
-				<Options>
-					<NavOption onClick={this.handleHome} >
-						<NavImage
-							image={this.props.location.pathname === "/" ?
-								require( "../images/home_color.svg" )
-								:
-								require( "../images/home.svg" )
-							}
-						/>
-					</NavOption>
 
-					<NavOption onClick={this.handleExplore}>
-						<NavImage
-							image={this.props.location.pathname === "/explore" ?
-								require( "../images/search_color.svg" )
-								:
-								require( "../images/search.svg" )
-							}
-						/>
+				{this.props.feedback &&
+					<FeedbackForm
+						toggleFeedback={this.props.toggleFeedbackForm}
+					/>
+				}
+				<Options auth={this.props.authenticated}>
+					<NavOption>
+						<a href="/" onClick={this.handleLink}>
+							<NavImage
+								image={this.props.location.pathname === "/" ?
+									require( "../images/home_color.svg" )
+									:
+									require( "../images/home.svg" )
+								}
+							/>
+						</a>
 					</NavOption>
 
 					<NavOption>
-						<NavImage
-							onClick={this.handleNotifications}
-							image={this.props.location.pathname === "/notifications"
-							|| this.props.displayNotifications
-								?
-								require( "../images/bell_color.svg" )
-								:
-								require( "../images/bell.svg" )
-							}
-						>
-							{this.props.newNotifications > 0 &&
-								<Label size="small" floating circular>
-									{this.props.newNotifications}
-								</Label>
-							}
-						</NavImage>
-
-						{this.props.displayNotifications &&
-							<Notifications socket={this.props.socket} isPopup />
-						}
+						<a href="/explore" onClick={this.handleLink}>
+							<NavImage
+								image={this.props.location.pathname === "/explore" ?
+									require( "../images/search_color.svg" )
+									:
+									require( "../images/search.svg" )
+								}
+							/>
+						</a>
 					</NavOption>
 
-					<NavOption>
-						<NavImage
-							onClick={this.handleMessages}
-							image={this.props.location.pathname === "/messages"
-							|| this.props.displayMessages ?
-								require( "../images/chat_color.svg" )
-								:
-								require( "../images/chat.svg" )
-							}
-						>
-							{chatNotifications > 0 &&
-								<Label size="small" floating circular>
-									{chatNotifications}
-								</Label>
-							}
-						</NavImage>
-
-						<Messages
-							displayPopup={this.props.displayMessages}
-							socket={this.props.socket}
-							largeScreen
-							onHome={this.props.location.pathname === "/"}
-							hideSidebar={this.props.location.pathname !== "/"}
-							messageTarget={this.props.messageTarget}
-							profilePage={this.props.profilePage}
-							startChat={this.props.startChat}
-							history={this.props.history}
-						/>
-					</NavOption>
-
-					<Logo href="/" image={require( "../images/black-logo-lname.svg" )} />
-
-					<RightOptions>
-						<Scores>
-							<NavImage
-								image={require( "../images/heart.svg" )}
-							/>
-							<Count>{this.props.totalLikes} likes</Count>
-						</Scores>
-						<Scores>
-							<NavImage
-								image={require( "../images/visibility.svg" )}
-							/>
-							<Count>{this.props.totalViews} views</Count>
-						</Scores>
-
-						<Dropdown
-							trigger={<ProfileImg circular src={profileImage} />}
-							icon={null} direction="left">
-							<Dropdown.Menu>
-								<UserInfo
-									onClick={() => this.goToProfile( username )}
+					{this.props.authenticated &&
+						<React.Fragment>
+							<NavOption>
+								<NavImage
+									onClick={this.handleNotifications}
+									image={this.props.location.pathname === "/notifications"
+									|| this.props.displayNotifications
+										?
+										require( "../images/bell_color.svg" )
+										:
+										require( "../images/bell.svg" )
+									}
 								>
-									<DropdownFullname>{fullname}</DropdownFullname>
-									<DropdownUsername>@{username}</DropdownUsername>
-								</UserInfo>
-								<Dropdown.Divider />
-								<StyledDropdownItem
-									text="Logout"
-									onClick={this.handleLogout}
-								/>
-								<StyledDropdownItem
-									text="Settings"
-									onClick={this.goToSettings}
-								/>
-								{localStorage.getItem( "ia" ) === "true" &&
-								<StyledDropdownItem
-									text="Batcave"
-									onClick={this.goToBatcave}
-								/>}
-							</Dropdown.Menu>
-						</Dropdown>
-					</RightOptions>
+									{this.props.newNotifications > 0 &&
+										<Label size="small" floating circular>
+											{this.props.newNotifications}
+										</Label>
+									}
+								</NavImage>
 
-					<NavOption id="NavbarSmallScreenOption">
-						<Dropdown
-							trigger={<ProfileImg circular src={profileImage} />}
-							icon={null} direction="left">
-							<Dropdown.Menu>
-								<UserInfo
-									onClick={() => this.goToProfile( username )}
+								{this.props.displayNotifications &&
+									<Notifications socket={this.props.socket} isPopup />
+								}
+							</NavOption>
+
+							<NavOption>
+								<NavImage
+									onClick={this.handleMessages}
+									image={this.props.location.pathname === "/messages"
+									|| this.props.displayMessages ?
+										require( "../images/chat_color.svg" )
+										:
+										require( "../images/chat.svg" )
+									}
 								>
-									<DropdownFullname>{fullname}</DropdownFullname>
-									<DropdownUsername>@{username}</DropdownUsername>
-								</UserInfo>
-								<Dropdown.Divider />
+									{chatNotifications > 0 &&
+										<Label size="small" floating circular>
+											{chatNotifications}
+										</Label>
+									}
+								</NavImage>
+
+								<Messages
+									displayPopup={this.props.displayMessages}
+									socket={this.props.socket}
+									largeScreen
+									onHome={this.props.location.pathname === "/"}
+									hideSidebar={this.props.location.pathname !== "/"}
+									messageTarget={this.props.messageTarget}
+									clearTargetAfterClose={this.props.profilePage}
+									startChat={this.props.startChat}
+									history={this.props.history}
+								/>
+							</NavOption>
+						</React.Fragment>
+					}
+
+					<Logo
+						href="/"
+						onClick={this.handleLink}
+						image={require( "../images/black-logo-lname.svg" )}
+					/>
+
+					{this.props.authenticated ?
+						<React.Fragment>
+							<RightOptions>
 								<Scores>
 									<NavImage
 										image={require( "../images/heart.svg" )}
@@ -430,26 +403,99 @@ class NavBar extends Component {
 									/>
 									<Count>{this.props.totalViews} views</Count>
 								</Scores>
-								<Dropdown.Divider />
-								<StyledDropdownItem
-									text="Logout"
-									onClick={this.handleLogout}
-								/>
-								<StyledDropdownItem
-									text="Settings"
-									onClick={this.goToSettings}
-								/>
-								<StyledDropdownItem>
-									<a href="/information/terms">Terms</a>
-								</StyledDropdownItem>
-								{localStorage.getItem( "ia" ) === "true" &&
-								<StyledDropdownItem
-									text="Batcave"
-									onClick={this.goToBatcave}
-								/>}
-							</Dropdown.Menu>
-						</Dropdown>
-					</NavOption>
+
+								<Dropdown
+									trigger={<ProfileImg circular src={profileImage} />}
+									icon={null} direction="left">
+									<Dropdown.Menu>
+										<UserInfo>
+											<a href={`/${username}`} onClick={this.handleLink}>
+												<DropdownFullname>{fullname}</DropdownFullname>
+												<DropdownUsername>@{username}</DropdownUsername>
+											</a>
+										</UserInfo>
+										<Dropdown.Divider />
+										<StyledDropdownItem
+											text="Logout"
+											onClick={this.handleLogout}
+										/>
+										<StyledDropdownItem>
+											<a href="/settings" onClick={this.handleLink}>
+												Settings
+											</a>
+										</StyledDropdownItem>
+										{localStorage.getItem( "ia" ) === "true" &&
+										<StyledDropdownItem
+											text="Batcave"
+											onClick={this.goToBatcave}
+										/>}
+									</Dropdown.Menu>
+								</Dropdown>
+							</RightOptions>
+
+							<NavOption id="NavbarSmallScreenOption">
+								<Dropdown
+									trigger={<ProfileImg circular src={profileImage} />}
+									icon={null} direction="left">
+									<Dropdown.Menu>
+										<UserInfo>
+											<a href={`/${username}`} onClick={this.handleLink}>
+												<DropdownFullname>{fullname}</DropdownFullname>
+												<DropdownUsername>@{username}</DropdownUsername>
+											</a>
+										</UserInfo>
+										<Dropdown.Divider />
+										<Scores>
+											<NavImage
+												image={require( "../images/heart.svg" )}
+											/>
+											<Count>{this.props.totalLikes} likes</Count>
+										</Scores>
+										<Scores>
+											<NavImage
+												image={require( "../images/visibility.svg" )}
+											/>
+											<Count>{this.props.totalViews} views</Count>
+										</Scores>
+										<Dropdown.Divider />
+										<StyledDropdownItem
+											text="Logout"
+											onClick={this.handleLogout}
+										/>
+										<StyledDropdownItem>
+											<a href="/settings" onClick={this.handleLink}>
+												Settings
+											</a>
+										</StyledDropdownItem>
+										<StyledDropdownItem>
+											<a href="/information/terms" onClick={this.handleLink}>
+												Terms
+											</a>
+										</StyledDropdownItem>
+										<StyledDropdownItem
+											onClick={this.props.toggleFeedbackForm}
+										>
+											Feedback
+										</StyledDropdownItem>
+										{localStorage.getItem( "ia" ) === "true" &&
+										<StyledDropdownItem
+											text="Batcave"
+											onClick={this.goToBatcave}
+										/>}
+									</Dropdown.Menu>
+								</Dropdown>
+							</NavOption>
+						</React.Fragment>
+						:
+						<AuthOptions>
+							<a href="/signup" onClick={this.handleLink}>
+								<Button secondary content="Sign up" />
+							</a>
+							<a href="/login" onClick={this.handleLink}>
+								<LoginButton content="Log in" />
+							</a>
+						</AuthOptions>
+					}
 				</Options>
 			</Wrapper>
 		);
@@ -462,7 +508,8 @@ NavBar.propTypes = {
 	newNotifications: PropTypes.number.isRequired,
 	totalLikes: PropTypes.number.isRequired,
 	totalViews: PropTypes.number.isRequired,
-	messageTarget: PropTypes.object
+	messageTarget: PropTypes.object,
+	socket: PropTypes.object
 };
 
 const
@@ -475,6 +522,8 @@ const
 		allConversations: state.conversations.allConversations,
 		displayShare: state.posts.displayShare,
 		displayPostDetails: state.posts.displayPostDetails,
+		feedback: state.user.feedback,
+		authenticated: state.authenticated
 	}),
 
 	mapDispatchToProps = dispatch => ({
@@ -482,7 +531,8 @@ const
 		switchNotifications: () => dispatch( switchNotifications()),
 		switchMessages: () => dispatch( switchMessages()),
 		switchPostDetails: post => dispatch( switchPostDetails( post )),
-		switchShare: () => dispatch( switchShare())
+		switchShare: () => dispatch( switchShare()),
+		toggleFeedbackForm: () => dispatch( toggleFeedbackForm())
 	});
 
 export default withRouter(

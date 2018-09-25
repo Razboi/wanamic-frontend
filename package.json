@@ -4,17 +4,14 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
     "image-compressor.js": "^1.1.4",
-    "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "react": "^16.4.2",
     "react-country-region-selector": "^1.3.0",
     "react-dom": "^16.4.2",
-    "react-fullpage": "^0.1.18",
     "react-ga": "^2.5.3",
-    "react-google-login": "^3.2.1",
     "react-infinite-scroller": "^1.2.0",
-    "react-masonry-component": "^6.2.1",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
@@ -32,7 +29,7 @@
   "scripts": {
     "start": "REACT_APP_STAGE=dev react-scripts start",
     "build": "react-scripts build",
-		"predeploy:testing": "REACT_APP_STAGE=testing npm run build",
+    "predeploy:testing": "REACT_APP_STAGE=testing npm run build",
     "deploy:testing": "aws s3 sync build/ s3://testing-wanamic.com",
     "predeploy:prod": "REACT_APP_STAGE=production npm run build",
     "deploy": "aws s3 sync build/ s3://wanamic.com",
@@ -40,16 +37,11 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "enzyme": "^3.6.0",
-    "enzyme-adapter-react-16": "^1.4.0",
     "eslint": "^4.19.1",
     "eslint-config-idiomatic": "^4.0.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1",
-    "mocha": "^5.2.0",
-    "redux-mock-store": "^1.5.3",
-    "sinon": "^4.5.0"
+    "mocha": "^5.2.0"
   }
 }

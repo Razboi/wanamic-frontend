@@ -59,38 +59,24 @@ class ExplorePage extends Component {
 			renderProfile: false,
 			renderClub: false,
 			typeOfSearch: "",
-			skip: 1,
 			userSkip: 0,
 			hasMore: true,
 			user: {},
 			clubSearch: "",
 			type: "",
 			clubData: {},
-			multiple: false
+			multiple: false,
+			messageTarget: undefined,
+			userSuggestions: undefined,
+			loadingUsers: false,
+			clubSuggestions: undefined,
+			loadingClubs: false
 		};
 	}
 
 	componentDidMount() {
 		window.scrollTo( 0, 0 );
 		document.title = "Explore";
-	}
-
-	getSugestedUser = () => {
-		api.getSugested( this.state.skip )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.getSugestedUser())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.setState({
-						user: res.data,
-						renderProfile: true,
-						typeOfSearch: "sugested",
-						skip: this.state.skip + 1
-					});
-				}
-			}).catch( err => console.log( err ));
 	}
 
 
@@ -128,21 +114,73 @@ class ExplorePage extends Component {
 			}).catch( err => console.log( err ));
 	}
 
-	matchUsername = () => {
-		api.getUserInfo( this.state.usernameSearch )
-			.then( res => {
-				if ( res === "jwt expired" ) {
-					refreshToken()
-						.then(() => this.matchUsername())
-						.catch( err => console.log( err ));
-				} else if ( res.data ) {
-					this.setState({ user: res.data, renderProfile: true });
-				}
-			}).catch( err => console.log( err ));
+	handleChange = e => {
+		this.getSearchSuggestions( e.target.name, e.target.value );
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
-	handleChange = e => {
-		this.setState({ [ e.target.name ]: e.target.value });
+	getSearchSuggestions = ( type, value ) => {
+		switch ( type ) {
+		case "usernameSearch":
+			this.getUserSuggestions( value );
+			break;
+		case "clubSearch":
+			this.getClubSuggestions( value );
+			break;
+		default:
+			this.getUserSuggestions( value );
+		}
+	}
+
+	getUserSuggestions = async value => {
+		if ( !value ) {
+			this.setState({
+				userSuggestions: undefined,
+				loadingUsers: false
+			});
+			return;
+		}
+		try {
+			this.setState({ loadingUsers: true });
+			const userSuggestions = await api.getUserSuggestions( value );
+			this.setState({
+				userSuggestions: userSuggestions.data,
+				loadingUsers: false
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getUserSuggestions( value );
+			} else {
+				console.log( err );
+			}
+		}
+	}
+
+
+	getClubSuggestions = async value => {
+		if ( !value ) {
+			this.setState({
+				clubSuggestions: undefined,
+				loadingClubs: false
+			});
+			return;
+		}
+		try {
+			this.setState({ loadingClubs: true });
+			const clubSuggestions = await api.getClubSuggestions( value );
+			this.setState({
+				clubSuggestions: clubSuggestions.data,
+				loadingClubs: false
+			});
+		} catch ( err ) {
+			if ( err.response.data === "jwt expired" ) {
+				await refreshToken();
+				this.getClubSuggestions( value );
+			} else {
+				console.log( err );
+			}
+		}
 	}
 
 	backToMenu = () => {
@@ -157,7 +195,7 @@ class ExplorePage extends Component {
 	nextUser = () => {
 		switch ( this.state.typeOfSearch ) {
 		case "sugested":
-			this.getSugestedUser();
+			this.getSuggestedUser();
 			break;
 		case "random":
 			this.getRandomUser();
@@ -166,7 +204,7 @@ class ExplorePage extends Component {
 			this.matchHobbies();
 			break;
 		default:
-			this.getSugestedUser();
+			this.getSuggestedUser();
 		}
 	}
 
@@ -217,14 +255,18 @@ class ExplorePage extends Component {
 		}
 	}
 
-	searchClub = async() => {
+	startChat = messageTarget => {
+		this.setState({ messageTarget: messageTarget });
+	}
+
+	chatMatchmaking = async() => {
 		try {
-			const club = await api.searchClub( this.state.clubSearch );
-			this.setState({ clubData: club.data, renderClub: true });
+			const user = await api.chatMatchmaking();
+			this.startChat( user.data );
 		} catch ( err ) {
 			if ( err.response.data === "jwt expired" ) {
 				await refreshToken();
-				this.searchClub();
+				this.chatMatchmaking();
 			} else {
 				console.log( err );
 			}
@@ -258,29 +300,34 @@ class ExplorePage extends Component {
 				/>
 			);
 		}
-		if ( window.innerWidth < 800 ) {
+		if ( window.innerWidth < 1300 ) {
 			return (
 				this.state.type ?
 					<Wrapper>
 						<NavBar
-							hide={this.state.scrollingDown}
 							socket={this.props.socket}
+							messageTarget={this.state.messageTarget}
+							startChat={this.startChat}
 						/>
 
 						<PageContent onClick={this.hidePopups}>
 							{this.state.type === "users" ?
 								<ExploreUsers
-									getSugested={this.getSugestedUser}
+									history={this.props.history}
 									getRandom={this.getRandomUser}
 									matchHobbies={this.matchHobbies}
-									matchUsername={this.matchUsername}
 									handleChange={this.handleChange}
+									chatMatchmaking={this.chatMatchmaking}
+									searchSuggestions={this.state.userSuggestions}
+									loading={this.state.loadingUsers}
 								/>
 								:
 								<ExploreClubs
+									history={this.props.history}
 									randomClub={this.randomClub}
-									searchClub={this.searchClub}
 									handleChange={this.handleChange}
+									searchSuggestions={this.state.clubSuggestions}
+									loading={this.state.loadingClubs}
 								/>
 							}
 						</PageContent>
@@ -305,22 +352,28 @@ class ExplorePage extends Component {
 		return (
 			<Wrapper>
 				<NavBar
-					hide={this.state.scrollingDown}
 					socket={this.props.socket}
+					profilePage
+					messageTarget={this.state.messageTarget}
+					startChat={this.startChat}
 				/>
 
 				<PageContent onClick={this.hidePopups}>
 					<ExploreUsers
-						getSugested={this.getSugestedUser}
+						history={this.props.history}
 						getRandom={this.getRandomUser}
 						matchHobbies={this.matchHobbies}
-						matchUsername={this.matchUsername}
 						handleChange={this.handleChange}
+						chatMatchmaking={this.chatMatchmaking}
+						searchSuggestions={this.state.userSuggestions}
+						loading={this.state.loadingUsers}
 					/>
 					<ExploreClubs
+						history={this.props.history}
 						randomClub={this.randomClub}
-						searchClub={this.searchClub}
 						handleChange={this.handleChange}
+						searchSuggestions={this.state.clubSuggestions}
+						loading={this.state.loadingClubs}
 					/>
 				</PageContent>
 			</Wrapper>

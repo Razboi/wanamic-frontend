@@ -226,16 +226,24 @@ class PostDetails extends Component {
 			nullPost: false,
 			hiddeCommentInput: true
 		};
-		this.previousHref = undefined;
+		this.previousHref = window.location.href;
+		this.previousTitle = document.title;
 		this.userPicture = undefined;
 	}
 
 	componentDidMount() {
+		const { postDetails } = this.props;
 		document.body.style.overflowY = "hidden";
-		this.previousHref = window.location.href;
-		window.history.pushState( null, null, "/post" );
+		window.history.pushState( null, null,
+			`/${postDetails.author.username}/${postDetails._id}` );
 		window.onpopstate = e => this.handlePopstate( e );
-		this.setState({ post: this.props.postDetails });
+		this.setState({ post: postDetails });
+
+		if ( postDetails.content ) {
+			document.title = `@${postDetails.author.username}: ${postDetails.content}`;
+		} else {
+			document.title = `@${postDetails.author.username}: ${postDetails._id}`;
+		}
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -245,32 +253,30 @@ class PostDetails extends Component {
 	}
 
 	componentWillUnmount() {
+		const { postDetails, history } = this.props;
 		document.body.style.overflowY = "auto";
 		window.onpopstate = () => {};
-	}
-
-	handlePopstate = e => {
-		e.preventDefault();
-		if ( this.props.displayShare ) {
-			this.props.switchShare();
-			window.history.pushState( null, null, "/post" );
+		document.title = this.previousTitle;
+		// if the previous location was also the post details
+		// push the user profile
+		if ( history.location.pathname ===
+			`/${postDetails.author.username}/${postDetails._id}` ) {
+			window.history.pushState( null, null,
+				`/${postDetails.author.username}` );
 		} else {
-			this.props.switchPostDetails();
+			window.history.pushState( null, null, this.previousHref );
 		}
 	}
 
-	getPost = async() => {
-		var post;
-		try {
-			post = await api.getPost( this.props.postId );
-			if ( !post.data ) {
-				this.setState({ nullPost: true });
-			} else {
-				this.setState({ post: post.data });
-			}
-		} catch ( err ) {
-			console.log( err );
-			this.setState({ nullPost: true });
+	handlePopstate = e => {
+		const { postDetails } = this.props;
+		e.preventDefault();
+		if ( this.props.displayShare ) {
+			this.props.switchShare();
+			window.history.pushState( null, null,
+				`/${postDetails.author.username}/${postDetails._id}` );
+		} else {
+			this.props.switchPostDetails();
 		}
 	}
 
@@ -284,6 +290,9 @@ class PostDetails extends Component {
 	}
 
 	handleShare = () => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
 		this.props.switchShare( this.state.post );
 	}
 
@@ -336,6 +345,9 @@ class PostDetails extends Component {
 	}
 
 	toggleCommentInput = () => {
+		if ( !this.props.authenticated ) {
+			return;
+		}
 		this.setState( state => ({ hiddeCommentInput: !state.hiddeCommentInput }));
 	}
 

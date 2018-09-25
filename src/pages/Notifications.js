@@ -59,7 +59,7 @@ const
 			border-bottom: 0;
 		}
 	`,
-	Notification = styled.div`
+	NotificationWrapper = styled.div`
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -70,7 +70,7 @@ const
 			cursor: pointer;
 		}
 	`,
-	NotificationImg = styled( Image )`
+	NotificationAuthorImg = styled( Image )`
 		width: 35px !important;
 		height: 35px !important;
 		align-self: flex-start;
@@ -128,6 +128,7 @@ class Notifications extends Component {
 		this.getNotifications();
 		this.getNetwork();
 		this.checkNotifications();
+		Notification.requestPermission();
 	}
 
 	getNetwork = async() => {
@@ -138,7 +139,7 @@ class Notifications extends Component {
 				await refreshToken();
 				this.getNetwork();
 			} else if ( network.data ) {
-				this.setState({ network: network.data.requester });
+				this.setState({ network: network.data });
 			}
 		} catch ( err ) {
 			console.log( err );
@@ -323,7 +324,7 @@ class Notifications extends Component {
 							notification.author &&
 								( notification.alert || notification.clubRequestResponse
 									|| notification.clubSuccession ) ?
-								<Notification key={index}>
+								<NotificationWrapper key={index}>
 									<Content alert>
 										{notification.content}
 										{notification.alert &&
@@ -338,21 +339,22 @@ class Notifications extends Component {
 											/>
 										}
 									</Content>
-								</Notification>
+								</NotificationWrapper>
 								:
-								<Notification key={index}>
-									<NotificationImg
-										onClick={() => this.handleDetails( notification, index )}
-										circular
-										src={notification.author.profileImage ?
-											process.env.REACT_APP_STAGE === "dev" ?
-												require( "../images/" + notification.author.profileImage )
+								<NotificationWrapper key={index}>
+									<a href={`/${notification.author.username}`}>
+										<NotificationAuthorImg
+											circular
+											src={notification.author.profileImage ?
+												process.env.REACT_APP_STAGE === "dev" ?
+													require( "../images/" + notification.author.profileImage )
+													:
+													s3Bucket + notification.author.profileImage
 												:
-												s3Bucket + notification.author.profileImage
-											:
-											require( "../images/defaultUser.png" )
-										}
-									/>
+												require( "../images/defaultUser.png" )
+											}
+										/>
+									</a>
 									<NotificationData
 										onClick={() => this.handleDetails( notification, index )}
 									>
@@ -387,7 +389,7 @@ class Notifications extends Component {
 										unFriend={() =>
 											this.unFriend( notification.author )}
 									/>
-								</Notification>
+								</NotificationWrapper>
 						)}
 					</div>}
 				</StyledInfiniteScroll>
